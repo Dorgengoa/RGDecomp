@@ -1,0 +1,15 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void SkyCfgSkyAnimeCmd_17ddc0(void);
+extern void SkyCfgSkyBgCmd_17deb0(void);
+extern void SkyCfgSkyBgHeightCmd_17dc90(void);
+extern void SkyCfgSkyImgCmd_17e100(void);
+extern void SkyCfgSkyMdsCmd_17e040(void);
+extern void SkyCfgSkyMirrorOffCmd_17dcc0(void);
+extern void SkyCfgSkybAnimeCmd_17dcd0(void);
+extern void SkyCfgSkybMdsCmd_17def0(void);
+extern void SkyCfgSunMdsCmd_17dfb0(void);
+const u32 D_0044A4C0[20] = {
+    $h, (u32)&SkyCfgSkyImgCmd_17e100, $h, (u32)&SkyCfgSkyMdsCmd_17e040, $h, (u32)&SkyCfgSkyAnimeCmd_17ddc0, $h, (u32)&SkyCfgSunMdsCmd_17dfb0, $h, (u32)&SkyCfgSkybMdsCmd_17def0, $h, (u32)&SkyCfgSkybAnimeCmd_17dcd0, $h, (u32)&SkyCfgSkyBgCmd_17deb0, $h, (u32)&SkyCfgSkyMirrorOffCmd_17dcc0, $h, (u32)&SkyCfgSkyBgHeightCmd_17dc90, $h, $h
+};
+typedef char data2c_sizecheck_0044A4C0[(sizeof(D_0044A4C0) == 80) ? 1 : -1];

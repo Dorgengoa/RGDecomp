@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MpegNextPictureMaybe_110008(void);
+const u32 D_00450480[24] = {
+    $h, (u32)&MpegNextPictureMaybe_110008, $h, (u32)&MpegNextPictureMaybe_110008, $h, $h, $h, $h, $h, $h, $h, (u32)&MpegNextPictureMaybe_110008, $h, $h, $h, $h, $h, (u32)&MpegNextPictureMaybe_110008, $h, (u32)&MpegNextPictureMaybe_110008, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00450480[(sizeof(D_00450480) == 96) ? 1 : -1];

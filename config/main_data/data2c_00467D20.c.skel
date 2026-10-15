@@ -1,0 +1,28 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCmdAllocEntries_41b7d0(void);
+extern void DataTableCmdAllocSubEntries_41a280(void);
+extern void DataTableCmdEntryAbilityListMaybe_41a970(void);
+extern void DataTableCmdEntryDefine_41b010(void);
+extern void DataTableCmdEntrySetFlags_41a540(void);
+extern void DataTableCmdEntrySetFlags_41a740(void);
+extern void DataTableCmdEntrySetIntArray_41aad0(void);
+extern void DataTableCmdEntrySetIntArray_41ab80(void);
+extern void DataTableCmdEntrySetIntArray_41ac30(void);
+extern void DataTableCmdEntrySetIntArray_41ace0(void);
+extern void DataTableCmdEntrySetIntArray_41ad90(void);
+extern void DataTableCmdEntrySetParams_41a110(void);
+extern void DataTableCmdEntrySetParams_41a330(void);
+extern void DataTableCmdEntrySetParams_41a3f0(void);
+extern void DataTableCmdEntrySetParams_41a460(void);
+extern void DataTableCmdEntrySetParams_41aa60(void);
+extern void DataTableCmdEntrySetParams_41ae40(void);
+extern void DataTableCmdEntrySetParams_41af70(void);
+extern void DataTableCmdNopId1_369040(void);
+extern void DataTableCmdNopId2_369030(void);
+extern void DataTableCmdNop_3b8db0(void);
+extern void DataTableCmdSubEntryDefine_41a1a0(void);
+const u32 D_00467D20[46] = {
+    $h, (u32)&DataTableCmdNopId1_369040, $h, (u32)&DataTableCmdNopId2_369030, $h, (u32)&DataTableCmdAllocEntries_41b7d0, $h, (u32)&DataTableCmdEntryDefine_41b010, $h, (u32)&DataTableCmdEntrySetParams_41af70, $h, (u32)&DataTableCmdEntrySetParams_41ae40, $h, (u32)&DataTableCmdEntrySetIntArray_41ad90, $h, (u32)&DataTableCmdEntrySetIntArray_41ace0, $h, (u32)&DataTableCmdEntrySetIntArray_41ac30, $h, (u32)&DataTableCmdEntrySetIntArray_41ab80, $h, (u32)&DataTableCmdNop_3b8db0, $h, (u32)&DataTableCmdEntrySetIntArray_41aad0, $h, (u32)&DataTableCmdEntrySetParams_41aa60, $h, (u32)&DataTableCmdEntryAbilityListMaybe_41a970, $h, (u32)&DataTableCmdEntrySetFlags_41a740, $h, (u32)&DataTableCmdEntrySetFlags_41a540, $h, (u32)&DataTableCmdEntrySetParams_41a460, $h, (u32)&DataTableCmdEntrySetParams_41a3f0, $h, (u32)&DataTableCmdEntrySetParams_41a330, $h, (u32)&DataTableCmdAllocSubEntries_41a280, $h, (u32)&DataTableCmdSubEntryDefine_41a1a0, $h, (u32)&DataTableCmdEntrySetParams_41a110, $h, $h
+};
+typedef char data2c_sizecheck_00467D20[(sizeof(D_00467D20) == 184) ? 1 : -1];

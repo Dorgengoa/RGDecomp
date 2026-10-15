@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void PlacePointCfgOfsCmd_3865c0(void);
+extern void PlacePointCfgRpCmd_3864f0(void);
+const u32 D_00454330[8] = {
+    $h, (u32)&PlacePointCfgOfsCmd_3865c0, $h, (u32)&PlacePointCfgRpCmd_3864f0, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00454330[(sizeof(D_00454330) == 32) ? 1 : -1];

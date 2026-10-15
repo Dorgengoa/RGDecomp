@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EventVoiceNodeResetMaybe_24f700(void);
+u32 D_00471498[4] = {
+    $h, $h, (u32)&EventVoiceNodeResetMaybe_24f700, $h
+};
+typedef char data2c_sizecheck_00471498[(sizeof(D_00471498) == 16) ? 1 : -1];

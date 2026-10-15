@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ObjRecResetBase_1c47c0(void);
+u32 D_00471130[4] = {
+    $h, $h, (u32)&ObjRecResetBase_1c47c0, $h
+};
+typedef char data2c_sizecheck_00471130[(sizeof(D_00471130) == 16) ? 1 : -1];

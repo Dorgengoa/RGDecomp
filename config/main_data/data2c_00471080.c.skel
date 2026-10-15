@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MotionEventTexAnimeGetKind_1b2560(void);
+extern void MotionEventTexAnimeGetTag_1b2570(void);
+extern void MotionEventTexAnimeWriteText_1b15d0(void);
+u32 D_00471080[8] = {
+    $h, $h, (u32)&MotionEventTexAnimeGetKind_1b2560, (u32)&MotionEventTexAnimeGetTag_1b2570, (u32)&MotionEventTexAnimeWriteText_1b15d0, $h, $h, $h
+};
+typedef char data2c_sizecheck_00471080[(sizeof(D_00471080) == 32) ? 1 : -1];

@@ -1,0 +1,23 @@
+#include "types.h"
+
+typedef struct Obj_FUN_00204250 Obj_FUN_00204250;
+typedef struct Q_FUN_00204250 Q_FUN_00204250;
+
+extern void MenuBattleEndLoaderRelease_2042b0(void);
+extern Q_FUN_00204250 *GetMenuResGroup_206a40(void);
+extern void ResGroupUnloadGroup_42b650(Q_FUN_00204250 *q, s32 n);
+extern void MenuBattleEndStackRelease_206590(void);
+extern Obj_FUN_00204250 *GetDrawCtxNameTable_15de40(void);
+extern void NameTableFreeGroup_158ac0(Obj_FUN_00204250 *o, s32 n);
+
+void MenuBattleEndResRelease_204250(void)
+{
+    Obj_FUN_00204250 *o;
+
+    MenuBattleEndLoaderRelease_2042b0();
+    ResGroupUnloadGroup_42b650(GetMenuResGroup_206a40(), 2);
+    MenuBattleEndStackRelease_206590();
+    o = GetDrawCtxNameTable_15de40();
+    NameTableFreeGroup_158ac0(o, 0x32D);
+    NameTableFreeGroup_158ac0(o, 0x32C);
+}

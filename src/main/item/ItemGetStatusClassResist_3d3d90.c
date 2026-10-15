@@ -1,0 +1,38 @@
+#include "types.h"
+
+/* Resolve a sub-object, then read a signed byte out of its 8-entry table at
+   +0x09 through the asymmetric guard pair. */
+
+typedef struct Owner10c {
+    u8 pad000[0x10];
+    void *sub;         /* +0x10 */
+} Owner10c;
+
+typedef struct Table09 {
+    u8 pad000[0x9];
+    s8 slot[1];        /* +0x09 */
+} Table09;
+
+extern Table09 *ItemDefGetKind2Or3Data_40e140(void *sub);
+
+s8 ItemGetStatusClassResist_3d3d90(Owner10c *o, s32 index)
+{
+    Table09 *t;
+    u8 ok;
+
+    t = ItemDefGetKind2Or3Data_40e140(o->sub);
+    if (t == 0) {
+        return 0;
+    }
+    if (index < 0) {
+        goto none;
+    }
+    ok = index < 8;
+    if (ok != 0) {
+        goto found;
+    }
+none:
+    return 0;
+found:
+    return t->slot[index];
+}

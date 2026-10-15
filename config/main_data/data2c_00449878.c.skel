@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_00449870[];
+const u32 D_00449878[254] = {
+    (u32)&D_00449870, (u32)&D_00449870, (u32)&D_00449878, (u32)&D_00449878, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00449878[(sizeof(D_00449878) == 1016) ? 1 : -1];

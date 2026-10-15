@@ -1,0 +1,30 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffModelObjDrawModelMaybe_2dd2d0(void);
+extern void EffModelObjGetCurEntryId_2e3580(void);
+extern void EffModelObjGetField984Related_2e3550(void);
+extern void EffModelObjGetField984Related_2e3570(void);
+extern void EffModelObjGetModel_2db7f0(void);
+extern void EffModelObjGetNextEntryId_2e3590(void);
+extern void EffModelObjGetScriptVm_2db7b0(void);
+extern void EffModelObjGetTargetRef_2e35a0(void);
+extern void EffModelObjGetWorkHeapMaybe_2e3560(void);
+extern void EffModelObjReset_2dd360(void);
+extern void EffModelObjSetNextEntryId_2db7d0(void);
+extern void EffectInstanceAllocNone_2e34f0(void);
+extern void EffectInstanceDrawNop_2dabc0(void);
+extern void EffectInstanceGetCountZero_2dabd0(void);
+extern void EffectInstanceGetEntriesNone_2dabe0(void);
+extern void EffectInstanceGetHeapBlockNone_2da840(void);
+extern void EffectInstanceGetTexGroupNone_2e3510(void);
+extern void EffectInstanceGetTexNameNone_2e3500(void);
+extern void EffectInstanceInitRangeNop_2e3530(void);
+extern void EffectInstanceSetTexGroupNop_2e3520(void);
+extern void EffectInstanceSetTexRangeNone_2e3540(void);
+extern void entry_002db7c0(void);
+extern void entry_002db7e0(void);
+extern void func_002DD2D0_e1(void);
+u32 D_00471760[28] = {
+    $h, $h, (u32)&EffModelObjReset_2dd360, (u32)&func_002DD2D0_e1, (u32)&EffModelObjDrawModelMaybe_2dd2d0, (u32)&EffectInstanceDrawNop_2dabc0, (u32)&EffModelObjGetModel_2db7f0, (u32)&EffModelObjGetScriptVm_2db7b0, (u32)&EffModelObjGetField984Related_2e3550, (u32)&EffModelObjGetWorkHeapMaybe_2e3560, (u32)&EffModelObjGetField984Related_2e3570, (u32)&entry_002db7c0, (u32)&EffectInstanceGetHeapBlockNone_2da840, (u32)&EffModelObjGetTargetRef_2e35a0, (u32)&entry_002db7e0, (u32)&EffModelObjSetNextEntryId_2db7d0, (u32)&EffModelObjGetCurEntryId_2e3580, (u32)&EffModelObjGetNextEntryId_2e3590, (u32)&EffectInstanceAllocNone_2e34f0, (u32)&EffectInstanceGetTexNameNone_2e3500, (u32)&EffectInstanceGetTexGroupNone_2e3510, (u32)&EffectInstanceSetTexGroupNop_2e3520, (u32)&EffectInstanceInitRangeNop_2e3530, (u32)&EffectInstanceSetTexRangeNone_2e3540, (u32)&EffectInstanceGetEntriesNone_2dabe0, (u32)&EffectInstanceGetCountZero_2dabd0, $h, $h
+};
+typedef char data2c_sizecheck_00471760[(sizeof(D_00471760) == 112) ? 1 : -1];

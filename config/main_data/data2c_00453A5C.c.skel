@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+const s16 data2c_fragment_00453A5C[1] = {
+    $d
+};
+typedef char data2c_sizecheck_00453A5C[(sizeof(data2c_fragment_00453A5C) == 2) ? 1 : -1];

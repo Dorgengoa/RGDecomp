@@ -1,0 +1,30 @@
+#include "types.h"
+
+extern s32 CharaMgrPoolFindById_3a8c60(s32, s32);
+extern s32 PartyCountMembers_3c2010(u8 *, s32, s32);
+extern void *D_00483890;
+
+s32 PartyGetSlotChara_3c2fb0(u8 *arg0, s32 arg1) {
+    s32 v;
+    s32 t;
+
+    if (D_00483890 == NULL) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 10) {
+        v = -1;
+    } else {
+        t = PartyCountMembers_3c2010(arg0, 1, 1);
+        if (arg1 < t) {
+            v = ((s16 *)(arg0 + 0x190))[arg1];
+        } else if (arg1 < t + 7) {
+            v = ((s16 *)(arg0 + 0x196))[arg1 - t];
+        } else {
+            v = -1;
+        }
+    }
+    if (v < 0) {
+        return 0;
+    }
+    return CharaMgrPoolFindById_3a8c60(*(s32 *)((u8 *)D_00483890 + 0x14), v);
+}

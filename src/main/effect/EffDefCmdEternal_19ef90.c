@@ -1,0 +1,13 @@
+#include "types.h"
+
+typedef struct Q { u8 pad0[0x30]; s32 f30; } Q;
+typedef struct P { u8 pad0[0x28]; Q *f28; } P;
+
+s32 EffDefCmdEternal_19ef90(void *a, s32 b, P **c)
+{
+    Q *q = (*c)->f28;
+
+    if (q == 0) return 0;
+    q->f30 = 1;
+    return 1;
+}

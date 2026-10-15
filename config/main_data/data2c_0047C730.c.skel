@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void TreasureBoxViewCount_426c90(void);
+extern void TreasureBoxViewGetAt_426b50(void);
+extern void func_00428400_e1(void);
+u32 D_0047C730[8] = {
+    $h, $h, (u32)&TreasureBoxViewCount_426c90, (u32)&func_00428400_e1, (u32)&TreasureBoxViewGetAt_426b50, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047C730[(sizeof(D_0047C730) == 32) ? 1 : -1];

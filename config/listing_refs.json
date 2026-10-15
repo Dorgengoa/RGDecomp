@@ -1,0 +1,7561 @@
+{
+ "factory": {
+  "factory_FactoryBeltTileGroupBuildObjs_4ff1e0": {
+   "gp": [
+    "0x00480860",
+    "0x00480864",
+    "0x00480868",
+    "0x0048086C",
+    "0x00480870",
+    "0x00480874",
+    "0x00480878",
+    "0x0048087C"
+   ]
+  },
+  "factory_FactoryBeltTrimPreview_500450": {
+   "gp": [
+    "0x0047D1EC"
+   ]
+  },
+  "factory_FactoryBlueprintAskClear_4fae70": {
+   "gp": [
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryBlueprintCancel_4fb5a0": {
+   "gp": [
+    "0x004807EC",
+    "0x004807E8"
+   ],
+   "jtbl": [
+    "0x0050CD20"
+   ]
+  },
+  "factory_FactoryBlueprintClearChosen_4faf10": {
+   "gp": [
+    "0x0047D4E4"
+   ]
+  },
+  "factory_FactoryBlueprintConfirm_4fb840": {
+   "jtbl": [
+    "0x0050CD50"
+   ]
+  },
+  "factory_FactoryBlueprintCursorBobCb_4eeed0": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryBlueprintCursorBob_4fb0f0": {
+   "gp": [
+    "0x0047D3D0",
+    "0x0047D3EC",
+    "0x004807EC"
+   ],
+   "jtbl": [
+    "0x0050CCF0"
+   ]
+  },
+  "factory_FactoryBlueprintDialogLayout_4f7ed0": {
+   "gp": [
+    "0x004807E8",
+    "0x00484A70",
+    "0x004807EC"
+   ],
+   "jtbl": [
+    "0x0050CCD0"
+   ]
+  },
+  "factory_FactoryBlueprintDialogSetStyle_4f7c70": {
+   "gp": [
+    "0x004807E8"
+   ]
+  },
+  "factory_FactoryBlueprintIsListOpen_4e9f20": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryBlueprintListClose_4ef2b0": {
+   "gp": [
+    "0x00484A48",
+    "0x0047D4E4",
+    "0x00484B7C",
+    "0x004807E8"
+   ]
+  },
+  "factory_FactoryBlueprintListInit_4fbab0": {
+   "gp": [
+    "0x0047D4F4",
+    "0x004807EC",
+    "0x004807E8",
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryBlueprintListOpen_4ef3c0": {
+   "gp": [
+    "0x00484A48",
+    "0x0047D278",
+    "0x00484B78"
+   ]
+  },
+  "factory_FactoryBlueprintListScissorCb_4eeda0": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryBlueprintListTick_4ef1d0": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryBlueprintOpenDetail_4f97a0": {
+   "gp": [
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryBlueprintOptPartUnlockedMaybe_4e9f70": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryBlueprintReturnToCaller_4eeb90": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryBlueprintSelChangedCb_4eef00": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryBlueprintSelChanged_4fb3d0": {
+   "gp": [
+    "0x004807E8"
+   ]
+  },
+  "factory_FactoryBlueprintSelectById_4e9f90": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryBlueprintSelect_4fafe0": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryBlueprintShowChosen_4f7ad0": {
+   "gp": [
+    "0x00484A70",
+    "0x0047D278"
+   ]
+  },
+  "factory_FactoryBlueprintShowProduct_4f9130": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryBlueprintViewClose_4eef80": {
+   "gp": [
+    "0x00484A48",
+    "0x0047D4E4",
+    "0x00484B84",
+    "0x004807E8"
+   ]
+  },
+  "factory_FactoryBlueprintViewInit_4fa8c0": {
+   "gp": [
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryBlueprintViewOpen_4ef090": {
+   "gp": [
+    "0x00484A48",
+    "0x0047D278",
+    "0x00484B80"
+   ]
+  },
+  "factory_FactoryBlueprintViewRestore_4fa760": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryBlueprintViewTick_4eef20": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryCameraInit_505af0": {
+   "gp": [
+    "0x0047DD5C",
+    "0x0047DD60",
+    "0x0047D310",
+    "0x0047DD64",
+    "0x0047DD68",
+    "0x0047DD6C",
+    "0x0047DD70",
+    "0x0047DD3C"
+   ]
+  },
+  "factory_FactoryCameraShakeStep_504ee0": {
+   "gp": [
+    "0x0047D8D8"
+   ]
+  },
+  "factory_FactoryCameraUpdate_5050c0": {
+   "gp": [
+    "0x0047D24C",
+    "0x0047D8D4",
+    "0x004808A0"
+   ],
+   "jtbl": [
+    "0x0050CEA0"
+   ]
+  },
+  "factory_FactoryDraw_50a710": {
+   "gp": [
+    "0x00480E10",
+    "0x00480E14",
+    "0x00480E18",
+    "0x00480E1C",
+    "0x00480E30",
+    "0x00480E20",
+    "0x00480E24",
+    "0x00480E28",
+    "0x00480E2C",
+    "0x0047D288",
+    "0x0047D7C4",
+    "0x0047D278",
+    "0x00480E34",
+    "0x00480E38",
+    "0x00480E3C",
+    "0x00480E40",
+    "0x00480E44",
+    "0x00480E48",
+    "0x00480E4C",
+    "0x00480E50",
+    "0x00480E54",
+    "0x00480E58",
+    "0x00480E5C",
+    "0x0047D85C",
+    "0x0047D7E0"
+   ],
+   "jtbl": [
+    "0x0050D7F0",
+    "0x0050D7C0"
+   ]
+  },
+  "factory_FactoryGridDirDx_4ff9f0": {
+   "gp": [
+    "0x00480840",
+    "0x00480844",
+    "0x00480848",
+    "0x0048084C"
+   ]
+  },
+  "factory_FactoryGridDirDy_4ff9b0": {
+   "gp": [
+    "0x00480850",
+    "0x00480854",
+    "0x00480858",
+    "0x0048085C"
+   ]
+  },
+  "factory_FactoryGridDirToAngle_4ff990": {
+   "gp": [
+    "0x0047D404"
+   ]
+  },
+  "factory_FactoryHelpCursorBobCb_4ece90": {
+   "gp": [
+    "0x00484A5C"
+   ]
+  },
+  "factory_FactoryHelpCursorBob_4f15d0": {
+   "gp": [
+    "0x0047D3D0",
+    "0x0047D3EC"
+   ]
+  },
+  "factory_FactoryHelpOpen_4f1f80": {
+   "gp": [
+    "0x0047D4F4",
+    "0x004807E8"
+   ]
+  },
+  "factory_FactoryHelpPageArrowBlink_4f1510": {
+   "gp": [
+    "0x004807E8",
+    "0x0047D4E8",
+    "0x0047D488",
+    "0x0047D418",
+    "0x0047D4EC"
+   ]
+  },
+  "factory_FactoryHelpPageClose_4f16b0": {
+   "gp": [
+    "0x00484A30",
+    "0x004807E8"
+   ]
+  },
+  "factory_FactoryHelpPageLoadPoll_4f1ce0": {
+   "gp": [
+    "0x00484A30",
+    "0x00484A70",
+    "0x004807E8"
+   ]
+  },
+  "factory_FactoryHelpPageNext_4f17e0": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryHelpRelease_4f1a40": {
+   "gp": [
+    "0x00484A30"
+   ]
+  },
+  "factory_FactoryHelpSelChangedCb_4ecec0": {
+   "gp": [
+    "0x00484A5C"
+   ]
+  },
+  "factory_FactoryHelpStateClose_4ed020": {
+   "gp": [
+    "0x00484A5C",
+    "0x0047D4E4",
+    "0x00484AE4"
+   ]
+  },
+  "factory_FactoryHelpStateOpen_4ed140": {
+   "gp": [
+    "0x00484A5C",
+    "0x0047D278",
+    "0x00484AE0"
+   ]
+  },
+  "factory_FactoryHelpStateTick_4ecee0": {
+   "gp": [
+    "0x00484A5C"
+   ]
+  },
+  "factory_FactoryHelpTopicListBuild_4f1350": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryHelpTopicListRefresh_4f1240": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryHelpTopicOpen_4f1ab0": {
+   "gp": [
+    "0x00484A30",
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryMarkerAddFromSaved_4ea130": {
+   "gp": [
+    "0x00484A60"
+   ]
+  },
+  "factory_FactoryMarkerAddSlot_4f6fe0": {
+   "gp": [
+    "0x004807F0"
+   ]
+  },
+  "factory_FactoryMarkerAdd_4ea1a0": {
+   "gp": [
+    "0x00484A60"
+   ]
+  },
+  "factory_FactoryMarkerClearAll_4ea120": {
+   "gp": [
+    "0x00484A60"
+   ]
+  },
+  "factory_FactoryMarkerDrawBase_4f5e70": {
+   "gp": [
+    "0x004807F0"
+   ]
+  },
+  "factory_FactoryMarkerDrawItemIcon_4f5490": {
+   "gp": [
+    "0x004807F0"
+   ]
+  },
+  "factory_FactoryMarkerDrawKindAnim_4f51a0": {
+   "gp": [
+    "0x004807F0"
+   ]
+  },
+  "factory_FactoryMarkerRemoveSlot_4f6e50": {
+   "gp": [
+    "0x004807F0"
+   ]
+  },
+  "factory_FactoryMarkerRemove_4ea140": {
+   "gp": [
+    "0x00484A60"
+   ]
+  },
+  "factory_FactoryMarkerSetKindUv_4f61a0": {
+   "jtbl": [
+    "0x0050CC10"
+   ]
+  },
+  "factory_FactoryMarkerUpdate_4ea160": {
+   "gp": [
+    "0x00484A60"
+   ]
+  },
+  "factory_FactoryMaterialChoiceClose_4edac0": {
+   "gp": [
+    "0x00484A58",
+    "0x0047D50C"
+   ]
+  },
+  "factory_FactoryMaterialChoiceCursorBobCb_4ed7b0": {
+   "gp": [
+    "0x00484A58"
+   ]
+  },
+  "factory_FactoryMaterialChoiceHighlightCb_4ed7e0": {
+   "gp": [
+    "0x00484A58"
+   ]
+  },
+  "factory_FactoryMaterialChoiceOpen_4edc10": {
+   "gp": [
+    "0x00484A58",
+    "0x0047D510"
+   ]
+  },
+  "factory_FactoryMaterialChoiceTick_4ed8c0": {
+   "gp": [
+    "0x00484A58",
+    "0x0047D504",
+    "0x0047D35C",
+    "0x0047D508"
+   ]
+  },
+  "factory_FactoryMaterialClearConfirmAnswer_4f2970": {
+   "gp": [
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryMaterialClearConfirmLayout_4f2170": {
+   "gp": [
+    "0x00484A70",
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryMaterialClearConfirmOpen_4f2a70": {
+   "gp": [
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryMaterialCursorBobCb_4ee020": {
+   "gp": [
+    "0x00484A58"
+   ]
+  },
+  "factory_FactoryMaterialCursorBob_4f3a70": {
+   "gp": [
+    "0x0047D3D0",
+    "0x0047D3EC",
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryMaterialFrameScrollCb_4ed2f0": {
+   "gp": [
+    "0x00484A58"
+   ]
+  },
+  "factory_FactoryMaterialGridScissorCb_4edda0": {
+   "gp": [
+    "0x00484A58"
+   ]
+  },
+  "factory_FactoryMaterialIsInputActive_4e9f00": {
+   "gp": [
+    "0x00484A58"
+   ]
+  },
+  "factory_FactoryMaterialLayout_4f3e00": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryMaterialMarkFilledRows_4f25c0": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMaterialMatchBlueprint_4f2750": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMaterialQtyClose_4ed580": {
+   "gp": [
+    "0x00484A58",
+    "0x0047D4FC"
+   ]
+  },
+  "factory_FactoryMaterialQtyOpen_4ed6d0": {
+   "gp": [
+    "0x00484A58",
+    "0x0047D500"
+   ]
+  },
+  "factory_FactoryMaterialQtyPreset_4f2bf0": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMaterialQtyTick_4ed320": {
+   "gp": [
+    "0x00484A58",
+    "0x0047D35C",
+    "0x0047D4F8"
+   ]
+  },
+  "factory_FactoryMaterialReqListLayout_4f2d50": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMaterialSelChangedCb_4ee050": {
+   "gp": [
+    "0x00484A58"
+   ]
+  },
+  "factory_FactoryMaterialStateClose_4ee360": {
+   "gp": [
+    "0x00484A58",
+    "0x0047D4E4"
+   ]
+  },
+  "factory_FactoryMaterialStateOpen_4ee4b0": {
+   "gp": [
+    "0x00484A58",
+    "0x0047D278"
+   ]
+  },
+  "factory_FactoryMaterialStateTick_4ee070": {
+   "gp": [
+    "0x00484A58",
+    "0x0047D510",
+    "0x0047D50C",
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMaterialTabKeyCb_4edef0": {
+   "gp": [
+    "0x00484A58"
+   ]
+  },
+  "factory_FactoryMenuBannerSetStyle_4eae00": {
+   "gp": [
+    "0x004807E4"
+   ]
+  },
+  "factory_FactoryMenuBuildWidgets_4ea1d0": {
+   "gp": [
+    "0x004807E4",
+    "0x00484A2C",
+    "0x004807E8",
+    "0x004807EC",
+    "0x004807F0",
+    "0x004807F4",
+    "0x00484A28",
+    "0x004807F8",
+    "0x00484A44",
+    "0x00484A48",
+    "0x00484A4C",
+    "0x00484A50",
+    "0x00484A54",
+    "0x00484A58",
+    "0x00484A5C",
+    "0x00484A60",
+    "0x0047DD80"
+   ]
+  },
+  "factory_FactoryMenuCaptionSetRow_4eb270": {
+   "gp": [
+    "0x004807E4"
+   ]
+  },
+  "factory_FactoryMenuCaptionSlideIn_4eb220": {
+   "gp": [
+    "0x004807E4",
+    "0x0047D248"
+   ]
+  },
+  "factory_FactoryMenuCaptionSlideOut_4eb1d0": {
+   "gp": [
+    "0x004807E4",
+    "0x0047D4F0"
+   ]
+  },
+  "factory_FactoryMenuCursorBobCb_4eb480": {
+   "gp": [
+    "0x00484A44"
+   ]
+  },
+  "factory_FactoryMenuCursorBob_4f0f30": {
+   "gp": [
+    "0x0047D3D0",
+    "0x0047D3EC",
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryMenuDraw2_4ec3f0": {
+   "gp": [
+    "0x00484A68",
+    "0x00484A60",
+    "0x00480800"
+   ]
+  },
+  "factory_FactoryMenuDraw_4ec430": {
+   "gp": [
+    "0x00484A68",
+    "0x004807E4",
+    "0x004807E8",
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryMenuIsActive_4ec3e0": {
+   "gp": [
+    "0x00484A6C"
+   ]
+  },
+  "factory_FactoryMenuOpen_4ec5e0": {
+   "gp": [
+    "0x00484A28",
+    "0x00484A2C",
+    "0x00484A30",
+    "0x00484A64",
+    "0x004807FC",
+    "0x00484A6C",
+    "0x00484A44",
+    "0x00484A48",
+    "0x00484A4C",
+    "0x00484A50",
+    "0x00484A54",
+    "0x00484A58",
+    "0x00484A5C",
+    "0x00484A60",
+    "0x00480800",
+    "0x00484A70",
+    "0x00484A84"
+   ]
+  },
+  "factory_FactoryMenuQuitConfirmClose_4eacd0": {
+   "gp": [
+    "0x004807EC",
+    "0x00484A44",
+    "0x00484A84",
+    "0x00484A94"
+   ]
+  },
+  "factory_FactoryMenuQuitConfirmOpen_4ea870": {
+   "gp": [
+    "0x00484A44",
+    "0x004807E4",
+    "0x00484A70",
+    "0x004807EC",
+    "0x00484A84"
+   ]
+  },
+  "factory_FactoryMenuRelease_4ec4e0": {
+   "gp": [
+    "0x00484A70",
+    "0x00484A2C",
+    "0x00484A58",
+    "0x00484A30",
+    "0x00484A68"
+   ]
+  },
+  "factory_FactoryMenuResReady_4ec0e0": {
+   "gp": [
+    "0x00484A2C",
+    "0x00484A88",
+    "0x00484A30",
+    "0x00484A70",
+    "0x004807F8",
+    "0x00484A64",
+    "0x00484A68"
+   ]
+  },
+  "factory_FactoryMenuResRequest_4ec2f0": {
+   "gp": [
+    "0x00484A30",
+    "0x00484A88"
+   ]
+  },
+  "factory_FactoryMenuReset_4f10f0": {
+   "gp": [
+    "0x0047D4F4"
+   ]
+  },
+  "factory_FactoryMenuRowChangedCb_4eb4b0": {
+   "gp": [
+    "0x00484A44"
+   ]
+  },
+  "factory_FactoryMenuRowsSlideIn_4eb3c0": {
+   "gp": [
+    "0x00484A44",
+    "0x00484A90",
+    "0x0047D248",
+    "0x0047D514"
+   ]
+  },
+  "factory_FactoryMenuRowsSlideOut_4eb320": {
+   "gp": [
+    "0x00484A90",
+    "0x00484A44",
+    "0x0047D4F0",
+    "0x0047D514"
+   ]
+  },
+  "factory_FactoryMenuShowNotice_4ea590": {
+   "gp": [
+    "0x004807E4",
+    "0x00484A70",
+    "0x00484A84"
+   ]
+  },
+  "factory_FactoryMenuStateEnter_4ebd10": {
+   "gp": [
+    "0x00480828",
+    "0x00480800",
+    "0x00484A44",
+    "0x0047D510",
+    "0x0047D520",
+    "0x00484A94",
+    "0x00484A8C",
+    "0x00484A90"
+   ]
+  },
+  "factory_FactoryMenuStateExit_4ebce0": {
+   "gp": [
+    "0x00484A6C"
+   ]
+  },
+  "factory_FactoryMenuStateMain_4eb4d0": {
+   "gp": [
+    "0x00484A94",
+    "0x00484A84",
+    "0x00484A44",
+    "0x004807E4",
+    "0x004807EC",
+    "0x004807FC",
+    "0x00484A90",
+    "0x00484A48",
+    "0x0048082C",
+    "0x0047D440",
+    "0x0047D35C",
+    "0x0047D518",
+    "0x0047D51C",
+    "0x00484A50",
+    "0x0047D510",
+    "0x0047D520"
+   ],
+   "jtbl": [
+    "0x0050CA40",
+    "0x0050CA10"
+   ]
+  },
+  "factory_FactoryMenuStep_4ec470": {
+   "gp": [
+    "0x004807E4",
+    "0x004807E8",
+    "0x004807EC",
+    "0x004807F0",
+    "0x004807F8"
+   ]
+  },
+  "factory_FactoryMenuTexRelease_4ec090": {
+   "gp": [
+    "0x00484A30",
+    "0x00484A88",
+    "0x00480800"
+   ]
+  },
+  "factory_FactoryMenuTexReloadPoll_4ebe90": {
+   "gp": [
+    "0x00480824",
+    "0x00484A88",
+    "0x00484A30",
+    "0x004807FC",
+    "0x00480800"
+   ]
+  },
+  "factory_FactoryMenuTexReload_4ebf90": {
+   "gp": [
+    "0x00484A88",
+    "0x00484A30",
+    "0x004807FC"
+   ]
+  },
+  "factory_FactoryMergeInputsMatchBlueprintMaybe_4e9f40": {
+   "gp": [
+    "0x00484A60"
+   ]
+  },
+  "factory_FactoryMergeInputsMatchByTypeMaybe_4f6af0": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMergeInputsMatchType2Maybe_4f4c60": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMergeInputsMatchType3Maybe_4f4a10": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMergeInputsMatchType4Maybe_4f47d0": {
+   "gp": [
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMoveOpen_4f45a0": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryMoveShowPartInfo_4f4130": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryMoveStateClose_4ee7d0": {
+   "gp": [
+    "0x00484A50",
+    "0x00484B2C"
+   ]
+  },
+  "factory_FactoryMoveStateOpen_4ee910": {
+   "gp": [
+    "0x00484A50",
+    "0x00484B28"
+   ]
+  },
+  "factory_FactoryMoveStateTick_4ee660": {
+   "gp": [
+    "0x00484A50",
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryMoveWaitRequest_4f43e0": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryPartGroupBuildObjs_4fead0": {
+   "gp": [
+    "0x00480880",
+    "0x00480884",
+    "0x00480888",
+    "0x0048088C",
+    "0x00480890",
+    "0x00480894",
+    "0x00480898",
+    "0x0048089C"
+   ]
+  },
+  "factory_FactoryPartGroupToItemId_4f4070": {
+   "jtbl": [
+    "0x0050CB80"
+   ]
+  },
+  "factory_FactoryPartGroupToItemId_4fc560": {
+   "jtbl": [
+    "0x0050CDA0"
+   ]
+  },
+  "factory_FactoryPartGroupToMsgId_4ef9f0": {
+   "jtbl": [
+    "0x0050CAC0"
+   ]
+  },
+  "factory_FactoryPartGroupToMsgId_4f4000": {
+   "jtbl": [
+    "0x0050CB60"
+   ]
+  },
+  "factory_FactoryPartGroupToMsgId_4fc4f0": {
+   "jtbl": [
+    "0x0050CD80"
+   ]
+  },
+  "factory_FactoryPartObjStateDrop_4fda80": {
+   "gp": [
+    "0x0047DC9C",
+    "0x0047DB7C"
+   ]
+  },
+  "factory_FactoryPartObjStateFollow_4fdd40": {
+   "gp": [
+    "0x0047DB50"
+   ]
+  },
+  "factory_FactoryPartObjStateWork_4fd2f0": {
+   "gp": [
+    "0x0047D404"
+   ]
+  },
+  "factory_FactoryPartObjStep_4fe000": {
+   "jtbl": [
+    "0x0050CE00"
+   ]
+  },
+  "factory_FactoryPartsCursorBobCb_4ec920": {
+   "gp": [
+    "0x00484A4C"
+   ]
+  },
+  "factory_FactoryPartsCursorBob_4f06e0": {
+   "gp": [
+    "0x0047D3D0",
+    "0x0047D3EC"
+   ]
+  },
+  "factory_FactoryPartsItemToGroup_4efb80": {
+   "jtbl": [
+    "0x0050CAE0"
+   ]
+  },
+  "factory_FactoryPartsListBuild_4efe90": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryPartsOpen_4f0920": {
+   "gp": [
+    "0x0047D4F4",
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryPartsRefreshDetail_4efd30": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryPartsSelChangedCb_4ec950": {
+   "gp": [
+    "0x00484A4C"
+   ]
+  },
+  "factory_FactoryPartsSelect_4f02c0": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryPartsShowNoStockMsgMaybe_4efa60": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryPartsStateClose_4ecbf0": {
+   "gp": [
+    "0x00484A4C",
+    "0x0047D4E4",
+    "0x00484ABC"
+   ]
+  },
+  "factory_FactoryPartsStateOpen_4ecd20": {
+   "gp": [
+    "0x00484A4C",
+    "0x0047D278",
+    "0x00484AB8"
+   ]
+  },
+  "factory_FactoryPartsStateTick_4ec970": {
+   "gp": [
+    "0x00484A4C",
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryProduceCheck_4eb070": {
+   "gp": [
+    "0x00484A48",
+    "0x00484A58"
+   ]
+  },
+  "factory_FactoryProduceDrawFailFlash_4f5000": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "factory_FactoryProduceOpen_4f77a0": {
+   "gp": [
+    "0x00484A70",
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryProducePollResult_4f74d0": {
+   "gp": [
+    "0x0047D35C",
+    "0x0047D4DC",
+    "0x0047D4E0",
+    "0x00484A48",
+    "0x0047D1DC"
+   ]
+  },
+  "factory_FactoryProduceResultStep_4f7100": {
+   "jtbl": [
+    "0x0050CCA0"
+   ]
+  },
+  "factory_FactoryProduceRun_505e00": {
+   "jtbl": [
+    "0x0050D670"
+   ]
+  },
+  "factory_FactoryProduceShowMessage_4f62d0": {
+   "gp": [
+    "0x00484A70"
+   ],
+   "jtbl": [
+    "0x0050CC80",
+    "0x0050CC40"
+   ]
+  },
+  "factory_FactoryProduceStateClose_4eeaa0": {
+   "gp": [
+    "0x00484A60",
+    "0x00484B54"
+   ]
+  },
+  "factory_FactoryProduceStateOpen_4eeb10": {
+   "gp": [
+    "0x00484A60",
+    "0x00484B50"
+   ]
+  },
+  "factory_FactoryProduceStateTick_4eea40": {
+   "gp": [
+    "0x00484A60"
+   ]
+  },
+  "factory_FactoryRectFrameCorner_509f10": {
+   "gp": [
+    "0x00480E70",
+    "0x00480E74",
+    "0x00480E78",
+    "0x00480E7C"
+   ]
+  },
+  "factory_FactoryRectFrameEdge_50a180": {
+   "gp": [
+    "0x00480E60",
+    "0x00480E64",
+    "0x00480E68",
+    "0x00480E6C"
+   ]
+  },
+  "factory_FactoryRelated_4ec7e0": {
+   "gp": [
+    "0x00484A4C"
+   ]
+  },
+  "factory_FactoryRemoveCursorBobCb_4ef590": {
+   "gp": [
+    "0x00484A54"
+   ]
+  },
+  "factory_FactoryRemoveCursorBob_4fccc0": {
+   "gp": [
+    "0x0047D3D0",
+    "0x0047D3EC",
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryRemoveDialogAnswer_4fc8d0": {
+   "gp": [
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryRemoveDialogLayout_4fbe10": {
+   "gp": [
+    "0x00484A70",
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryRemoveDialogOpen_4fcee0": {
+   "gp": [
+    "0x0047D3EC"
+   ]
+  },
+  "factory_FactoryRemoveKeyCb_4ef530": {
+   "gp": [
+    "0x00484A54"
+   ]
+  },
+  "factory_FactoryRemoveOpen_4fcf80": {
+   "gp": [
+    "0x0047D4F4",
+    "0x00484A70",
+    "0x004807EC"
+   ]
+  },
+  "factory_FactoryRemoveSelChangedCb_4ef5c0": {
+   "gp": [
+    "0x00484A54"
+   ]
+  },
+  "factory_FactoryRemoveShowPartInfo_4fc620": {
+   "gp": [
+    "0x00484A70"
+   ]
+  },
+  "factory_FactoryRemoveStateClose_4ef800": {
+   "gp": [
+    "0x00484A54",
+    "0x00484BAC",
+    "0x004807E8"
+   ]
+  },
+  "factory_FactoryRemoveStateOpen_4ef900": {
+   "gp": [
+    "0x00484A54",
+    "0x00484BA8"
+   ]
+  },
+  "factory_FactoryRemoveStateTick_4ef5e0": {
+   "gp": [
+    "0x00484A54",
+    "0x00484A48"
+   ]
+  },
+  "factory_FactoryStep_5069e0": {
+   "gp": [
+    "0x0047DC90",
+    "0x0047DB50",
+    "0x0047DB7C",
+    "0x0047D5D0",
+    "0x0047DC94",
+    "0x0047DC98",
+    "0x00480E00",
+    "0x00480E04",
+    "0x00480E08",
+    "0x00480E0C",
+    "0x0047DB14"
+   ],
+   "jtbl": [
+    "0x0050D780",
+    "0x0050D750",
+    "0x0050D720",
+    "0x0050D6F0",
+    "0x0050D6C0"
+   ]
+  }
+ },
+ "insect": {
+  "insect_InsectAbilityTableClear_51d1d0": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdCharaName_51c990": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdCount_51ce50": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdEffectKind_51cd10": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdHeaderRelated_51cea0": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdInflictFlags_51cb20": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdLevel_51cdb0": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdMotionMaybe_51c9e0": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdName_51cd60": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdNeedsTarget_51cbd0": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdNextRecord_51c900": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdParam65Related_51cc20": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdPower_51cb80": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdRangeFlags_51ca60": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdRangeLength_51cc70": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdRangePattern_51ccc0": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdResistType_51cac0": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdSeqFile_51c940": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdSpecies_51ce00": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableCmdVariantMask_51c860": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAbilityTableLoad_51d0b0": {
+   "gp": [
+    "0x00485170"
+   ]
+  },
+  "insect_InsectAiCfgParseAbilityChain_523110": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseAiLevelNum_523250": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseAiLevel_523210": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseAttackChain_522f40": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseHeadHunt_5230b0": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseHeal_523170": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseImperialGuard_523050": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseLookAlive_523000": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseOrderType_5231d0": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseScript_522cc0": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseTargetType_522f00": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiCfgParseUseingAbility_522fa0": {
+   "gp": [
+    "0x004851B8"
+   ]
+  },
+  "insect_InsectAiPlanScissorThrow_51f1d0": {
+   "jtbl": [
+    "0x00525640"
+   ]
+  },
+  "insect_InsectAiSpecialCanHit_522310": {
+   "jtbl": [
+    "0x00525750"
+   ]
+  },
+  "insect_InsectAiSpecialTargetCannonBlast_51e3c0": {
+   "gp": [
+    "0x0047D344"
+   ]
+  },
+  "insect_InsectAiSpecialTargetCharmBeam_51e560": {
+   "gp": [
+    "0x0047D90C",
+    "0x0047DC84",
+    "0x0047D288"
+   ]
+  },
+  "insect_InsectAiThinkStep_51f500": {
+   "gp": [
+    "0x004851E0",
+    "0x004851C0",
+    "0x004851BC",
+    "0x0047DADC",
+    "0x0047D344"
+   ],
+   "jtbl": [
+    "0x005256F0",
+    "0x005256D0",
+    "0x005256B0",
+    "0x00525690"
+   ]
+  },
+  "insect_InsectAiThink_522a90": {
+   "jtbl": [
+    "0x005257A0"
+   ]
+  },
+  "insect_InsectBattleAttackSeqStep_4fa210": {
+   "gp": [
+    "0x0047DB50"
+   ]
+  },
+  "insect_InsectBattleCamEyeSettled_4f19f0": {
+   "gp": [
+    "0x0047D88C",
+    "0x0047D89C"
+   ]
+  },
+  "insect_InsectBattleCamOrbit_4f1bc0": {
+   "gp": [
+    "0x00480FE0",
+    "0x00480FE4",
+    "0x00480FE8",
+    "0x00480FF0",
+    "0x00480FEC",
+    "0x00480FF4",
+    "0x00480FF8",
+    "0x00480FFC",
+    "0x0047D838",
+    "0x0047D8B8",
+    "0x0047D8BC"
+   ]
+  },
+  "insect_InsectBattleCamTargetSettled_4f1980": {
+   "gp": [
+    "0x0047D88C",
+    "0x0047D89C"
+   ]
+  },
+  "insect_InsectBattleCamUpdate_4f2100": {
+   "gp": [
+    "0x0047D8B0",
+    "0x0047D5D0",
+    "0x00480F40",
+    "0x00480F44",
+    "0x00480F48",
+    "0x00480F50",
+    "0x00480F4C",
+    "0x00480F54",
+    "0x00480F58",
+    "0x00480F5C",
+    "0x0047D8B4",
+    "0x0047D8C0",
+    "0x0047D8C4",
+    "0x0047D53C",
+    "0x0047D8C8",
+    "0x00480F60",
+    "0x00480F64",
+    "0x00480F68",
+    "0x00480F6C",
+    "0x0047D8CC",
+    "0x0047D1FC",
+    "0x00480F70",
+    "0x00480F74",
+    "0x00480F78",
+    "0x00480F7C",
+    "0x0047D8D0",
+    "0x00480F80",
+    "0x00480F84",
+    "0x00480F88",
+    "0x00480F90",
+    "0x00480F8C",
+    "0x00480F94",
+    "0x00480F98",
+    "0x00480F9C",
+    "0x0047D404",
+    "0x00480FA0",
+    "0x00480FA4",
+    "0x00480FA8",
+    "0x00480FB0",
+    "0x00480FAC",
+    "0x00480FB4",
+    "0x00480FB8",
+    "0x00480FBC",
+    "0x00480FC0",
+    "0x00480FC4",
+    "0x00480FC8",
+    "0x00480FCC",
+    "0x0047D1B0",
+    "0x00480FD0",
+    "0x00480FD4",
+    "0x00480FD8",
+    "0x00480FDC"
+   ],
+   "jtbl": [
+    "0x00524BD0"
+   ]
+  },
+  "insect_InsectBattleConfirmDialogOpen_50eaf0": {
+   "gp": [
+    "0x00480E94",
+    "0x00480E90"
+   ]
+  },
+  "insect_InsectBattleCursorPlace_4f4260": {
+   "gp": [
+    "0x00484FAC",
+    "0x0047D8FC",
+    "0x0047D1FC"
+   ]
+  },
+  "insect_InsectBattleDamagePopupSpawn_50f730": {
+   "gp": [
+    "0x0047D354",
+    "0x0047DC88"
+   ]
+  },
+  "insect_InsectBattleDrawCellQuad_4f6d30": {
+   "gp": [
+    "0x0047D874",
+    "0x0047D878",
+    "0x0047D87C",
+    "0x0047D880",
+    "0x0047D884",
+    "0x0047D888"
+   ],
+   "jtbl": [
+    "0x00524C40"
+   ]
+  },
+  "insect_InsectBattleDrawDizzyStars_4f4fe0": {
+   "gp": [
+    "0x0047D1FC"
+   ]
+  },
+  "insect_InsectBattleDrawHpBars_4f5bd0": {
+   "gp": [
+    "0x0047D480"
+   ]
+  },
+  "insect_InsectBattleDrawMarkerModels_4f4a30": {
+   "gp": [
+    "0x0047D1FC"
+   ]
+  },
+  "insect_InsectBattleDrawPieceIcons_4f5430": {
+   "gp": [
+    "0x0047D354",
+    "0x0047D278",
+    "0x0047D480"
+   ]
+  },
+  "insect_InsectBattleDrawPreviewModel_4f5fc0": {
+   "gp": [
+    "0x00480E80",
+    "0x00480E84",
+    "0x00480E88",
+    "0x00480E8C",
+    "0x0047D410",
+    "0x0047D414",
+    "0x0047D7F8",
+    "0x00480F30",
+    "0x00480F34",
+    "0x00480F38",
+    "0x00480F3C",
+    "0x0047D80C",
+    "0x0047D810",
+    "0x0047D7A4",
+    "0x0047D1FC"
+   ]
+  },
+  "insect_InsectBattleEffectsRemove_51da90": {
+   "jtbl": [
+    "0x00525480"
+   ]
+  },
+  "insect_InsectBattleEffectsSpawn_51dc30": {
+   "gp": [
+    "0x0047E180"
+   ],
+   "jtbl": [
+    "0x00525510",
+    "0x005254B0"
+   ]
+  },
+  "insect_InsectBattleEffectsUpdate_51d4b0": {
+   "jtbl": [
+    "0x00525420"
+   ]
+  },
+  "insect_InsectBattleFlowActionCmd_504ce0": {
+   "jtbl": [
+    "0x00524E80"
+   ]
+  },
+  "insect_InsectBattleFlowConfirmPrompt_502180": {
+   "jtbl": [
+    "0x00524DD0"
+   ]
+  },
+  "insect_InsectBattleFlowDispatch_50b8d0": {
+   "jtbl": [
+    "0x00525010"
+   ]
+  },
+  "insect_InsectBattleFlowManualControlConfirm_505b60": {
+   "jtbl": [
+    "0x00524EA0"
+   ]
+  },
+  "insect_InsectBattleFlowPlaceTeam_502c20": {
+   "gp": [
+    "0x00484FA0"
+   ],
+   "jtbl": [
+    "0x00524E50"
+   ]
+  },
+  "insect_InsectBattleFlowPlayerTurn_509c60": {
+   "jtbl": [
+    "0x00524ED0"
+   ]
+  },
+  "insect_InsectBattleFlowSelectVictoryCond_502a30": {
+   "jtbl": [
+    "0x00524E30"
+   ]
+  },
+  "insect_InsectBattleFlowTextEntryMaybe_5024c0": {
+   "gp": [
+    "0x00484104"
+   ],
+   "jtbl": [
+    "0x00524E00"
+   ]
+  },
+  "insect_InsectBattleFrameUpdate_50c4b0": {
+   "gp": [
+    "0x00480EC0",
+    "0x00480EC4",
+    "0x00480EC8",
+    "0x00480E80",
+    "0x00480ECC",
+    "0x00480E84",
+    "0x00480E88",
+    "0x00480E8C",
+    "0x0047D1FC",
+    "0x0047D7F8",
+    "0x00480ED0",
+    "0x00480ED4",
+    "0x00480ED8",
+    "0x00480EDC",
+    "0x0047DC30",
+    "0x0047DADC",
+    "0x0047D278",
+    "0x0047D5D0",
+    "0x0047DC80",
+    "0x00484F94",
+    "0x00484F90"
+   ]
+  },
+  "insect_InsectBattleHelpStep_50a9f0": {
+   "gp": [
+    "0x00484F9C",
+    "0x00484F98"
+   ],
+   "jtbl": [
+    "0x00524F60"
+   ]
+  },
+  "insect_InsectBattleLoadEffectModels_4f90b0": {
+   "gp": [
+    "0x0047E180"
+   ]
+  },
+  "insect_InsectBattleLoadMarkerModels_4f8e50": {
+   "gp": [
+    "0x00484FA8"
+   ]
+  },
+  "insect_InsectBattleLoadSpecialChara_4f76b0": {
+   "gp": [
+    "0x0047E180"
+   ]
+  },
+  "insect_InsectBattleLoadStep_50a810": {
+   "jtbl": [
+    "0x00524EF0"
+   ]
+  },
+  "insect_InsectBattleLoadTeams_4f88a0": {
+   "gp": [
+    "0x00480F28"
+   ]
+  },
+  "insect_InsectBattleLoadTrainerCharas_4f83f0": {
+   "gp": [
+    "0x00480F2C"
+   ]
+  },
+  "insect_InsectBattleLogDraw_51b8d0": {
+   "gp": [
+    "0x00485148"
+   ]
+  },
+  "insect_InsectBattleMarkerModelUpdate_50c100": {
+   "gp": [
+    "0x0047D1FC"
+   ]
+  },
+  "insect_InsectBattleMenuDispatch_50b6c0": {
+   "jtbl": [
+    "0x00524F90"
+   ]
+  },
+  "insect_InsectBattleMenuEndTurn_4fda60": {
+   "gp": [
+    "0x00484FA4"
+   ]
+  },
+  "insect_InsectBattleMenuMatchIntro_4fe160": {
+   "gp": [
+    "0x00480F18",
+    "0x00480F1C"
+   ]
+  },
+  "insect_InsectBattleMenuOpponentIntro_501c60": {
+   "gp": [
+    "0x0047DADC"
+   ]
+  },
+  "insect_InsectBattleMenuSpecialTargetSelectMaybe_4fc080": {
+   "gp": [
+    "0x0047D278"
+   ]
+  },
+  "insect_InsectBattleMoveSeqStep_4fa680": {
+   "gp": [
+    "0x0047D7D8"
+   ]
+  },
+  "insect_InsectBattleParamWindowLayout_4f3620": {
+   "gp": [
+    "0x0047D5D0",
+    "0x0047D278"
+   ]
+  },
+  "insect_InsectBattleRematchPromptStep_4f0f60": {
+   "gp": [
+    "0x0047D88C"
+   ],
+   "jtbl": [
+    "0x00524BB0"
+   ]
+  },
+  "insect_InsectBoardAbilityCanHit_4eea10": {
+   "jtbl": [
+    "0x00524920"
+   ]
+  },
+  "insect_InsectBoardAbilityFindTarget_4ef0f0": {
+   "jtbl": [
+    "0x00524970"
+   ]
+  },
+  "insect_InsectBoardCalcAttackRange_4ec720": {
+   "jtbl": [
+    "0x00524900"
+   ]
+  },
+  "insect_InsectBoardCellToWorld_4eda70": {
+   "gp": [
+    "0x0047D878"
+   ]
+  },
+  "insect_InsectBoardPieceWorldPos_4edad0": {
+   "gp": [
+    "0x0047D878"
+   ]
+  },
+  "insect_InsectFileSlotRequest_512140": {
+   "gp": [
+    "0x00481004",
+    "0x00481000",
+    "0x00481008"
+   ],
+   "jtbl": [
+    "0x00525210"
+   ]
+  },
+  "insect_InsectFormationParseFormNum_4eff10": {
+   "gp": [
+    "0x00484F58"
+   ]
+  },
+  "insect_InsectFormationParseForm_4efe60": {
+   "gp": [
+    "0x00484F58"
+   ]
+  },
+  "insect_InsectFormationParseFormationEnd_4efee0": {
+   "gp": [
+    "0x00484F58"
+   ]
+  },
+  "insect_InsectFormationParseFormation_4eff00": {
+   "gp": [
+    "0x00484F58"
+   ]
+  },
+  "insect_InsectFormationParseScript_4efde0": {
+   "gp": [
+    "0x00484F58"
+   ]
+  },
+  "insect_InsectHelpInit_510da0": {
+   "gp": [
+    "0x00484FD0"
+   ]
+  },
+  "insect_InsectHelpParseHelpData_5109f0": {
+   "gp": [
+    "0x00484FD0"
+   ]
+  },
+  "insect_InsectHelpParseHelpNum_510af0": {
+   "gp": [
+    "0x00484FD0"
+   ]
+  },
+  "insect_InsectHelpParseScript_510b30": {
+   "gp": [
+    "0x00484FD0"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdCount_523a00": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdName_523970": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdNextRecord_5235e0": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice0_523920": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice10_523600": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice1_5238d0": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice2_523880": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice3_523830": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice4_5237e0": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice5_523790": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice6_523740": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice7_5236f0": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice8_5236a0": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableCmdVoice9_523650": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableInit_5235c0": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectLiveTalkTableLoad_523540": {
+   "gp": [
+    "0x00485208"
+   ]
+  },
+  "insect_InsectPieceAttachSubModel_515210": {
+   "gp": [
+    "0x00481010",
+    "0x00481014",
+    "0x00481018",
+    "0x0048101C"
+   ]
+  },
+  "insect_InsectPieceFaceCell_515590": {
+   "gp": [
+    "0x0047D1FC"
+   ]
+  },
+  "insect_InsectPieceGetMoveKind_5151a0": {
+   "gp": [
+    "0x00481028"
+   ]
+  },
+  "insect_InsectPieceGetYawRad_515130": {
+   "gp": [
+    "0x0047D1FC"
+   ]
+  },
+  "insect_InsectPieceUpdate_515a30": {
+   "gp": [
+    "0x00481010",
+    "0x00481014",
+    "0x00481018",
+    "0x0048101C"
+   ]
+  },
+  "insect_InsectSeqExecAbiImpact_519760": {
+   "gp": [
+    "0x0047DD48",
+    "0x004850DC",
+    "0x0048102C",
+    "0x004850D8",
+    "0x0047DD20"
+   ],
+   "jtbl": [
+    "0x005253B0",
+    "0x00525370"
+   ]
+  },
+  "insect_InsectSeqExecAroundDmg_5176c0": {
+   "gp": [
+    "0x0047DD4C"
+   ]
+  },
+  "insect_InsectSeqExecBackdrop_519020": {
+   "gp": [
+    "0x004850E4",
+    "0x0047D288",
+    "0x00481030",
+    "0x004850E0",
+    "0x004850E8",
+    "0x004850EC",
+    "0x0047DD50"
+   ]
+  },
+  "insect_InsectSeqExecDarkImpact_517d90": {
+   "gp": [
+    "0x0047D288",
+    "0x00481034",
+    "0x004850F8",
+    "0x004850FC",
+    "0x004850F0",
+    "0x004850F4",
+    "0x0047DD50",
+    "0x0047DD48",
+    "0x0047DD20"
+   ],
+   "jtbl": [
+    "0x00525310"
+   ]
+  },
+  "insect_InsectSeqExecDig_5187e0": {
+   "gp": [
+    "0x0047DD54"
+   ]
+  },
+  "insect_InsectSeqExecHeraculesCrash_517120": {
+   "gp": [
+    "0x00485110",
+    "0x00485108",
+    "0x0048510C",
+    "0x0047DD48",
+    "0x00485100",
+    "0x00481038",
+    "0x00485104",
+    "0x0047DD20"
+   ],
+   "jtbl": [
+    "0x005252F0"
+   ]
+  },
+  "insect_InsectSeqExecReclimed_518610": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "insect_InsectSeqExecRotate_518cc0": {
+   "gp": [
+    "0x0047DD58"
+   ]
+  },
+  "insect_InsectSeqExecSnailThrow_516a30": {
+   "gp": [
+    "0x00485114",
+    "0x00485124",
+    "0x00485118",
+    "0x0048511C",
+    "0x00485120",
+    "0x0047D1FC"
+   ]
+  },
+  "insect_InsectSeqExecSpiderWeb_516770": {
+   "gp": [
+    "0x0048103C"
+   ]
+  },
+  "insect_InsectSeqParseRotate_4eb070": {
+   "gp": [
+    "0x0047D1FC"
+   ]
+  }
+ },
+ "insmenu": {
+  "insmenu_InsectVsBackGuideHide_4ea000": {
+   "gp": [
+    "0x0047D3D8"
+   ]
+  },
+  "insmenu_InsectVsBackGuideInit_4ea060": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsBackGuideShow_4ea030": {
+   "gp": [
+    "0x0047D240"
+   ]
+  },
+  "insmenu_InsectVsBattleTeamPending_4f9680": {
+   "gp": [
+    "0x00484358"
+   ]
+  },
+  "insmenu_InsectVsBootFinish_4ee160": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsCageViewState_4f82e0": {
+   "gp": [
+    "0x0047D460",
+    "0x0047D3C8",
+    "0x00484348",
+    "0x00480464"
+   ]
+  },
+  "insmenu_InsectVsCageViewStepCage_4f8db0": {
+   "gp": [
+    "0x00480464"
+   ]
+  },
+  "insmenu_InsectVsConfirmDialogFadeIn_4ee990": {
+   "gp": [
+    "0x0047D240",
+    "0x0048430C"
+   ]
+  },
+  "insmenu_InsectVsConfirmDialogFadeOut_4ee940": {
+   "gp": [
+    "0x0047D49C"
+   ]
+  },
+  "insmenu_InsectVsConfirmDialogLayout_4ee9e0": {
+   "gp": [
+    "0x00481BBC"
+   ]
+  },
+  "insmenu_InsectVsConfirmDialogSetMessage_4ee810": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsCtrlSetCursorBobCb_4ea8e0": {
+   "gp": [
+    "0x0047D3D0",
+    "0x00484308",
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsCtrlSetRefreshRows_4eb050": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsGetBusyFlagMaybe_4f32f0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsGetMsgTable_4f3320": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsGetSaveCtx_4f3850": {
+   "gp": [
+    "0x004842F4"
+   ]
+  },
+  "insmenu_InsectVsGetSaveIconData_4f3840": {
+   "gp": [
+    "0x004842F8"
+   ]
+  },
+  "insmenu_InsectVsHighlightBarSize_4ea410": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "insmenu_InsectVsListFrameFit_4ea4e0": {
+   "gp": [
+    "0x0047D3DC"
+   ]
+  },
+  "insmenu_InsectVsListLayoutRowWidgets_4ea1b0": {
+   "gp": [
+    "0x0047D3D4"
+   ]
+  },
+  "insmenu_InsectVsLoadCardScanEnterCb_4f6410": {
+   "gp": [
+    "0x00484390"
+   ]
+  },
+  "insmenu_InsectVsLoadCardScanStepCb_4f6250": {
+   "gp": [
+    "0x00484390"
+   ]
+  },
+  "insmenu_InsectVsLoadConfirmCb_4f55c0": {
+   "gp": [
+    "0x00484394",
+    "0x00484344",
+    "0x00484398",
+    "0x00484348"
+   ]
+  },
+  "insmenu_InsectVsLoadConfirmEnterCb_4f5b50": {
+   "gp": [
+    "0x00484394"
+   ]
+  },
+  "insmenu_InsectVsLoadPanelCloseToTeams_4f5480": {
+   "gp": [
+    "0x0047D3C8",
+    "0x0047D460",
+    "0x0047D488",
+    "0x0047D49C",
+    "0x00484354"
+   ]
+  },
+  "insmenu_InsectVsLoadPanelClose_4f7ba0": {
+   "gp": [
+    "0x0047D3C8",
+    "0x0047D460",
+    "0x0047D488",
+    "0x0047D49C",
+    "0x00484348",
+    "0x00484350",
+    "0x00480464"
+   ]
+  },
+  "insmenu_InsectVsLoadPanelLayout_4f7dd0": {
+   "gp": [
+    "0x0047D34C",
+    "0x0047D28C",
+    "0x0047D3C4",
+    "0x0047D240",
+    "0x0048436C"
+   ]
+  },
+  "insmenu_InsectVsLoadPortBobCb_4f6460": {
+   "gp": [
+    "0x00484388",
+    "0x0048438C"
+   ]
+  },
+  "insmenu_InsectVsLoadPortCancelCb_4f6560": {
+   "gp": [
+    "0x00484388",
+    "0x00484370",
+    "0x0047D3C8",
+    "0x0047D34C",
+    "0x0047D240",
+    "0x0047D3CC",
+    "0x00484364"
+   ]
+  },
+  "insmenu_InsectVsLoadPortConfirmCb_4f6740": {
+   "gp": [
+    "0x00484388"
+   ]
+  },
+  "insmenu_InsectVsLoadPortCursorBob_4f68d0": {
+   "gp": [
+    "0x0047D3B8",
+    "0x0048434C"
+   ]
+  },
+  "insmenu_InsectVsLoadPortEnterCb_4f64b0": {
+   "gp": [
+    "0x00484388"
+   ]
+  },
+  "insmenu_InsectVsLoadPortMoveCb_4f67c0": {
+   "gp": [
+    "0x0048438C"
+   ]
+  },
+  "insmenu_InsectVsLoadSlotCursorBob_4f6810": {
+   "gp": [
+    "0x0047D3B8",
+    "0x0048434C"
+   ]
+  },
+  "insmenu_InsectVsLoadSlotListConfirm_4f5f70": {
+   "gp": [
+    "0x00484340",
+    "0x0048436C",
+    "0x00484344"
+   ]
+  },
+  "insmenu_InsectVsLoadWidgetsFade_4f6ac0": {
+   "gp": [
+    "0x0047D3C0"
+   ]
+  },
+  "insmenu_InsectVsLoadYesNoCursorBob_4f69e0": {
+   "gp": [
+    "0x0047D3B8",
+    "0x0048434C"
+   ]
+  },
+  "insmenu_InsectVsMenuCursorBob_4ee610": {
+   "gp": [
+    "0x0047D3D0",
+    "0x00484308"
+   ]
+  },
+  "insmenu_InsectVsMenuDraw_4f3030": {
+   "gp": [
+    "0x00484300",
+    "0x00484104",
+    "0x00484360"
+   ]
+  },
+  "insmenu_InsectVsMenuIsActive_4f3300": {
+   "gp": [
+    "0x00484300"
+   ]
+  },
+  "insmenu_InsectVsMenuOpen_4f3120": {
+   "gp": [
+    "0x00480450",
+    "0x004842FC",
+    "0x00484300",
+    "0x00484304",
+    "0x00484308",
+    "0x0048430C",
+    "0x00484310",
+    "0x004842E0",
+    "0x004842F4",
+    "0x004842F8",
+    "0x00484318",
+    "0x00484104"
+   ]
+  },
+  "insmenu_InsectVsMenuRelease_4f2f90": {
+   "gp": [
+    "0x00484104",
+    "0x00484300"
+   ]
+  },
+  "insmenu_InsectVsMenuResPoll_4f3370": {
+   "gp": [
+    "0x00484300",
+    "0x004842E0",
+    "0x004842FC",
+    "0x00484104",
+    "0x004842F8"
+   ]
+  },
+  "insmenu_InsectVsMenuSetupWidgets_4f3670": {
+   "gp": [
+    "0x004842E0",
+    "0x004842EC",
+    "0x004842F0",
+    "0x004842E8",
+    "0x00484300"
+   ]
+  },
+  "insmenu_InsectVsMenuStateConfirm_4eb230": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304",
+    "0x0047D49C",
+    "0x00484314",
+    "0x00484315"
+   ]
+  },
+  "insmenu_InsectVsMenuStateCtrlSetClose_4eaa80": {
+   "gp": [
+    "0x00484304",
+    "0x00484314",
+    "0x00484315"
+   ]
+  },
+  "insmenu_InsectVsMenuStateCtrlSetOpen_4eadb0": {
+   "gp": [
+    "0x00484304",
+    "0x0047D488",
+    "0x004842FC",
+    "0x00484314",
+    "0x00484315"
+   ]
+  },
+  "insmenu_InsectVsMenuStateCtrlSetStep_4eabb0": {
+   "gp": [
+    "0x0047D488",
+    "0x00484304",
+    "0x0047D49C"
+   ]
+  },
+  "insmenu_InsectVsMenuUpdate_4f30a0": {
+   "gp": [
+    "0x00484300",
+    "0x00484104",
+    "0x00484360"
+   ]
+  },
+  "insmenu_InsectVsPwBattleEnter_4ed850": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsPwBattleMenuStep_4ed660": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsPwBattlePanelLayout_4f1430": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsPwEntryOpen_4f7810": {
+   "gp": [
+    "0x00484104",
+    "0x00484360"
+   ]
+  },
+  "insmenu_InsectVsPwEntryResult_4f7610": {
+   "gp": [
+    "0x00484104",
+    "0x00484360",
+    "0x0047D460"
+   ]
+  },
+  "insmenu_InsectVsPwEntryWait_4f77c0": {
+   "gp": [
+    "0x00484104"
+   ]
+  },
+  "insmenu_InsectVsPwWatchCursorFadeIn_4f0e70": {
+   "gp": [
+    "0x0047D34C"
+   ]
+  },
+  "insmenu_InsectVsPwWatchCursorFadeOut_4f0e20": {
+   "gp": [
+    "0x0047D3E0"
+   ]
+  },
+  "insmenu_InsectVsPwWatchPanelDim_4f0f20": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "insmenu_InsectVsPwWatchPanelFadeIn_4f1140": {
+   "gp": [
+    "0x0047D240",
+    "0x0048430C"
+   ]
+  },
+  "insmenu_InsectVsPwWatchPanelFadeOut_4f10f0": {
+   "gp": [
+    "0x0047D3E0"
+   ]
+  },
+  "insmenu_InsectVsRegDeleteMenuStep_4ec2a0": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsRegDeletePanelLayout_4ef220": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsRegPwAskAgainStep_4ecbe0": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsRegPwCursorFadeIn_4f03a0": {
+   "gp": [
+    "0x0047D34C"
+   ]
+  },
+  "insmenu_InsectVsRegPwCursorFadeOut_4f0350": {
+   "gp": [
+    "0x0047D3D8"
+   ]
+  },
+  "insmenu_InsectVsRegPwEnter_4ed0a0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsRegPwInputStep_4ecd10": {
+   "gp": [
+    "0x00484104",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsRegPwMenuStep_4ece80": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304",
+    "0x00484104"
+   ]
+  },
+  "insmenu_InsectVsRegPwPanelDim_4f0450": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "insmenu_InsectVsRegPwPanelFadeIn_4f0630": {
+   "gp": [
+    "0x0047D240",
+    "0x0048430C"
+   ]
+  },
+  "insmenu_InsectVsRegPwPanelFadeOut_4f05e0": {
+   "gp": [
+    "0x0047D3D8"
+   ]
+  },
+  "insmenu_InsectVsRegPwPanelLayout_4f06a0": {
+   "gp": [
+    "0x004842FC",
+    "0x0047D3D8"
+   ]
+  },
+  "insmenu_InsectVsRegSaveAskAgainStep_4ec780": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsRegSaveCursorFadeIn_4efa90": {
+   "gp": [
+    "0x0047D34C"
+   ]
+  },
+  "insmenu_InsectVsRegSaveCursorFadeOut_4efa40": {
+   "gp": [
+    "0x0047D3D8"
+   ]
+  },
+  "insmenu_InsectVsRegSaveMenuStep_4ec9a0": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsRegSavePanelDim_4efb40": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "insmenu_InsectVsRegSavePanelFadeIn_4efd20": {
+   "gp": [
+    "0x0047D240",
+    "0x0048430C"
+   ]
+  },
+  "insmenu_InsectVsRegSavePanelFadeOut_4efcd0": {
+   "gp": [
+    "0x0047D3D8"
+   ]
+  },
+  "insmenu_InsectVsRegSavePanelFocus_4ef7b0": {
+   "jtbl": [
+    "0x004F9FD0"
+   ]
+  },
+  "insmenu_InsectVsRegSavePanelLayout_4efd90": {
+   "gp": [
+    "0x004842FC",
+    "0x0047D3D8"
+   ]
+  },
+  "insmenu_InsectVsRegTeamCursorFadeIn_4eeec0": {
+   "gp": [
+    "0x0047D34C"
+   ]
+  },
+  "insmenu_InsectVsRegTeamCursorFadeOut_4eee70": {
+   "gp": [
+    "0x0047D3D8"
+   ]
+  },
+  "insmenu_InsectVsRegTeamPanelDim_4eef70": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "insmenu_InsectVsRegTeamPanelFadeIn_4ef190": {
+   "gp": [
+    "0x0047D240",
+    "0x0048430C"
+   ]
+  },
+  "insmenu_InsectVsRegTeamPanelFadeOut_4ef140": {
+   "gp": [
+    "0x0047D3D8"
+   ]
+  },
+  "insmenu_InsectVsRegViewMenuStep_4ec560": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsRegViewPanelLayout_4ef4c0": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsRegisterCursorFadeIn_4f2200": {
+   "gp": [
+    "0x0047D34C"
+   ]
+  },
+  "insmenu_InsectVsRegisterCursorFadeOut_4f21b0": {
+   "gp": [
+    "0x0047D3E0"
+   ]
+  },
+  "insmenu_InsectVsRegisterMenuStep_4edc50": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsRegisterPanelDim_4f22b0": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "insmenu_InsectVsRegisterPanelFadeIn_4f2490": {
+   "gp": [
+    "0x0047D240",
+    "0x0048430C"
+   ]
+  },
+  "insmenu_InsectVsRegisterPanelFadeOut_4f2440": {
+   "gp": [
+    "0x0047D3E0"
+   ]
+  },
+  "insmenu_InsectVsRegisterPanelLayout_4f2500": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsSaveConfirmBobCb_4f6e40": {
+   "gp": [
+    "0x0047D3B8",
+    "0x0048437C"
+   ]
+  },
+  "insmenu_InsectVsSaveConfirmReask_4f6f30": {
+   "gp": [
+    "0x0047D3C8",
+    "0x00484364"
+   ]
+  },
+  "insmenu_InsectVsSaveConfirmState_4f6fb0": {
+   "gp": [
+    "0x00484364",
+    "0x00481BBC",
+    "0x0047D3C8",
+    "0x00484370",
+    "0x00484360",
+    "0x0047D460",
+    "0x0047D488",
+    "0x0047D49C"
+   ]
+  },
+  "insmenu_InsectVsSaveErrorState_4f6c00": {
+   "gp": [
+    "0x00484384",
+    "0x00484380",
+    "0x0047D3C8"
+   ]
+  },
+  "insmenu_InsectVsSaveHighlightOption_4f6bb0": {
+   "gp": [
+    "0x00480468",
+    "0x0048046A",
+    "0x0048046C"
+   ]
+  },
+  "insmenu_InsectVsSaveResultCbSet_4ebce0": {
+   "gp": [
+    "0x0047FAA4"
+   ]
+  },
+  "insmenu_InsectVsSaveScreenClose_4f7990": {
+   "gp": [
+    "0x0047D3C8"
+   ]
+  },
+  "insmenu_InsectVsSaveScreenOpen_4f8ef0": {
+   "gp": [
+    "0x0047D460",
+    "0x00484374",
+    "0x00484350",
+    "0x00484360",
+    "0x00484348",
+    "0x0048436C",
+    "0x00484368",
+    "0x00484364",
+    "0x00484358",
+    "0x00484370",
+    "0x00484344",
+    "0x00480464"
+   ]
+  },
+  "insmenu_InsectVsSaveScreenRequest_4f3250": {
+   "gp": [
+    "0x00484310"
+   ]
+  },
+  "insmenu_InsectVsSaveSetError_4f6e20": {
+   "gp": [
+    "0x00484380"
+   ]
+  },
+  "insmenu_InsectVsSaveSysInit_4f95d0": {
+   "gp": [
+    "0x004842E0",
+    "0x00484318",
+    "0x00483188"
+   ]
+  },
+  "insmenu_InsectVsSceneRenderHide_4e9f80": {
+   "gp": [
+    "0x00484310"
+   ]
+  },
+  "insmenu_InsectVsSceneRenderRestore_4e9f40": {
+   "gp": [
+    "0x00484310"
+   ]
+  },
+  "insmenu_InsectVsSetBusyFlagMaybe_4f32e0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsSetSceneBgFlagMaybe_4f3310": {
+   "gp": [
+    "0x00480450"
+   ]
+  },
+  "insmenu_InsectVsSourceChoiceBobCb_4f8560": {
+   "gp": [
+    "0x0047D3B8",
+    "0x00484378"
+   ]
+  },
+  "insmenu_InsectVsSourceChoiceClose_4f8630": {
+   "gp": [
+    "0x0047D3C8",
+    "0x0048436C"
+   ]
+  },
+  "insmenu_InsectVsSourceChoiceOpen_4f8800": {
+   "gp": [
+    "0x0048436C",
+    "0x0047D460"
+   ]
+  },
+  "insmenu_InsectVsSourceChoiceStep_4f8710": {
+   "gp": [
+    "0x0047D488",
+    "0x0048436C"
+   ]
+  },
+  "insmenu_InsectVsStateAdvance_4ec150": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateAdvance_4ec180": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateAdvance_4ec480": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateAdvance_4ec740": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateAdvance_4ecba0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateAdvance_4edbf0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateAdvance_4ee130": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateAdvance_4ee1a0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateIdle_4ec140": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateIdle_4ed150": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateIdle_4ed540": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateIdle_4ed900": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateIdle_4ee190": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec1c0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec200": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec240": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec4c0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec500": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec840": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec880": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec8c0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec900": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ec940": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4eccd0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ece20": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ed160": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ed1b0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ed200": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ed550": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ed5a0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ed5f0": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ed910": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ed950": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitFade_4ed990": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsStateWaitSubscreen_4ecca0": {
+   "gp": [
+    "0x00484310",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsTasksResume_4e9f00": {
+   "gp": [
+    "0x00484310"
+   ]
+  },
+  "insmenu_InsectVsTasksSuspend_4e9fc0": {
+   "gp": [
+    "0x00484310"
+   ]
+  },
+  "insmenu_InsectVsTeamCommitCb_4f3860": {
+   "gp": [
+    "0x0048439C",
+    "0x0048435C",
+    "0x0047D3BC",
+    "0x0048436C",
+    "0x00484354",
+    "0x004843A0"
+   ]
+  },
+  "insmenu_InsectVsTeamCommitEnterCb_4f4230": {
+   "gp": [
+    "0x0048439C"
+   ]
+  },
+  "insmenu_InsectVsTeamInfoStepCb_4f43f0": {
+   "gp": [
+    "0x00484104",
+    "0x00484360"
+   ]
+  },
+  "insmenu_InsectVsTeamListCancel_4f4ea0": {
+   "gp": [
+    "0x0047D3BC"
+   ]
+  },
+  "insmenu_InsectVsTeamListConfirm_4f4f00": {
+   "gp": [
+    "0x00484340",
+    "0x0048435C"
+   ]
+  },
+  "insmenu_InsectVsTeamListOpen_4f5110": {
+   "gp": [
+    "0x0047D460",
+    "0x0047D488"
+   ]
+  },
+  "insmenu_InsectVsTeamListStepCb_4f46b0": {
+   "gp": [
+    "0x00484354",
+    "0x0048436C",
+    "0x0047D3BC",
+    "0x00484364"
+   ]
+  },
+  "insmenu_InsectVsTeamListTitleUpdate_4f5400": {
+   "gp": [
+    "0x0048436C"
+   ]
+  },
+  "insmenu_InsectVsTeamPwStepCb_4f4260": {
+   "gp": [
+    "0x00484360"
+   ]
+  },
+  "insmenu_InsectVsTeamViewClose_4f8990": {
+   "gp": [
+    "0x00484358"
+   ]
+  },
+  "insmenu_InsectVsTeamViewState_4f8a00": {
+   "gp": [
+    "0x00484358",
+    "0x00484368",
+    "0x00484360",
+    "0x00484364",
+    "0x0047D3C8",
+    "0x00484104"
+   ]
+  },
+  "insmenu_InsectVsTitleBannerLayout_4ea600": {
+   "jtbl": [
+    "0x004F9FB0"
+   ]
+  },
+  "insmenu_InsectVsTitleBannerSlideIn_4f2ef0": {
+   "gp": [
+    "0x0047D1E8"
+   ]
+  },
+  "insmenu_InsectVsTitleBannerSlideOut_4f2ed0": {
+   "gp": [
+    "0x0047D1E8"
+   ]
+  },
+  "insmenu_InsectVsTopCursorFadeIn_4f2900": {
+   "gp": [
+    "0x0047D34C"
+   ]
+  },
+  "insmenu_InsectVsTopCursorFadeOut_4f28b0": {
+   "gp": [
+    "0x0047D3E0"
+   ]
+  },
+  "insmenu_InsectVsTopMenuStep_4edeb0": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsTopPanelDim_4f29c0": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "insmenu_InsectVsTopPanelFadeIn_4f2bb0": {
+   "gp": [
+    "0x0047D240",
+    "0x0048430C"
+   ]
+  },
+  "insmenu_InsectVsTopPanelFadeOut_4f2b60": {
+   "gp": [
+    "0x0047D3E0"
+   ]
+  },
+  "insmenu_InsectVsTopPanelLayout_4f2c20": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsTwoPlayerCursorFadeIn_4f1980": {
+   "gp": [
+    "0x0047D34C"
+   ]
+  },
+  "insmenu_InsectVsTwoPlayerCursorFadeOut_4f1930": {
+   "gp": [
+    "0x0047D3E0"
+   ]
+  },
+  "insmenu_InsectVsTwoPlayerMenuStep_4eda00": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsTwoPlayerPanelDim_4f1a30": {
+   "gp": [
+    "0x0047D288"
+   ]
+  },
+  "insmenu_InsectVsTwoPlayerPanelFadeIn_4f1c10": {
+   "gp": [
+    "0x0047D240",
+    "0x0048430C"
+   ]
+  },
+  "insmenu_InsectVsTwoPlayerPanelFadeOut_4f1bc0": {
+   "gp": [
+    "0x0047D3E0"
+   ]
+  },
+  "insmenu_InsectVsTwoPlayerPanelLayout_4f1c80": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsWatchEnter_4ed450": {
+   "gp": [
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsWatchMenuStep_4ed260": {
+   "gp": [
+    "0x0048430C",
+    "0x00484304"
+   ]
+  },
+  "insmenu_InsectVsWatchPanelLayout_4f11d0": {
+   "gp": [
+    "0x004842FC"
+   ]
+  },
+  "insmenu_InsectVsYesNoCursorBobCb_4eb190": {
+   "gp": [
+    "0x0047D3D0",
+    "0x00484308"
+   ]
+  },
+  "insmenu_InsectVsYesNoCursorFadeIn_4ee770": {
+   "gp": [
+    "0x0047D34C"
+   ]
+  }
+ },
+ "normal": {
+  "normal_BtlChgMenuAbilityConfirmCursorBobCb_4fc380": {
+   "gp": [
+    "0x004844F8",
+    "0x0047D3D0",
+    "0x0047D1FC",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuAbilityConfirmCursorMoveCb_4fc430": {
+   "gp": [
+    "0x004805B0",
+    "0x004805B2",
+    "0x004805B4",
+    "0x004805B6",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuAbilityConfirmState_4fc4b0": {
+   "gp": [
+    "0x004805A8",
+    "0x004805AA",
+    "0x004805AC",
+    "0x004805AE",
+    "0x0048449C",
+    "0x004844F4",
+    "0x00481BBC",
+    "0x004844A0",
+    "0x00484454",
+    "0x00481BB8",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuAbilityCostsRefresh_503080": {
+   "gp": [
+    "0x004844A0",
+    "0x00484454",
+    "0x004844C0",
+    "0x0047D34C",
+    "0x0047D1FC",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuAbilityDetailRefresh_503450": {
+   "gp": [
+    "0x004844A0",
+    "0x0048449C",
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuAbilityListCloseState_5023b0": {
+   "gp": [
+    "0x0048449C",
+    "0x0047D278",
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuAbilityListCursorBobCb_502150": {
+   "gp": [
+    "0x00484454",
+    "0x0048449C",
+    "0x0047D278"
+   ]
+  },
+  "normal_BtlChgMenuAbilityListCursorMoveCb_5020c0": {
+   "gp": [
+    "0x00484454",
+    "0x004844A4"
+   ]
+  },
+  "normal_BtlChgMenuAbilityListOpenState_502970": {
+   "gp": [
+    "0x00484454",
+    "0x004844A4",
+    "0x00484498",
+    "0x0048449C",
+    "0x004844A0",
+    "0x004844C0",
+    "0x0047D278"
+   ]
+  },
+  "normal_BtlChgMenuAbilityListStartState_502920": {
+   "gp": [
+    "0x00484454",
+    "0x00484498",
+    "0x004844A0"
+   ]
+  },
+  "normal_BtlChgMenuAbilityListState_5025b0": {
+   "gp": [
+    "0x0048449C",
+    "0x004844A0",
+    "0x004844A4",
+    "0x00484454",
+    "0x00484498",
+    "0x0047D278"
+   ]
+  },
+  "normal_BtlChgMenuAbilityNamesRefresh_502e50": {
+   "gp": [
+    "0x004844A0",
+    "0x00484454",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuAbilityUseCloseState_502490": {
+   "gp": [
+    "0x00480520",
+    "0x004844A0",
+    "0x0048449C",
+    "0x0047D278",
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuClose_4f9d70": {
+   "gp": [
+    "0x00484468",
+    "0x00484454",
+    "0x00484464",
+    "0x004804DC"
+   ]
+  },
+  "normal_BtlChgMenuCommandCursorBobCb_500890": {
+   "gp": [
+    "0x004844D8",
+    "0x0047D1FC",
+    "0x0048449C",
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuCommandCursorMoveCb_500780": {
+   "gp": [
+    "0x00484454",
+    "0x0048449C",
+    "0x0047D280",
+    "0x004844DC",
+    "0x004844E0",
+    "0x0047D278"
+   ]
+  },
+  "normal_BtlChgMenuCommandCursorPlace_503580": {
+   "gp": [
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuCommandDispatchState_500b80": {
+   "gp": [
+    "0x00484454",
+    "0x0048449C",
+    "0x0047D278",
+    "0x00484498",
+    "0x0048444C"
+   ]
+  },
+  "normal_BtlChgMenuCommandOpenState_501290": {
+   "gp": [
+    "0x00484454",
+    "0x00484498",
+    "0x0048449C",
+    "0x004844A0",
+    "0x004844E0",
+    "0x004844DC",
+    "0x004844D8",
+    "0x0047D520",
+    "0x0047D278"
+   ]
+  },
+  "normal_BtlChgMenuCommandPanelSlide_501e90": {
+   "gp": [
+    "0x00484454",
+    "0x0048449C",
+    "0x0047D278",
+    "0x0047D518"
+   ]
+  },
+  "normal_BtlChgMenuCommandRowsRefresh_501640": {
+   "gp": [
+    "0x00484454",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuCommandSelectState_500e10": {
+   "gp": [
+    "0x004844A0",
+    "0x00484454",
+    "0x00484498",
+    "0x004844A4",
+    "0x0048456C"
+   ]
+  },
+  "normal_BtlChgMenuCursorBob_503750": {
+   "gp": [
+    "0x004844E8",
+    "0x0047D3D0",
+    "0x0047D1FC",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuCursorShow_503730": {
+   "gp": [
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuCursorTrailMove_4fb110": {
+   "gp": [
+    "0x0047D278",
+    "0x0047D950",
+    "0x004804C0",
+    "0x004804C2",
+    "0x0047D5BC",
+    "0x004804C4",
+    "0x0047DA4C",
+    "0x004804C6",
+    "0x0047DA50",
+    "0x0047DA54",
+    "0x00484440",
+    "0x0047DA58",
+    "0x0047DA5C",
+    "0x0047DA60"
+   ]
+  },
+  "normal_BtlChgMenuDraw_4f9f80": {
+   "gp": [
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuGetAbilityReq_4f9d60": {
+   "gp": [
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuGetCommandRow_501230": {
+   "gp": [
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuGetPhase_4f9d40": {
+   "gp": [
+    "0x00484468"
+   ]
+  },
+  "normal_BtlChgMenuGetResult_4f9d50": {
+   "gp": [
+    "0x00484464"
+   ]
+  },
+  "normal_BtlChgMenuInit_4faac0": {
+   "gp": [
+    "0x00484444",
+    "0x0048444C",
+    "0x00484450",
+    "0x00484458",
+    "0x00484454",
+    "0x00484464",
+    "0x004804DC",
+    "0x00484468",
+    "0x00484470"
+   ]
+  },
+  "normal_BtlChgMenuIsAbilityListOpen_4f9f60": {
+   "gp": [
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuItemGridCursorBobCb_4fdeb0": {
+   "gp": [
+    "0x0047D3F4",
+    "0x004844B8",
+    "0x0047D3F0",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuItemGridCursorMoveCb_4fdf70": {
+   "gp": [
+    "0x00480504",
+    "0x00480508",
+    "0x0048449C",
+    "0x0047D3F0",
+    "0x004844B0",
+    "0x0047D240",
+    "0x00484498",
+    "0x00480500"
+   ]
+  },
+  "normal_BtlChgMenuItemGridLayout_5000b0": {
+   "gp": [
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuItemListBuild_5002f0": {
+   "gp": [
+    "0x0048449C",
+    "0x004844A0",
+    "0x004844B0"
+   ]
+  },
+  "normal_BtlChgMenuItemListCloseState_4ff640": {
+   "gp": [
+    "0x0048449C",
+    "0x004844A0",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuItemListOpenState_4ffbd0": {
+   "gp": [
+    "0x0048449C",
+    "0x004844EC",
+    "0x00484454",
+    "0x004844A0",
+    "0x00480508",
+    "0x00480504",
+    "0x00480500",
+    "0x004844B0",
+    "0x004844C4",
+    "0x004844B8",
+    "0x0047D518",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuItemListScrollState_4ff5c0": {
+   "gp": [
+    "0x0048449C",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuItemListState_4ff6c0": {
+   "gp": [
+    "0x004844A0",
+    "0x0048051C",
+    "0x004844C4",
+    "0x0048449C",
+    "0x0047D518",
+    "0x00484498",
+    "0x00484454",
+    "0x004844A8",
+    "0x004844AA",
+    "0x004844AC",
+    "0x004844E4"
+   ]
+  },
+  "normal_BtlChgMenuItemTargetCancelState_4fd760": {
+   "gp": [
+    "0x0048449C",
+    "0x004844A0",
+    "0x004844A8",
+    "0x004844AA",
+    "0x004844AC",
+    "0x004844B0",
+    "0x00484498",
+    "0x00480500",
+    "0x00480504",
+    "0x00480508"
+   ]
+  },
+  "normal_BtlChgMenuItemTargetCursorBobCb_4fd540": {
+   "gp": [
+    "0x004844C4",
+    "0x0047D3D0",
+    "0x004844B8",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuItemTargetCursorMoveCb_4fd6d0": {
+   "gp": [
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuItemTargetOpenState_4fdc50": {
+   "gp": [
+    "0x0048449C",
+    "0x0047D524",
+    "0x004844A0",
+    "0x004844B8",
+    "0x004844C4",
+    "0x00481BB8",
+    "0x0047D518",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuItemTargetSelectState_4fd920": {
+   "gp": [
+    "0x004844A0",
+    "0x00484498",
+    "0x00484454",
+    "0x0048051C",
+    "0x00480508",
+    "0x00480504",
+    "0x00480500",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuLeaderDownNoticeMaybe_4fa870": {
+   "gp": [
+    "0x00484454",
+    "0x004804DC",
+    "0x00481BBC"
+   ]
+  },
+  "normal_BtlChgMenuMsgBoxCloseState_4fcb90": {
+   "gp": [
+    "0x0048449C",
+    "0x004844E4",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuMsgBoxOpenState_4fcc90": {
+   "gp": [
+    "0x00484454",
+    "0x004805A0",
+    "0x004805A2",
+    "0x004805A4",
+    "0x004805A6",
+    "0x0048449C",
+    "0x004844E4",
+    "0x00484498",
+    "0x004844A0",
+    "0x00481BB8"
+   ]
+  },
+  "normal_BtlChgMenuMsgBoxWaitState_4fcc20": {
+   "gp": [
+    "0x004844A0",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuOpenBurstStart_4fb890": {
+   "gp": [
+    "0x004804E0",
+    "0x004804E4",
+    "0x004804E8",
+    "0x004804EC",
+    "0x0047DD08",
+    "0x0047DD0C",
+    "0x00484460",
+    "0x0047DD10",
+    "0x0047DB7C",
+    "0x0047D5D0",
+    "0x0047DADC",
+    "0x0047DA90"
+   ]
+  },
+  "normal_BtlChgMenuOpenBurstUpdate_4fb280": {
+   "gp": [
+    "0x0047D920",
+    "0x0048445C",
+    "0x0047DA44",
+    "0x0047D354",
+    "0x0047D5D0",
+    "0x004804CE",
+    "0x004804CC",
+    "0x004804CA",
+    "0x004804C8",
+    "0x0047D94C"
+   ]
+  },
+  "normal_BtlChgMenuOpen_4fa3c0": {
+   "gp": [
+    "0x00484448",
+    "0x00484454",
+    "0x00484470",
+    "0x00484468",
+    "0x0048446C",
+    "0x0048444C",
+    "0x00484464",
+    "0x00484440",
+    "0x00484460",
+    "0x004804DC",
+    "0x00481BBC",
+    "0x0047D5D0",
+    "0x0048445C"
+   ]
+  },
+  "normal_BtlChgMenuPanelGlowMaybe_4faf20": {
+   "gp": [
+    "0x0047D518",
+    "0x0047D35C"
+   ]
+  },
+  "normal_BtlChgMenuScrollBarLayout_5004b0": {
+   "gp": [
+    "0x0048449C",
+    "0x00480558",
+    "0x00480568",
+    "0x0048055A",
+    "0x0048056C",
+    "0x0048055C",
+    "0x00480570",
+    "0x00480560",
+    "0x00480562",
+    "0x00480564"
+   ]
+  },
+  "normal_BtlChgMenuSetMemberFace_501d40": {
+   "gp": [
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuStatusIconsUpdate_501a70": {
+   "gp": [
+    "0x00480550",
+    "0x00480552",
+    "0x0048449C",
+    "0x004844E0",
+    "0x004844DC",
+    "0x00481BB8"
+   ]
+  },
+  "normal_BtlChgMenuStep_4f9fb0": {
+   "gp": [
+    "0x00484464",
+    "0x00484470",
+    "0x00484454",
+    "0x00484448",
+    "0x0048444C",
+    "0x00484460",
+    "0x00484468",
+    "0x0047DA6C",
+    "0x0048446C",
+    "0x0047DA70",
+    "0x0047D5D0"
+   ]
+  },
+  "normal_BtlChgMenuTacticsCloseState_4fd060": {
+   "gp": [
+    "0x0048449C",
+    "0x0047D248",
+    "0x0047D51C",
+    "0x004844A0",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuTacticsCursorBobCb_4fcf10": {
+   "gp": [
+    "0x0047D3D0",
+    "0x004844D4",
+    "0x0047D1FC",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuTacticsCursorMoveCb_4fcfd0": {
+   "gp": [
+    "0x00484454",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuTacticsOpenState_4fd2d0": {
+   "gp": [
+    "0x00481BBC",
+    "0x004844D4",
+    "0x0048449C",
+    "0x0047D248",
+    "0x0047D520",
+    "0x00484454",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuTacticsSelectState_4fd140": {
+   "gp": [
+    "0x004844A0",
+    "0x00484498",
+    "0x00480580",
+    "0x00480584",
+    "0x00480588",
+    "0x0048058C",
+    "0x0047D35C",
+    "0x0048449C",
+    "0x0047D278",
+    "0x0047D51C",
+    "0x004844E4"
+   ]
+  },
+  "normal_BtlChgMenuTryLeaderChange_502250": {
+   "gp": [
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuWeaponConfirmCursorBobCb_4fbe20": {
+   "gp": [
+    "0x0047D3F4",
+    "0x004844B8",
+    "0x0048449C",
+    "0x0047D3F0"
+   ]
+  },
+  "normal_BtlChgMenuWeaponConfirmCursorMoveCb_4fbec0": {
+   "gp": [
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuWeaponConfirmOpenState_4fc1e0": {
+   "gp": [
+    "0x004844A0",
+    "0x00484454",
+    "0x004844B8",
+    "0x0048449C",
+    "0x00481BBC",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuWeaponConfirmState_4fbf80": {
+   "gp": [
+    "0x004844A0",
+    "0x0048449C",
+    "0x00484498",
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuWeaponEquipDoneState_4fbf30": {
+   "gp": [
+    "0x0048449C",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuWeaponGridCursorBobCb_4fe230": {
+   "gp": [
+    "0x0047D3F4",
+    "0x004844BC",
+    "0x0047D3F0",
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuWeaponGridCursorMoveCb_4fe2f0": {
+   "gp": [
+    "0x00480514",
+    "0x00480518",
+    "0x00484454",
+    "0x0048449C",
+    "0x0047D3F0",
+    "0x004844B4",
+    "0x0047D240",
+    "0x00484498",
+    "0x00480510"
+   ]
+  },
+  "normal_BtlChgMenuWeaponGridDrawCb_503930": {
+   "gp": [
+    "0x0048449C",
+    "0x00484458",
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuWeaponListCloseState_4fe6d0": {
+   "gp": [
+    "0x0048449C",
+    "0x004844A0",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuWeaponListOpenState_4feca0": {
+   "gp": [
+    "0x0048449C",
+    "0x004844F0",
+    "0x00484454",
+    "0x004844A0",
+    "0x00480518",
+    "0x00480514",
+    "0x00480510",
+    "0x004844B4",
+    "0x004844C4",
+    "0x004844BC",
+    "0x0047D518",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuWeaponListRefresh_4ffee0": {
+   "gp": [
+    "0x00484454",
+    "0x0048449C",
+    "0x00484458",
+    "0x004844A0",
+    "0x004844B4"
+   ]
+  },
+  "normal_BtlChgMenuWeaponListScrollState_4fe5e0": {
+   "gp": [
+    "0x0048449C",
+    "0x004844A0",
+    "0x00484454",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuWeaponListState_4fe750": {
+   "gp": [
+    "0x004844A0",
+    "0x0048051C",
+    "0x004844C4",
+    "0x0048449C",
+    "0x0047D518",
+    "0x00484454",
+    "0x00484498",
+    "0x004844E4",
+    "0x0047D52C"
+   ]
+  },
+  "normal_BtlChgMenuWeaponSlotCursorBobCb_4ff070": {
+   "gp": [
+    "0x0048449C",
+    "0x0047D3F4",
+    "0x004844B8",
+    "0x0047D3F0",
+    "0x004844D8",
+    "0x0047D1FC",
+    "0x004844A0"
+   ]
+  },
+  "normal_BtlChgMenuWeaponSlotCursorMoveCb_4feff0": {
+   "gp": [
+    "0x0048449C"
+   ]
+  },
+  "normal_BtlChgMenuWeaponSlotDoneState_4ff240": {
+   "gp": [
+    "0x00484498",
+    "0x0048449C",
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgMenuWeaponSlotOpenState_4ff460": {
+   "gp": [
+    "0x0048449C",
+    "0x00481BBC",
+    "0x004844A0",
+    "0x0047D518",
+    "0x004844B8",
+    "0x00484498"
+   ]
+  },
+  "normal_BtlChgMenuWeaponSlotSelectState_4ff310": {
+   "gp": [
+    "0x004844A0",
+    "0x0048449C",
+    "0x00484498",
+    "0x00484454"
+   ]
+  },
+  "normal_BtlChgPageHeaderLayoutRelated_5056b0": {
+   "gp": [
+    "0x004805BA",
+    "0x004805B8",
+    "0x004805BC",
+    "0x004805C0",
+    "0x004805C2",
+    "0x004805C8",
+    "0x004805C4",
+    "0x004805CA",
+    "0x004805D0",
+    "0x004805CC",
+    "0x004805D2",
+    "0x004805D8",
+    "0x004805D4",
+    "0x004805DA",
+    "0x004805DC"
+   ]
+  },
+  "normal_BtlChgPageWeaponConfirmLayout_504030": {
+   "gp": [
+    "0x00481BBC"
+   ]
+  },
+  "normal_BtlChgPageWeaponGridLayout_5047a0": {
+   "gp": [
+    "0x0047D528"
+   ]
+  },
+  "normal_BtlChgPageWeaponListBuild_504b50": {
+   "gp": [
+    "0x004805F0",
+    "0x004805F4",
+    "0x004805F8"
+   ]
+  },
+  "normal_FieldHudAllySuggestCancel_4eec90": {
+   "gp": [
+    "0x0047D330",
+    "0x0047D334",
+    "0x0047D338"
+   ]
+  },
+  "normal_FieldHudAllySuggestOpen_4efc50": {
+   "gp": [
+    "0x00484410",
+    "0x0047D278",
+    "0x0047D34C",
+    "0x0047D35C",
+    "0x0047D1E8",
+    "0x0047D360",
+    "0x0047D288"
+   ]
+  },
+  "normal_FieldHudAllySuggestPanelPulse_4ee940": {
+   "gp": [
+    "0x0047D35C",
+    "0x0047DA44",
+    "0x0047DA94"
+   ]
+  },
+  "normal_FieldHudAllySuggestRingsUpdate_4eee80": {
+   "gp": [
+    "0x0047DA44",
+    "0x0047D1FC",
+    "0x0047DA90",
+    "0x0047D90C"
+   ]
+  },
+  "normal_FieldHudAllySuggestStep_4ef070": {
+   "gp": [
+    "0x0047DA6C",
+    "0x004804B8",
+    "0x0047D35C",
+    "0x0047DA48",
+    "0x0047D5D0",
+    "0x0047D90C",
+    "0x0047DA84",
+    "0x004804B0",
+    "0x004804B2",
+    "0x004804B4",
+    "0x00484410",
+    "0x0047D454",
+    "0x0047D94C",
+    "0x004804BA",
+    "0x004804BC",
+    "0x0047DA98",
+    "0x0047DA90"
+   ]
+  },
+  "normal_FieldHudAllySuggestTimerUpdate_4eea90": {
+   "gp": [
+    "0x00484410",
+    "0x0047D35C",
+    "0x0047D90C",
+    "0x0047DA84"
+   ]
+  },
+  "normal_FieldHudAttackChainUpdate_4f61b0": {
+   "gp": [
+    "0x0047DA9C",
+    "0x0047D1FC",
+    "0x0047D5D0",
+    "0x0047DAA0",
+    "0x0047D904",
+    "0x0047DAA4",
+    "0x0047DA8C"
+   ]
+  },
+  "normal_FieldHudBtlEscArrowBob_4f0b50": {
+   "gp": [
+    "0x0047D278",
+    "0x0047D950",
+    "0x0047D5BC",
+    "0x0047DA4C",
+    "0x0047DA50",
+    "0x0047DA54",
+    "0x0047D1FC",
+    "0x0047DA58",
+    "0x0047DA5C",
+    "0x0047DA60"
+   ]
+  },
+  "normal_FieldHudBtlEscChoiceBlink_4f0a60": {
+   "gp": [
+    "0x0047DA44",
+    "0x0047D288"
+   ]
+  },
+  "normal_FieldHudBtlEscClose_4f0fa0": {
+   "gp": [
+    "0x0047DA48",
+    "0x0047D94C"
+   ]
+  },
+  "normal_FieldHudBtlEscOpen_4f1030": {
+   "gp": [
+    "0x00481BBC",
+    "0x0047D288",
+    "0x0047D248",
+    "0x0047D354"
+   ]
+  },
+  "normal_FieldHudBtlEscStep_4f0cf0": {
+   "gp": [
+    "0x00484410",
+    "0x0047D354"
+   ]
+  },
+  "normal_FieldHudDraw_4f54e0": {
+   "gp": [
+    "0x00484414",
+    "0x0047D828"
+   ]
+  },
+  "normal_FieldHudEnemyListBuildMaybe_4f1d40": {
+   "gp": [
+    "0x00481BBC"
+   ]
+  },
+  "normal_FieldHudEnemyListShowMaybe_4f1a80": {
+   "gp": [
+    "0x0047D278",
+    "0x0047DCFC",
+    "0x0047DD00",
+    "0x0047DD04"
+   ]
+  },
+  "normal_FieldHudEnemyListUpdateMaybe_4f13d0": {
+   "gp": [
+    "0x0047D94C",
+    "0x0047DA80",
+    "0x0047DA84",
+    "0x0047DA88"
+   ]
+  },
+  "normal_FieldHudHintTimersUpdateMaybe_4f8f10": {
+   "gp": [
+    "0x0047DA6C"
+   ]
+  },
+  "normal_FieldHudInit_4f71a0": {
+   "gp": [
+    "0x00484410",
+    "0x00484414"
+   ]
+  },
+  "normal_FieldHudItemUseFeedback_4f2ab0": {
+   "gp": [
+    "0x004804A8",
+    "0x004804A4"
+   ]
+  },
+  "normal_FieldHudItemUseSeReset_4f2d40": {
+   "gp": [
+    "0x004804A4",
+    "0x004804A8"
+   ]
+  },
+  "normal_FieldHudMissionBannerHideMaybe_4f2350": {
+   "gp": [
+    "0x0047DCF8"
+   ]
+  },
+  "normal_FieldHudMissionBannerShowMaybe_4f23e0": {
+   "gp": [
+    "0x00481BBC",
+    "0x0047D5D0",
+    "0x0047DADC"
+   ]
+  },
+  "normal_FieldHudMissionBannerUpdateMaybe_4f1eb0": {
+   "gp": [
+    "0x0047DA6C",
+    "0x0047DA44"
+   ]
+  },
+  "normal_FieldHudPanelActionChipsUpdateMaybe_4f5f00": {
+   "gp": [
+    "0x004804A0",
+    "0x004804A2"
+   ]
+  },
+  "normal_FieldHudPanelFlashUpdate_4f50f0": {
+   "gp": [
+    "0x00484418",
+    "0x0047DA44",
+    "0x0047D1FC",
+    "0x0047DA7C",
+    "0x0047D288",
+    "0x0047DA64",
+    "0x0047D248"
+   ]
+  },
+  "normal_FieldHudPanelHealGlowStart_4f2f40": {
+   "gp": [
+    "0x00484414"
+   ]
+  },
+  "normal_FieldHudPanelHealGlowUpdate_4f2d50": {
+   "gp": [
+    "0x00484414",
+    "0x0047D1FC",
+    "0x0047D90C",
+    "0x0047D1D0"
+   ]
+  },
+  "normal_FieldHudPanelSetRaised_4f5310": {
+   "gp": [
+    "0x0047D248"
+   ]
+  },
+  "normal_FieldHudPanelTintUpdateMaybe_4f4c10": {
+   "gp": [
+    "0x0047D5D0",
+    "0x0047DA64",
+    "0x0047D248",
+    "0x0047DA68"
+   ]
+  },
+  "normal_FieldHudPanelsDim_4f4f80": {
+   "gp": [
+    "0x0047D248",
+    "0x0047D530"
+   ]
+  },
+  "normal_FieldHudPanelsFadeUpdate_4f6d30": {
+   "gp": [
+    "0x0047D248",
+    "0x0047D288"
+   ]
+  },
+  "normal_FieldHudPartyPanelLayoutMaybe_4f7700": {
+   "gp": [
+    "0x0047D248",
+    "0x0047D288"
+   ]
+  },
+  "normal_FieldHudPartyPanelShakeStep_4f4880": {
+   "gp": [
+    "0x0047D538",
+    "0x0047D5D0"
+   ]
+  },
+  "normal_FieldHudPartyPanelsRefresh_4f7d00": {
+   "gp": [
+    "0x0047D248",
+    "0x0047D5D0",
+    "0x0047D7A4",
+    "0x0047D7A8",
+    "0x0047D7AC",
+    "0x0047D7B0",
+    "0x0047D7B4"
+   ]
+  },
+  "normal_FieldHudPartyPanelsStep_4f57f0": {
+   "gp": [
+    "0x0047D288",
+    "0x0047DA74",
+    "0x0047D248",
+    "0x0047DA78"
+   ]
+  },
+  "normal_FieldHudRadarDraw_4f3720": {
+   "gp": [
+    "0x0047D814",
+    "0x0047D7CC",
+    "0x0047D1FC",
+    "0x0047D824"
+   ]
+  },
+  "normal_FieldHudRadarFadeInCheck_4f1380": {
+   "gp": [
+    "0x0047D90C"
+   ]
+  },
+  "normal_FieldHudRadarShow_4f19e0": {
+   "gp": [
+    "0x0047DB7C"
+   ]
+  },
+  "normal_FieldHudRadarSlideOut_4f1940": {
+   "gp": [
+    "0x0047DB7C",
+    "0x0047DD14",
+    "0x0047DD18"
+   ]
+  },
+  "normal_FieldHudRadarTargetHide_4f1260": {
+   "gp": [
+    "0x0047D1D8"
+   ]
+  },
+  "normal_FieldHudRadarTargetShow_4f12d0": {
+   "gp": [
+    "0x0047D1E0",
+    "0x0047D240"
+   ]
+  },
+  "normal_FieldHudRadarUpdate_4f4050": {
+   "gp": [
+    "0x0047DA44",
+    "0x0047D1FC"
+   ]
+  },
+  "normal_FieldHudReshowMaybe_4f7a00": {
+   "gp": [
+    "0x00484414"
+   ]
+  },
+  "normal_FieldHudShutdown_4f7180": {
+   "gp": [
+    "0x00484414"
+   ]
+  },
+  "normal_FieldHudTacticsModeIconRefresh_4f7be0": {
+   "gp": [
+    "0x0047D608",
+    "0x0047D7A0"
+   ]
+  },
+  "normal_FieldHudWidget7FClose_4f9a90": {
+   "gp": [
+    "0x0047DB60"
+   ]
+  },
+  "normal_FieldHudWidget7FOpen_4f9ae0": {
+   "gp": [
+    "0x00481BBC"
+   ]
+  },
+  "normal_FieldHudWidget80CarryOpenMaybe_4f97b0": {
+   "gp": [
+    "0x00481BBC"
+   ]
+  },
+  "normal_FieldHudWidget80LiftCloseMaybe_4f9670": {
+   "gp": [
+    "0x0047DA6C"
+   ]
+  },
+  "normal_FieldHudWidget80LiftOpenMaybe_4f96d0": {
+   "gp": [
+    "0x00481BBC"
+   ]
+  },
+  "normal_FieldHudWidget81Close_4f9920": {
+   "gp": [
+    "0x0047DCA0"
+   ]
+  },
+  "normal_FieldHudWidget82Close_4f9840": {
+   "gp": [
+    "0x0047DCA0"
+   ]
+  },
+  "normal_FieldHudWidget83Close_4f9540": {
+   "gp": [
+    "0x0047DB60"
+   ]
+  },
+  "normal_FieldHudWidget83Open_4f95b0": {
+   "gp": [
+    "0x00481BBC"
+   ]
+  },
+  "normal_FieldHudWidget86Close_4f9440": {
+   "gp": [
+    "0x0047DCA0"
+   ]
+  },
+  "normal_FieldHudWidget86Open_4f94b0": {
+   "gp": [
+    "0x00481BBC"
+   ]
+  },
+  "normal_FieldHudWidget87Close_4f9c00": {
+   "gp": [
+    "0x0047DA6C"
+   ]
+  },
+  "normal_HelpMenuCloseState_522310": {
+   "gp": [
+    "0x0047D7D0",
+    "0x004849B8",
+    "0x004849D8"
+   ]
+  },
+  "normal_HelpMenuDataLoad_524850": {
+   "gp": [
+    "0x004849EC",
+    "0x004849E8",
+    "0x004849F0"
+   ]
+  },
+  "normal_HelpMenuDraw_522f80": {
+   "gp": [
+    "0x004849C0"
+   ]
+  },
+  "normal_HelpMenuInit_523280": {
+   "gp": [
+    "0x00484998",
+    "0x004849C4",
+    "0x004849E8",
+    "0x004849EC",
+    "0x004849F0",
+    "0x004849F4",
+    "0x004849F8",
+    "0x004849FC",
+    "0x0048499C",
+    "0x004849A0",
+    "0x004849BC",
+    "0x004849C0",
+    "0x004849B8",
+    "0x004807B4"
+   ]
+  },
+  "normal_HelpMenuIsOpen_523260": {
+   "gp": [
+    "0x004849B8"
+   ]
+  },
+  "normal_HelpMenuListCursorBob_521a10": {
+   "gp": [
+    "0x0047D3D0",
+    "0x004849C8",
+    "0x0047D1FC"
+   ]
+  },
+  "normal_HelpMenuListCursorMoveCb_521b00": {
+   "gp": [
+    "0x00484A04"
+   ]
+  },
+  "normal_HelpMenuListFill_522e30": {
+   "gp": [
+    "0x004849E8"
+   ]
+  },
+  "normal_HelpMenuListState_522400": {
+   "gp": [
+    "0x004849F0",
+    "0x0047D7CC",
+    "0x004849FC",
+    "0x004849F8",
+    "0x00484A04"
+   ]
+  },
+  "normal_HelpMenuOpenState_522880": {
+   "gp": [
+    "0x0047D7CC",
+    "0x004849F0",
+    "0x00484A04",
+    "0x004849B4"
+   ]
+  },
+  "normal_HelpMenuPageCloseState_521c40": {
+   "gp": [
+    "0x0047D7C8",
+    "0x0047D7C4",
+    "0x004849E0",
+    "0x004849A0"
+   ]
+  },
+  "normal_HelpMenuPageLoadState_5220b0": {
+   "gp": [
+    "0x004849A0",
+    "0x004849E0",
+    "0x004849E4",
+    "0x004849F8",
+    "0x004849E8",
+    "0x004849FC"
+   ]
+  },
+  "normal_HelpMenuPageState_521e20": {
+   "gp": [
+    "0x0047D7CC",
+    "0x0047D7C4",
+    "0x0047D7D0",
+    "0x00484A00",
+    "0x004807C0",
+    "0x004849F8",
+    "0x004849FC",
+    "0x004849E8",
+    "0x0047D3FC",
+    "0x0047D1FC",
+    "0x0047D5D0"
+   ]
+  },
+  "normal_HelpMenuPageTurnState_521d30": {
+   "gp": [
+    "0x0047D7C8",
+    "0x0047D7C4",
+    "0x004849E0",
+    "0x004849A0"
+   ]
+  },
+  "normal_HelpMenuParseData_524ab0": {
+   "gp": [
+    "0x004849E8",
+    "0x004849EC"
+   ]
+  },
+  "normal_HelpMenuParseNum_524c40": {
+   "gp": [
+    "0x004849F0",
+    "0x0048499C",
+    "0x004849E8"
+   ]
+  },
+  "normal_HelpMenuScrollBarLayout_522b90": {
+   "gp": [
+    "0x004807C8",
+    "0x004807D8",
+    "0x004807CA",
+    "0x004807DC",
+    "0x004807CC",
+    "0x004807E0",
+    "0x004807D0",
+    "0x004807D2",
+    "0x004807D4"
+   ]
+  },
+  "normal_HelpMenuShutdown_522eb0": {
+   "gp": [
+    "0x0048499C",
+    "0x004849A0",
+    "0x004807B4",
+    "0x004849C0",
+    "0x004849B8",
+    "0x004849C4",
+    "0x004849E8",
+    "0x004849EC",
+    "0x004849F0",
+    "0x004849F4",
+    "0x004849F8",
+    "0x004849FC"
+   ]
+  },
+  "normal_HelpMenuStep_522fd0": {
+   "gp": [
+    "0x004849C0",
+    "0x004849BC",
+    "0x004849C4",
+    "0x0048499C",
+    "0x00484998",
+    "0x004849AC",
+    "0x004849B0",
+    "0x004849A8",
+    "0x004807B4"
+   ]
+  },
+  "normal_InsectEntryCloseState_5237e0": {
+   "gp": [
+    "0x004849D0",
+    "0x0047D7C8",
+    "0x004849B8",
+    "0x004849D8"
+   ]
+  },
+  "normal_InsectEntryGetFee_524220": {
+   "gp": [
+    "0x004849B4"
+   ]
+  },
+  "normal_InsectEntryMenuDraw_5242d0": {
+   "gp": [
+    "0x004849C0"
+   ]
+  },
+  "normal_InsectEntryMenuFileRelease_524620": {
+   "gp": [
+    "0x004807BC",
+    "0x004807B8"
+   ]
+  },
+  "normal_InsectEntryMenuGetResult_524ce0": {
+   "gp": [
+    "0x004849D0",
+    "0x004849D4"
+   ]
+  },
+  "normal_InsectEntryMenuInit_5245b0": {
+   "gp": [
+    "0x00484998",
+    "0x004849C4",
+    "0x0048499C",
+    "0x004849BC",
+    "0x004849C0",
+    "0x004849B8",
+    "0x004807B4",
+    "0x004849F4"
+   ]
+  },
+  "normal_InsectEntryMenuIsOpen_524590": {
+   "gp": [
+    "0x004849B8"
+   ]
+  },
+  "normal_InsectEntryMenuResPoll_524680": {
+   "gp": [
+    "0x004807BC",
+    "0x004807B8",
+    "0x0048499C",
+    "0x004849B4",
+    "0x004849F4",
+    "0x004849BC",
+    "0x004849C4"
+   ]
+  },
+  "normal_InsectEntryMenuResRequest_5247d0": {
+   "gp": [
+    "0x004802C0",
+    "0x004807B8",
+    "0x004807BC"
+   ]
+  },
+  "normal_InsectEntryMenuShutdown_524270": {
+   "gp": [
+    "0x004849C0",
+    "0x004807B4",
+    "0x004849B8",
+    "0x004849C4"
+   ]
+  },
+  "normal_InsectEntryMenuStep_524320": {
+   "gp": [
+    "0x004849C0",
+    "0x004849BC",
+    "0x004849C4",
+    "0x0048499C",
+    "0x00484998",
+    "0x004849AC",
+    "0x004849B0",
+    "0x004849A8",
+    "0x004807B4"
+   ]
+  },
+  "normal_InsectEntryNoFundsMsgCloseState_5233c0": {
+   "gp": [
+    "0x0047D7D0"
+   ]
+  },
+  "normal_InsectEntryNoFundsMsgOpenState_523450": {
+   "gp": [
+    "0x004849B4",
+    "0x0047D7C4"
+   ]
+  },
+  "normal_InsectEntryOpenState_523b70": {
+   "gp": [
+    "0x004807C4",
+    "0x004849D4",
+    "0x004849D0",
+    "0x004849B4",
+    "0x0047D5D0",
+    "0x004849D8"
+   ]
+  },
+  "normal_InsectEntryRankCursorBob_523600": {
+   "gp": [
+    "0x0047D3D0",
+    "0x004849C8",
+    "0x0047D1FC"
+   ]
+  },
+  "normal_InsectEntryRankCursorMoveCb_5236f0": {
+   "gp": [
+    "0x004807C4"
+   ]
+  },
+  "normal_InsectEntryRankSelectState_5239c0": {
+   "gp": [
+    "0x004807C4",
+    "0x004849D4",
+    "0x0047D35C",
+    "0x004849D0",
+    "0x0047D7D4"
+   ]
+  },
+  "normal_LeaderHudBannerBlinkTick_507a90": {
+   "gp": [
+    "0x0048456C",
+    "0x00480630",
+    "0x00484564",
+    "0x00480634",
+    "0x0047D248",
+    "0x00484570",
+    "0x0047D440"
+   ]
+  },
+  "normal_LeaderHudBannerGaugeRefresh_507bb0": {
+   "gp": [
+    "0x00484564",
+    "0x0048456C",
+    "0x00484584"
+   ]
+  },
+  "normal_LeaderHudBannerLayout_506370": {
+   "gp": [
+    "0x00480600",
+    "0x00480604",
+    "0x00480608",
+    "0x00480610",
+    "0x00480614",
+    "0x00480618"
+   ]
+  },
+  "normal_LeaderHudBannerRefresh_507a30": {
+   "gp": [
+    "0x0048456C"
+   ]
+  },
+  "normal_LeaderHudBannerReshow_503720": {
+   "gp": [
+    "0x0048456C"
+   ]
+  },
+  "normal_LeaderHudBannerSlideEdge_507e90": {
+   "gp": [
+    "0x00484570",
+    "0x00484564",
+    "0x0047D440"
+   ]
+  },
+  "normal_LeaderHudBannerSlide_507d70": {
+   "gp": [
+    "0x00484564",
+    "0x0048456C",
+    "0x00484570",
+    "0x0047D440"
+   ]
+  },
+  "normal_LeaderHudBossGaugeClear_506fc0": {
+   "gp": [
+    "0x00484570"
+   ]
+  },
+  "normal_LeaderHudBossGaugeRebuild_507170": {
+   "gp": [
+    "0x00484570",
+    "0x00484564",
+    "0x0047D34C"
+   ]
+  },
+  "normal_LeaderHudBossGaugeUpdate_506fe0": {
+   "gp": [
+    "0x00484570",
+    "0x00484564"
+   ]
+  },
+  "normal_LeaderHudGaugeGainFlash_5084c0": {
+   "gp": [
+    "0x00480620",
+    "0x00480622",
+    "0x00480624",
+    "0x00480626",
+    "0x00484578",
+    "0x00484564",
+    "0x00484580",
+    "0x0047D1FC",
+    "0x0047D53C",
+    "0x0047D518"
+   ]
+  },
+  "normal_LeaderHudGaugeLevelPulse_508820": {
+   "gp": [
+    "0x00484574",
+    "0x0047D520",
+    "0x0047D1FC",
+    "0x0047D35C",
+    "0x00484564"
+   ]
+  },
+  "normal_LeaderHudGaugeLevelRefresh_507ff0": {
+   "gp": [
+    "0x00484564",
+    "0x00480628",
+    "0x0048062A",
+    "0x0048062C",
+    "0x0048062E",
+    "0x00484574"
+   ]
+  },
+  "normal_LeaderHudHideState_507490": {
+   "gp": [
+    "0x0048456C",
+    "0x00484564"
+   ]
+  },
+  "normal_LeaderHudInitState_507840": {
+   "gp": [
+    "0x0048456C",
+    "0x00484564",
+    "0x00484568",
+    "0x00484560",
+    "0x00484578"
+   ]
+  },
+  "normal_LeaderHudLeaderChanged_503ff0": {
+   "gp": [
+    "0x0048456C"
+   ]
+  },
+  "normal_LeaderHudPanelSlideOffscreen_509140": {
+   "gp": [
+    "0x00484564",
+    "0x0047D440",
+    "0x0047D534"
+   ]
+  },
+  "normal_LeaderHudPanelSlide_509040": {
+   "gp": [
+    "0x00484564",
+    "0x0047D440"
+   ]
+  },
+  "normal_LeaderHudReload_507990": {
+   "gp": [
+    "0x00484578",
+    "0x0048456C"
+   ]
+  },
+  "normal_LeaderHudResetState_5077f0": {
+   "gp": [
+    "0x00484560",
+    "0x0048457C"
+   ]
+  },
+  "normal_LeaderHudReset_506ef0": {
+   "gp": [
+    "0x0047DADC",
+    "0x0047D278"
+   ]
+  },
+  "normal_LeaderHudUpdateState_507540": {
+   "gp": [
+    "0x0048456C",
+    "0x00484564"
+   ]
+  },
+  "normal_LeaderHudWeaponRefresh_508990": {
+   "gp": [
+    "0x00484564",
+    "0x0048457C",
+    "0x0048456C",
+    "0x0047D288",
+    "0x0047D35C",
+    "0x0047D278",
+    "0x0047D520"
+   ]
+  },
+  "normal_LeaderHudWeaponShakeStep_5072a0": {
+   "gp": [
+    "0x0047D538",
+    "0x00484564",
+    "0x0047D518"
+   ]
+  },
+  "normal_MenuBattleEndDrawLevelUpGlow_4e9f00": {
+   "gp": [
+    "0x00480490",
+    "0x00480494",
+    "0x00480498",
+    "0x0048049C"
+   ]
+  },
+  "normal_MenuBattleEndExpBonusAnimMaybe_4eb290": {
+   "gp": [
+    "0x0047D354",
+    "0x0047D454",
+    "0x0047D350",
+    "0x0047D900"
+   ]
+  },
+  "normal_MenuBattleEndExpBonusShowMaybe_4eb400": {
+   "gp": [
+    "0x0047D844",
+    "0x0047D35C",
+    "0x0047D924"
+   ]
+  },
+  "normal_MenuBattleEndInit_4ee600": {
+   "gp": [
+    "0x004843E0",
+    "0x004843C8",
+    "0x004843CC",
+    "0x004843D0",
+    "0x004843D4",
+    "0x004843D8",
+    "0x004843DC"
+   ]
+  },
+  "normal_MenuBattleEndItemRowsCascade_4ea700": {
+   "gp": [
+    "0x004843E0"
+   ]
+  },
+  "normal_MenuBattleEndItemRowsCountUpdateMaybe_4eb150": {
+   "gp": [
+    "0x0047D904"
+   ]
+  },
+  "normal_MenuBattleEndItemRowsShow_4ea890": {
+   "gp": [
+    "0x004843E0"
+   ]
+  },
+  "normal_MenuBattleEndItemRowsSlide_4eb4b0": {
+   "gp": [
+    "0x0047D354"
+   ]
+  },
+  "normal_MenuBattleEndLevelUpLabelUpdate_4ea3f0": {
+   "gp": [
+    "0x0047D354",
+    "0x0047D910",
+    "0x0047D35C",
+    "0x0047D7C4",
+    "0x0047D1B8",
+    "0x0047D914",
+    "0x0047D918",
+    "0x0047D454",
+    "0x0047D350",
+    "0x0047D900"
+   ]
+  },
+  "normal_MenuBattleEndMemberRowsFadeIn_4eb5f0": {
+   "gp": [
+    "0x0047D7CC"
+   ]
+  },
+  "normal_MenuBattleEndOpen_4ec990": {
+   "gp": [
+    "0x004843CC",
+    "0x004843D0",
+    "0x004843D4",
+    "0x004843C8",
+    "0x004843D8",
+    "0x004843DC",
+    "0x0047DADC",
+    "0x0047D33C",
+    "0x0047D5D0"
+   ]
+  },
+  "normal_MenuBattleEndPromptBlink_4ec870": {
+   "gp": [
+    "0x0047D5D0",
+    "0x0047D924"
+   ]
+  },
+  "normal_MenuBattleEndSetMsgTable_4ee5c0": {
+   "gp": [
+    "0x004843E8",
+    "0x004843EC"
+   ]
+  },
+  "normal_MenuBattleEndSkipInput_4ec220": {
+   "gp": [
+    "0x004843E0"
+   ]
+  },
+  "normal_MenuBattleEndStep_4eb6c0": {
+   "gp": [
+    "0x0047D8B0",
+    "0x0047D844",
+    "0x0047D91C",
+    "0x0047D920",
+    "0x004843E0",
+    "0x0047D924",
+    "0x0047D928",
+    "0x0047D92C",
+    "0x0047D7C4"
+   ]
+  },
+  "normal_MenuBattleEndWeaponGaugeUpdateMaybe_4ed890": {
+   "gp": [
+    "0x0047D35C",
+    "0x0047D908",
+    "0x0047D1FC",
+    "0x0047D90C"
+   ]
+  },
+  "normal_ShopMenuBuyConfirmCloseState_50cb60": {
+   "gp": [
+    "0x0047D4BC",
+    "0x004845CC",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuBuyConfirmOpenState_50ce50": {
+   "gp": [
+    "0x00484644",
+    "0x004845D0",
+    "0x004845CC",
+    "0x0047D460",
+    "0x00484650",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuBuyConfirmState_50cbe0": {
+   "gp": [
+    "0x004845D0",
+    "0x00484650",
+    "0x004845C4",
+    "0x004845CC",
+    "0x0047D4BC",
+    "0x00484644",
+    "0x0047D3B8",
+    "0x00484630",
+    "0x00484648"
+   ]
+  },
+  "normal_ShopMenuBuyItemStatusLayout_50be30": {
+   "gp": [
+    "0x004845CC",
+    "0x0047D288",
+    "0x004845F8"
+   ]
+  },
+  "normal_ShopMenuBuyListCloseState_50de30": {
+   "gp": [
+    "0x004845C8",
+    "0x0047D4C0",
+    "0x0047D4B0",
+    "0x0047D4C4",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuBuyListCursorBobCb_50dd20": {
+   "gp": [
+    "0x0047D3B8",
+    "0x00484648",
+    "0x004845C8",
+    "0x0048464C",
+    "0x0048463C"
+   ]
+  },
+  "normal_ShopMenuBuyListCursorMoveCb_50dc30": {
+   "gp": [
+    "0x004845C8",
+    "0x00484638",
+    "0x00484634",
+    "0x0047D34C",
+    "0x0047D240",
+    "0x0048464C"
+   ]
+  },
+  "normal_ShopMenuBuyListOpenState_50e740": {
+   "gp": [
+    "0x004845C8",
+    "0x0047D4C8",
+    "0x004845D0",
+    "0x00484634",
+    "0x004845CC",
+    "0x0047D488",
+    "0x00484644",
+    "0x00484638",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuBuyListState_50df50": {
+   "gp": [
+    "0x004845D0",
+    "0x004845C8",
+    "0x0047D4C4",
+    "0x0047D488",
+    "0x0048464C",
+    "0x0048463C",
+    "0x004845C4",
+    "0x00484630",
+    "0x00484644",
+    "0x004845CC",
+    "0x0047D470",
+    "0x00484634",
+    "0x0047D460",
+    "0x00484638"
+   ]
+  },
+  "normal_ShopMenuBuyMsgCloseState_50c910": {
+   "gp": [
+    "0x0047D4BC",
+    "0x004845CC",
+    "0x004845D0",
+    "0x004845C4",
+    "0x00484630"
+   ]
+  },
+  "normal_ShopMenuBuyMsgOpenState_50ca10": {
+   "gp": [
+    "0x004845CC",
+    "0x0047D460",
+    "0x00484630",
+    "0x004845F8",
+    "0x004845D0",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuBuyMsgWaitState_50c9a0": {
+   "gp": [
+    "0x004845D0",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuBuyQtyCloseState_50d110": {
+   "gp": [
+    "0x0047D4BC",
+    "0x004845CC",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuBuyQtyCursorMoveCb_50cf50": {
+   "gp": [
+    "0x004845CC",
+    "0x00484644"
+   ]
+  },
+  "normal_ShopMenuBuyQtyOpenState_50d540": {
+   "gp": [
+    "0x004845CC",
+    "0x0047D460",
+    "0x004845C8",
+    "0x0047D4BC",
+    "0x0047D4C0",
+    "0x00484644",
+    "0x004845D4",
+    "0x00484640",
+    "0x004845F8",
+    "0x004845D0",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuBuyQtyPanelLayout_50bb40": {
+   "gp": [
+    "0x004845CC",
+    "0x004845F8"
+   ]
+  },
+  "normal_ShopMenuBuyQtyState_50d1b0": {
+   "gp": [
+    "0x004845D0",
+    "0x00484644",
+    "0x004845C4",
+    "0x00484630",
+    "0x004845CC",
+    "0x0047D4BC"
+   ]
+  },
+  "normal_ShopMenuBuyRowHintShow_50c550": {
+   "gp": [
+    "0x004845D0",
+    "0x004845CC",
+    "0x0047D34C",
+    "0x0047D3C8"
+   ]
+  },
+  "normal_ShopMenuBuyRowIconsRefresh_50dae0": {
+   "gp": [
+    "0x004845C8"
+   ]
+  },
+  "normal_ShopMenuBuyRowsRefresh_50b5c0": {
+   "gp": [
+    "0x0048463C",
+    "0x004845C8",
+    "0x0047D288"
+   ]
+  },
+  "normal_ShopMenuBuySpecialStateMaybe_50c730": {
+   "gp": [
+    "0x004845D0",
+    "0x00484644",
+    "0x004845CC",
+    "0x004845F8",
+    "0x00484654",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuBuyTotalPriceSet_50bb00": {
+   "gp": [
+    "0x004845CC"
+   ]
+  },
+  "normal_ShopMenuCloseState_50a0f0": {
+   "gp": [
+    "0x0048460C",
+    "0x00480638",
+    "0x0047D4D0",
+    "0x004845D8"
+   ]
+  },
+  "normal_ShopMenuClutBufAlloc_50b120": {
+   "gp": [
+    "0x004845AC",
+    "0x004845B4"
+   ]
+  },
+  "normal_ShopMenuConfirmTextSet_5092e0": {
+   "gp": [
+    "0x004845F8",
+    "0x004845CC"
+   ]
+  },
+  "normal_ShopMenuCursorBob_5097e0": {
+   "gp": [
+    "0x0047D3B8",
+    "0x004845E8"
+   ]
+  },
+  "normal_ShopMenuDiscountIconRefresh_50b140": {
+   "gp": [
+    "0x00484640",
+    "0x004845C8"
+   ]
+  },
+  "normal_ShopMenuDraw_50a6a0": {
+   "gp": [
+    "0x004845E0"
+   ]
+  },
+  "normal_ShopMenuFrameFadeOut_50a2f0": {
+   "gp": [
+    "0x0047D4D4",
+    "0x0047D4D8"
+   ]
+  },
+  "normal_ShopMenuIconClutBuild_50b110": {
+   "gp": [
+    "0x004845B4"
+   ]
+  },
+  "normal_ShopMenuInit_50ab50": {
+   "gp": [
+    "0x004845A8",
+    "0x004845E4",
+    "0x004845AC",
+    "0x004845B0",
+    "0x004845DC",
+    "0x004845E0",
+    "0x004845D8",
+    "0x00480638",
+    "0x004845FC",
+    "0x004845D4",
+    "0x004845C4",
+    "0x004845C8",
+    "0x004845D0",
+    "0x004845CC"
+   ]
+  },
+  "normal_ShopMenuIsOpen_50ab00": {
+   "gp": [
+    "0x004845D8"
+   ]
+  },
+  "normal_ShopMenuIsTransitioning_50ab10": {
+   "gp": [
+    "0x00480638"
+   ]
+  },
+  "normal_ShopMenuOpenState_50a390": {
+   "gp": [
+    "0x0047D4C8",
+    "0x0047D488",
+    "0x0047D4DC",
+    "0x0047D288"
+   ]
+  },
+  "normal_ShopMenuResPoll_50ae40": {
+   "gp": [
+    "0x004845AC",
+    "0x004845F8",
+    "0x004845DC",
+    "0x004845FC",
+    "0x004845E4"
+   ]
+  },
+  "normal_ShopMenuResRelease_50ad90": {
+   "gp": [
+    "0x004845FC"
+   ]
+  },
+  "normal_ShopMenuResRequest_50b020": {
+   "gp": [
+    "0x004845FC"
+   ]
+  },
+  "normal_ShopMenuScrollBarLayout_50b2a0": {
+   "gp": [
+    "0x00480650",
+    "0x00480652",
+    "0x00480654",
+    "0x00480658",
+    "0x00480660",
+    "0x0048065A",
+    "0x00480664",
+    "0x00480668",
+    "0x0048065C",
+    "0x004845C8",
+    "0x00484634"
+   ]
+  },
+  "normal_ShopMenuSellCellHintShow_50f650": {
+   "gp": [
+    "0x004845D0",
+    "0x004845D4",
+    "0x004845CC",
+    "0x0047D34C",
+    "0x0047D3C8"
+   ]
+  },
+  "normal_ShopMenuSellCloseState_5106f0": {
+   "gp": [
+    "0x004845C8",
+    "0x0047D49C",
+    "0x0047D4B0",
+    "0x004845CC",
+    "0x0047D4AC",
+    "0x0047D460",
+    "0x0047D4B4",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuSellConfirmCloseState_50fae0": {
+   "gp": [
+    "0x0047D3C8",
+    "0x004845CC",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuSellConfirmOpenState_50fdd0": {
+   "gp": [
+    "0x004845D0",
+    "0x0048467C",
+    "0x004845CC",
+    "0x0047D460",
+    "0x00484684",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuSellConfirmState_50fb60": {
+   "gp": [
+    "0x004845D0",
+    "0x00484684",
+    "0x004845C4",
+    "0x004845CC",
+    "0x0047D3C8",
+    "0x0048467C",
+    "0x004845D4",
+    "0x0047D3B8",
+    "0x00484678"
+   ]
+  },
+  "normal_ShopMenuSellGridCursorBobCb_510620": {
+   "gp": [
+    "0x0047D3B8",
+    "0x00484678"
+   ]
+  },
+  "normal_ShopMenuSellGridCursorMoveCb_510580": {
+   "gp": [
+    "0x004845D4",
+    "0x0047D240",
+    "0x00484680"
+   ]
+  },
+  "normal_ShopMenuSellGridState_510860": {
+   "gp": [
+    "0x004845D0",
+    "0x004845C8",
+    "0x0047D4B4",
+    "0x00484680",
+    "0x004845D4",
+    "0x004845C4",
+    "0x0048467C",
+    "0x004845CC",
+    "0x0047D470"
+   ]
+  },
+  "normal_ShopMenuSellItemStatusLayout_50ef80": {
+   "gp": [
+    "0x004845CC",
+    "0x0047D288",
+    "0x004845F8"
+   ]
+  },
+  "normal_ShopMenuSellMsgCloseState_50f880": {
+   "gp": [
+    "0x004845CC",
+    "0x0047D3C8",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuSellMsgOpenState_50f960": {
+   "gp": [
+    "0x004845CC",
+    "0x0047D460",
+    "0x004845F8",
+    "0x004845D0",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuSellMsgWaitState_50f8e0": {
+   "gp": [
+    "0x004845D0",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuSellOpenState_510a30": {
+   "gp": [
+    "0x004845C8",
+    "0x0047D4B8",
+    "0x004845D4",
+    "0x004845D0",
+    "0x0047D488",
+    "0x004845CC",
+    "0x0048467C",
+    "0x0047D4B4",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuSellQtyCloseState_50ffb0": {
+   "gp": [
+    "0x004845C8",
+    "0x0047D4A8",
+    "0x004845CC",
+    "0x0047D4AC",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuSellQtyCursorMoveCb_50fed0": {
+   "gp": [
+    "0x004845D0",
+    "0x004845D4",
+    "0x004845CC",
+    "0x0048467C"
+   ]
+  },
+  "normal_ShopMenuSellQtyOpenState_5101e0": {
+   "gp": [
+    "0x004845CC",
+    "0x004845D0",
+    "0x0047D460",
+    "0x004845C8",
+    "0x0047D4AC",
+    "0x0047D49C",
+    "0x0048467C",
+    "0x004845D4",
+    "0x004845C4"
+   ]
+  },
+  "normal_ShopMenuSellQtyPanelLayout_50ecc0": {
+   "gp": [
+    "0x004845CC",
+    "0x004845F8"
+   ]
+  },
+  "normal_ShopMenuSellQtyState_510050": {
+   "gp": [
+    "0x004845D0",
+    "0x004845CC",
+    "0x0047D4AC",
+    "0x004845C4",
+    "0x0048467C"
+   ]
+  },
+  "normal_ShopMenuSellTabsLayout_50e980": {
+   "gp": [
+    "0x004845C8"
+   ]
+  },
+  "normal_ShopMenuSellTabsSwitchCb_5103f0": {
+   "gp": [
+    "0x004845D4",
+    "0x0047D240",
+    "0x004845A8",
+    "0x00484680"
+   ]
+  },
+  "normal_ShopMenuSellTotalPriceSet_50ec80": {
+   "gp": [
+    "0x004845CC"
+   ]
+  },
+  "normal_ShopMenuShutdown_50a630": {
+   "gp": [
+    "0x004845D4",
+    "0x00480638",
+    "0x004845B4",
+    "0x004845E0",
+    "0x004845D8",
+    "0x004845E4"
+   ]
+  },
+  "normal_ShopMenuStep_50a6f0": {
+   "gp": [
+    "0x004845E0",
+    "0x004845DC",
+    "0x00480638",
+    "0x004845AC",
+    "0x004845A8",
+    "0x004845BC",
+    "0x004845C0",
+    "0x004845B8",
+    "0x0047D934"
+   ]
+  },
+  "normal_ShopMenuTiledPanelDrawCb_510d10": {
+   "gp": [
+    "0x004845C8",
+    "0x004845B4"
+   ]
+  },
+  "normal_ShopMenuTopCursorMoveCb_5098f0": {
+   "gp": [
+    "0x0047D240"
+   ]
+  },
+  "normal_ShopMenuTopPickAnimStep_509e90": {
+   "gp": [
+    "0x00484600",
+    "0x00484608",
+    "0x00484604",
+    "0x0047D4C8",
+    "0x0047D35C",
+    "0x0047D440",
+    "0x0047D4E0",
+    "0x0047D280"
+   ],
+   "jtbl": [
+    "0x005264E0"
+   ]
+  },
+  "normal_ShopMenuTopRowsSlideOut_50a1c0": {
+   "gp": [
+    "0x0047D348",
+    "0x0047D4CC",
+    "0x00484600",
+    "0x0047D460"
+   ]
+  },
+  "normal_ShopMenuTopState_509a80": {
+   "gp": [
+    "0x0047D4DC",
+    "0x0047D348",
+    "0x0047D344",
+    "0x00484600",
+    "0x0047D488",
+    "0x0047D4C8",
+    "0x0047D4E0",
+    "0x00484604"
+   ]
+  },
+  "normal_SpaceMenuAnimStep_513000": {
+   "gp": [
+    "0x0047D93C",
+    "0x0047D1FC",
+    "0x0047D91C",
+    "0x004806B0",
+    "0x004806B4",
+    "0x004806B8",
+    "0x004806BC",
+    "0x0047D288",
+    "0x0047D940",
+    "0x0047D938",
+    "0x0047D944",
+    "0x0047D948",
+    "0x0047D94C",
+    "0x0047D950",
+    "0x0047D954",
+    "0x0047D248"
+   ]
+  },
+  "normal_SpaceMenuBuild_514560": {
+   "gp": [
+    "0x004846B0",
+    "0x00481BBC"
+   ]
+  },
+  "normal_SpaceMenuCancel_5117e0": {
+   "gp": [
+    "0x0047D7D0",
+    "0x0047D7D8"
+   ]
+  },
+  "normal_SpaceMenuCloseState_510d70": {
+   "gp": [
+    "0x004846B8"
+   ]
+  },
+  "normal_SpaceMenuConfirmEndStep_511de0": {
+   "gp": [
+    "0x0047D938",
+    "0x0047D5D0",
+    "0x0047D248",
+    "0x004846A8",
+    "0x00480678"
+   ]
+  },
+  "normal_SpaceMenuConfirmStep_511940": {
+   "gp": [
+    "0x00481BBC",
+    "0x004846AC",
+    "0x004806C0",
+    "0x004806C2",
+    "0x004806C4",
+    "0x004806C6",
+    "0x0047D35C",
+    "0x0047D71C",
+    "0x004846A8",
+    "0x00480678"
+   ]
+  },
+  "normal_SpaceMenuDraw_511100": {
+   "gp": [
+    "0x004846B8"
+   ]
+  },
+  "normal_SpaceMenuGetResult_511660": {
+   "gp": [
+    "0x004846A8",
+    "0x00480678"
+   ]
+  },
+  "normal_SpaceMenuInitState_510fd0": {
+   "gp": [
+    "0x004846B4",
+    "0x00480670",
+    "0x00480678",
+    "0x00480674",
+    "0x004846A8",
+    "0x004846BC"
+   ]
+  },
+  "normal_SpaceMenuInit_5116f0": {
+   "gp": [
+    "0x004846B0",
+    "0x004846B4",
+    "0x004846B8"
+   ]
+  },
+  "normal_SpaceMenuIsBusy_511690": {
+   "gp": [
+    "0x004846B8"
+   ]
+  },
+  "normal_SpaceMenuIsRunning_5110c0": {
+   "gp": [
+    "0x004846B8"
+   ]
+  },
+  "normal_SpaceMenuMainState_510d90": {
+   "gp": [
+    "0x004846B8",
+    "0x004846A8"
+   ]
+  },
+  "normal_SpaceMenuMapBuild_5135f0": {
+   "gp": [
+    "0x0047D248"
+   ]
+  },
+  "normal_SpaceMenuObjInit_5146b0": {
+   "gp": [
+    "0x0047DD8C"
+   ]
+  },
+  "normal_SpaceMenuOpenAnimStart_512e20": {
+   "gp": [
+    "0x0047D578",
+    "0x0047D7CC",
+    "0x0047D7DC"
+   ]
+  },
+  "normal_SpaceMenuOpenState_510df0": {
+   "gp": [
+    "0x004846B8",
+    "0x004846B4"
+   ]
+  },
+  "normal_SpaceMenuPanelsLayout_514270": {
+   "gp": [
+    "0x0047D7C4"
+   ]
+  },
+  "normal_SpaceMenuRelease_511010": {
+   "gp": [
+    "0x004846B8",
+    "0x004846B4",
+    "0x004846B0",
+    "0x00480674",
+    "0x00480670"
+   ]
+  },
+  "normal_SpaceMenuResPollState_510e30": {
+   "gp": [
+    "0x00480674",
+    "0x00480670",
+    "0x004846B0",
+    "0x004846AC",
+    "0x004846B4"
+   ]
+  },
+  "normal_SpaceMenuResRequestState_510f40": {
+   "gp": [
+    "0x004802BC",
+    "0x00480670",
+    "0x00480674",
+    "0x004846B4"
+   ]
+  },
+  "normal_SpaceMenuRouteDraw_511150": {
+   "gp": [
+    "0x004846B8",
+    "0x004846BC",
+    "0x0047D814",
+    "0x0047D1FC",
+    "0x0047D4CC"
+   ]
+  },
+  "normal_SpaceMenuStep_5115c0": {
+   "gp": [
+    "0x004846B8",
+    "0x004846B4"
+   ]
+  },
+  "normal_SpaceMenuUpdate_512070": {
+   "gp": [
+    "0x0047D5D0",
+    "0x0047D248",
+    "0x004846B8",
+    "0x004846A8",
+    "0x00480678"
+   ]
+  },
+  "normal_ThinkMenuCloseState_520c00": {
+   "gp": [
+    "0x00484920",
+    "0x0047DD30",
+    "0x00484938",
+    "0x00484954"
+   ]
+  },
+  "normal_ThinkMenuConfirmCloseState_520120": {
+   "gp": [
+    "0x00484920",
+    "0x0047DD2C",
+    "0x0047DADC"
+   ]
+  },
+  "normal_ThinkMenuConfirmOpenState_520320": {
+   "gp": [
+    "0x00484920",
+    "0x0047DADC",
+    "0x00481BBC",
+    "0x00484934",
+    "0x00484944"
+   ]
+  },
+  "normal_ThinkMenuConfirmState_5201a0": {
+   "gp": [
+    "0x00484920",
+    "0x00484934",
+    "0x0048494C",
+    "0x00484950",
+    "0x00484948"
+   ]
+  },
+  "normal_ThinkMenuDraw_5211c0": {
+   "gp": [
+    "0x0048493C",
+    "0x00484920"
+   ]
+  },
+  "normal_ThinkMenuGetResult_5219c0": {
+   "gp": [
+    "0x00484948",
+    "0x0048494C",
+    "0x00484950"
+   ]
+  },
+  "normal_ThinkMenuGridCursorBobToCell_5209c0": {
+   "gp": [
+    "0x0047D3D0",
+    "0x00484944"
+   ]
+  },
+  "normal_ThinkMenuGridCursorMoveCb_520a90": {
+   "gp": [
+    "0x00484934",
+    "0x00484920",
+    "0x0047D3F0"
+   ]
+  },
+  "normal_ThinkMenuGridState_520ca0": {
+   "gp": [
+    "0x00484948",
+    "0x00484934",
+    "0x00484920",
+    "0x0047DD2C",
+    "0x0048494C",
+    "0x00484950"
+   ]
+  },
+  "normal_ThinkMenuInit_5212b0": {
+   "gp": [
+    "0x00484940",
+    "0x00484918",
+    "0x0048491C",
+    "0x00484920",
+    "0x00484930",
+    "0x0048492C",
+    "0x00484928",
+    "0x0048493C",
+    "0x00484938",
+    "0x00480788",
+    "0x00484934"
+   ]
+  },
+  "normal_ThinkMenuIsOpen_521290": {
+   "gp": [
+    "0x00484938"
+   ]
+  },
+  "normal_ThinkMenuIsSelecting_5219b0": {
+   "gp": [
+    "0x00484954"
+   ]
+  },
+  "normal_ThinkMenuLayoutBuild_521400": {
+   "gp": [
+    "0x00484918",
+    "0x00484920",
+    "0x00484964",
+    "0x0048078C",
+    "0x00484958",
+    "0x0048495C",
+    "0x00480790",
+    "0x00484960"
+   ]
+  },
+  "normal_ThinkMenuOpenState_520e80": {
+   "gp": [
+    "0x00484920",
+    "0x00484934",
+    "0x0047DD34",
+    "0x00484948",
+    "0x00484954",
+    "0x0048494C",
+    "0x00484950"
+   ]
+  },
+  "normal_ThinkMenuPromptScrollStep_521660": {
+   "gp": [
+    "0x00484958",
+    "0x00480790",
+    "0x0048078C",
+    "0x00484960",
+    "0x00484964",
+    "0x0048495C",
+    "0x00484920"
+   ]
+  },
+  "normal_ThinkMenuResPoll_5217e0": {
+   "gp": [
+    "0x00484970",
+    "0x0048491C",
+    "0x00484940"
+   ]
+  },
+  "normal_ThinkMenuResRequest_5218d0": {
+   "gp": [
+    "0x0048491C"
+   ]
+  },
+  "normal_ThinkMenuShutdown_521160": {
+   "gp": [
+    "0x00484934",
+    "0x00480788",
+    "0x0048493C",
+    "0x00484938",
+    "0x00484940"
+   ]
+  },
+  "normal_ThinkMenuStep_5211f0": {
+   "gp": [
+    "0x0048493C",
+    "0x00484940",
+    "0x00480788",
+    "0x00484920"
+   ]
+  },
+  "normal_ThinkMenuTabsCursorMoveCb_520850": {
+   "gp": [
+    "0x00484934"
+   ]
+  },
+  "normal_ThinkMenuTabsLayout_520500": {
+   "gp": [
+    "0x00484920"
+   ]
+  },
+  "normal_ThinkMenuYesNoCursorBobCb_520000": {
+   "gp": [
+    "0x0047D3D0",
+    "0x00484944"
+   ]
+  },
+  "normal_ThinkMenuYesNoCursorMoveCb_5200b0": {
+   "gp": [
+    "0x00484920"
+   ]
+  },
+  "normal_TransHunterBountyListCursorBobCb_51f2b0": {
+   "gp": [
+    "0x0047D3B8",
+    "0x004848A8",
+    "0x0047D1FC",
+    "0x00484710",
+    "0x004848C8",
+    "0x0047D3FC",
+    "0x00480760",
+    "0x0047D240"
+   ]
+  },
+  "normal_TransHunterBountyListCursorMoveCb_51f210": {
+   "gp": [
+    "0x00484710",
+    "0x004848B4",
+    "0x004848B8",
+    "0x0047D34C"
+   ]
+  },
+  "normal_TransHunterBountyListFill_51efe0": {
+   "gp": [
+    "0x00484744",
+    "0x00484710"
+   ]
+  },
+  "normal_TransHunterBountyListState_51f630": {
+   "gp": [
+    "0x00484720",
+    "0x00484710",
+    "0x0047D248",
+    "0x0047D9D4",
+    "0x0048470C",
+    "0x004848BC",
+    "0x004848C0",
+    "0x004848B8"
+   ]
+  },
+  "normal_TransHunterCloseSlide_51f550": {
+   "gp": [
+    "0x004848C4",
+    "0x00484710",
+    "0x0047D9CC",
+    "0x0047D9D0"
+   ]
+  },
+  "normal_TransHunterCloseState_51f410": {
+   "gp": [
+    "0x00484710",
+    "0x0047D4B0",
+    "0x0047D9C0",
+    "0x004848C4",
+    "0x0048470C",
+    "0x0048472C"
+   ]
+  },
+  "normal_TransHunterMsgOpenState_51eb20": {
+   "gp": [
+    "0x00484710",
+    "0x0047D9C0",
+    "0x0047D9C4",
+    "0x00484720",
+    "0x00484718",
+    "0x0047D9C8",
+    "0x004848BC",
+    "0x00484770",
+    "0x004848CC",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransHunterMsgWaitState_51ead0": {
+   "gp": [
+    "0x00484720",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransHunterOpenState_51fc20": {
+   "gp": [
+    "0x004848B0",
+    "0x004848AC",
+    "0x00484710",
+    "0x0047D9D0",
+    "0x0047D9D8",
+    "0x0048472C",
+    "0x0047D920",
+    "0x00484720",
+    "0x00484770",
+    "0x004848B8",
+    "0x004848B4",
+    "0x0047D9A8",
+    "0x0047D35C",
+    "0x0048470C",
+    "0x004848BC",
+    "0x004848C0"
+   ]
+  },
+  "normal_TransHunterPlayerRowPulse_51d780": {
+   "gp": [
+    "0x00480758",
+    "0x00480750",
+    "0x00480754",
+    "0x0047D35C",
+    "0x00484710"
+   ]
+  },
+  "normal_TransHunterRankCloseState_51dcd0": {
+   "gp": [
+    "0x00484710",
+    "0x0047D4B0",
+    "0x0048477C",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransHunterRankListCursorBobCb_51db80": {
+   "gp": [
+    "0x0047D3B8",
+    "0x004848A8",
+    "0x0047D1FC",
+    "0x00484710",
+    "0x004848C8",
+    "0x0047D3FC",
+    "0x00480760",
+    "0x0047D240"
+   ]
+  },
+  "normal_TransHunterRankListCursorMoveCb_51dad0": {
+   "gp": [
+    "0x00484710",
+    "0x004848B4",
+    "0x004848B8",
+    "0x0047D34C"
+   ]
+  },
+  "normal_TransHunterRankListFill_51d820": {
+   "gp": [
+    "0x00480758",
+    "0x00484710"
+   ]
+  },
+  "normal_TransHunterRankListState_51dd40": {
+   "gp": [
+    "0x00484720",
+    "0x00484710",
+    "0x0047D9B8",
+    "0x00480784",
+    "0x0048470C",
+    "0x004848F0",
+    "0x004848B8",
+    "0x0047D998",
+    "0x004848B4"
+   ]
+  },
+  "normal_TransHunterRankOpenState_51e290": {
+   "gp": [
+    "0x00484720",
+    "0x00484710",
+    "0x0047D920",
+    "0x0047D9BC",
+    "0x00480754",
+    "0x00480758",
+    "0x00480750",
+    "0x004848B8",
+    "0x004848B4",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransHunterRankResultState_51e720": {
+   "gp": [
+    "0x00484718",
+    "0x00484720",
+    "0x0048075C",
+    "0x00484770",
+    "0x004848D0",
+    "0x0047D288",
+    "0x004848D4",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransHunterResultMsgState_51e5f0": {
+   "gp": [
+    "0x00484718",
+    "0x0047D998",
+    "0x00484720",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransHunterRewardEndState_51d3c0": {
+   "gp": [
+    "0x00484718",
+    "0x0047D9B0",
+    "0x00484710",
+    "0x0047D9B4",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransHunterRewardFindNext_51d320": {
+   "gp": [
+    "0x00480784",
+    "0x0048075C"
+   ]
+  },
+  "normal_TransHunterRewardGiveState_51d430": {
+   "gp": [
+    "0x00484720",
+    "0x0048470C",
+    "0x00480784",
+    "0x004848F0"
+   ]
+  },
+  "normal_TransHunterRewardMsgFormat_51d150": {
+   "gp": [
+    "0x00484770",
+    "0x00484718"
+   ]
+  },
+  "normal_TransHunterRewardOpenState_51d570": {
+   "gp": [
+    "0x00484710",
+    "0x0047D9B8",
+    "0x00484720",
+    "0x004848F0",
+    "0x00480784",
+    "0x0048075C",
+    "0x0048470C",
+    "0x00484718",
+    "0x0047D998",
+    "0x00484770",
+    "0x0047D470"
+   ]
+  },
+  "normal_TransHunterScrollBarLayout_51ed00": {
+   "gp": [
+    "0x00480768",
+    "0x0048076A",
+    "0x0048076C",
+    "0x00480770",
+    "0x00480778",
+    "0x00480772",
+    "0x0048077C",
+    "0x00480780",
+    "0x00480774",
+    "0x00484710"
+   ]
+  },
+  "normal_TransHunterVoiceEndState_51ea30": {
+   "gp": [
+    "0x00484718",
+    "0x0047D9C0",
+    "0x0048470C",
+    "0x004848C0"
+   ]
+  },
+  "normal_TransHunterVoiceWaitState_51e510": {
+   "gp": [
+    "0x00484718",
+    "0x0047D9C0",
+    "0x00484710",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransMenuBobIconPlace_518480": {
+   "gp": [
+    "0x004806D8",
+    "0x004806DC",
+    "0x004846E8",
+    "0x00484710"
+   ]
+  },
+  "normal_TransMenuBobIconReset_518570": {
+   "gp": [
+    "0x004806D8",
+    "0x00484790",
+    "0x004806DC",
+    "0x004806E0"
+   ]
+  },
+  "normal_TransMenuBobIconSetPos_518560": {
+   "gp": [
+    "0x004806D8",
+    "0x004806DC",
+    "0x004806E0"
+   ]
+  },
+  "normal_TransMenuBobIconShow_5183c0": {
+   "gp": [
+    "0x004846E8",
+    "0x00484710"
+   ]
+  },
+  "normal_TransMenuBobTimerGet_518550": {
+   "gp": [
+    "0x00484790"
+   ]
+  },
+  "normal_TransMenuBobTimerTick_518540": {
+   "gp": [
+    "0x0047D93C"
+   ]
+  },
+  "normal_TransMenuCloseState_5159e0": {
+   "gp": [
+    "0x004846E8",
+    "0x0047DA08",
+    "0x004806C8",
+    "0x0048479C",
+    "0x0047DA14",
+    "0x00484748",
+    "0x0048472C"
+   ]
+  },
+  "normal_TransMenuCursorBobToCell_514ad0": {
+   "gp": [
+    "0x0047D3B8",
+    "0x00484780"
+   ]
+  },
+  "normal_TransMenuDraw_5163a0": {
+   "gp": [
+    "0x0048474C",
+    "0x004846EC",
+    "0x004846E8",
+    "0x00480700",
+    "0x00480704",
+    "0x00480708",
+    "0x0048070C",
+    "0x0048472C",
+    "0x00484758",
+    "0x004846F0",
+    "0x004846F4",
+    "0x004846F8"
+   ]
+  },
+  "normal_TransMenuGetWarpRequest_518620": {
+   "gp": [
+    "0x00484738",
+    "0x0048473C"
+   ]
+  },
+  "normal_TransMenuHeaderFadeOut_515cd0": {
+   "gp": [
+    "0x004846E8",
+    "0x004846EC",
+    "0x0047DA08",
+    "0x0047DA18"
+   ]
+  },
+  "normal_TransMenuIconClutBuild_518590": {
+   "gp": [
+    "0x00484728"
+   ]
+  },
+  "normal_TransMenuInit_516aa0": {
+   "gp": [
+    "0x00484778",
+    "0x00484794",
+    "0x00484750",
+    "0x004806CC",
+    "0x00484754",
+    "0x004846E0",
+    "0x004846E4",
+    "0x00484728",
+    "0x00484724",
+    "0x0048475C",
+    "0x004846E8",
+    "0x004846EC",
+    "0x004846F0",
+    "0x004846F4",
+    "0x004846F8",
+    "0x00484704",
+    "0x00484708",
+    "0x00484700",
+    "0x00484744",
+    "0x0048474C",
+    "0x00484748",
+    "0x004806C8",
+    "0x00484740",
+    "0x00484788",
+    "0x0048478C",
+    "0x00484768",
+    "0x0048476C",
+    "0x004806F0",
+    "0x004806F4",
+    "0x004806F8",
+    "0x004806FC",
+    "0x0048470C",
+    "0x00484710",
+    "0x00484720",
+    "0x00484714",
+    "0x00484770",
+    "0x00484718",
+    "0x0048472C",
+    "0x00484730",
+    "0x0048471C",
+    "0x00484738"
+   ]
+  },
+  "normal_TransMenuIsOpen_516a50": {
+   "gp": [
+    "0x00484748"
+   ]
+  },
+  "normal_TransMenuIsQuickOpen_514a00": {
+   "gp": [
+    "0x00484778"
+   ]
+  },
+  "normal_TransMenuIsTransitioning_516a60": {
+   "gp": [
+    "0x004806C8"
+   ]
+  },
+  "normal_TransMenuLayoutBuild_516e20": {
+   "gp": [
+    "0x004846E8",
+    "0x004846E0",
+    "0x004846EC",
+    "0x004846F0",
+    "0x004846F4",
+    "0x004846F8",
+    "0x00484704",
+    "0x00484740",
+    "0x00484708",
+    "0x00484700",
+    "0x004846E4",
+    "0x0047D288"
+   ]
+  },
+  "normal_TransMenuLocationNameSet_5173c0": {
+   "gp": [
+    "0x004846E8",
+    "0x00484774"
+   ]
+  },
+  "normal_TransMenuMinimapMarkersDrawMaybe_5174d0": {
+   "gp": [
+    "0x0048476C",
+    "0x0047D248"
+   ]
+  },
+  "normal_TransMenuNoticeState_514880": {
+   "gp": [
+    "0x004846E8",
+    "0x0047D9F8"
+   ]
+  },
+  "normal_TransMenuOpenState_515f10": {
+   "gp": [
+    "0x004846E8",
+    "0x0047D920",
+    "0x0047D5D0",
+    "0x0047DA28",
+    "0x0047D288",
+    "0x00484710",
+    "0x0048477C",
+    "0x00484730",
+    "0x00484750"
+   ]
+  },
+  "normal_TransMenuPickIconCopy_515950": {
+   "gp": [
+    "0x004846E8"
+   ]
+  },
+  "normal_TransMenuPlayTimeSet_517310": {
+   "gp": [
+    "0x004846E8"
+   ]
+  },
+  "normal_TransMenuQuickOpenState_515da0": {
+   "gp": [
+    "0x00484798",
+    "0x00484750",
+    "0x0048478C",
+    "0x004846E8"
+   ]
+  },
+  "normal_TransMenuRelease_516290": {
+   "gp": [
+    "0x00484770",
+    "0x004806C8",
+    "0x00484740",
+    "0x00484724",
+    "0x0048475C",
+    "0x0048474C",
+    "0x00484748",
+    "0x00484750"
+   ]
+  },
+  "normal_TransMenuResFree_5181a0": {
+   "gp": [
+    "0x00484788"
+   ]
+  },
+  "normal_TransMenuResPoll_5181d0": {
+   "gp": [
+    "0x004846E0",
+    "0x00484788",
+    "0x00484770",
+    "0x00484774",
+    "0x00484750"
+   ]
+  },
+  "normal_TransMenuResRequest_518370": {
+   "gp": [
+    "0x00484788",
+    "0x004802A4"
+   ]
+  },
+  "normal_TransMenuSetOpen_516a40": {
+   "gp": [
+    "0x00484748"
+   ]
+  },
+  "normal_TransMenuSetWarpRequest_518640": {
+   "gp": [
+    "0x00484738",
+    "0x0048473C"
+   ]
+  },
+  "normal_TransMenuStep_5165c0": {
+   "gp": [
+    "0x0048474C",
+    "0x00484758",
+    "0x0047D958",
+    "0x0047D1FC",
+    "0x00484750",
+    "0x004806C8",
+    "0x004846EC",
+    "0x004846E8",
+    "0x0047D95C",
+    "0x0048472C",
+    "0x004846F0",
+    "0x004846F4",
+    "0x004846F8"
+   ]
+  },
+  "normal_TransMenuSubResFree_517cf0": {
+   "gp": [
+    "0x0048478C",
+    "0x00484784"
+   ]
+  },
+  "normal_TransMenuSubResPoll_517d40": {
+   "gp": [
+    "0x004806CC",
+    "0x004846E4",
+    "0x0048478C",
+    "0x00484794",
+    "0x00484784",
+    "0x0048475C",
+    "0x00484754",
+    "0x00484750"
+   ]
+  },
+  "normal_TransMenuSubResRequest_518040": {
+   "gp": [
+    "0x00484794",
+    "0x0048478C",
+    "0x00484784",
+    "0x004806CC"
+   ]
+  },
+  "normal_TransMenuTopCursorBobCb_514a30": {
+   "gp": [
+    "0x0048477C",
+    "0x0047D400",
+    "0x004847AC"
+   ]
+  },
+  "normal_TransMenuTopCursorMoveCb_514bb0": {
+   "gp": [
+    "0x004846E8",
+    "0x0047D240",
+    "0x0047D288",
+    "0x00484710"
+   ]
+  },
+  "normal_TransMenuTopPickAnimStep_515550": {
+   "gp": [
+    "0x004847A0",
+    "0x004847A8",
+    "0x004847A4",
+    "0x0047D920",
+    "0x0047D35C",
+    "0x004846E8",
+    "0x0047D94C",
+    "0x0047DA20",
+    "0x0047D9A8",
+    "0x0047DA1C",
+    "0x0047DA24",
+    "0x0047DA28"
+   ],
+   "jtbl": [
+    "0x005266F0"
+   ]
+  },
+  "normal_TransMenuTopRowsSlideOut_515b20": {
+   "gp": [
+    "0x004846E8",
+    "0x0047DA0C",
+    "0x0047DA10",
+    "0x0047DA04"
+   ]
+  },
+  "normal_TransMenuTopState_514e10": {
+   "gp": [
+    "0x0048478C",
+    "0x0048472C",
+    "0x004846E8",
+    "0x0047DA1C",
+    "0x0047DA0C",
+    "0x0047D344",
+    "0x004847A0",
+    "0x0047D920",
+    "0x0047D5D0",
+    "0x00484710",
+    "0x00484730",
+    "0x00484770",
+    "0x004847A4",
+    "0x0047DA20"
+   ]
+  },
+  "normal_TransMenuWidgetListShow_514a10": {
+   "gp": [
+    "0x004846E8"
+   ]
+  },
+  "normal_TransSaveCardScanEnterCb_519710": {
+   "gp": [
+    "0x0048480C"
+   ]
+  },
+  "normal_TransSaveCardScanTickCb_5194f0": {
+   "gp": [
+    "0x0048480C",
+    "0x00484724",
+    "0x004847D8"
+   ]
+  },
+  "normal_TransSaveCloseSlide_51a1a0": {
+   "gp": [
+    "0x004847D4",
+    "0x0047D5D0",
+    "0x0047D9F8",
+    "0x0047D9FC",
+    "0x0047DA00"
+   ]
+  },
+  "normal_TransSaveCloseState_51a0a0": {
+   "gp": [
+    "0x004847F8",
+    "0x004847D4",
+    "0x00484794",
+    "0x004847D0"
+   ]
+  },
+  "normal_TransSaveDrawBgCb_5186b0": {
+   "gp": [
+    "0x00484710"
+   ]
+  },
+  "normal_TransSaveDrawSlotIconsCb_518660": {
+   "gp": [
+    "0x00484710"
+   ]
+  },
+  "normal_TransSaveErrorState_519e90": {
+   "gp": [
+    "0x00484800",
+    "0x004847FC",
+    "0x004847F0",
+    "0x004847F4",
+    "0x004847D0"
+   ]
+  },
+  "normal_TransSaveGetSlotScroll_519e20": {
+   "gp": [
+    "0x00484720"
+   ]
+  },
+  "normal_TransSaveIconSysInit_518a50": {
+   "gp": [
+    "0x00484724"
+   ]
+  },
+  "normal_TransSaveMainState_51a360": {
+   "gp": [
+    "0x004847D8",
+    "0x00484714"
+   ]
+  },
+  "normal_TransSaveNewFileEnterCb_519490": {
+   "gp": [
+    "0x00484810"
+   ]
+  },
+  "normal_TransSaveNewFileTickCb_519020": {
+   "gp": [
+    "0x00484810",
+    "0x004847D4",
+    "0x00484814",
+    "0x004847F4",
+    "0x004847F0",
+    "0x004847D8",
+    "0x0047D34C",
+    "0x00484818",
+    "0x00484724"
+   ]
+  },
+  "normal_TransSaveOpenState_51a3c0": {
+   "gp": [
+    "0x004846E0",
+    "0x0048470C",
+    "0x004847F0",
+    "0x00484710",
+    "0x004847F4",
+    "0x00484720",
+    "0x004847D0",
+    "0x004847D4",
+    "0x004847D8",
+    "0x004847E4",
+    "0x00484724",
+    "0x00484714",
+    "0x0047DA00",
+    "0x004847DC",
+    "0x004847E0",
+    "0x0047D9A8",
+    "0x0047D35C",
+    "0x0047DA04",
+    "0x0047D5D0"
+   ]
+  },
+  "normal_TransSavePanelFade_518700": {
+   "gp": [
+    "0x004847D4",
+    "0x0047D3C0"
+   ]
+  },
+  "normal_TransSavePortCancelCb_5197a0": {
+   "gp": [
+    "0x00484804",
+    "0x004847D8",
+    "0x004847D0"
+   ]
+  },
+  "normal_TransSavePortConfirmCb_519830": {
+   "gp": [
+    "0x004847D8",
+    "0x00484808",
+    "0x00484804"
+   ]
+  },
+  "normal_TransSavePortCursorBob_5187c0": {
+   "gp": [
+    "0x00484714",
+    "0x0047D3B8",
+    "0x004847E4"
+   ]
+  },
+  "normal_TransSavePortEnterCb_519900": {
+   "gp": [
+    "0x00484804",
+    "0x004847D8"
+   ]
+  },
+  "normal_TransSavePortMoveCb_519750": {
+   "gp": [
+    "0x00484808"
+   ]
+  },
+  "normal_TransSavePortTickCb_5198b0": {
+   "gp": [
+    "0x00484804",
+    "0x00484808"
+   ]
+  },
+  "normal_TransSaveProgressWindowShow_519e50": {
+   "gp": [
+    "0x00484714"
+   ]
+  },
+  "normal_TransSaveQuitCancelCb_518a90": {
+   "gp": [
+    "0x00484820",
+    "0x004847D8"
+   ]
+  },
+  "normal_TransSaveQuitConfirmCb_518ae0": {
+   "gp": [
+    "0x00484820",
+    "0x004847D0",
+    "0x004847D8"
+   ]
+  },
+  "normal_TransSaveQuitEnterCb_518c00": {
+   "gp": [
+    "0x00484744",
+    "0x00484820"
+   ]
+  },
+  "normal_TransSaveQuitMoveCb_518b80": {
+   "gp": [
+    "0x00484820"
+   ]
+  },
+  "normal_TransSaveQuitTickCb_518bc0": {
+   "gp": [
+    "0x00484820"
+   ]
+  },
+  "normal_TransSaveSetError_51a000": {
+   "gp": [
+    "0x004847FC",
+    "0x004847D0"
+   ]
+  },
+  "normal_TransSaveShowMsg_519ff0": {
+   "gp": [
+    "0x00484714"
+   ]
+  },
+  "normal_TransSaveSlotCursorBob_518990": {
+   "gp": [
+    "0x0047D3B8",
+    "0x004847E4"
+   ]
+  },
+  "normal_TransSaveSlotListCancel_519c20": {
+   "gp": [
+    "0x004847D8"
+   ]
+  },
+  "normal_TransSaveSlotListConfirm_519c60": {
+   "gp": [
+    "0x004847EC",
+    "0x00484724",
+    "0x004847E8",
+    "0x004847D8"
+   ]
+  },
+  "normal_TransSaveSlotListTickCb_519990": {
+   "gp": [
+    "0x004847D8",
+    "0x004847F0",
+    "0x004847F4"
+   ]
+  },
+  "normal_TransSaveWriteEnterCb_519010": {
+   "gp": [
+    "0x00484818"
+   ]
+  },
+  "normal_TransSaveWriteTickCb_518c60": {
+   "gp": [
+    "0x00484818",
+    "0x004847D4",
+    "0x0048481C",
+    "0x004847F4",
+    "0x004847F0",
+    "0x004847D8",
+    "0x0047D34C",
+    "0x00484744",
+    "0x004847EC",
+    "0x004847E8",
+    "0x004847D0"
+   ]
+  },
+  "normal_TransSaveYesNoCursorBob_5188c0": {
+   "gp": [
+    "0x00484714",
+    "0x0047D3B8",
+    "0x004847E4"
+   ]
+  },
+  "normal_TransWarpCloseSlide_51c1e0": {
+   "gp": [
+    "0x00484884",
+    "0x00484710",
+    "0x0047D5D0",
+    "0x0047D9E0",
+    "0x0047D9E4"
+   ]
+  },
+  "normal_TransWarpCloseState_51bfe0": {
+   "gp": [
+    "0x00484710",
+    "0x0047D9D8",
+    "0x0047D9D4",
+    "0x0047D9DC",
+    "0x00484764",
+    "0x00484768",
+    "0x00484760",
+    "0x00484884",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransWarpCursorBob_51c720": {
+   "gp": [
+    "0x0047D3B8",
+    "0x0048487C",
+    "0x0047D3F8",
+    "0x00484880",
+    "0x00484710"
+   ]
+  },
+  "normal_TransWarpListAlloc_51a9a0": {
+   "gp": [
+    "0x00484870"
+   ]
+  },
+  "normal_TransWarpListBuild_51b120": {
+   "gp": [
+    "0x00484870",
+    "0x00484850"
+   ]
+  },
+  "normal_TransWarpListCollapse_51ad60": {
+   "gp": [
+    "0x00484870",
+    "0x00484850"
+   ]
+  },
+  "normal_TransWarpListCursorBobCb_51bbe0": {
+   "gp": [
+    "0x00484878",
+    "0x00484768",
+    "0x00484760",
+    "0x00484764"
+   ]
+  },
+  "normal_TransWarpListCursorMoveCb_51b980": {
+   "gp": [
+    "0x00484870",
+    "0x00484878",
+    "0x0048476C",
+    "0x00484854",
+    "0x00484710",
+    "0x0048484C",
+    "0x0047D34C",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransWarpListEdgeRowSet_51b310": {
+   "gp": [
+    "0x00484710",
+    "0x00484870"
+   ]
+  },
+  "normal_TransWarpListExpand_51aef0": {
+   "gp": [
+    "0x00484870",
+    "0x00484850"
+   ]
+  },
+  "normal_TransWarpListFree_51a990": {
+   "gp": [
+    "0x00484870"
+   ]
+  },
+  "normal_TransWarpListOpenState_51c900": {
+   "gp": [
+    "0x00484710",
+    "0x0047D9F0",
+    "0x0047D920",
+    "0x0047D288",
+    "0x0047D9F4",
+    "0x0047D248",
+    "0x00484874",
+    "0x00484870",
+    "0x00480720",
+    "0x00480724",
+    "0x00480728",
+    "0x0048072C",
+    "0x00484848",
+    "0x00484860",
+    "0x00484720",
+    "0x00484854",
+    "0x0048484C",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransWarpListRowsFill_51b4b0": {
+   "gp": [
+    "0x00484710",
+    "0x00484870"
+   ]
+  },
+  "normal_TransWarpListScrollState_51bdb0": {
+   "gp": [
+    "0x00484710",
+    "0x00484878",
+    "0x00484768",
+    "0x00484760",
+    "0x00484764",
+    "0x00484720",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransWarpListState_51c2e0": {
+   "gp": [
+    "0x00484720",
+    "0x00484870",
+    "0x00484710",
+    "0x0048484C",
+    "0x00484850",
+    "0x00484854",
+    "0x00484874",
+    "0x0048470C",
+    "0x0047D9E8",
+    "0x0047D9EC",
+    "0x0047D9DC",
+    "0x00484884",
+    "0x0048476C"
+   ]
+  },
+  "normal_TransWarpMinimapFocus_51a7a0": {
+   "gp": [
+    "0x00484870",
+    "0x00484848",
+    "0x00484710",
+    "0x0047D9DC"
+   ]
+  },
+  "normal_TransWarpOpenState_51cde0": {
+   "gp": [
+    "0x00484710",
+    "0x0047D9EC",
+    "0x0047D9F8",
+    "0x00484878",
+    "0x0048484C",
+    "0x0048470C"
+   ]
+  },
+  "normal_TransWarpPreviewTexSet_51a9d0": {
+   "gp": [
+    "0x00484710"
+   ]
+  },
+  "normal_TransWarpPreviewUpdate_51aa80": {
+   "gp": [
+    "0x00484870",
+    "0x00484710"
+   ]
+  },
+  "normal_TransWarpRowHighlight_51acb0": {
+   "gp": [
+    "0x00484710"
+   ]
+  },
+  "normal_TransWarpScrollBarLayout_51b700": {
+   "gp": [
+    "0x00480740",
+    "0x00480744",
+    "0x00480748",
+    "0x00484710",
+    "0x0048073C",
+    "0x00480738",
+    "0x0048073A",
+    "0x0048484C"
+   ]
+  },
+  "normal_TransWarpScrollBarUpdate_51ac30": {
+   "gp": [
+    "0x00484850",
+    "0x00484710",
+    "0x00484720"
+   ]
+  }
+ },
+ "title": {
+  "title_FUN_004efb24": {
+   "gp": [
+    "0x00484254",
+    "0x00484260",
+    "0x00484262"
+   ]
+  },
+  "title_TitleAttractMovieTick_4ead40": {
+   "gp": [
+    "0x00484170",
+    "0x0048416C",
+    "0x00484164",
+    "0x00484198",
+    "0x0047D56C",
+    "0x00484160",
+    "0x004803B0",
+    "0x004803B4",
+    "0x00484194",
+    "0x00484154",
+    "0x004803D0",
+    "0x00484188",
+    "0x0048418C",
+    "0x0048417C",
+    "0x00484158"
+   ]
+  },
+  "title_TitleDemoMenuCursorBobCb_4e9f00": {
+   "gp": [
+    "0x0047D3B8",
+    "0x004841AC",
+    "0x0047D1FC"
+   ]
+  },
+  "title_TitleDemoMenuIntro_4ea5f0": {
+   "gp": [
+    "0x00484170",
+    "0x004841B4",
+    "0x004841B0",
+    "0x004841AC",
+    "0x0047D520",
+    "0x0048415C",
+    "0x004841B8",
+    "0x004841B9",
+    "0x004841BA",
+    "0x0047D518",
+    "0x00484158",
+    "0x0048418C"
+   ]
+  },
+  "title_TitleDemoMenuTick_4ea000": {
+   "gp": [
+    "0x0048418C",
+    "0x0048415C",
+    "0x004803AC",
+    "0x00484178",
+    "0x0048417C",
+    "0x0047D464",
+    "0x00484170",
+    "0x0047D35C",
+    "0x0047D520",
+    "0x0047D540",
+    "0x0047D248",
+    "0x0047D51C",
+    "0x0047D544",
+    "0x0047D52C",
+    "0x00484158",
+    "0x00484188"
+   ]
+  },
+  "title_TitleDraw_4ec890": {
+   "gp": [
+    "0x00484160",
+    "0x004803A8",
+    "0x004803A4",
+    "0x00484170",
+    "0x00484174"
+   ]
+  },
+  "title_TitleEnablePadCheck_4f13e0": {
+   "gp": [
+    "0x004842A4"
+   ]
+  },
+  "title_TitleFrameStep_4f0b20": {
+   "gp": [
+    "0x00484298",
+    "0x00484290",
+    "0x004842A4",
+    "0x00480434",
+    "0x00484294"
+   ]
+  },
+  "title_TitleGetCardChangeState_4ed370": {
+   "gp": [
+    "0x004841A4"
+   ]
+  },
+  "title_TitleGetNoAnalogPause_4f13c0": {
+   "gp": [
+    "0x00484294"
+   ]
+  },
+  "title_TitleGetResult_4ec7d0": {
+   "gp": [
+    "0x00484160",
+    "0x0048418C"
+   ]
+  },
+  "title_TitleGetSaveCtx_4ef380": {
+   "gp": [
+    "0x00484184"
+   ]
+  },
+  "title_TitleGetSelection_4ecd30": {
+   "gp": [
+    "0x0048418C"
+   ]
+  },
+  "title_TitleIsPadReady_4f13d0": {
+   "gp": [
+    "0x00480434"
+   ]
+  },
+  "title_TitleIsRunning_4ec840": {
+   "gp": [
+    "0x00484160",
+    "0x00484188"
+   ]
+  },
+  "title_TitleLoadCardScanEnterCb_4ee070": {
+   "gp": [
+    "0x0048421C"
+   ]
+  },
+  "title_TitleLoadCardScanTickCb_4edec0": {
+   "gp": [
+    "0x0048421C",
+    "0x004841E8"
+   ]
+  },
+  "title_TitleLoadClose_4eeb90": {
+   "gp": [
+    "0x004841F0",
+    "0x004841E4",
+    "0x0047D55C",
+    "0x0047D560",
+    "0x0047D564",
+    "0x0047D548",
+    "0x0047D518",
+    "0x0047D568",
+    "0x004841E0"
+   ]
+  },
+  "title_TitleLoadConfirmCb_4ee2c0": {
+   "gp": [
+    "0x0048420C",
+    "0x004841FC",
+    "0x00484210",
+    "0x00484200",
+    "0x004841E8",
+    "0x004841E0",
+    "0x004841F0"
+   ]
+  },
+  "title_TitleLoadConfirmEnterCb_4ee610": {
+   "gp": [
+    "0x0048420C"
+   ]
+  },
+  "title_TitleLoadDoneReset_4ef3b0": {
+   "gp": [
+    "0x004841F0"
+   ]
+  },
+  "title_TitleLoadDrawBgCb_4ed9e0": {
+   "gp": [
+    "0x00484170"
+   ]
+  },
+  "title_TitleLoadDrawSlotIconsCb_4ed990": {
+   "gp": [
+    "0x00484170"
+   ]
+  },
+  "title_TitleLoadFadeWidgets_4eda30": {
+   "gp": [
+    "0x004841E4",
+    "0x0047D3C0"
+   ]
+  },
+  "title_TitleLoadGetSlotScroll_4edde0": {
+   "gp": [
+    "0x0048415C"
+   ]
+  },
+  "title_TitleLoadHighlightOption_4ede30": {
+   "gp": [
+    "0x00480410",
+    "0x00480412",
+    "0x00480414"
+   ]
+  },
+  "title_TitleLoadIsDone_4ef3a0": {
+   "gp": [
+    "0x004841F0"
+   ]
+  },
+  "title_TitleLoadOpen_4eedc0": {
+   "gp": [
+    "0x004841E4",
+    "0x0047FAA4",
+    "0x004841F0",
+    "0x0047D564",
+    "0x0047D56C",
+    "0x0047D570",
+    "0x004841EC",
+    "0x0047D518",
+    "0x004841E8",
+    "0x004841E0"
+   ]
+  },
+  "title_TitleLoadPortCancelCb_4ee0c0": {
+   "gp": [
+    "0x00484214",
+    "0x004841E0"
+   ]
+  },
+  "title_TitleLoadPortConfirmCb_4ee120": {
+   "gp": [
+    "0x004841E8",
+    "0x00484214"
+   ]
+  },
+  "title_TitleLoadPortCursorBob_4edaf0": {
+   "gp": [
+    "0x00484174",
+    "0x004841F4",
+    "0x0047D3B8",
+    "0x0047D1FC"
+   ]
+  },
+  "title_TitleLoadPortEnterCb_4ee1e0": {
+   "gp": [
+    "0x00484214"
+   ]
+  },
+  "title_TitleLoadPortMoveCb_4ee270": {
+   "gp": [
+    "0x00484218"
+   ]
+  },
+  "title_TitleLoadPortTickCb_4ee190": {
+   "gp": [
+    "0x00484214",
+    "0x00484218"
+   ]
+  },
+  "title_TitleLoadProgressWindowShow_4ede10": {
+   "gp": [
+    "0x00484174"
+   ]
+  },
+  "title_TitleLoadShowError_4eeb70": {
+   "gp": [
+    "0x00484204",
+    "0x004841E0"
+   ]
+  },
+  "title_TitleLoadShowMsg_4eeb60": {
+   "gp": [
+    "0x00484174"
+   ]
+  },
+  "title_TitleLoadSlotCursorBob_4edcf0": {
+   "gp": [
+    "0x0047D3B8",
+    "0x004841F4",
+    "0x0047D1FC"
+   ]
+  },
+  "title_TitleLoadSlotListCancel_4ee8c0": {
+   "gp": [
+    "0x004841E8"
+   ]
+  },
+  "title_TitleLoadSlotListConfirm_4ee8f0": {
+   "gp": [
+    "0x004841F8",
+    "0x004841E8"
+   ]
+  },
+  "title_TitleLoadSlotListTickCb_4ee640": {
+   "gp": [
+    "0x004841E8",
+    "0x004841FC",
+    "0x00484200"
+   ]
+  },
+  "title_TitleLoadStateError_4eea40": {
+   "gp": [
+    "0x00484208",
+    "0x00484204",
+    "0x004841FC",
+    "0x00484200",
+    "0x004841E0"
+   ]
+  },
+  "title_TitleLoadTick_4eed60": {
+   "gp": [
+    "0x004841E8",
+    "0x00484174"
+   ]
+  },
+  "title_TitleLoadYesNoCursorBob_4edc00": {
+   "gp": [
+    "0x00484174",
+    "0x004841F4",
+    "0x0047D3B8",
+    "0x0047D1FC"
+   ]
+  },
+  "title_TitleMenuCursorMoveCb_4eaa90": {
+   "gp": [
+    "0x00484188",
+    "0x0048418C",
+    "0x0048416C",
+    "0x0048417C"
+   ]
+  },
+  "title_TitleMenuFadeOut_4ecd40": {
+   "gp": [
+    "0x0047D574"
+   ]
+  },
+  "title_TitleMenuShow_4ecd80": {
+   "gp": [
+    "0x0048419C",
+    "0x0047D578"
+   ]
+  },
+  "title_TitleMenuTick_4eaf70": {
+   "gp": [
+    "0x004803A4",
+    "0x0048415C",
+    "0x00484168",
+    "0x0048419C",
+    "0x00484170",
+    "0x004803AC",
+    "0x0048416C",
+    "0x0047D248",
+    "0x00484164",
+    "0x00484160",
+    "0x00484188",
+    "0x0048418C",
+    "0x0047D1FC",
+    "0x0047D564",
+    "0x00484178",
+    "0x004841A8",
+    "0x004841A4",
+    "0x004841A0",
+    "0x0047D278",
+    "0x0047D56C",
+    "0x004803B0",
+    "0x004803B4",
+    "0x00484194",
+    "0x00484198",
+    "0x0048417C",
+    "0x00484154",
+    "0x004803B8",
+    "0x0047D574",
+    "0x00484190",
+    "0x0047D35C",
+    "0x0047D518",
+    "0x00484158"
+   ]
+  },
+  "title_TitleMenuUpdateExtraRow_4eca70": {
+   "gp": [
+    "0x004841A0",
+    "0x0048419C",
+    "0x0048418C",
+    "0x0048415C",
+    "0x00484170"
+   ]
+  },
+  "title_TitleMenuWidgetsSetup_4ece80": {
+   "gp": [
+    "0x0048419C",
+    "0x00484174",
+    "0x0047D248",
+    "0x0047D56C",
+    "0x0048415C"
+   ]
+  },
+  "title_TitleMoviePlay_4f0600": {
+   "gp": [
+    "0x00480430",
+    "0x0048429C",
+    "0x00484290",
+    "0x004842A0",
+    "0x00484288"
+   ]
+  },
+  "title_TitleMovieRelease_4f0440": {
+   "gp": [
+    "0x004842A0",
+    "0x00484290",
+    "0x00480430"
+   ]
+  },
+  "title_TitleMovieSetVolume_4f05d0": {
+   "gp": [
+    "0x00484290"
+   ]
+  },
+  "title_TitleMovieStop_4f0480": {
+   "gp": [
+    "0x00484290",
+    "0x0048429C",
+    "0x00480430"
+   ]
+  },
+  "title_TitleMovieUpdate_4f04c0": {
+   "gp": [
+    "0x00484288",
+    "0x00480430",
+    "0x00484290",
+    "0x0048429C"
+   ]
+  },
+  "title_TitleObjectsCreate_4ecbc0": {
+   "gp": [
+    "0x00484150",
+    "0x00484154",
+    "0x004803E0",
+    "0x00484184",
+    "0x00484170",
+    "0x00484158",
+    "0x0048415C",
+    "0x00484160",
+    "0x00484174",
+    "0x0047D7E0",
+    "0x004803A8",
+    "0x004803B4",
+    "0x004803AC",
+    "0x004803B0",
+    "0x00484188",
+    "0x0048418C",
+    "0x00484194",
+    "0x00484198",
+    "0x00484164",
+    "0x00484178",
+    "0x0048417C",
+    "0x00484180",
+    "0x004841A4",
+    "0x004841A8"
+   ]
+  },
+  "title_TitleObjectsRelease_4ec700": {
+   "gp": [
+    "0x00484170",
+    "0x00484160",
+    "0x00484158",
+    "0x00484150",
+    "0x004803A0",
+    "0x004803A4",
+    "0x00484180"
+   ]
+  },
+  "title_TitleOpeningMovieTick_4ebaf0": {
+   "gp": [
+    "0x0048416C",
+    "0x00484164",
+    "0x00481B90",
+    "0x00484198",
+    "0x00484160",
+    "0x0047D56C",
+    "0x00484170",
+    "0x004803B0",
+    "0x004803B4",
+    "0x00484194",
+    "0x00484154",
+    "0x004803D4",
+    "0x0048417C",
+    "0x00484188",
+    "0x0048418C",
+    "0x00484158"
+   ]
+  },
+  "title_TitleOptionsClose_4efc10": {
+   "gp": [
+    "0x00484254",
+    "0x0047D51C",
+    "0x0047D520",
+    "0x0047D548",
+    "0x0047D54C",
+    "0x0047D518",
+    "0x0047D52C",
+    "0x0047D550",
+    "0x00484250"
+   ]
+  },
+  "title_TitleOptionsCursorBobCb_4efb90": {
+   "gp": [
+    "0x0047D3B8",
+    "0x00484264",
+    "0x00484254"
+   ]
+  },
+  "title_TitleOptionsCursorMoveCb_4ef940": {
+   "gp": [
+    "0x00484262"
+   ],
+   "jtbl": [
+    "0x004F1600"
+   ]
+  },
+  "title_TitleOptionsHighlightPair_4ef890": {
+   "gp": [
+    "0x00484254",
+    "0x0047D288"
+   ]
+  },
+  "title_TitleOptionsOpen_4efeb0": {
+   "gp": [
+    "0x00484158",
+    "0x00484170",
+    "0x0048415C",
+    "0x00484250",
+    "0x00484254",
+    "0x00484258",
+    "0x0047D554",
+    "0x0047D558",
+    "0x00484180",
+    "0x00480428",
+    "0x0048042A",
+    "0x0048042C",
+    "0x0047D550",
+    "0x0047D248",
+    "0x00484260",
+    "0x00484262",
+    "0x0048425C",
+    "0x0047D518"
+   ]
+  },
+  "title_TitleOptionsTick_4efdd0": {
+   "gp": [
+    "0x00484258",
+    "0x00484250"
+   ]
+  },
+  "title_TitlePromoMovieTick_4eab10": {
+   "gp": [
+    "0x00484170",
+    "0x0048416C",
+    "0x00484164",
+    "0x00484198",
+    "0x0047D56C",
+    "0x00484160",
+    "0x004803B0",
+    "0x004803B4",
+    "0x00484194",
+    "0x00484154",
+    "0x004803D0",
+    "0x00484188",
+    "0x0048418C",
+    "0x0048417C",
+    "0x00484158"
+   ]
+  },
+  "title_TitleSaveSysInit_4ef2b0": {
+   "gp": [
+    "0x00484158",
+    "0x004841FC",
+    "0x004841F4",
+    "0x00484200",
+    "0x004841E0",
+    "0x00484170",
+    "0x0048415C",
+    "0x004841E4",
+    "0x004841E8",
+    "0x00484150"
+   ]
+  },
+  "title_TitleSessionInit_4f0cb0": {
+   "gp": [
+    "0x00480434",
+    "0x00484294",
+    "0x004842A4",
+    "0x00481B90",
+    "0x0047D4A0",
+    "0x00484288",
+    "0x0048428C",
+    "0x00484298"
+   ]
+  },
+  "title_TitleSessionShutdown_4f0820": {
+   "gp": [
+    "0x0047DD90",
+    "0x0047DD94",
+    "0x0047DD98",
+    "0x0047DD9C",
+    "0x0047DDA0",
+    "0x0047DDA4",
+    "0x0047DDA8",
+    "0x0047DDAC",
+    "0x0047DDB0",
+    "0x0047DDB4",
+    "0x0047DDB8",
+    "0x0047DDBC",
+    "0x0047DDC0"
+   ]
+  },
+  "title_TitleSetCardChangeState_4ed360": {
+   "gp": [
+    "0x004841A4"
+   ]
+  },
+  "title_TitleSetCardPollEnabled_4ed350": {
+   "gp": [
+    "0x004841A8"
+   ]
+  },
+  "title_TitleSetNoAnalogPause_4f13b0": {
+   "gp": [
+    "0x00484294"
+   ]
+  },
+  "title_TitleStateCardCheck_4ed3c0": {
+   "gp": [
+    "0x00484220",
+    "0x00484224",
+    "0x00484228",
+    "0x00484174",
+    "0x004841E8",
+    "0x00484200",
+    "0x004841FC",
+    "0x004841E0"
+   ]
+  },
+  "title_TitleStateEnter_4ebdf0": {
+   "gp": [
+    "0x00484170",
+    "0x00484160",
+    "0x0047D56C",
+    "0x0048417C",
+    "0x00484188",
+    "0x0048418C",
+    "0x004803B4",
+    "0x00484178",
+    "0x004803B0",
+    "0x004803B8",
+    "0x00484194",
+    "0x00484198",
+    "0x00484164",
+    "0x00484190",
+    "0x004841A8",
+    "0x00484154",
+    "0x00484158",
+    "0x004803D0",
+    "0x0048416C",
+    "0x0048415C",
+    "0x0048419C",
+    "0x0047D248",
+    "0x004803AC"
+   ]
+  },
+  "title_TitleStateInit_4ec660": {
+   "gp": [
+    "0x004803A0",
+    "0x004803A4",
+    "0x00484158",
+    "0x00484188",
+    "0x0047D56C",
+    "0x004803AC",
+    "0x0048418C",
+    "0x004803B0",
+    "0x00484194",
+    "0x004803B4",
+    "0x00484198",
+    "0x0048417C"
+   ]
+  },
+  "title_TitleStateLoadFont_4ec5a0": {
+   "gp": [
+    "0x00484158"
+   ]
+  },
+  "title_TitleStateLoadRes_4ec030": {
+   "gp": [
+    "0x00484150",
+    "0x004802CC",
+    "0x00484180",
+    "0x004803A4",
+    "0x00484170",
+    "0x00484174",
+    "0x0048415C",
+    "0x00484158",
+    "0x004803A0"
+   ]
+  },
+  "title_TitleStateMain_4ebd00": {
+   "gp": [
+    "0x004803F0",
+    "0x004841A4",
+    "0x004803F4",
+    "0x004803F8",
+    "0x004803FC",
+    "0x004841A8",
+    "0x00484170",
+    "0x00484164",
+    "0x0048417C",
+    "0x00484158"
+   ]
+  },
+  "title_TitleUpdate_4ec910": {
+   "gp": [
+    "0x00484160",
+    "0x00484158",
+    "0x004803A8",
+    "0x0048415C",
+    "0x0048419C",
+    "0x004841A8",
+    "0x004841A0",
+    "0x004841A4",
+    "0x00484170",
+    "0x00484174"
+   ]
+  }
+ }
+}

@@ -1,0 +1,119 @@
+#include "types.h"
+
+union Val {
+    s8 vs8;
+    u8 vu8;
+    s16 vs16;
+    u16 vu16;
+    s32 vs32;
+    u32 vu32;
+    s64 vs64;
+    u64 vu64;
+    f32 vf32;
+};
+
+struct Var {
+    s32 tag;                                        /* 0x00 */
+    u8 pad004[0x4];
+    union Val u;                                    /* 0x08 */
+    void (*get)(struct Var *, void *, s32, s32);    /* 0x10 */
+    u8 pad014[0x4];
+    u8 a018[0x8];                                   /* 0x18 */
+    void (*set)(struct Var *, void *, s32, s32);    /* 0x20 */
+    u8 pad024[0x4];
+    u8 a028[0x8];                                   /* 0x28 */
+};
+
+extern s32 VariantPromoteTypes_36e510(struct Var *, s32, s32);
+extern s32 VariantGetS8_36fe50(struct Var *);
+extern s32 VariantGetU8_36fd70(struct Var *);
+extern s32 VariantGetS16_36fcc0(struct Var *);
+extern s32 VariantGetU16_36fbe0(struct Var *);
+extern s32 VariantGetS32_36fb30(struct Var *);
+extern s32 VariantGetU32_36fa50(struct Var *);
+extern s64 VariantGetS64_36f9a0(struct Var *);
+extern u64 VariantGetU64_36f8f0(struct Var *);
+extern f32 VariantGetFloat_36f7a0(struct Var *);
+extern s64 VariantGetDouble_36f6c0(struct Var *);
+extern s32 DoubleNotEqual_1002d0(s64, s64);
+
+struct Var *VariantLogicalAnd_36d230(struct Var *a, struct Var *b)
+{
+    s32 r32;
+
+    if (a->get != 0) {
+        a->get(a, &a->a018, 0, 0);
+        a->get = 0;
+    }
+    if (b != 0) {
+        if (b->get != 0) {
+            b->get(b, &b->a018, 0, 0);
+            b->get = 0;
+        }
+    }
+    switch (VariantPromoteTypes_36e510(a, a->tag, b->tag)) {
+    case 1:
+        r32 = (VariantGetS8_36fe50(a) != 0) && (VariantGetS8_36fe50(b) != 0);
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    case 2:
+        r32 = (VariantGetU8_36fd70(a) != 0) && (VariantGetU8_36fd70(b) != 0);
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    case 3:
+        r32 = (VariantGetS16_36fcc0(a) != 0) && (VariantGetS16_36fcc0(b) != 0);
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    case 4:
+        r32 = (VariantGetU16_36fbe0(a) != 0) && (VariantGetU16_36fbe0(b) != 0);
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    case 5:
+        r32 = (VariantGetS32_36fb30(a) != 0) && (VariantGetS32_36fb30(b) != 0);
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    case 6:
+        r32 = (VariantGetU32_36fa50(a) != 0) && (VariantGetU32_36fa50(b) != 0);
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    case 7:
+        r32 = (VariantGetS64_36f9a0(a) != 0) && (VariantGetS64_36f9a0(b) != 0);
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    case 8:
+        r32 = (VariantGetU64_36f8f0(a) != 0) && (VariantGetU64_36f8f0(b) != 0);
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    case 9: {
+        f32 x9 = VariantGetFloat_36f7a0(a);
+        f32 z9 = 0.0f;
+        r32 = (x9 != z9);
+        if (r32 != 0) {
+            f32 y9 = VariantGetFloat_36f7a0(b);
+            r32 = (y9 != z9);
+        }
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    }
+    case 10:
+        r32 = DoubleNotEqual_1002d0(VariantGetDouble_36f6c0(a), 0);
+        if (r32 != 0) {
+            r32 = DoubleNotEqual_1002d0(VariantGetDouble_36f6c0(b), 0);
+        }
+        a->tag = 1;
+        a->u.vs8 = r32;
+        break;
+    case 0:
+        break;
+    }
+    return a;
+}

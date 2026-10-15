@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void TwoTableViewGetAt_413800(void);
+extern void TwoTableViewGetCount_4138c0(void);
+extern void func_00418AB0_e12(void);
+u32 D_0047A5B0[8] = {
+    $h, $h, (u32)&TwoTableViewGetCount_4138c0, (u32)&func_00418AB0_e12, (u32)&TwoTableViewGetAt_413800, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047A5B0[(sizeof(D_0047A5B0) == 32) ? 1 : -1];

@@ -1,0 +1,18 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void TextEntryDialogFadeInStateThunk_4327e0(void);
+extern void TextEntryDialogFadeOutStateThunk_432780(void);
+extern void TextEntryDialogInputStateThunk_4327b0(void);
+extern void TextEntryFadeOutStateThunk_4329e0(void);
+extern void TextEntryIdleStateThunk_432890(void);
+extern void TextEntryMsgWinFadeOutStateThunk_432670(void);
+extern void TextEntryMsgWinOpenStateThunk_4326d0(void);
+extern void TextEntryMsgWinWaitStateThunk_4326a0(void);
+extern void TextEntryNameFocusStateThunk_4328f0(void);
+extern void TextEntryNameGridInputStateThunk_4328c0(void);
+extern void TextEntryPaletteSelectStateThunk_432a10(void);
+extern void TextEntrySetupStateThunk_432a40(void);
+const u32 D_00455260[28] = {
+    $h, (u32)&TextEntrySetupStateThunk_432a40, $h, (u32)&TextEntryPaletteSelectStateThunk_432a10, $h, (u32)&TextEntryFadeOutStateThunk_4329e0, $h, (u32)&TextEntryNameFocusStateThunk_4328f0, $h, (u32)&TextEntryNameGridInputStateThunk_4328c0, $h, (u32)&TextEntryIdleStateThunk_432890, $h, (u32)&TextEntryDialogFadeInStateThunk_4327e0, $h, (u32)&TextEntryDialogInputStateThunk_4327b0, $h, (u32)&TextEntryDialogFadeOutStateThunk_432780, $h, (u32)&TextEntryMsgWinOpenStateThunk_4326d0, $h, (u32)&TextEntryMsgWinWaitStateThunk_4326a0, $h, (u32)&TextEntryMsgWinFadeOutStateThunk_432670, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00455260[(sizeof(D_00455260) == 112) ? 1 : -1];

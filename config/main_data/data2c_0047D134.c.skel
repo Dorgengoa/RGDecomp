@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 data2c_overlay_load_base[];
+u32 D_0047D134[19] = {
+    (u32)&data2c_overlay_load_base, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047D134[(sizeof(D_0047D134) == 76) ? 1 : -1];

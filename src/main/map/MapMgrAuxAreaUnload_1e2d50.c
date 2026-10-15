@@ -1,0 +1,12 @@
+#include "types.h"
+
+/* Tail-call adapter: marshal and forward.  The callee arity is the
+   w1_arity read-before-write scan; a register overwritten without
+   being read may hide an ignored parameter the bytes cannot see. */
+
+extern s32 MapDataUnload_1e6690(void *, s32);
+
+s32 MapMgrAuxAreaUnload_1e2d50(void *p4, s32 a5)
+{
+    return MapDataUnload_1e6690((u8 *)p4 + 0x2058, a5);
+}

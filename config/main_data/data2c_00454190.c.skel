@@ -1,0 +1,45 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void InsectCageMenuBattleOpen_38e390(void);
+extern void InsectCageMenuBattleState_38de90(void);
+extern void InsectCageMenuBreedOpen_38ddb0(void);
+extern void InsectCageMenuBreedState_38d6b0(void);
+extern void InsectCageMenuFeedOpen_38f090(void);
+extern void InsectCageMenuFeedState_38ea30(void);
+extern void InsectCageMenuInfoOpen_38fd50(void);
+extern void InsectCageMenuItemCategoryCycle_38f230(void);
+extern void InsectCageMenuItemCellCb_38f4f0(void);
+extern void InsectCageMenuItemCursorBobCb_38f4a0(void);
+extern void InsectCageMenuItemErrorMsgCloseFwd_38f170(void);
+extern void InsectCageMenuItemErrorMsgClose_38f190(void);
+extern void InsectCageMenuItemErrorMsgShow_38f1d0(void);
+extern void InsectCageMenuItemSelectClose_38f280(void);
+extern void InsectCageMenuItemSelectOpen_38f5c0(void);
+extern void InsectCageMenuItemUseSelect_38f2b0(void);
+extern void InsectCageMenuMoveCageCancel_38d120(void);
+extern void InsectCageMenuMoveCageConfirm_38d1a0(void);
+extern void InsectCageMenuMoveCageOpen_38d260(void);
+extern void InsectCageMenuMoveSlotCancel_38cd90(void);
+extern void InsectCageMenuMoveSlotConfirm_38cdd0(void);
+extern void InsectCageMenuMoveSlotErrorMsgClose_38d3d0(void);
+extern void InsectCageMenuMoveSlotErrorMsgShow_38d410(void);
+extern void InsectCageMenuMoveSlotOpen_38d070(void);
+extern void InsectCageMenuPairErrorMsgCloseFwd_38e8f0(void);
+extern void InsectCageMenuPairErrorMsgClose_38e910(void);
+extern void InsectCageMenuPairErrorMsgShow_38e980(void);
+extern void InsectCageMenuPlaceCursor_38ca70(void);
+extern void InsectCageMenuPlaceCursor_38d040(void);
+extern void InsectCageMenuPlaceCursor_38d230(void);
+extern void InsectCageMenuRemoveConfirm_38c1c0(void);
+extern void InsectCageMenuRemoveDialogOpen_38c6b0(void);
+extern void InsectCageMenuRenameOpen_38c120(void);
+extern void InsectCageMenuRename_38be70(void);
+extern void InsectCageMenuSpawnInsectMaybe_38cba0(void);
+extern void InsectCageMenuSpawnInsectStartMaybe_38cd60(void);
+extern void InsectCageMenuSwitchCageCancel_38c930(void);
+extern void InsectCageMenuSwitchCageOpen_38caa0(void);
+extern void InsectCageMenuSwitchCage_38c990(void);
+const u32 func_00454190[84] = {
+    $h, (u32)&InsectCageMenuInfoOpen_38fd50, $h, (u32)&InsectCageMenuItemCellCb_38f4f0, $h, (u32)&InsectCageMenuItemUseSelect_38f2b0, $h, (u32)&InsectCageMenuItemSelectClose_38f280, $h, (u32)&InsectCageMenuItemSelectOpen_38f5c0, $h, (u32)&InsectCageMenuItemCursorBobCb_38f4a0, $h, (u32)&InsectCageMenuItemCategoryCycle_38f230, $h, (u32)&InsectCageMenuItemErrorMsgClose_38f190, $h, (u32)&InsectCageMenuItemErrorMsgCloseFwd_38f170, $h, (u32)&InsectCageMenuItemErrorMsgShow_38f1d0, $h, (u32)&InsectCageMenuPairErrorMsgClose_38e910, $h, (u32)&InsectCageMenuPairErrorMsgCloseFwd_38e8f0, $h, (u32)&InsectCageMenuPairErrorMsgShow_38e980, $h, (u32)&InsectCageMenuFeedOpen_38f090, $h, (u32)&InsectCageMenuFeedState_38ea30, $h, (u32)&InsectCageMenuBattleOpen_38e390, $h, (u32)&InsectCageMenuBattleState_38de90, $h, (u32)&InsectCageMenuBreedOpen_38ddb0, $h, (u32)&InsectCageMenuBreedState_38d6b0, $h, (u32)&InsectCageMenuPlaceCursor_38d230, $h, (u32)&InsectCageMenuMoveCageConfirm_38d1a0, $h, (u32)&InsectCageMenuMoveCageCancel_38d120, $h, (u32)&InsectCageMenuMoveCageOpen_38d260, $h, (u32)&InsectCageMenuPlaceCursor_38d040, $h, (u32)&InsectCageMenuMoveSlotConfirm_38cdd0, $h, (u32)&InsectCageMenuMoveSlotCancel_38cd90, $h, (u32)&InsectCageMenuMoveSlotOpen_38d070, $h, (u32)&InsectCageMenuMoveSlotErrorMsgClose_38d3d0, $h, (u32)&InsectCageMenuMoveSlotErrorMsgClose_38d3d0, $h, (u32)&InsectCageMenuMoveSlotErrorMsgShow_38d410, $h, (u32)&InsectCageMenuSpawnInsectStartMaybe_38cd60, $h, (u32)&InsectCageMenuSpawnInsectMaybe_38cba0, $h, (u32)&InsectCageMenuPlaceCursor_38ca70, $h, (u32)&InsectCageMenuSwitchCage_38c990, $h, (u32)&InsectCageMenuSwitchCageCancel_38c930, $h, (u32)&InsectCageMenuSwitchCageOpen_38caa0, $h, (u32)&InsectCageMenuRemoveDialogOpen_38c6b0, $h, (u32)&InsectCageMenuRemoveConfirm_38c1c0, $h, (u32)&InsectCageMenuRenameOpen_38c120, $h, (u32)&InsectCageMenuRename_38be70, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00454190[(sizeof(func_00454190) == 336) ? 1 : -1];

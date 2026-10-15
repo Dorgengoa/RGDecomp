@@ -1,0 +1,22 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EvObjDrawNop_2f9900(void);
+extern void EvObjGetCharaCollIgnoreMaskNone_2f9a90(void);
+extern void EvObjLockNop_2f9a10(void);
+extern void EvObjOnAreaLoadedNop_2f9a00(void);
+extern void EvObjOnAreaUnloadNop_2f99f0(void);
+extern void EvObjResumeNop_2f98e0(void);
+extern void EvObjSuspendNop_2f98f0(void);
+extern void ObjTypeMonographApplyInitialState_372210(void);
+extern void ObjTypeMonographDebugDraw_371890(void);
+extern void ObjTypeMonographGetType_372bd0(void);
+extern void ObjTypeMonographHitTest_372240(void);
+extern void ObjTypeMonographIsTargetActive_372b90(void);
+extern void ObjTypeMonographOnTouch_372100(void);
+extern void ObjTypeMonographPreUpdate_372060(void);
+extern void ObjTypeMonographResolveTarget_372bb0(void);
+extern void ObjTypeMonographUpdate_371a70(void);
+u32 D_00472000[20] = {
+    $h, $h, (u32)&ObjTypeMonographGetType_372bd0, (u32)&EvObjGetCharaCollIgnoreMaskNone_2f9a90, (u32)&ObjTypeMonographResolveTarget_372bb0, (u32)&ObjTypeMonographIsTargetActive_372b90, (u32)&EvObjLockNop_2f9a10, (u32)&EvObjOnAreaLoadedNop_2f9a00, (u32)&EvObjOnAreaUnloadNop_2f99f0, (u32)&ObjTypeMonographHitTest_372240, (u32)&ObjTypeMonographApplyInitialState_372210, (u32)&ObjTypeMonographOnTouch_372100, (u32)&ObjTypeMonographPreUpdate_372060, (u32)&ObjTypeMonographUpdate_371a70, (u32)&EvObjDrawNop_2f9900, (u32)&EvObjSuspendNop_2f98f0, (u32)&EvObjResumeNop_2f98e0, (u32)&ObjTypeMonographDebugDraw_371890, $h, $h
+};
+typedef char data2c_sizecheck_00472000[(sizeof(D_00472000) == 80) ? 1 : -1];

@@ -1,0 +1,10 @@
+#include "types.h"
+
+/* Tail-call adapter: marshal and forward a global address. */
+
+extern s32 UnitOnBattleEndCode_3bcc90(s32, s32, s32, s32, s32);
+
+s32 UnitOnBattleEndCodeThunk_3bf1c0(s32 a4, s32 a5)
+{
+    return UnitOnBattleEndCode_3bcc90(a4, a5, 0, 1, 0);
+}

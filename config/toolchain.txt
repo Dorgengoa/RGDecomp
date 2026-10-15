@@ -1,0 +1,86 @@
+# Units that are NOT built with plain `mwcc CC_FLAGS` -- read by scripts/hostbuild.py.
+#   <symbol>      <toolchain>  <flags>
+# gcc29 = Sony ee-gcc 2.9-ee-991111-01 (cc1 -G0 -ffunction-sections + Sony as -G0).
+# The two non-mwcc islands (see tools/ee-gcc/island165 in the parent workspace):
+SdRemoteInitMasterVolume_165608    gcc29   -O2     # one TU 0x165608-0x1660D4: 17 functions (16 hosted guests)
+KernelInitSystemConfigMaybe_446b20    gcc29   -O2     # Sony libkernl kernel-resident code (linked at 0x8007xxxx)
+KernelGetOsdConfigParam2_446be0   gcc29   -O2
+KernelExecPS2Maybe_446dd0    gcc29   -O2
+KernelInsertAlarm_447158    gcc29   -O2
+KernelReleaseAlarm_4473a0    gcc29   -O2
+# mwcc with extra CLI flags (no pragma equivalent exists):
+ParticleEmitterSpawnMaybe_1a8ad0    mwcc    -sdatathreshold 16   # local initializer object @N in .sdata = D_0047E1B0
+TextEntryBackspace_434db0    mwcc    -sdatathreshold 16   # local initializer object @N in .sdata = D_00480350
+MapWarpModeUpdate_284060    mwcc    -sdatathreshold 16   # two {0,0,0,1} local initializers in .sdata = D_0047E9E0, D_0047E9F0 (wlx)
+KernelSetAlarm_447260    gcc29   -O2
+CharaUpdateMovement_20a7d0    mwcc    -sdatathreshold 16   # s60m/s78m solo MATCH; built with -sdatathreshold 16 (s79m merge)
+ScreenMarkerDrawAll_31af50    mwcc    -sdatathreshold 16   # s69m MATCH: Vec4 col = *(Vec4 *)D_0047F2B0 (f32[4] in .sdata) struct copy
+ModelDrawOffscreenCompositeMaybe_16aac0    mwcc    -sdatathreshold 16   # s82m MATCH: rgba = *(S4 *)D_0047DF80 struct copy (s32[4] in .sdata)
+FocusFilterDrawMaybe_17c000    mwcc    -sdatathreshold 16   # c17k MATCH: col/dx/dy local initializers in .sdata = D_0047DFA0, B0, C0
+CharaMoveCollideMaybe_234dc0    mwcc    -sdatathreshold 16   # s85m MATCH: N4 q = *(N4 *)D_0047E720 (f32[4] in .sdata) struct copy x2
+CharaActDispatch_20d190    mwcc    -sdatathreshold 16   # s86m MATCH; s32 arr[4] initializer in .sdata
+FuncDataTableDrawFireFlaresMaybe_18eb30    mwcc    -sdatathreshold 16   # s88m MATCH: 13 Vec4 = *(Vec4 *)D_0047E0xx (f32[4] in .sdata) struct copies
+GfxFlipBuffersMaybe_143650    mwcc    -sdatathreshold 16   # s88m MATCH: u64 giftag[2] initializer in .sdata
+SunLightDraw_293410    mwcc    -sdatathreshold 16   # s88m MATCH: 3 local initializers (up/col/kk) in .sdata
+HatenaMarkStep_345540    mwcc    -sdatathreshold 16   # s88m MATCH: 4 Vec4 local initializers in .sdata
+MinimapDrawEntry_325720    mwcc    -sdatathreshold 16   # s79m MATCH: 14 local initializers (@N) in .sdata = D_0047F360..D_0047F420
+InsectBattleMenuFrameNineSliceMaybe_393ac0    mwcc    -sdatathreshold 16   # s88m MATCH: 5 f32[3] local initializers (X/Y/U/V/S) in .sdata = D_0047FD10..D_0047FD50
+CharaCmdGunShoot_228f80    mwcc    -sdatathreshold 16   # s88m MATCH: f32[4] D_0047E6E0 struct-copied into local F4 col (.sdata)
+ItemUseApplyToCharaMaybe_2eeb20    mwcc    -sdatathreshold 16   # s88m MATCH: 2 f32[4] D_0047F000/D_0047F010 struct-copied into block-local V4 col/col2 (.sdata)
+EffectTimedSlotDrawMaybe_2d4950    mwcc    -sdatathreshold 16   # s88m MATCH: f32[4] D_0047EE70 struct-copied into block-local Vec4 v60 (.sdata)
+UiScrollBarSpritesLayoutMaybe_392e60    mwcc    -sdatathreshold 16   # s88m MATCH: 4 static f32[3] + 2 f32[3] local initializers in .sdata = D_0047FDC0..D_0047FE10
+ScriptCmdEffectNearestEnemyId_32cda0    mwcc    -sdatathreshold 16   # s88m MATCH: f32 pos[4] + s32 id[2] + f32 dist[2] block-local initializers in .sdata = D_0047F5C0/D0/D8
+LoadingScreenFrame_3435d0    mwcc    include/mwcc_prime_dp.c   # s88m x36 MATCH (pure C): primer TU compiled first in the same mwcc process (IDE cross-TU state: fptodp uses a0/a1); writes a throwaway mwcc_prime_dp.o
+GuardEffectStepMaybe_2d5260    mwcc    include/mwcc_prime_dp.c   # s88m 2d5y MATCH (pure C): post-inc arg + implicit f64 conv; primer TU first makes fptodp use a0/a1 -> x interferes with a1 -> move a1,v1
+CharaSysOnBattleEnd_3a11f0    mwcc    include/mwcc_prime_dp.c   # s88m 3a1z MATCH (pure C): DoubleToU64_13ab28 = implicit __fixunsdfdi (f64 unk8 -> u64 unk188); primer makes it use a0/a1 -> a1 live from jal 3a1550 -> M5/S2 skip a1
+BoxToCenterExtentsVu0Maybe_14ff40    mwcc    -sdatathreshold 16   # s88m acc7 de-asm: lqc2 vf3 from D_0047DEE0 (f32[4] in .sdata, gp-rel)
+MatMulPointXyz_1cb780    mwcc    -sdatathreshold 16   # s88m acc6 de-asm: f32 v[4] = {x,y,z,1} initializer in .sdata = D_0047E2B0
+DestroyArray_1005b0    mwcc    -O4,p   # libdeasm 1005b0b: MW runtime __destroy_arr built "optimize for speed" (no pragma equivalent; -opt speed is rejected) -> extra nop after loop
+ConstructArray_100620    mwcc    -O4,p   # libdeasm 100620: MW runtime __construct_array; speed = p2alignl 3 on post-loop join (lone nop) + no branch-likely tail
+ConstructNewArray_100710    mwcc    -O4,p   # libdeasm 100710: MW runtime __construct_new_array (header {size,n,dtor} + pad loop), same speed signature
+OperatorDelete_100840    mwcc    -O4,p   # libdeasm 100840: MSL operator delete(void*) throw() (C++ EH on); speed = `b; nop` over the dead __unexpected handler
+EhCatchTypeCompare_100a60    mwcc    -O4,p   # libdeasm 100a60: MW runtime __throw_catch_compare (ExceptionPPC.cp spelling verbatim, s64 offset); plain -O4 = len 0x234
+OperatorNew_100990    mwcc    -O4,p   # libdeasm 100990: MSL operator new(size_t) (C++ EH on, throw std::bad_alloc = fp frame); speed = `b; nop; nop` tails
+DestroyGlobalChain_100d60    mwcc    -O4,p   # libdeasm 100d60: MW runtime __destroy_global_chain (NMWException.cp while-loop verbatim); plain -O4 = len 0x40
+RunStaticCtors_100df0    mwcc    -O4,p   # libdeasm 100df0: MW runtime ctor/fn-table loop `for (p=start;p<end;p++) (*p)();` then EhRegisterFragmentStubMaybe_1026b0(a,b); speed = `sltu;nop;bnez;nop`; plain -O4 = len 0x74
+TaskStepJudgeObject_3135c0   mwcc    -sdatathreshold 16   # libdeasm dark7: f32 center[4] = {0,0,0,1} local initializer in .sdata = D_0047F200
+UiNineSliceSpritesLayout_3930d0   mwcc    -sdatathreshold 16   # libdeasm dark7: six 12-byte X/Y/W/H/U/V local initializers in .sdata = D_0047FD60..D_0047FDB0
+EhDispatchHandler_1011d0    mwcc    -O4,p   # libdeasm 1011d0: MW runtime catch-handler search (ActionIterator switch, inline IsInSpecification/HandleUnexpected); plain -O4 = len 0x2CC
+EhUnexpected_1014d0    mwcc    -O4,p   # libdeasm 1014d0: MW runtime __unexpected (try/catch(...), exception_magic, inline IsInSpecification x2); plain -O4 = len 0x1AC
+EhGetCatchRecord_101700    mwcc    -O4,p   # libdeasm 101700: MW runtime FindMostRecentException (ActionIterator switch, inline CurrentAction); plain -O4 = b/lw delay-slot diff
+EhUnwindActions_101860    mwcc    -O4,p   # libdeasm 101860: MW runtime UnwindStack (16-case action switch, inline dtor/catch-type readers); plain -O4 = len 0x7F0
+EhSkipActions_102070    mwcc    -O4,p   # libdeasm 102070: MW runtime NextAction (action-length switch + branch-skip loop); plain -O4 = len 0x2E8
+EhFindCallSite_102380    mwcc    -O4,p   # libdeasm 102380: MW runtime FindExceptionRecord (inline binary-search index lookup + range-table walk); plain -O4 = len 0x198
+EhUnwindRestoreRegs_102770    mwcc    -O4,p   # libdeasm 102770: MW runtime PopStackFrame (u64 frame fields, GPR/dyn-FPR restore loops); plain -O4 = len 0x170
+IosBaseDtor_102970    mwcc    -O4,p   # libdeasm 102970: MW runtime dtor (vtable 0046FDA0, reverse dtor-list loop `&list[--n]`, free x3); plain -O4 = len 0xA8
+StreambufXsputn_103890    mwcc    -O4,p   # libdeasm 103890: MSL basic_streambuf<char>::xsputn (C++, ref-returning min, inline sputc, vcall overflow +0x34); plain -O4 = len 0x114
+StreambufXsgetn_1039b0    mwcc    -O4,p   # libdeasm 1039b0: MSL basic_streambuf<char>::xsgetn (C++, ref-returning min, inline sbumpc, vcall uflow +0x28); plain -O4 != MATCH
+WStreambufXsputn_103b00    mwcc    -O4,p   # libdeasm 103b00: MSL basic_streambuf<wchar_t>::xsputn (C++, ref min, inline element copy unrolled x8, sputc(s32), vcall overflow +0x34); plain -O4 = len 0x144
+WStreambufXsgetn_103d50    mwcc    -O4,p   # libdeasm 103d50: MSL basic_streambuf<wchar_t>::xsgetn (C++, ref min, inline element copy unrolled x8, inline sbumpc, vcall uflow +0x28); plain -O4 != MATCH
+FilebufOverflow_1048d0    mwcc    -O4,p   # libdeasm 1048d0: MSL basic_filebuf<char>::overflow (C++, newlib putc macro, vcall seekoff +0x10, inline eq/ne/pbump/accessors); plain -O4 = len 0x3AC
+WFilebufOverflow_1053e0    mwcc    -O4,p   # libdeasm 1053e0: MSL basic_filebuf<wchar_t>::overflow (wide twin of 1048d0: s32 elements, flags +0x64, s32 ch); plain -O4 = len 0x424
+WFilebufReadWChar_105ce0    mwcc    -O4,p   # libdeasm 105ce0: MSL filebuf wide read helper (getc x n into buf[12], memcpy to s32 slot, ungetc(buf[--n]) putback); plain -O4 = len 0x104
+WFilebufWriteWChar_105e00    mwcc    -O4,p   # libdeasm 105e00: MSL filebuf wide write helper (memcpy wchar_t param to buf[12], putc x n; #pragma wchar_type on -> param home 0x5c); plain -O4 = len 0x11C
+FilebufReadChar_105fe0    mwcc    -O4,p   # libdeasm 105fe0: MSL filebuf char read helper (char twin of 105ce0: u8 slot, return wc); plain -O4 = len 0x104
+FilebufWriteChar_106100    mwcc    -O4,p   # libdeasm 106100: MSL filebuf char write helper (char twin of 105e00: char param, return (u8)c); plain -O4 = len 0x11C
+DecimalFromLongDouble_106830    mwcc205    -O4,p   # libdeasm 106830b: b205 exact; b210 fills isinf delay slot incorrectly for retail
+DecimalCompareToHalf_106ab0    mwcc    -O4,p   # libdeasm 106ab0: inline string length is a seven-bit field
+DecimalRoundToDigits_106b50    mwcc    -O4,p
+
+StringReplace_106f90    mwcc    -O4,p
+StringFindChar_107550    mwcc    -O4,p
+StringReplaceFill_1075d0 mwcc -O4,p
+StringEraseRange_107960    mwcc    -O4,p
+StringEraseAt_1079e0    mwcc    -O4,p
+StringInsertChar_107a60    mwcc    -O4,p
+StringCtorSubstr_107b70    mwcc    -O4,p
+StringCopyCtor_107c30    mwcc    -O4,p
+
+StringReplaceSubstr_107cd0 mwcc -O4,p
+StringReserve_107e80 mwcc -O4,p
+KernelTlbMapPage_446470    gcc29    -O2
+KernelVblankWaitInitHooks_446d00    gcc29    -O2
+
+KernelAlarmArmTimer3_447560    gcc29    -O2
+KernelAlarmIntrHandler_447588    gcc29    -O2
+sceGsResetGraph_108110    gcc29    -O2

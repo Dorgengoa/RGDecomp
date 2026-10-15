@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_004556F0[];
+extern void WiosDtor_103650(void);
+u32 D_0046FDD8[6] = {
+    (u32)((u8*)&D_004556F0 + 0xA8u), $h, (u32)&WiosDtor_103650, $h, $h, $h
+};
+typedef char data2c_sizecheck_0046FDD8[(sizeof(D_0046FDD8) == 24) ? 1 : -1];

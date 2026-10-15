@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+s16 D_00480350[8] = {
+    $d, $d, $d, $d, $d, $d, $d, $d
+};
+typedef char data2c_sizecheck_00480350[(sizeof(D_00480350) == 16) ? 1 : -1];

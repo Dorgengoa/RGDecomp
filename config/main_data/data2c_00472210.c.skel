@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void CharaAbilityViewCount_3a8140(void);
+extern void CharaAbilityViewGetNth_3a8100(void);
+extern void ContainerViewGetAtFwd_3b0930(void);
+u32 D_00472210[8] = {
+    $h, $h, (u32)&CharaAbilityViewCount_3a8140, (u32)&ContainerViewGetAtFwd_3b0930, (u32)&CharaAbilityViewGetNth_3a8100, $h, $h, $h
+};
+typedef char data2c_sizecheck_00472210[(sizeof(D_00472210) == 32) ? 1 : -1];

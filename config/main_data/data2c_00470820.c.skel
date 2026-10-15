@@ -1,0 +1,13 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffTexUvRandParamApply_19a540(void);
+extern void EffTexUvRandParamGetType_19a520(void);
+extern void EffTexUvRandParamRandomize_198920(void);
+extern void EffTexUvRandParamReturnZero_19a530(void);
+extern void EffectParamNopSlot18_19a560(void);
+extern void EffectParamNopSlot1C_19a570(void);
+extern void func_0019A540_e1(void);
+u32 D_00470820[12] = {
+    $h, $h, (u32)&EffTexUvRandParamGetType_19a520, (u32)&func_0019A540_e1, (u32)&EffTexUvRandParamRandomize_198920, (u32)&EffTexUvRandParamApply_19a540, (u32)&EffectParamNopSlot18_19a560, (u32)&EffectParamNopSlot1C_19a570, (u32)&EffTexUvRandParamReturnZero_19a530, $h, $h, $h
+};
+typedef char data2c_sizecheck_00470820[(sizeof(D_00470820) == 48) ? 1 : -1];

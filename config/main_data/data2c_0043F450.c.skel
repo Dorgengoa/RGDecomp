@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+const u32 D_0043F450[80] = {
+    $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0043F450[(sizeof(D_0043F450) == 320) ? 1 : -1];

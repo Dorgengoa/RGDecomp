@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_004641D8[];
+extern void InsectCageCfgAdj_3917c0(void);
+u32 D_0047FF00[4] = {
+    (u32)((u8*)&D_004641D8 + 0x10u), (u32)&InsectCageCfgAdj_3917c0, $h, $h
+};
+typedef char data2c_sizecheck_0047FF00[(sizeof(D_0047FF00) == 16) ? 1 : -1];

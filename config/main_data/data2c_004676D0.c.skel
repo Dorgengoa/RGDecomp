@@ -1,0 +1,14 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCmdAllocEntries_409ef0(void);
+extern void DataTableCmdEntryDefine_408a90(void);
+extern void DataTableCmdNopId1_369040(void);
+extern void DataTableCmdNopId2_369030(void);
+extern void DataTableCmdRevelationBoardSetCellKind_4086d0(void);
+extern void DataTableCmdRevelationBoardSetCellValue_4089f0(void);
+extern void DataTableCmdRevelationBoardSetCells_408880(void);
+extern void DataTableCmdRowCheckNop_408a50(void);
+const u32 D_004676D0[20] = {
+    $h, (u32)&DataTableCmdNopId1_369040, $h, (u32)&DataTableCmdNopId2_369030, $h, (u32)&DataTableCmdAllocEntries_409ef0, $h, (u32)&DataTableCmdEntryDefine_408a90, $h, (u32)&DataTableCmdRowCheckNop_408a50, $h, (u32)&DataTableCmdRevelationBoardSetCellValue_4089f0, $h, (u32)&DataTableCmdRevelationBoardSetCells_408880, $h, (u32)&DataTableCmdRevelationBoardSetCellKind_4086d0, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_004676D0[(sizeof(D_004676D0) == 80) ? 1 : -1];

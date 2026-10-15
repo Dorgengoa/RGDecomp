@@ -1,0 +1,19 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCmdAllocEntries_4077e0(void);
+extern void DataTableCmdAllocSubEntries_407070(void);
+extern void DataTableCmdAllocSubEntries_407240(void);
+extern void DataTableCmdAllocSubEntries_4074d0(void);
+extern void DataTableCmdAllocSubEntries_407660(void);
+extern void DataTableCmdEntryDefine_407770(void);
+extern void DataTableCmdNopId1_369040(void);
+extern void DataTableCmdNopId2_369030(void);
+extern void DataTableCmdSubEntryDefine_406f60(void);
+extern void DataTableCmdSubEntryDefine_407170(void);
+extern void DataTableCmdSubEntryDefine_407370(void);
+extern void DataTableCmdSubEntryDefine_4075b0(void);
+extern void DataTableCmdTableParams_4078b0(void);
+const u32 D_004675F0[28] = {
+    $h, (u32)&DataTableCmdNopId1_369040, $h, (u32)&DataTableCmdNopId2_369030, $h, (u32)&DataTableCmdTableParams_4078b0, $h, (u32)&DataTableCmdAllocEntries_4077e0, $h, (u32)&DataTableCmdEntryDefine_407770, $h, (u32)&DataTableCmdAllocSubEntries_407660, $h, (u32)&DataTableCmdSubEntryDefine_4075b0, $h, (u32)&DataTableCmdAllocSubEntries_4074d0, $h, (u32)&DataTableCmdSubEntryDefine_407370, $h, (u32)&DataTableCmdAllocSubEntries_407240, $h, (u32)&DataTableCmdSubEntryDefine_407170, $h, (u32)&DataTableCmdAllocSubEntries_407070, $h, (u32)&DataTableCmdSubEntryDefine_406f60, $h, $h
+};
+typedef char data2c_sizecheck_004675F0[(sizeof(D_004675F0) == 112) ? 1 : -1];

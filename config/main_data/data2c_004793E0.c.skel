@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ItemDefExtWeaponGetTypeId_40e620(void);
+extern void ItemDefExtWeaponIsKindOf_40e630(void);
+u32 D_004793E0[4] = {
+    $h, $h, (u32)&ItemDefExtWeaponGetTypeId_40e620, (u32)&ItemDefExtWeaponIsKindOf_40e630
+};
+typedef char data2c_sizecheck_004793E0[(sizeof(D_004793E0) == 16) ? 1 : -1];

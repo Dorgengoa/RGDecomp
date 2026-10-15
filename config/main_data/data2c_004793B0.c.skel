@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ItemDefExtKind2GetTypeId_40e540(void);
+extern void ItemDefExtKind2IsKindOf_40e550(void);
+u32 D_004793B0[4] = {
+    $h, $h, (u32)&ItemDefExtKind2GetTypeId_40e540, (u32)&ItemDefExtKind2IsKindOf_40e550
+};
+typedef char data2c_sizecheck_004793B0[(sizeof(D_004793B0) == 16) ? 1 : -1];

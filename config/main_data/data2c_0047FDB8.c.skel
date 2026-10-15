@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+f32 D_0047FDB8[2] = {
+    $f, $f
+};
+typedef char data2c_sizecheck_0047FDB8[(sizeof(D_0047FDB8) == 8) ? 1 : -1];

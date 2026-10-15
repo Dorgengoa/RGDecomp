@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+s16 D_0047FCAA[3] = {
+    $d, $d, $d
+};
+typedef char data2c_sizecheck_0047FCAA[(sizeof(D_0047FCAA) == 6) ? 1 : -1];

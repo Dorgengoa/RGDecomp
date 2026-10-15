@@ -1,0 +1,13 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void PartyDeserialize_3bf4f0(void);
+extern void PartyGetSaveHeaderSize_3cb870(void);
+extern void PartyGetSaveSize_3bf330(void);
+extern void PartyLoadBlob_3bf340(void);
+extern void PartyReset_3cb300(void);
+extern void PartySerialize_3bf820(void);
+extern void SaveObjGetDataSize_370670(void);
+u32 D_00475840[12] = {
+    $h, $h, (u32)&PartyGetSaveHeaderSize_3cb870, (u32)&PartyGetSaveSize_3bf330, (u32)&SaveObjGetDataSize_370670, (u32)&PartySerialize_3bf820, (u32)&PartyDeserialize_3bf4f0, (u32)&PartyReset_3cb300, (u32)&PartyLoadBlob_3bf340, $h, $h, $h
+};
+typedef char data2c_sizecheck_00475840[(sizeof(D_00475840) == 48) ? 1 : -1];

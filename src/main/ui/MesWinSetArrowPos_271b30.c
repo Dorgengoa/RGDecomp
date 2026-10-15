@@ -1,0 +1,18 @@
+#include "types.h"
+
+/* Field setter.  The assignments are in the order the reference stores
+   them: mwcc emits a run of independent stores in source order and sinks
+   the last into the `jr` delay slot, so the order is readable off the
+   listing rather than guessed. */
+
+typedef struct Obj_FUN_00271b30 {
+    u8 pad000[0x1C30];
+    s32 m1C30;         /* +0x1C30 */
+    s32 m1C34;         /* +0x1C34 */
+} Obj_FUN_00271b30;
+
+void MesWinSetArrowPos_271b30(Obj_FUN_00271b30 *o, s32 p0, s32 p1)
+{
+    o->m1C30 = p0;
+    o->m1C34 = p1;
+}

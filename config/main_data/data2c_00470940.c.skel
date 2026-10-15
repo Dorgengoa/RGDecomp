@@ -1,0 +1,13 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffectParamNopSlot18_19a560(void);
+extern void EffectParamNopSlot1C_19a570(void);
+extern void EffectParamRandomizeApplyRot_199740(void);
+extern void EffectParamRandomizeRot_1998d0(void);
+extern void EffectParamReturnZero_19a590(void);
+extern void EffectParamRotGetType_19a5e0(void);
+extern void func_0019A540_e1(void);
+u32 D_00470940[12] = {
+    $h, $h, (u32)&EffectParamRotGetType_19a5e0, (u32)&func_0019A540_e1, (u32)&EffectParamRandomizeRot_1998d0, (u32)&EffectParamRandomizeApplyRot_199740, (u32)&EffectParamNopSlot18_19a560, (u32)&EffectParamNopSlot1C_19a570, (u32)&EffectParamReturnZero_19a590, $h, $h, $h
+};
+typedef char data2c_sizecheck_00470940[(sizeof(D_00470940) == 48) ? 1 : -1];

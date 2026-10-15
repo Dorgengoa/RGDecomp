@@ -1,0 +1,45 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DynAirResistCmd_167440(void);
+extern void DynBindLoopCmd_167fa0(void);
+extern void DynBindSpringCmd_1679e0(void);
+extern void DynBindSpringEndCmd_1679d0(void);
+extern void DynBindSpringStartCmd_167c30(void);
+extern void DynBindVertexCmd_167cd0(void);
+extern void DynBindVertexEndCmd_167cc0(void);
+extern void DynBindVertexOfsCmd_167ed0(void);
+extern void DynBindVertexStartCmd_167f00(void);
+extern void DynBoundingBoxCmd_167840(void);
+extern void DynBoundingBoxEndCmd_167830(void);
+extern void DynBoundingBoxStartCmd_167910(void);
+extern void DynCollisionCmd_1674e0(void);
+extern void DynCollisionEndCmd_1674d0(void);
+extern void DynCollisionIdCmd_167770(void);
+extern void DynCollisionStartCmd_1677a0(void);
+extern void DynDrawFrameCmd_167fd0(void);
+extern void DynFixVertexCCmd_168620(void);
+extern void DynFixVertexCmd_1686b0(void);
+extern void DynFixVertexEndCmd_168580(void);
+extern void DynFixVertexSCmd_168590(void);
+extern void DynFixVertexStartCmd_168890(void);
+extern void DynFollowVertexCmd_1683f0(void);
+extern void DynFollowVertexEndCmd_1683e0(void);
+extern void DynFollowVertexStartCmd_1684e0(void);
+extern void DynFrameCmd_168d20(void);
+extern void DynFrameEndCmd_168d10(void);
+extern void DynFramePoseCmd_1680b0(void);
+extern void DynFramePoseLCmd_168130(void);
+extern void DynFrameStartCmd_168d90(void);
+extern void DynGravityCmd_1674a0(void);
+extern void DynKCmd_167470(void);
+extern void DynNotResetFrameCmd_167400(void);
+extern void DynVertColOffIdCmd_168ca0(void);
+extern void DynVertexCmd_168b60(void);
+extern void DynVertexEndCmd_168960(void);
+extern void DynVertexLCmd_168a40(void);
+extern void DynVertexStartCmd_168cd0(void);
+extern void DynWindCmd_167410(void);
+const u32 D_0044A280[80] = {
+    $h, (u32)&DynFrameStartCmd_168d90, $h, (u32)&DynFrameCmd_168d20, $h, (u32)&DynFrameEndCmd_168d10, $h, (u32)&DynVertexStartCmd_168cd0, $h, (u32)&DynVertColOffIdCmd_168ca0, $h, (u32)&DynVertexCmd_168b60, $h, (u32)&DynVertexLCmd_168a40, $h, (u32)&DynVertexEndCmd_168960, $h, (u32)&DynFixVertexStartCmd_168890, $h, (u32)&DynFixVertexCmd_1686b0, $h, (u32)&DynFixVertexCCmd_168620, $h, (u32)&DynFixVertexSCmd_168590, $h, (u32)&DynFixVertexEndCmd_168580, $h, (u32)&DynFollowVertexStartCmd_1684e0, $h, (u32)&DynFollowVertexCmd_1683f0, $h, (u32)&DynFollowVertexEndCmd_1683e0, $h, (u32)&DynFramePoseCmd_1680b0, $h, (u32)&DynFramePoseLCmd_168130, $h, (u32)&DynDrawFrameCmd_167fd0, $h, (u32)&DynBindLoopCmd_167fa0, $h, (u32)&DynBindVertexStartCmd_167f00, $h, (u32)&DynBindVertexOfsCmd_167ed0, $h, (u32)&DynBindVertexCmd_167cd0, $h, (u32)&DynBindVertexEndCmd_167cc0, $h, (u32)&DynBindSpringStartCmd_167c30, $h, (u32)&DynBindSpringCmd_1679e0, $h, (u32)&DynBindSpringEndCmd_1679d0, $h, (u32)&DynBoundingBoxStartCmd_167910, $h, (u32)&DynBoundingBoxCmd_167840, $h, (u32)&DynBoundingBoxEndCmd_167830, $h, (u32)&DynCollisionStartCmd_1677a0, $h, (u32)&DynCollisionIdCmd_167770, $h, (u32)&DynCollisionCmd_1674e0, $h, (u32)&DynCollisionEndCmd_1674d0, $h, (u32)&DynGravityCmd_1674a0, $h, (u32)&DynKCmd_167470, $h, (u32)&DynAirResistCmd_167440, $h, (u32)&DynWindCmd_167410, $h, (u32)&DynNotResetFrameCmd_167400, $h, $h
+};
+typedef char data2c_sizecheck_0044A280[(sizeof(D_0044A280) == 320) ? 1 : -1];

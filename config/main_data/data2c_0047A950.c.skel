@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void PlanetAreaQueryCount_415400(void);
+extern void PlanetAreaQueryGetAt_4153c0(void);
+extern void func_00418AB0_e6(void);
+u32 D_0047A950[8] = {
+    $h, $h, (u32)&PlanetAreaQueryCount_415400, (u32)&func_00418AB0_e6, (u32)&PlanetAreaQueryGetAt_4153c0, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047A950[(sizeof(D_0047A950) == 32) ? 1 : -1];

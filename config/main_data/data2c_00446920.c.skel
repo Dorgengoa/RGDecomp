@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void func_00120748(void);
+extern void kFindAddress_120780(void);
+const u32 D_00446920[4] = {
+    $h, (u32)&kFindAddress_120780, $h, (u32)&func_00120748
+};
+typedef char data2c_sizecheck_00446920[(sizeof(D_00446920) == 16) ? 1 : -1];

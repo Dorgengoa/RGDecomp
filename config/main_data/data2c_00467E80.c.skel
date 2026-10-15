@@ -1,0 +1,10 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCmdEntryUpdateSetIntArray_41cdc0(void);
+extern void DataTableCmdEntryUpdateSetParams_41ce50(void);
+extern void DataTableCmdEntryUpdate_41cec0(void);
+extern void DataTableCmdNop_3b8db0(void);
+const u32 D_00467E80[14] = {
+    $h, (u32)&DataTableCmdNop_3b8db0, $h, (u32)&DataTableCmdNop_3b8db0, $h, (u32)&DataTableCmdNop_3b8db0, $h, (u32)&DataTableCmdEntryUpdate_41cec0, $h, (u32)&DataTableCmdEntryUpdateSetParams_41ce50, $h, (u32)&DataTableCmdEntryUpdateSetIntArray_41cdc0, $h, $h
+};
+typedef char data2c_sizecheck_00467E80[(sizeof(D_00467E80) == 56) ? 1 : -1];

@@ -1,0 +1,12 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void SaveObjGetDataSize_370670(void);
+extern void StateBlockDeserialize_3cb970(void);
+extern void StateBlockGetSaveHeaderSize_3cd8a0(void);
+extern void StateBlockGetSaveSize_3cb8b0(void);
+extern void StateBlockLoadBlob_3cb8c0(void);
+extern void StateBlockSerialize_3cb9d0(void);
+u32 D_00475870[8] = {
+    $h, $h, (u32)&StateBlockGetSaveHeaderSize_3cd8a0, (u32)&StateBlockGetSaveSize_3cb8b0, (u32)&SaveObjGetDataSize_370670, (u32)&StateBlockSerialize_3cb9d0, (u32)&StateBlockDeserialize_3cb970, (u32)&StateBlockLoadBlob_3cb8c0
+};
+typedef char data2c_sizecheck_00475870[(sizeof(D_00475870) == 32) ? 1 : -1];

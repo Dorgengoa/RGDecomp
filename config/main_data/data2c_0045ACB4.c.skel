@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+const u32 data2c_gap_0045ACB4[3] = {
+    $h, $h, $h
+};
+typedef char data2c_sizecheck_0045ACB4[(sizeof(data2c_gap_0045ACB4) == 12) ? 1 : -1];

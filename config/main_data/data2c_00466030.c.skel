@@ -1,0 +1,27 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCmdNopId1_369040(void);
+extern void DataTableCmdNopId2_369030(void);
+extern void DataTableCmdNop_3b8db0(void);
+extern void WorldDataCmdAddItemMaybe_3b9d40(void);
+extern void WorldDataCmdCharaLearnAbilities_3b9720(void);
+extern void WorldDataCmdCharaLookupRelated_3b96d0(void);
+extern void WorldDataCmdCharaSetEquip_3b97e0(void);
+extern void WorldDataCmdCharaSetHpMp_3b95c0(void);
+extern void WorldDataCmdCharaSetLevelExp_3b99f0(void);
+extern void WorldDataCmdMapMarkerSetAddMaybe_3b8ee0(void);
+extern void WorldDataCmdRunOpStreamMaybe_3b8e30(void);
+extern void WorldDataCmdSectionBegin_3b9f20(void);
+extern void WorldDataCmdSetFieldEnablesMaybe_3b9260(void);
+extern void WorldDataCmdSetMoney_3b9ec0(void);
+extern void WorldDataCmdSetOptions_3b9380(void);
+extern void WorldDataCmdSetPartyMember_3b9b00(void);
+extern void WorldDataCmdSetPendingEncounter_3b8dc0(void);
+extern void WorldDataCmdSetStateFlags256_3b8f80(void);
+extern void WorldDataCmdSetStateFlags2_3b9030(void);
+extern void WorldDataCmdSetStateFlags_3b91a0(void);
+extern void WorldDataCmdSetStateVars_3b90e0(void);
+const u32 D_00466030[44] = {
+    $h, (u32)&DataTableCmdNopId1_369040, $h, (u32)&DataTableCmdNopId2_369030, $h, (u32)&DataTableCmdNop_3b8db0, $h, (u32)&WorldDataCmdSectionBegin_3b9f20, $h, (u32)&WorldDataCmdSetMoney_3b9ec0, $h, (u32)&WorldDataCmdAddItemMaybe_3b9d40, $h, (u32)&WorldDataCmdSetPartyMember_3b9b00, $h, (u32)&WorldDataCmdCharaSetLevelExp_3b99f0, $h, (u32)&WorldDataCmdCharaSetEquip_3b97e0, $h, (u32)&WorldDataCmdCharaLearnAbilities_3b9720, $h, (u32)&WorldDataCmdCharaLookupRelated_3b96d0, $h, (u32)&WorldDataCmdCharaSetHpMp_3b95c0, $h, (u32)&WorldDataCmdSetOptions_3b9380, $h, (u32)&WorldDataCmdSetFieldEnablesMaybe_3b9260, $h, (u32)&WorldDataCmdSetStateFlags_3b91a0, $h, (u32)&WorldDataCmdSetStateVars_3b90e0, $h, (u32)&WorldDataCmdSetStateFlags2_3b9030, $h, (u32)&WorldDataCmdSetStateFlags256_3b8f80, $h, (u32)&WorldDataCmdMapMarkerSetAddMaybe_3b8ee0, $h, (u32)&WorldDataCmdRunOpStreamMaybe_3b8e30, $h, (u32)&WorldDataCmdSetPendingEncounter_3b8dc0, $h, $h
+};
+typedef char data2c_sizecheck_00466030[(sizeof(D_00466030) == 176) ? 1 : -1];

@@ -1,0 +1,14 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableBaseClearNop_2933f0(void);
+extern void DataTableBaseGetParamZeroMaybe_293390(void);
+extern void DataTableBaseInitTrue_2933a0(void);
+extern void DataTableBaseLoadBinFileTrue_2933e0(void);
+extern void DataTableBaseLoadResidentBinArgTrue_2933c0(void);
+extern void DataTableBaseLoadResidentBinDefaultTrue_2933b0(void);
+extern void DataTableBaseLoadResidentBinTrue_2933d0(void);
+extern void DataTableBaseNopSlot24_293400(void);
+u32 D_004714E0[10] = {
+    $h, $h, (u32)&DataTableBaseGetParamZeroMaybe_293390, (u32)&DataTableBaseInitTrue_2933a0, (u32)&DataTableBaseLoadResidentBinTrue_2933d0, (u32)&DataTableBaseLoadResidentBinArgTrue_2933c0, (u32)&DataTableBaseLoadResidentBinDefaultTrue_2933b0, (u32)&DataTableBaseLoadBinFileTrue_2933e0, (u32)&DataTableBaseClearNop_2933f0, (u32)&DataTableBaseNopSlot24_293400
+};
+typedef char data2c_sizecheck_004714E0[(sizeof(D_004714E0) == 40) ? 1 : -1];

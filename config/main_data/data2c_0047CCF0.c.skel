@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void HeapBlockRefFreeIfBlock_42e0e0(void);
+extern void HeapBlockRefRebind_42e150(void);
+extern void HeapBlockRefSet_42e1d0(void);
+u32 D_0047CCF0[8] = {
+    $h, $h, (u32)&HeapBlockRefSet_42e1d0, (u32)&HeapBlockRefRebind_42e150, (u32)&HeapBlockRefFreeIfBlock_42e0e0, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047CCF0[(sizeof(D_0047CCF0) == 32) ? 1 : -1];

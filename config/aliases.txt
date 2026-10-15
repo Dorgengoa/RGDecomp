@@ -1,0 +1,22 @@
+# Compiler-runtime names that mwcc emits on its own (not game functions, so they
+# are not renamed in main.symbols.txt -- naming is deferred and the board counts
+# that file). bytecheck resolves these; SCUS_974.90.lcf carries the same
+# assignment for the link.
+#   <name>          <vram>
+__ptmf_scall        0x00100E70   # C++ pointer-to-member call helper (retail PtmfScall_100e70)
+__udivdi3           0x00139EB0   # libgcc u64 divide (retail UDivDi3_139eb0; Base58EncodeBlock_42f2d0 x/58 -> new x) s55m
+__umoddi3           0x0013A430   # libgcc u64 modulo (retail UModDi3_13a430; Base58EncodeBlock_42f2d0 x%58 -> digit index) s55m
+__divdi3            0x00139188   # libgcc s64 divide (retail Divdi3_139188; sign flips on EITHER operand, negates quotient) s68m
+__moddi3            0x00139820   # libgcc s64 modulo (retail ModDi3_139820; sign from dividend only) s68m
+__floatdidf         0x0013A998   # libgcc s64 -> double (retail S64ToDouble_13a998; litodp/dpmul/dpadd) s68m
+__floatdisf         0x0013AA40   # libgcc s64 -> float (retail S64ToFloat_13aa40; 53-bit round guard + dptofp) s68m
+__fixunsdfdi        0x0013AB28   # libgcc double -> u64 (retail DoubleToU64_13ab28; <0 -> 0, dpmul 2^-32, fixunsdfsi, floatdidf, dpsub) s88m 3a1z
+__vt__7B177430      0x00470090   # vtable of CameraObjCtor_177430's base class (retail D_00470090) s59m
+__vt__7O177430      0x00470340   # vtable of CameraObjCtor_177430's class (retail D_00470340) s59m
+__unexpected        0x001014D0   # MW C++ runtime: called by a throw() spec handler (retail EhUnexpected_1014d0; OperatorDelete_100840 operator delete) libdeasm 100840
+__throw             0x001025C0   # MW C++ runtime __throw(typestr, obj, dtor) (retail ThrowException_1025c0; OperatorNew_100990 operator new) libdeasm 100990
+__vt__Q23std9bad_alloc    0x0046FD80   # std::bad_alloc vtable (retail D_0046FD80; OperatorNew_100990 operator new) libdeasm 100990
+__dt__Q23std9bad_allocFv  0x00100920   # std::bad_alloc::~bad_alloc (retail BadAllocDtor_100920; OperatorNew_100990 operator new) libdeasm 100990
+__vt__Q23std13bad_exception    0x0046FD90   # std::bad_exception vtable (retail D_0046FD90; EhUnexpected_1014d0 __unexpected) libdeasm 1014d0
+__dt__Q23std13bad_exceptionFv  0x001016A0   # std::bad_exception::~bad_exception (retail BadExceptionDtor_1016a0; EhUnexpected_1014d0) libdeasm 1014d0
+__end__catch        0x00101010   # MW C++ runtime __end__catch(CatchInfo*) (retail EhEndCatch_101010; EhUnexpected_1014d0 catch(...)) libdeasm 1014d0

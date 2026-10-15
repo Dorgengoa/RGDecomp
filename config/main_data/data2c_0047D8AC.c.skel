@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+f32 D_0047D8AC[12] = {
+    $f, $f, $f, $f, $f, $f, $f, $f, $f, $f, $f, $f
+};
+typedef char data2c_sizecheck_0047D8AC[(sizeof(D_0047D8AC) == 48) ? 1 : -1];

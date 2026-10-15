@@ -1,0 +1,20 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void CaptionCfgCmdAddAltGlyph_33ee90(void);
+extern void CaptionCfgCmdAddGlyph_33ef30(void);
+extern void CaptionCfgCmdSetAltCellSize_33ed50(void);
+extern void CaptionCfgCmdSetAltGlyphBase_33ebd0(void);
+extern void CaptionCfgCmdSetAltGlyphOrigin_33ecd0(void);
+extern void CaptionCfgCmdSetAltGridDims_33edb0(void);
+extern void CaptionCfgCmdSetCellSize_33f090(void);
+extern void CaptionCfgCmdSetFrameRect_33ee10(void);
+extern void CaptionCfgCmdSetGlyphBase_33ec10(void);
+extern void CaptionCfgCmdSetGlyphOrigin_33ec50(void);
+extern void CaptionCfgCmdSetGridDims_33f030(void);
+extern void CaptionCfgCmdSetImageMode_33eba0(void);
+extern void CaptionCfgCmdSetImageSize_33efd0(void);
+extern void CaptionCfgCmdSetTexName_33f0f0(void);
+const u32 D_00453780[36] = {
+    $h, (u32)&CaptionCfgCmdSetTexName_33f0f0, $h, (u32)&CaptionCfgCmdSetImageSize_33efd0, $h, (u32)&CaptionCfgCmdAddGlyph_33ef30, $h, (u32)&CaptionCfgCmdAddGlyph_33ef30, $h, (u32)&CaptionCfgCmdAddAltGlyph_33ee90, $h, (u32)&CaptionCfgCmdSetFrameRect_33ee10, $h, (u32)&CaptionCfgCmdSetAltGridDims_33edb0, $h, (u32)&CaptionCfgCmdSetAltCellSize_33ed50, $h, (u32)&CaptionCfgCmdSetAltGlyphOrigin_33ecd0, $h, (u32)&CaptionCfgCmdSetAltGlyphBase_33ebd0, $h, (u32)&CaptionCfgCmdSetGridDims_33f030, $h, (u32)&CaptionCfgCmdSetGridDims_33f030, $h, (u32)&CaptionCfgCmdSetCellSize_33f090, $h, (u32)&CaptionCfgCmdSetCellSize_33f090, $h, (u32)&CaptionCfgCmdSetGlyphOrigin_33ec50, $h, (u32)&CaptionCfgCmdSetGlyphBase_33ec10, $h, (u32)&CaptionCfgCmdSetImageMode_33eba0, $h, $h
+};
+typedef char data2c_sizecheck_00453780[(sizeof(D_00453780) == 144) ? 1 : -1];

@@ -1,0 +1,10 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void InfoCfgImgCmd_1aa390(void);
+extern void InfoCfgImgEndCmd_1aa350(void);
+extern void InfoCfgImgModelCmd_1aa060(void);
+extern void InfoCfgShadowModelCmdThunk_1aa050(void);
+const u32 D_0044AD40[12] = {
+    $h, (u32)&InfoCfgImgCmd_1aa390, $h, (u32)&InfoCfgImgEndCmd_1aa350, $h, (u32)&InfoCfgImgModelCmd_1aa060, $h, (u32)&InfoCfgShadowModelCmdThunk_1aa050, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044AD40[(sizeof(D_0044AD40) == 48) ? 1 : -1];

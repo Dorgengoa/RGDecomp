@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void SpatialMgrBaseDtor_313e20(void);
+extern void SpatialMgrVslot10NopRelated_313e10(void);
+u32 D_00471A70[12] = {
+    $h, $h, $h, $h, (u32)&SpatialMgrVslot10NopRelated_313e10, $h, $h, $h, (u32)&SpatialMgrBaseDtor_313e20, $h, $h, $h
+};
+typedef char data2c_sizecheck_00471A70[(sizeof(D_00471A70) == 48) ? 1 : -1];

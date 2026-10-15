@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_00455310[];
+extern u8 D_00455B20[];
+const u32 func_00455BCC[17] = {
+    (u32)((u8*)&D_00455B20 + 0x90u), $h, $h, $h, $h, $h, $h, $h, $h, (u32)((u8*)&D_00455310 + 0x180u), $h, (u32)((u8*)&D_00455B20 + 0x88u), $h, $h, $h, (u32)((u8*)&func_00455BCC + 0x4u), (u32)((u8*)&func_00455BCC + 0x24u)
+};
+typedef char data2c_sizecheck_00455BCC[(sizeof(func_00455BCC) == 68) ? 1 : -1];

@@ -1,0 +1,19 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_004556F0[];
+extern void WStreambufDtor_1036b0(void);
+extern void WStreambufOverflow_103af0(void);
+extern void WStreambufPbackfail_103ce0(void);
+extern void WStreambufSeekoff_103f40(void);
+extern void WStreambufSeekpos_103f30(void);
+extern void WStreambufSetbuf_102a30(void);
+extern void WStreambufShowmanyc_1037e0(void);
+extern void WStreambufSync_1037d0(void);
+extern void WStreambufUflow_103cf0(void);
+extern void WStreambufUnderflow_103d40(void);
+extern void WStreambufXsgetn_103d50(void);
+extern void WStreambufXsputn_103b00(void);
+u32 D_0046FE10[16] = {
+    (u32)((u8*)&D_004556F0 + 0x170u), $h, (u32)&WStreambufDtor_1036b0, (u32)&WStreambufSetbuf_102a30, (u32)&WStreambufSeekoff_103f40, (u32)&WStreambufSeekpos_103f30, (u32)&WStreambufSync_1037d0, (u32)&WStreambufShowmanyc_1037e0, (u32)&WStreambufXsgetn_103d50, (u32)&WStreambufUnderflow_103d40, (u32)&WStreambufUflow_103cf0, (u32)&WStreambufPbackfail_103ce0, (u32)&WStreambufXsputn_103b00, (u32)&WStreambufOverflow_103af0, $h, $h
+};
+typedef char data2c_sizecheck_0046FE10[(sizeof(D_0046FE10) == 64) ? 1 : -1];

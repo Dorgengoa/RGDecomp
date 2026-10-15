@@ -1,0 +1,30 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffectInstanceAllocNone_2e34f0(void);
+extern void EffectInstanceDrawNop_2dabc0(void);
+extern void EffectInstanceGetCountZero_2dabd0(void);
+extern void EffectInstanceGetCurEntryIdNone_2daea0(void);
+extern void EffectInstanceGetEntriesNone_2dabe0(void);
+extern void EffectInstanceGetHeapBlockNone_2da840(void);
+extern void EffectInstanceGetNextEntryIdNone_2daef0(void);
+extern void EffectInstanceGetScriptVmNone_2daed0(void);
+extern void EffectInstanceGetTargetRefNone_2dd9a0(void);
+extern void EffectInstanceGetTexGroupNone_2e3510(void);
+extern void EffectInstanceGetTexNameNone_2e3500(void);
+extern void EffectInstanceGetWorkHeapNoneMaybe_2da830(void);
+extern void EffectInstanceHasWorkHeapFalseMaybe_2daee0(void);
+extern void EffectInstanceInitRangeNop_2e3530(void);
+extern void EffectInstanceResetNop_2dc530(void);
+extern void EffectInstanceSetCurEntryIdNop_2daec0(void);
+extern void EffectInstanceSetNextEntryIdNop_2daeb0(void);
+extern void EffectInstanceSetTexGroupNop_2e3520(void);
+extern void EffectInstanceSetTexRangeNone_2e3540(void);
+extern void EffectInstanceStepNop_2da410(void);
+extern void EffectInstanceVslot20ZeroRelated_2e34e0(void);
+extern void entry_002d94b0_e5(void);
+extern void entry_002d94b0_e6(void);
+extern void entry_002d94b0_e7(void);
+u32 D_004716F0[28] = {
+    $h, $h, (u32)&EffectInstanceResetNop_2dc530, (u32)&EffectInstanceStepNop_2da410, (u32)&entry_002d94b0_e5, (u32)&EffectInstanceDrawNop_2dabc0, (u32)&entry_002d94b0_e6, (u32)&EffectInstanceGetScriptVmNone_2daed0, (u32)&EffectInstanceVslot20ZeroRelated_2e34e0, (u32)&EffectInstanceGetWorkHeapNoneMaybe_2da830, (u32)&entry_002d94b0_e7, (u32)&EffectInstanceHasWorkHeapFalseMaybe_2daee0, (u32)&EffectInstanceGetHeapBlockNone_2da840, (u32)&EffectInstanceGetTargetRefNone_2dd9a0, (u32)&EffectInstanceSetCurEntryIdNop_2daec0, (u32)&EffectInstanceSetNextEntryIdNop_2daeb0, (u32)&EffectInstanceGetCurEntryIdNone_2daea0, (u32)&EffectInstanceGetNextEntryIdNone_2daef0, (u32)&EffectInstanceAllocNone_2e34f0, (u32)&EffectInstanceGetTexNameNone_2e3500, (u32)&EffectInstanceGetTexGroupNone_2e3510, (u32)&EffectInstanceSetTexGroupNop_2e3520, (u32)&EffectInstanceInitRangeNop_2e3530, (u32)&EffectInstanceSetTexRangeNone_2e3540, (u32)&EffectInstanceGetEntriesNone_2dabe0, (u32)&EffectInstanceGetCountZero_2dabd0, $h, $h
+};
+typedef char data2c_sizecheck_004716F0[(sizeof(D_004716F0) == 112) ? 1 : -1];

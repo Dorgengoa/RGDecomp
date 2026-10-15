@@ -1,0 +1,3 @@
+#include "types.h"
+extern s32 MapAreaGetSoundEnvPresetId_1dcea0(void*);extern s32 MapBlockGetSoundEnvPresetId_1e0090(void*);extern void*MapFindAreaSlotById_1e4cb0(s32,s32);extern s32 MapDataGetParentId_1e7bb0(void*);extern s32 MapDataGetType_1e7c00(void*);
+s32 MapDataGetSoundEnvPresetId_1e5340(s32 ctx,u8*p){s32 mode;void*q;if(!p)return-1;mode=MapDataGetType_1e7c00(p);switch(mode){case 2:return MapAreaGetSoundEnvPresetId_1dcea0(p);case 4:if(*(s32*)(p+0x2c)&8)return MapBlockGetSoundEnvPresetId_1e0090(p);q=MapFindAreaSlotById_1e4cb0(ctx,MapDataGetParentId_1e7bb0(p));return q?MapAreaGetSoundEnvPresetId_1dcea0(q):-1;default:return-1;}}

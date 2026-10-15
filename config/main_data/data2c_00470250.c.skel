@@ -1,0 +1,23 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void CollMeshCollectTrisAll_16d2c0(void);
+extern void CollMeshCollectTrisInBox_16d1a0(void);
+extern void CollMeshGetTriAttr_16cc90(void);
+extern void CollMeshGetTriCount_16b940(void);
+extern void CollMeshGetTypeId_16b910(void);
+extern void CollMeshInit_16d3e0(void);
+extern void CollMeshIsKindOf_16b920(void);
+extern void CollMeshSetTriAttr_16cd10(void);
+extern void CollShapeContainsPoint_16d440(void);
+extern void CollShapeCopyBounds_16b950(void);
+extern void CollShapeGetBounds_16b970(void);
+extern void CollShapeReturnZero_16b9c0(void);
+extern void CollShapeReturnZero_16b9d0(void);
+extern void CollShapeReturnZero_16b9e0(void);
+extern void CollShapeReturnZero_16b9f0(void);
+extern void CollShapeSetBounds_16b9a0(void);
+extern void func_0016D2F0(void);
+u32 D_00470250[20] = {
+    $h, $h, (u32)&CollMeshGetTypeId_16b910, (u32)&CollMeshIsKindOf_16b920, (u32)&CollShapeGetBounds_16b970, (u32)&CollShapeSetBounds_16b9a0, (u32)&func_0016D2F0, (u32)&CollShapeContainsPoint_16d440, (u32)&CollShapeReturnZero_16b9c0, (u32)&CollShapeReturnZero_16b9d0, (u32)&CollShapeReturnZero_16b9f0, (u32)&CollMeshCollectTrisAll_16d2c0, (u32)&CollMeshCollectTrisInBox_16d1a0, (u32)&CollShapeReturnZero_16b9e0, (u32)&CollMeshGetTriCount_16b940, (u32)&CollMeshSetTriAttr_16cd10, (u32)&CollMeshGetTriAttr_16cc90, (u32)&CollShapeCopyBounds_16b950, (u32)&CollMeshInit_16d3e0, $h
+};
+typedef char data2c_sizecheck_00470250[(sizeof(D_00470250) == 80) ? 1 : -1];

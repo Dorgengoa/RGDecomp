@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EventVolumeRecListInsert_2d2380(void);
+u32 D_00471578[4] = {
+    $h, $h, (u32)&EventVolumeRecListInsert_2d2380, $h
+};
+typedef char data2c_sizecheck_00471578[(sizeof(D_00471578) == 16) ? 1 : -1];

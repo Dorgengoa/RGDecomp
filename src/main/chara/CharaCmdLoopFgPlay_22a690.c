@@ -1,0 +1,30 @@
+#include "types.h"
+
+extern s32 GetActionMgr_1fdb50(void);
+extern void CharaPlayLoopFg_213b90(s32 arg0, s32 arg1, f32 arg2);
+extern s32 ActionMgrFindById_233b50(s32 arg0, s32 arg1);
+extern f32 ScriptArgGetFloat_302cf0(s32 arg0);
+extern s32 ScriptArgGetInt_302d70(s32 arg0);
+
+s32 CharaCmdLoopFgPlay_22a690(s32 *arg0, s32 arg1, s32 arg2)
+{
+    f32 var_f0;
+    s32 temp_2;
+    s32 temp_16;
+
+    if ((arg2 != 1) && (arg2 != 2)) {
+        return 1;
+    }
+    temp_2 = ActionMgrFindById_233b50(GetActionMgr_1fdb50(), *arg0);
+    if (temp_2 == 0) {
+        return 1;
+    }
+    temp_16 = ScriptArgGetInt_302d70(arg1);
+    if (arg2 >= 2) {
+        var_f0 = ScriptArgGetFloat_302cf0(arg1 + 5);
+    } else {
+        var_f0 = 1.0f;
+    }
+    CharaPlayLoopFg_213b90(temp_2, temp_16, var_f0);
+    return 1;
+}

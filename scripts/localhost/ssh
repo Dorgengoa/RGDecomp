@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""Stand-in for `ssh` when RGD_HOST=local: run the command on this machine.
+
+Put on PATH by scripts/rgd.py. Accepts the subset of ssh the build uses:
+options (-i KEY, -o OPT, ...) are ignored, the first operand is the host,
+everything after it is the command, run with `sh -c` in $HOME.
+"""
+import os
+import sys
+
+WITH_VALUE = {"-i", "-o", "-p", "-F", "-l", "-E", "-c", "-m"}
+args, i = sys.argv[1:], 0
+while i < len(args) and args[i].startswith("-"):
+    i += 2 if args[i] in WITH_VALUE else 1
+command = " ".join(args[i + 1:])
+os.chdir(os.path.expanduser("~"))
+os.execvp("sh", ["sh", "-c", command or "exec sh"])

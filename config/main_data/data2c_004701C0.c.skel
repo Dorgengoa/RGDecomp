@@ -1,0 +1,14 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ModelMeshMode1BuildDefaultMaybe_164b00(void);
+extern void ModelMeshMode1BuildDmaHeaderMaybe_164620(void);
+extern void ModelMeshMode1GetGroupPktsMaybe_1645c0(void);
+extern void ModelMeshMode1GetPktMaybe_164120(void);
+extern void ModelMeshMode1GetTypeId_164110(void);
+extern void ModelMeshMode1InitThunkMaybe_164b10(void);
+extern void ModelMeshMode1IsKindOf_164b90(void);
+extern void ModelMeshMode1WriteVuHeaderMaybe_1646a0(void);
+u32 D_004701C0[12] = {
+    $h, $h, (u32)&ModelMeshMode1GetTypeId_164110, (u32)&ModelMeshMode1IsKindOf_164b90, (u32)&ModelMeshMode1GetPktMaybe_164120, (u32)&ModelMeshMode1WriteVuHeaderMaybe_1646a0, (u32)&ModelMeshMode1GetGroupPktsMaybe_1645c0, (u32)&ModelMeshMode1InitThunkMaybe_164b10, (u32)&ModelMeshMode1BuildDmaHeaderMaybe_164620, (u32)&ModelMeshMode1BuildDefaultMaybe_164b00, $h, $h
+};
+typedef char data2c_sizecheck_004701C0[(sizeof(D_004701C0) == 48) ? 1 : -1];

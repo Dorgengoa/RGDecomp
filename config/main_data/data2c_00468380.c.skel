@@ -1,0 +1,26 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DrawCbNop_39e0a0(void);
+extern void ItemSpriteSpinDrawCb_2b3bb0(void);
+extern void MenuScissorDrawCb_2b3b20(void);
+extern void MenuScissorDrawCb_2bb3a0(void);
+extern void MenuScissorDrawCb_2bb3d0(void);
+extern void MenuScissorDrawCb_2bb400(void);
+extern void MenuScissorDrawCb_2bb430(void);
+extern void MenuScissorDrawCb_2bb460(void);
+extern void MenuScissorDrawCb_2bb490(void);
+extern void MenuScissorDrawCb_358da0(void);
+extern void MenuScissorDrawCb_35b8f0(void);
+extern void MenuScissorDrawCb_3805d0(void);
+extern void MenuTiledPanelDrawCb_2b3b50(void);
+extern void RevelationBoardDrawCb_349830(void);
+extern void TextClipRectDrawCb_298b00(void);
+extern void TextClipRectDrawCb_399ed0(void);
+extern void TextClipScissorDrawCb_342f50(void);
+extern void TextEntryNameGridTextStyleDrawCb_432a70(void);
+extern void TextEntryPaletteTextStyleDrawCb_432ac0(void);
+extern void TransMenuItemTiledPanelDrawCb_380600(void);
+const u32 D_00468380[80] = {
+    $h, (u32)&DrawCbNop_39e0a0, $h, (u32)&TextClipRectDrawCb_298b00, $h, (u32)&RevelationBoardDrawCb_349830, $h, (u32)&ItemSpriteSpinDrawCb_2b3bb0, $h, (u32)&MenuTiledPanelDrawCb_2b3b50, $h, (u32)&MenuScissorDrawCb_2b3b20, $h, (u32)&MenuScissorDrawCb_2bb3a0, $h, (u32)&MenuScissorDrawCb_2bb490, $h, (u32)&MenuScissorDrawCb_2bb460, $h, (u32)&MenuScissorDrawCb_2bb430, $h, (u32)&MenuScissorDrawCb_2bb400, $h, (u32)&MenuScissorDrawCb_2bb3d0, $h, (u32)&TextClipScissorDrawCb_342f50, $h, (u32)&MenuScissorDrawCb_358da0, $h, (u32)&MenuScissorDrawCb_35b8f0, $h, (u32)&TextClipRectDrawCb_399ed0, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, (u32)&TransMenuItemTiledPanelDrawCb_380600, $h, (u32)&MenuScissorDrawCb_3805d0, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, (u32)&TextEntryPaletteTextStyleDrawCb_432ac0, $h, (u32)&TextEntryNameGridTextStyleDrawCb_432a70, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00468380[(sizeof(D_00468380) == 320) ? 1 : -1];

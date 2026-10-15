@@ -1,0 +1,11 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ContainerViewGetAtFwd_3f61d0(void);
+extern void DataTableEntryGetSubRowThunk_3f6470(void);
+extern void DataTableEntryGetSubRow_3f5630(void);
+extern void DataTableEntrySubRowCountThunk_3f6460(void);
+extern void DataTableEntrySubRowCount_3f5ec0(void);
+u32 D_00476468[10] = {
+    $h, $h, (u32)&DataTableEntrySubRowCountThunk_3f6460, (u32)&ContainerViewGetAtFwd_3f61d0, (u32)&DataTableEntryGetSubRowThunk_3f6470, (u32)&DataTableEntrySubRowCount_3f5ec0, (u32)&DataTableEntryGetSubRow_3f5630, $h, $h, $h
+};
+typedef char data2c_sizecheck_00476468[(sizeof(D_00476468) == 40) ? 1 : -1];

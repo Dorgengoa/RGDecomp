@@ -1,0 +1,33 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableAllocIndex_4175b0(void);
+extern void DataTableClearHook_413210(void);
+extern void DataTableClear_368390(void);
+extern void DataTableCompareThunk_417650(void);
+extern void DataTableDefaultBufSize_4171c0(void);
+extern void DataTableDefaultParam_4171b0(void);
+extern void DataTableFindByKey_3680a0(void);
+extern void DataTableGetCmdTable_413260(void);
+extern void DataTableGetEntries_417570(void);
+extern void DataTableGetEntryHashKeyNop_368030(void);
+extern void DataTableGetEntrySize_417580(void);
+extern void DataTableGetEntry_419580(void);
+extern void DataTableGetIndexSlot_4175a0(void);
+extern void DataTableGetIndex_417590(void);
+extern void DataTableGetKey_419540(void);
+extern void DataTableGetParamMaybe_367f40(void);
+extern void DataTableInitFinishEnableSort_413240(void);
+extern void DataTableInit_368e30(void);
+extern void DataTableLoadBinFile_368bf0(void);
+extern void DataTableLoadResidentBinDefault_367fe0(void);
+extern void DataTableLoadResidentBin_368d00(void);
+extern void DataTableNopSlot24_368040(void);
+extern void DataTableReset_368f70(void);
+extern void DataTableRunCfg_3683e0(void);
+extern void DataTableSortAndIndex_412f70(void);
+extern void func_00367FE0_e1(void);
+extern void func_00417650_e1(void);
+u32 D_0047A470[29] = {
+    $h, $h, (u32)&DataTableGetParamMaybe_367f40, (u32)&DataTableInit_368e30, (u32)&DataTableLoadResidentBin_368d00, (u32)&func_00367FE0_e1, (u32)&DataTableLoadResidentBinDefault_367fe0, (u32)&DataTableLoadBinFile_368bf0, (u32)&DataTableClear_368390, (u32)&DataTableNopSlot24_368040, (u32)&DataTableDefaultParam_4171b0, (u32)&DataTableDefaultBufSize_4171c0, (u32)&DataTableGetEntries_417570, (u32)&DataTableGetEntry_419580, (u32)&DataTableGetKey_419540, (u32)&DataTableGetEntrySize_417580, (u32)&DataTableGetIndex_417590, (u32)&DataTableGetIndexSlot_4175a0, (u32)&DataTableGetCmdTable_413260, (u32)&DataTableReset_368f70, (u32)&DataTableAllocIndex_4175b0, (u32)&DataTableGetEntryHashKeyNop_368030, (u32)&DataTableRunCfg_3683e0, (u32)&DataTableInitFinishEnableSort_413240, (u32)&DataTableClearHook_413210, (u32)&DataTableSortAndIndex_412f70, (u32)&DataTableCompareThunk_417650, (u32)&func_00417650_e1, (u32)&DataTableFindByKey_3680a0
+};
+typedef char data2c_sizecheck_0047A470[(sizeof(D_0047A470) == 116) ? 1 : -1];

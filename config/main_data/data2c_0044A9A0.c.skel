@@ -1,0 +1,15 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MapModelCfgClothFix_195ac0(void);
+extern void MapModelCfgClothWind_195a20(void);
+extern void MapModelCfgCloth_195b40(void);
+extern void MapModelCfgFarClip_195dc0(void);
+extern void MapModelCfgMdsEnd_195750(void);
+extern void MapModelCfgMds_195f20(void);
+extern void MapModelCfgModelRm_195cd0(void);
+extern void MapModelCfgType_195e80(void);
+extern void MapModelCfgWave_195d60(void);
+const u32 D_0044A9A0[20] = {
+    $h, (u32)&MapModelCfgMds_195f20, $h, (u32)&MapModelCfgType_195e80, $h, (u32)&MapModelCfgModelRm_195cd0, $h, (u32)&MapModelCfgCloth_195b40, $h, (u32)&MapModelCfgClothFix_195ac0, $h, (u32)&MapModelCfgClothWind_195a20, $h, (u32)&MapModelCfgWave_195d60, $h, (u32)&MapModelCfgFarClip_195dc0, $h, (u32)&MapModelCfgMdsEnd_195750, $h, $h
+};
+typedef char data2c_sizecheck_0044A9A0[(sizeof(D_0044A9A0) == 80) ? 1 : -1];

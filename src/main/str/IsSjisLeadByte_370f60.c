@@ -1,0 +1,10 @@
+#include "types.h"
+
+s32 IsSjisLeadByte_370f60(s32 c)
+{
+    u8 d = c;
+    if ((d >= 0x81 && d <= 0x9F) || (d >= 0xE0 && d <= 0xFF)) {
+        return 1;
+    }
+    return 0;
+}

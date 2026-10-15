@@ -1,0 +1,10 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MapScriptCmdAddMoveReqXyz_1e9bc0(void);
+extern void MapScriptCmdGetNodeMover_1e9cd0(void);
+extern void MapScriptCmdGetNodePos_1e9ea0(void);
+extern void MapScriptCmdGetNodeRot_1e9d90(void);
+const u32 D_0044B570[12] = {
+    (u32)&MapScriptCmdGetNodePos_1e9ea0, $h, (u32)&MapScriptCmdGetNodeRot_1e9d90, $h, (u32)&MapScriptCmdGetNodeMover_1e9cd0, $h, (u32)&MapScriptCmdAddMoveReqXyz_1e9bc0, $h, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044B570[(sizeof(D_0044B570) == 48) ? 1 : -1];

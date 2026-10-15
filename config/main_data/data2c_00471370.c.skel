@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ListInsertAppend_1fdf20(void);
+u32 D_00471370[4] = {
+    $h, $h, (u32)&ListInsertAppend_1fdf20, $h
+};
+typedef char data2c_sizecheck_00471370[(sizeof(D_00471370) == 16) ? 1 : -1];

@@ -1,0 +1,75 @@
+#include "types.h"
+
+typedef struct {
+    u8 pad0[0x18E];
+    s16 unk18E;
+} Sub18_001F6D90;
+
+typedef struct {
+    u8 pad0[0x18];
+    Sub18_001F6D90 *unk18;
+    u8 pad1C[4];
+    s32 unk20;
+} Ctx001F6D90;
+
+extern f32 VecDistXZ_1cb3f0(void *arg0, void *arg1);
+extern s32 MapSlotsIsPointFreeMaybe_1e3730(s32 arg0, void *arg1, f32 arg2);
+extern Ctx001F6D90 *GetGameData_1fede0(void);
+extern s32 FieldMapGetUpdateFlagRelated_201a50(void);
+extern s32 GetMapMgr_201a90(void);
+extern s32 CharaIsFreeToActMaybe_2100a0(s32 arg0);
+extern s32 CharaGetActionMode_213850(s32 arg0);
+extern s32 CharaEvObjContactFlag2Related_2148e0(s32 arg0);
+extern s32 CharaEvObjContactFlag1Related_214920(s32 arg0);
+extern s32 ActionMgrFindById_233b50(void *arg0, s32 arg1);
+extern void CharaGetPos_2388d0(s32 arg0, void *arg1);
+extern s32 GetEventObjMgr_2d1960(void);
+extern s32 EventObjMgrDoorsLiftsIdle_2e8c60(s32 arg0);
+extern void CharaSysEncounterDistTick_3a5890(s32 arg0, f32 arg1);
+extern void SrtGetPosThunk_1c7430(s32 arg0, void *arg1);
+extern u8 D_004B8680[0x400];
+
+void TaskAddEncountDist_1f6d90(void)
+{
+    u8 a[0x10];
+    u8 b[0x10];
+    Ctx001F6D90 *ctx;
+    u8 *tbl;
+    s32 i;
+    s32 e;
+    s32 cur;
+    if (FieldMapGetUpdateFlagRelated_201a50() != 0) {
+        return;
+    }
+    ctx = GetGameData_1fede0();
+    tbl = D_004B8680;
+    cur = ctx->unk18->unk18E;
+    for (i = 0; i <= 11; i++) {
+        e = ActionMgrFindById_233b50(tbl, i);
+        if (e != 0 && CharaGetActionMode_213850(e) == 7) {
+            return;
+        }
+    }
+    e = ActionMgrFindById_233b50(tbl, cur);
+    if (e == 0) {
+        return;
+    }
+    if (CharaIsFreeToActMaybe_2100a0(e) == 0) {
+        return;
+    }
+    if (CharaEvObjContactFlag1Related_214920(e) != 0) {
+        return;
+    }
+    if (CharaEvObjContactFlag2Related_2148e0(e) != 0) {
+        return;
+    }
+    CharaGetPos_2388d0(e, a);
+    if (MapSlotsIsPointFreeMaybe_1e3730(GetMapMgr_201a90(), a, 0.0f) == 0) {
+        return;
+    }
+    if (EventObjMgrDoorsLiftsIdle_2e8c60(GetEventObjMgr_2d1960()) == 0) {
+        return;
+    }
+    SrtGetPosThunk_1c7430(e, b);
+    CharaSysEncounterDistTick_3a5890(ctx->unk20, VecDistXZ_1cb3f0(a, b));
+}

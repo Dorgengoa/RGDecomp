@@ -1,0 +1,13 @@
+#include "types.h"
+
+/* Read the s32 at +0x14. */
+
+typedef struct Obj_FUN_001e7ba0 {
+    u8 pad000[0x14];
+    s32 field;         /* +0x14 */
+} Obj_FUN_001e7ba0;
+
+s32 MapDataGetHeapSize_1e7ba0(Obj_FUN_001e7ba0 *o)
+{
+    return o->field;
+}

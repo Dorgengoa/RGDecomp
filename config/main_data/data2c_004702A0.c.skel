@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void CollFrameGetTypeId_16d470(void);
+extern void CollFrameInit_16be20(void);
+extern void CollFrameIsKindOf_16d480(void);
+u32 D_004702A0[8] = {
+    $h, $h, (u32)&CollFrameGetTypeId_16d470, (u32)&CollFrameIsKindOf_16d480, (u32)&CollFrameInit_16be20, $h, $h, $h
+};
+typedef char data2c_sizecheck_004702A0[(sizeof(D_004702A0) == 32) ? 1 : -1];

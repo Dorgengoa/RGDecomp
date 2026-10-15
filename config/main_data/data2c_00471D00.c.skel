@@ -1,0 +1,32 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void JudgeObjectApplyHitsNop_3141e0(void);
+extern void JudgeObjectDrawModelNop_313f00(void);
+extern void JudgeObjectGetGravityZero_313f40(void);
+extern void JudgeObjectGetOwnerPos_314020(void);
+extern void JudgeObjectGetPosOrigin_313f60(void);
+extern void JudgeObjectGetRadiusZero_313fa0(void);
+extern void JudgeObjectGetRestitutionZero_313f50(void);
+extern void JudgeObjectGetVelZero_313f80(void);
+extern void JudgeObjectHitIntervalCheckMaybe_3140e0(void);
+extern void JudgeObjectOnMapHit_3141f0(void);
+extern void JudgeObjectSetGravityNop_314000(void);
+extern void JudgeObjectSetPosNop_313fb0(void);
+extern void JudgeObjectSetPosVecNop_313fc0(void);
+extern void JudgeObjectSetRadiusNop_313ff0(void);
+extern void JudgeObjectSetRestitutionNop_314010(void);
+extern void JudgeObjectSetVelNop_313fd0(void);
+extern void JudgeObjectSetVelVecNop_313fe0(void);
+extern void JudgeObjectSyncOwnerThunk_314590(void);
+extern void JudgeObjectVslotCZeroRelated_313ed0(void);
+extern void NodeRefObjApplyHit_3184a0(void);
+extern void NodeRefObjBuildAttackShape_318aa0(void);
+extern void NodeRefObjBuildBodyShape_318a50(void);
+extern void NodeRefObjDtor_2166a0(void);
+extern void NodeRefObjGetKind_3194f0(void);
+extern void NodeRefObjOnHitByTrue_318490(void);
+extern void NodeRefObjUpdate_318af0(void);
+u32 D_00471D00[28] = {
+    $h, $h, (u32)&NodeRefObjUpdate_318af0, (u32)&JudgeObjectVslotCZeroRelated_313ed0, (u32)&NodeRefObjBuildAttackShape_318aa0, (u32)&NodeRefObjBuildBodyShape_318a50, (u32)&JudgeObjectSyncOwnerThunk_314590, (u32)&JudgeObjectDrawModelNop_313f00, (u32)&JudgeObjectOnMapHit_3141f0, (u32)&NodeRefObjApplyHit_3184a0, (u32)&NodeRefObjOnHitByTrue_318490, (u32)&JudgeObjectApplyHitsNop_3141e0, (u32)&JudgeObjectHitIntervalCheckMaybe_3140e0, (u32)&NodeRefObjGetKind_3194f0, (u32)&JudgeObjectGetGravityZero_313f40, (u32)&JudgeObjectGetRestitutionZero_313f50, (u32)&JudgeObjectGetPosOrigin_313f60, (u32)&JudgeObjectGetVelZero_313f80, (u32)&JudgeObjectGetRadiusZero_313fa0, (u32)&JudgeObjectGetOwnerPos_314020, (u32)&JudgeObjectSetPosVecNop_313fc0, (u32)&JudgeObjectSetPosNop_313fb0, (u32)&JudgeObjectSetVelVecNop_313fe0, (u32)&JudgeObjectSetVelNop_313fd0, (u32)&JudgeObjectSetRadiusNop_313ff0, (u32)&JudgeObjectSetGravityNop_314000, (u32)&JudgeObjectSetRestitutionNop_314010, (u32)&NodeRefObjDtor_2166a0
+};
+typedef char data2c_sizecheck_00471D00[(sizeof(D_00471D00) == 112) ? 1 : -1];

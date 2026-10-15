@@ -1,0 +1,77 @@
+#include "types.h"
+
+class Obj {
+public:
+    virtual void v0();
+    virtual void v1(void *p, s32 z, s32 f, s32 z2);
+    virtual void v2();
+    virtual void v3();
+    virtual void v4();
+    virtual void v5();
+    virtual void v6();
+    virtual void v7();
+    virtual void v8();
+    virtual void v9();
+    virtual void v10();
+    virtual void v11();
+    virtual void v12();
+    virtual void v13();
+    virtual void v14();
+    virtual void v15();
+    virtual void v16();
+    virtual void v17();
+};
+
+struct This {
+    void *m00;
+    u8    pad04[0x4];
+    Obj  *m08;
+    Obj  *m0C;
+};
+
+extern const s32   D_004644A8;
+extern void *const D_004657B0;
+extern void *const D_004657B8;
+
+extern "C" void *MemStackNew_14e130(s32 size);
+extern "C" void *DataTableCtor_41d390(void *p);
+extern "C" void *MemStackNew_14e0b0(s32 size, void *tag);
+extern "C" void *ConstructNewArray_100710(void *mem, void *fn, s32 z, s32 stride, s32 n);
+extern "C" void  DataTableCtor_41d130();
+
+extern "C" s32 WorldSubsysInit_41c680(This *self, void *a, u8 *b)
+{
+    void *t;
+    void *m;
+    Obj  *e;
+    s32   i;
+    s32   flag;
+    void *arg;
+    s32   n;
+
+    if (a == 0) return 0;
+    self->m00 = a;
+    t = MemStackNew_14e130(0x94);
+    if (t != 0) t = DataTableCtor_41d390(t);
+    self->m08 = (Obj *)t;
+    if (t == 0) return 0;
+    n = D_004644A8;
+    m = ConstructNewArray_100710(MemStackNew_14e0b0(n * 0x98 + 0x10, self->m00),
+                     (void *)DataTableCtor_41d130, 0, 0x98, n);
+    self->m0C = (Obj *)m;
+    if (m == 0) return 0;
+    if (self->m08 != 0) {
+        self->m08->v1(self->m00, 0, D_004657B0 != 0, 0);
+    }
+    e = self->m0C;
+    if (e == 0) goto done;
+    flag = D_004657B8 != 0;
+    for (i = 0; i < n; i++, e = (Obj *)((u8 *)e + 0x98)) {
+        arg = a;
+        if (b != 0) arg = (void *)(b + i * 88);
+        e->v17();
+        e->v1(arg, 0, flag, 0);
+    }
+done:
+    return 1;
+}

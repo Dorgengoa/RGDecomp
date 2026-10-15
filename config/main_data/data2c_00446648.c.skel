@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EntryPad_100000(void);
+extern void func_0011FED8(void);
+extern void func_00200000(void);
+const u32 D_00446648[172] = {
+    $h, (u32)&func_0011FED8, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, (u32)&EntryPad_100000, $h, $h, $h, $h, $h, $h, $h, (u32)&func_00200000, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00446648[(sizeof(D_00446648) == 688) ? 1 : -1];

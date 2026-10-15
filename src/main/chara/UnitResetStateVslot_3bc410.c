@@ -1,0 +1,13 @@
+#include "types.h"
+
+extern void UnitKind2502ResetState_3bc4b0(s32);
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+void UnitResetStateVslot_3bc410(s32 p0)
+{
+    UnitKind2502ResetState_3bc4b0(p0);
+}

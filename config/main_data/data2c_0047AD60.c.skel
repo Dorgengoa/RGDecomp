@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void LocationTypeBGetTypeId_419680(void);
+extern void LocationTypeBIsKindOf_419690(void);
+u32 D_0047AD60[4] = {
+    $h, $h, (u32)&LocationTypeBGetTypeId_419680, (u32)&LocationTypeBIsKindOf_419690
+};
+typedef char data2c_sizecheck_0047AD60[(sizeof(D_0047AD60) == 16) ? 1 : -1];

@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EntryPad_100000(void);
+const u32 D_004503C0[48] = {
+    $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, (u32)&EntryPad_100000, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_004503C0[(sizeof(D_004503C0) == 192) ? 1 : -1];

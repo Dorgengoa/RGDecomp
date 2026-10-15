@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ContainerViewGetAtFwd_40e8b0(void);
+extern void ContainerViewItemFilterCountMatches_40c1c0(void);
+extern void ContainerViewItemFilterGetNthMatch_40c0a0(void);
+u32 D_004792E0[8] = {
+    $h, $h, (u32)&ContainerViewItemFilterCountMatches_40c1c0, (u32)&ContainerViewGetAtFwd_40e8b0, (u32)&ContainerViewItemFilterGetNthMatch_40c0a0, $h, $h, $h
+};
+typedef char data2c_sizecheck_004792E0[(sizeof(D_004792E0) == 32) ? 1 : -1];

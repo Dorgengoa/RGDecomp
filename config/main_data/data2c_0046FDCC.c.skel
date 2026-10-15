@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_004556F0[];
+extern void WistreamVirtualDtorThunk_106820(void);
+u32 D_0046FDCC[3] = {
+    (u32)((u8*)&D_004556F0 + 0xC8u), $h, (u32)&WistreamVirtualDtorThunk_106820
+};
+typedef char data2c_sizecheck_0046FDCC[(sizeof(D_0046FDCC) == 12) ? 1 : -1];

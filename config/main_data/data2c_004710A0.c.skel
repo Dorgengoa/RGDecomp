@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MotionEventFootSeGetKind_1b2580(void);
+extern void MotionEventFootSeGetTag_1b2590(void);
+extern void MotionEventFootSeWriteText_1b16b0(void);
+u32 D_004710A0[8] = {
+    $h, $h, (u32)&MotionEventFootSeGetKind_1b2580, (u32)&MotionEventFootSeGetTag_1b2590, (u32)&MotionEventFootSeWriteText_1b16b0, $h, $h, $h
+};
+typedef char data2c_sizecheck_004710A0[(sizeof(D_004710A0) == 32) ? 1 : -1];

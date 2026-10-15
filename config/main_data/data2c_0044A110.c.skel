@@ -1,0 +1,19 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void TexAnimeCfgAlphaBlendCmd_1621e0(void);
+extern void TexAnimeCfgAlphaTestCmd_162180(void);
+extern void TexAnimeCfgBugPatchCmd_161e20(void);
+extern void TexAnimeCfgClutCopyCmd_1622b0(void);
+extern void TexAnimeCfgColorCmd_162210(void);
+extern void TexAnimeCfgDestTexCmd_162490(void);
+extern void TexAnimeCfgScrollCmd_1622e0(void);
+extern void TexAnimeCfgSrcTexCmd_1625c0(void);
+extern void TexAnimeCfgTexAnimeCmd_1626f0(void);
+extern void TexAnimeCfgTexAnimeDataCmd_162690(void);
+extern void TexAnimeCfgTexAnimeDataEndCmd_161e80(void);
+extern void TexAnimeCfgTexAnimeEndCmd_161e30(void);
+extern void TexAnimeCfgWaitCmd_162100(void);
+const u32 D_0044A110[28] = {
+    $h, (u32)&TexAnimeCfgTexAnimeCmd_1626f0, $h, (u32)&TexAnimeCfgTexAnimeDataCmd_162690, $h, (u32)&TexAnimeCfgSrcTexCmd_1625c0, $h, (u32)&TexAnimeCfgDestTexCmd_162490, $h, (u32)&TexAnimeCfgScrollCmd_1622e0, $h, (u32)&TexAnimeCfgClutCopyCmd_1622b0, $h, (u32)&TexAnimeCfgColorCmd_162210, $h, (u32)&TexAnimeCfgAlphaBlendCmd_1621e0, $h, (u32)&TexAnimeCfgAlphaTestCmd_162180, $h, (u32)&TexAnimeCfgWaitCmd_162100, $h, (u32)&TexAnimeCfgTexAnimeDataEndCmd_161e80, $h, (u32)&TexAnimeCfgTexAnimeEndCmd_161e30, $h, (u32)&TexAnimeCfgBugPatchCmd_161e20, $h, $h
+};
+typedef char data2c_sizecheck_0044A110[(sizeof(D_0044A110) == 112) ? 1 : -1];

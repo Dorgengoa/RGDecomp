@@ -1,0 +1,254 @@
+# Object post-processing rules -- read by scripts/objfix.py (called from hostbuild.py).
+#   <symbol>      redirect  <section>  <D_symbol>
+# The section is retail data asm/data already carries at D_symbol: relocations
+# against it are retargeted there and the section is dropped from the object.
+ParticleEmitterSpawnMaybe_1a8ad0    redirect  .sdata  D_0047E1B0   # f32 sc[4] = {0,0,1,0} initializer
+TextEntryBackspace_434db0    redirect  .sdata  D_00480350   # s16 tbl[5] = {20,11,7,4,20} initializer
+MapWarpModeUpdate_284060    redirect  .sdata  D_0047E9E0   # f32 r[4] = {x,y,z,1} initializer (1st .sdata section)
+MapWarpModeUpdate_284060    redirect  .sdata  D_0047E9F0   # f32 q[4] = {0,ry,0,1} initializer (2nd .sdata section)
+FocusFilterDrawMaybe_17c000    redirect  .sdata  D_0047DFA0   # f32 col[4] initializer (c17k)
+FocusFilterDrawMaybe_17c000    redirect  .sdata  D_0047DFB0   # s32 dx[4] initializer
+FocusFilterDrawMaybe_17c000    redirect  .sdata  D_0047DFC0   # s32 dy[4] initializer
+CharaActDispatch_20d190    redirect  .sdata  D_0047E630   # s32 arr[4] = {-10,-11,-20,-21} initializer (s86m)
+SunFlareDrawQuadsMaybe_17b390    redirect  .data   D_0044A480   # s32 ox[8] initializer (1st .data section, s88m)
+SunFlareDrawQuadsMaybe_17b390    redirect  .data   D_0044A4A0   # s32 oy[8] initializer (2nd .data section)
+GfxFlipBuffersMaybe_143650    redirect  .sdata  D_0047DE30   # u64 giftag[2] = {SET_TAG(0,1,0,0,0,1), 0xE} initializer (s88m)
+DynClothSubstep_1697c0    redirect  .lit4   D_0047D1D8   # -0.1f float literal (1st .lit4 section, R_MIPS_LITERAL, s88m)
+DynClothSubstep_1697c0    redirect  .lit4   D_0047D244   # 0.1f float literal (2nd .lit4 section)
+DynClothSubstep_1697c0    redirect  .lit4   D_0047D1E8   # 0.3f float literal (3rd .lit4 section)
+McSaveStep_374110    redirect  .sbss   D_004831AC   # function-local `static s32` (only user; alias-free sw = retail schedule, s88m)
+SunLightDraw_293410    redirect  .sdata  D_0047EB60   # Vec4 up = {0,1,0,0} initializer (1st .sdata section, s88m)
+SunLightDraw_293410    redirect  .sdata  D_0047EB70   # f32 col[2] = {1.0,1.8} initializer (2nd .sdata section)
+SunLightDraw_293410    redirect  .sdata  D_0047EB78   # f32 kk[2] = {1.0,0.65} initializer (3rd .sdata section)
+SunLightDraw_293410    redirect  .lit4   D_0047D7C4   # 0.3f float literal (1st .lit4 section, R_MIPS_LITERAL)
+SunLightDraw_293410    redirect  .lit4   D_0047D288   # 0.6f float literal (2nd .lit4 section)
+CameraObjOrbitControlMaybe_161260    redirect  .sbss   D_00481120   # function-local `static s32` (only user; alias-free sw = li-first schedule, s88m)
+AiCmdPickRecoveryItemMaybe_2c3be0    redirect  .lit4   D_0047D288   # 0.6f float literal (1st .lit4 section, R_MIPS_LITERAL, s88m)
+AiCmdPickRecoveryItemMaybe_2c3be0    redirect  .lit4   D_0047D1E8   # 0.3f float literal (2nd .lit4 section)
+LensFlareDraw_2ed830    redirect  .lit4   D_0047D7CC   # 0.1f float literal (1st .lit4 section, R_MIPS_LITERAL, s88m)
+LensFlareDraw_2ed830    redirect  .lit4   D_0047D7EC   # 1.1666666f float literal (2nd .lit4 section)
+InsectMenuCageSelectMaybe_395a20    redirect  .lit4   D_0047DD2C   # -0.1f float literal (1st .lit4 section, R_MIPS_LITERAL, s88m)
+FuncDataTableFindNearestPlightsMaybe_190220    redirect  .lit4   D_0047D5D0   # 0.2f float literal (R_MIPS_LITERAL, s88m)
+InsectMenuCageSelectMaybe_395a20    redirect  .lit4   D_0047D288   # 0.6f float literal (2nd .lit4 section)
+InsectMenuCageSelectMaybe_395a20    redirect  .lit4   D_0047DADC   # 0.1f float literal (3rd .lit4 section)
+FontDrawTextGradient_26c6e0    redirect  .sdata  D_0047E9A0   # RGBAQ rc = {0x80,0x80,0x80,alpha,0} initializer (8 B, default threshold, s88m)
+HatenaMarkStep_345540    redirect  .sdata  D_0047F680   # Vec4 v = {0.1,0.1,0.1,1} initializer (1st .sdata section, s88m)
+HatenaMarkStep_345540    redirect  .sdata  D_0047F690   # Vec4 v2 = {0.1,0.1,0.1,1} initializer (2nd .sdata section)
+HatenaMarkStep_345540    redirect  .sdata  D_0047F6A0   # Vec4 c3 = {0,37,0,1} initializer (3rd .sdata section)
+HatenaMarkStep_345540    redirect  .sdata  D_0047F6B0   # Vec4 c4 = {0,0,0,1} initializer (4th .sdata section)
+HatenaMarkStep_345540    redirect  .lit4   D_0047DAF0   # 6.2831855f float literal (1st .lit4 section, R_MIPS_LITERAL, s88m)
+HatenaMarkStep_345540    redirect  .lit4   D_0047D94C   # 0.3f float literal (2nd .lit4 section)
+HatenaMarkStep_345540    redirect  .lit4   D_0047DAEC   # 0.099f float literal (3rd .lit4 section)
+HatenaMarkStep_345540    redirect  .lit4   D_0047D354   # 1.2f float literal (4th .lit4 section)
+HatenaMarkStep_345540    redirect  .lit4   D_0047DAE8   # 0.07f float literal (5th .lit4 section)
+HatenaMarkStep_345540    redirect  .lit4   D_0047D248   # 0.7f float literal (6th .lit4 section)
+HatenaMarkStep_345540    redirect  .lit4   D_0047DAC4   # 0.05f float literal (7th .lit4 section)
+HatenaMarkStep_345540    redirect  .lit4   D_0047DAE4   # 3.14f float literal (8th .lit4 section)
+HatenaMarkStep_345540    redirect  .lit4   D_0047DADC   # 0.1f float literal (9th .lit4 section)
+HatenaMarkStep_345540    redirect  .lit8   D_0047D190   # 0.1 double literal (only .lit8 section, R_MIPS_LITERAL)
+FontDrawText_26cdc0    redirect  .sdata  D_0047E990   # RGBAF colC = {0x40,0x40,0x80,0x80,0.0f} initializer (1st .sdata section, s88m)
+FontDrawText_26cdc0    redirect  .sdata  D_0047E998   # RGBAQ e = {0x80,0x80,0x80,alpha,0} initializer (2nd .sdata section)
+# MinimapDrawEntry_325720 (s79m MATCH a87): 14 mwcc @N .sdata initializers, in .sdata section order, bytes verified == retail
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F360   # @252 col {128,128,128,128}
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F370   # @271
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F380   # @320
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F390   # @325
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F3A0   # @364
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F3B0   # @392
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F3C0   # @420
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F3D0   # @438
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F3E0   # @488
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F3F0   # @541
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F400   # @616 (4 bytes)
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F404   # @618 (4 bytes)
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F410   # @639
+MinimapDrawEntry_325720    redirect  .sdata  D_0047F420   # @686
+McSaveCreateStep_375090    redirect  .sdata  D_0047FAA8   # function-local `static s8 = -1` (only user; alias-free gp access = retail schedule, s88m)
+McSaveCreateStep_375090    redirect  .sbss   D_0048319C   # function-local `static s32` (1st .sbss section, decl order)
+McSaveCreateStep_375090    redirect  .sbss   D_004831A0   # function-local `static s32` (2nd .sbss section)
+CollMeshBuildFromRes_16c740    redirect  .lit4   D_0047D870   # 0.99f float literal (1st .lit4 section, R_MIPS_LITERAL, s88m)
+CollMeshBuildFromRes_16c740    redirect  .lit4   D_0047DA2C   # 0.0001f float literal (2nd .lit4 section)
+InsectBattleMenuFrameNineSliceMaybe_393ac0    redirect  .sdata  D_0047FD10   # f32 X[3] = {0,16,16+8*sx} initializer (1st .sdata section, s88m)
+InsectBattleMenuFrameNineSliceMaybe_393ac0    redirect  .sdata  D_0047FD20   # f32 Y[3] = {0,16,16+8*sy} initializer (2nd .sdata section)
+InsectBattleMenuFrameNineSliceMaybe_393ac0    redirect  .sdata  D_0047FD30   # f32 U[3] = {0,16,24} initializer (3rd .sdata section)
+InsectBattleMenuFrameNineSliceMaybe_393ac0    redirect  .sdata  D_0047FD40   # f32 V[3] = {0,16,24} initializer (4th .sdata section)
+InsectBattleMenuFrameNineSliceMaybe_393ac0    redirect  .sdata  D_0047FD50   # f32 S[3] = {16,8,16} initializer (5th .sdata section)
+AttackChainStartMaybe_382910    redirect  .lit4   D_0047D7EC   # 1.1666666f float literal (1st .lit4 section, R_MIPS_LITERAL, s88m)
+AttackChainStartMaybe_382910    redirect  .lit4   D_0047D1FC   # 3.1415927f float literal (2nd .lit4 section)
+AttackChainStartMaybe_382910    redirect  .lit4   D_0047DCD8   # 6.2831855f float literal (3rd .lit4 section)
+SplineEvalBezierSolveTime_14b8a0    redirect  .lit4   D_0047D24C   # 0.001f float literal (only .lit4 section, R_MIPS_LITERAL, s88m)
+AmixerBlendCurveEvalMaybe_170180    redirect  .lit4   D_0047D24C   # 0.001f float literal (1st .lit4 section, R_MIPS_LITERAL, s88m)
+AmixerBlendCurveEvalMaybe_170180    redirect  .lit4   D_0047D260   # 0.6666f float literal (2nd .lit4 section)
+AmixerBlendCurveEvalMaybe_170180    redirect  .lit4   D_0047D25C   # 0.3333f float literal (3rd .lit4 section)
+AmixerBlendCurveEvalMaybe_170180    redirect  .lit4   D_0047D258   # 0.0001f float literal (4th .lit4 section)
+AmixerBlendCurveEvalMaybe_170180    redirect  .lit4   D_0047D254   # 0.9999f float literal (5th .lit4 section)
+UiScrollBarSpritesLayoutMaybe_392e60    redirect  .sdata  D_0047FDC0   # static f32 V[3] = {248,248,248} (1st .sdata section, s88m)
+UiScrollBarSpritesLayoutMaybe_392e60    redirect  .sdata  D_0047FDD0   # static f32 U[3] = {74,80,88} (2nd .sdata section)
+UiScrollBarSpritesLayoutMaybe_392e60    redirect  .sdata  D_0047FDE0   # static f32 S[3] = {8,8,8} (3rd .sdata section)
+UiScrollBarSpritesLayoutMaybe_392e60    redirect  .sdata  D_0047FDF0   # static f32 E[3] = {6,8,6} (4th .sdata section)
+UiScrollBarSpritesLayoutMaybe_392e60    redirect  .sdata  D_0047FE00   # f32 H[3] = {6,fh-12,6} initializer (5th .sdata section)
+UiScrollBarSpritesLayoutMaybe_392e60    redirect  .sdata  D_0047FE10   # f32 Y[3] = {0,6,fh-6} initializer (6th .sdata section)
+ScriptCmdEffectNearestEnemyId_32cda0    redirect  .sdata  D_0047F5C0   # f32 pos[4] = {0,0,0,1} initializer (1st .sdata section, s88m)
+ScriptCmdEffectNearestEnemyId_32cda0    redirect  .sdata  D_0047F5D0   # s32 id[2] = {-1,-1} initializer (2nd .sdata section)
+ScriptCmdEffectNearestEnemyId_32cda0    redirect  .sdata  D_0047F5D8   # f32 dist[2] = {50000,50000} initializer (3rd .sdata section)
+GuardWaveEffectStepMaybe_2d56f0    redirect  .lit4   D_0047DADC   # 0.1f float literal (1st .lit4 section, R_MIPS_LITERAL, s88m)
+GuardWaveEffectStepMaybe_2d56f0    redirect  .lit4   D_0047DAD8   # 0.030000001f float literal (2nd .lit4 section)
+GuardWaveEffectStepMaybe_2d56f0    redirect  .lit4   D_0047DAD4   # 0.23333333f float literal (3rd .lit4 section)
+InsectCageMenuStepMaybe_38a500    redirect  .lit4   D_0047D1FC   # 3.1415927f float literal (R_MIPS_LITERAL, s88m)
+MatMulPointXyz_1cb780    redirect  .sdata  D_0047E2B0   # f32 v[4] = {x,y,z,1} initializer (only .sdata section, s88m acc6)
+HeadLookUpdate_1c5460    redirect_each  .lit4   D_0047DAF4 D_0047DAF8 D_0047DAFC D_0047DB00   # 4 float literals, one pool word per load in .text order (s88m 1c54, litscore.py)
+XformRecUpdateMaybe_1c5ee0    redirect_each  .lit4   D_0047D2D8 D_0047D2DC D_0047D2E0 D_0047D2E4   # -pi,2pi,-pi,2pi: retail gives each load its own word (s88m 1c5, litscore.py)
+OperatorDelete_100840    drop      .exceptix   # C++ EH table of operator delete throw() (retail has no table; libdeasm 100840)
+OperatorDelete_100840    drop      .exception  # its EH action data (retail has none)
+OperatorNew_100990    drop      .exceptix   # C++ EH table of operator new (retail has no table; libdeasm 100990)
+OperatorNew_100990    redirect  .rodata  D_004554E0   # throw type string "!std::exception!!std::bad_alloc!!" (retail copy; libdeasm 100990)
+TaskStepJudgeObject_3135c0   redirect  .sdata  D_0047F200   # f32 center[4] = {0,0,0,1} initializer (only .sdata section, libdeasm dark7)
+UiNineSliceSpritesLayout_3930d0   redirect  .sdata  D_0047FD60   # f32 X[3] = {0,8,8+8*((w-26)/8)} initializer (1st .sdata section, libdeasm dark7)
+UiNineSliceSpritesLayout_3930d0   redirect  .sdata  D_0047FD70   # f32 Y[3] = {0,36,36+8*((h-44)/8)} initializer (2nd .sdata section)
+UiNineSliceSpritesLayout_3930d0   redirect  .sdata  D_0047FD80   # s32 W[3] = {8,8,18} initializer (3rd .sdata section)
+UiNineSliceSpritesLayout_3930d0   redirect  .sdata  D_0047FD90   # s32 H[3] = {36,8,8} initializer (4th .sdata section)
+UiNineSliceSpritesLayout_3930d0   redirect  .sdata  D_0047FDA0   # s32 U[3] = {0,8,16} initializer (5th .sdata section)
+UiNineSliceSpritesLayout_3930d0   redirect  .sdata  D_0047FDB0   # s32 V[3] = {122,158,166} initializer (6th .sdata section)
+EhDispatchHandler_1011d0    redirect  .rodata jtbl_00455510   # switch jump table = data2c_00455510's copy (libdeasm 1011d0)
+EhUnexpected_1014d0    drop      .exceptix   # C++ EH table of __unexpected's try/catch (retail has no table; libdeasm 1014d0)
+EhUnexpected_1014d0    drop      .exception  # its EH action data (retail has none)
+EhUnexpected_1014d0    redirect  .rodata  D_00455570   # throw type string "!std::exception!!std::bad_exception!!" (retail copy; libdeasm 1014d0)
+SharedArrayPtrCtor_102b30    drop      .exceptix   # C++ EH table of the try/catch(...) (retail has no word 0x102b30; libdeasm 102b30)
+SharedArrayPtrCtor_102b30    drop      .exception  # its EH action data (retail has none)
+IosBaseInitCtor_102bd0    drop      .exceptix   # C++ EH table of the 4 placement-new cleanups (retail has no word 0x102bd0; libdeasm 102bd0)
+IosBaseInitCtor_102bd0    drop      .exception  # its EH action data (retail has none)
+EhGetCatchRecord_101700    redirect  .rodata jtbl_004555A0   # switch jump table = data2c_004555A0's copy (libdeasm 101700)
+EhUnwindActions_101860    redirect  .rodata jtbl_004555E0   # switch jump table = data2c_004555E0's copy (libdeasm 101860)
+EhSkipActions_102070    redirect  .rodata jtbl_00455620   # switch jump table = data2c_00455620's copy (libdeasm 102070)
+WIosBaseInitCtor_103110    drop      .exceptix   # C++ EH table of the 4 placement-new cleanups (retail has no word 0x103110; libdeasm 103110)
+WIosBaseInitCtor_103110    drop      .exception  # its EH action data (retail has none)
+IstreamCtor_103f50    drop      .exceptix   # C++ EH table of basic_istream(streambuf*) vbase cleanup (retail has no word 0x103f50; libdeasm 103f50)
+IstreamCtor_103f50    drop      .exception  # its EH action data (retail has none)
+IstreamCtor_103f50    rename    __ct__13basic_istreamFPv IstreamCtor_103f50   # real C++ ctor -> retail unit symbol (libdeasm 103f50)
+IstreamCtor_103f50    rename    __vt__8ios_base D_0046FDA0          # ios_base vtable (retail D_0046FDA0)
+IstreamCtor_103f50    rename    __vt__9basic_ios D_0046FEA8         # basic_ios vtable (retail D_0046FEA8)
+IstreamCtor_103f50    rename    __vt__13basic_istream D_0046FE90    # basic_istream vtable (+0xC = vbase vtable D_0046FE9C)
+IstreamCtor_103f50    rename    init__9basic_iosFPv IosInit_102a50    # basic_ios::init (retail IosInit_102a50)
+IstreamCtor_103f50    rename    __dt__9basic_iosFv IosDtor_103700     # basic_ios dtor (retail vtable D_0046FEA8 slot; only the dropped .exception used it)
+WistreamCtor_104000    drop      .exceptix   # C++ EH table of basic_istream<wchar_t>(streambuf*) vbase cleanup (retail has none; libdeasm 104000)
+WistreamCtor_104000    drop      .exception  # its EH action data (retail has none)
+WistreamCtor_104000    rename    __ct__14basic_wistreamFPv WistreamCtor_104000  # real C++ ctor -> retail unit symbol (libdeasm 104000)
+WistreamCtor_104000    rename    __vt__8ios_base D_0046FDA0          # ios_base vtable (retail D_0046FDA0)
+WistreamCtor_104000    rename    __vt__10basic_wios D_0046FDD8       # basic_ios<wchar_t> vtable (retail D_0046FDD8)
+WistreamCtor_104000    rename    __vt__14basic_wistream D_0046FDC0   # basic_istream<wchar_t> vtable (+0xC = vbase vtable D_0046FDCC)
+WistreamCtor_104000    rename    init__10basic_wiosFPv IosInit_102a50  # basic_ios::init (retail IosInit_102a50)
+WistreamCtor_104000    rename    __dt__10basic_wiosFv WiosDtor_103650   # basic_ios<wchar_t> dtor (retail vtable D_0046FDD8 slot 2; only the dropped .exception used it)
+OstreamCtor_104270    drop      .exceptix   # C++ EH table of basic_ostream(streambuf*) vbase cleanup (retail has none; libdeasm 104270)
+OstreamCtor_104270    drop      .exception  # its EH action data (retail has none)
+OstreamCtor_104270    rename    __ct__13basic_ostreamFPv OstreamCtor_104270   # real C++ ctor -> retail unit symbol (libdeasm 104270)
+OstreamCtor_104270    rename    __vt__8ios_base D_0046FDA0          # ios_base vtable (retail D_0046FDA0)
+OstreamCtor_104270    rename    __vt__9basic_ios D_0046FEA8         # basic_ios vtable (retail D_0046FEA8)
+OstreamCtor_104270    rename    __vt__13basic_ostream D_0046FEC0    # basic_ostream vtable (+0xC = vbase vtable D_0046FECC)
+OstreamCtor_104270    rename    init__9basic_iosFPv IosInit_102a50    # basic_ios::init (retail IosInit_102a50)
+OstreamCtor_104270    rename    __dt__9basic_iosFv IosDtor_103700     # basic_ios dtor (retail vtable D_0046FEA8 slot 2; only the dropped .exception used it)
+OstreamFlush_1040b0    drop      .exceptix   # C++ EH table of basic_ostream::flush try/catch (retail has none; libdeasm 1040b0)
+OstreamFlush_1040b0    drop      .exception  # its EH action data (retail has none)
+OstreamFlush_1040b0    redirect  .rodata  D_00455A60   # throw type string "!std::exception!!std::ios_base::failure!!" (retail copy)
+OstreamFlush_1040b0    rename    __vt__7Failure D_0046FDB0         # ios_base::failure vtable (retail D_0046FDB0)
+OstreamFlush_1040b0    rename    __dt__7FailureFv IosBaseFailureDtor_1028f0     # ios_base::failure dtor (retail D_0046FDB0 slot 2)
+OstreamFlush_1040b0    rename    __dt__5RcPtrFv SharedArrayPtrDtor_102ab0       # failure msg RcPtr dtor (retail, called by IosBaseFailureDtor_1028f0; only the dropped .exception used it)
+OstreamFlush_1040b0    rename    __dt__9ExceptionFv ExceptionDtor_1008a0   # std::exception dtor (retail D_0046FD70 slot 2; only the dropped .exception used it)
+WOstreamFlush_104320    drop      .exceptix   # C++ EH table of wide basic_ostream::flush try/catch (retail has none; libdeasm 104320, twin of 1040b0)
+WOstreamFlush_104320    drop      .exception  # its EH action data (retail has none)
+WOstreamFlush_104320    redirect  .rodata  D_00455A60   # throw type string "!std::exception!!std::ios_base::failure!!" (retail copy, same as 1040b0)
+WOstreamFlush_104320    rename    __vt__7Failure D_0046FDB0         # ios_base::failure vtable (retail D_0046FDB0)
+WOstreamFlush_104320    rename    __dt__7FailureFv IosBaseFailureDtor_1028f0     # ios_base::failure dtor (retail D_0046FDB0 slot 2)
+WOstreamFlush_104320    rename    __dt__5RcPtrFv SharedArrayPtrDtor_102ab0       # failure msg RcPtr dtor (only the dropped .exception used it)
+WOstreamFlush_104320    rename    __dt__9ExceptionFv ExceptionDtor_1008a0   # std::exception dtor (only the dropped .exception used it)
+OstreamSentryCtor_106230    drop      .exceptix   # C++ EH table of basic_ostream::sentry ctor try/catch (retail has none; libdeasm 106230)
+OstreamSentryCtor_106230    drop      .exception  # its EH action data (retail has none)
+OstreamSentryCtor_106230    redirect  .rodata  D_00455A60   # throw type string "!std::exception!!std::ios_base::failure!!" (retail copy, same as 1040b0)
+OstreamSentryCtor_106230    rename    __vt__7Failure D_0046FDB0         # ios_base::failure vtable (retail D_0046FDB0)
+OstreamSentryCtor_106230    rename    __dt__7FailureFv IosBaseFailureDtor_1028f0     # ios_base::failure dtor (retail D_0046FDB0 slot 2)
+OstreamSentryCtor_106230    rename    __dt__5RcPtrFv SharedArrayPtrDtor_102ab0       # failure msg RcPtr dtor (only the dropped .exception used it)
+OstreamSentryCtor_106230    rename    __dt__9ExceptionFv ExceptionDtor_1008a0   # std::exception dtor (only the dropped .exception used it)
+WOstreamSentryCtor_106510    drop      .exceptix   # C++ EH table of basic_ostream<wchar_t>::sentry ctor try/catch (retail has none; libdeasm 106510)
+WOstreamSentryCtor_106510    drop      .exception  # its EH action data (retail has none)
+WOstreamSentryCtor_106510    redirect  .rodata  D_00455A60   # throw type string "!std::exception!!std::ios_base::failure!!" (retail copy, same as 106230)
+WOstreamSentryCtor_106510    rename    __vt__7Failure D_0046FDB0         # ios_base::failure vtable (retail D_0046FDB0)
+WOstreamSentryCtor_106510    rename    __dt__7FailureFv IosBaseFailureDtor_1028f0     # ios_base::failure dtor (retail D_0046FDB0 slot 2)
+WOstreamSentryCtor_106510    rename    __dt__5RcPtrFv SharedArrayPtrDtor_102ab0       # failure msg RcPtr dtor (only the dropped .exception used it)
+WOstreamSentryCtor_106510    rename    __dt__9ExceptionFv ExceptionDtor_1008a0   # std::exception dtor (only the dropped .exception used it)
+WostreamCtor_1044e0    drop      .exceptix   # C++ EH table of basic_ostream<wchar_t>(streambuf*) vbase cleanup (retail has none; libdeasm 1044e0)
+WostreamCtor_1044e0    drop      .exception  # its EH action data (retail has none)
+WostreamCtor_1044e0    rename    __ct__14basic_wostreamFPv WostreamCtor_1044e0  # real C++ ctor -> retail unit symbol (libdeasm 1044e0)
+WostreamCtor_1044e0    rename    __vt__8ios_base D_0046FDA0          # ios_base vtable (retail D_0046FDA0)
+WostreamCtor_1044e0    rename    __vt__10basic_wios D_0046FDD8       # basic_ios<wchar_t> vtable (retail D_0046FDD8)
+WostreamCtor_1044e0    rename    __vt__14basic_wostream D_0046FDF0   # basic_ostream<wchar_t> vtable (+0xC = vbase vtable D_0046FDFC)
+WostreamCtor_1044e0    rename    init__10basic_wiosFPv IosInit_102a50  # basic_ios::init (retail IosInit_102a50)
+WostreamCtor_1044e0    rename    __dt__10basic_wiosFv WiosDtor_103650   # basic_ios<wchar_t> dtor (retail vtable D_0046FDD8 slot 2; only the dropped .exception used it)
+# OstreamVirtualDtorThunk_1067f0: basic_ostream<char> dtor vbase thunk (libdeasm 1067f0)
+OstreamVirtualDtorThunk_1067f0    dropfn    key_fn__13basic_ostreamFv          # vtable key function, only there to emit the thunk (no retail code)
+OstreamVirtualDtorThunk_1067f0    drop      .vtables                           # basic_ostream vtable (retail D_0046FEC0/D_0046FECC data2c units)
+OstreamVirtualDtorThunk_1067f0    rename    @8@72@__dt__13basic_ostreamFv OstreamVirtualDtorThunk_1067f0   # mwcc vbase this-adjustor thunk -> retail unit symbol
+OstreamVirtualDtorThunk_1067f0    rename    __dt__13basic_ostreamFv OstreamDtor_102fd0          # ~basic_ostream (retail OstreamDtor_102fd0)
+OstreamVirtualDtorThunk_1067f0    globalize OstreamVirtualDtorThunk_1067f0                      # mwcc emits thunks LOCAL; retail unit symbol is global
+# IstreamVirtualDtorThunk_106800: basic_istream<char> dtor vbase thunk (libdeasm 106800)
+IstreamVirtualDtorThunk_106800    dropfn    key_fn__13basic_istreamFv          # vtable key function, only there to emit the thunk (no retail code)
+IstreamVirtualDtorThunk_106800    drop      .vtables                           # basic_istream vtable (retail data2c units)
+IstreamVirtualDtorThunk_106800    rename    @24@72@__dt__13basic_istreamFv IstreamVirtualDtorThunk_106800  # mwcc vbase this-adjustor thunk -> retail unit symbol
+IstreamVirtualDtorThunk_106800    rename    __dt__13basic_istreamFv IstreamDtor_103070          # ~basic_istream (retail IstreamDtor_103070)
+IstreamVirtualDtorThunk_106800    globalize IstreamVirtualDtorThunk_106800                      # mwcc emits thunks LOCAL; retail unit symbol is global
+# WostreamVirtualDtorThunk_106810: basic_ostream<wchar_t> dtor vbase thunk (libdeasm 106810)
+WostreamVirtualDtorThunk_106810    dropfn    key_fn__14basic_wostreamFv         # vtable key function, only there to emit the thunk (no retail code)
+WostreamVirtualDtorThunk_106810    drop      .vtables                           # basic_wostream vtable (retail data2c units)
+WostreamVirtualDtorThunk_106810    rename    @8@72@__dt__14basic_wostreamFv WostreamVirtualDtorThunk_106810  # mwcc vbase this-adjustor thunk -> retail unit symbol
+WostreamVirtualDtorThunk_106810    rename    __dt__14basic_wostreamFv WostreamDtor_103510         # ~basic_wostream (retail WostreamDtor_103510)
+WostreamVirtualDtorThunk_106810    globalize WostreamVirtualDtorThunk_106810                      # mwcc emits thunks LOCAL; retail unit symbol is global
+# WistreamVirtualDtorThunk_106820: basic_istream<wchar_t> dtor vbase thunk (libdeasm 106820)
+WistreamVirtualDtorThunk_106820    dropfn    key_fn__14basic_wistreamFv         # vtable key function, only there to emit the thunk (no retail code)
+WistreamVirtualDtorThunk_106820    drop      .vtables                           # basic_wistream vtable (retail data2c units)
+WistreamVirtualDtorThunk_106820    rename    @24@72@__dt__14basic_wistreamFv WistreamVirtualDtorThunk_106820  # mwcc vbase this-adjustor thunk -> retail unit symbol
+WistreamVirtualDtorThunk_106820    rename    __dt__14basic_wistreamFv WistreamDtor_1035b0         # ~basic_wistream (retail WistreamDtor_1035b0)
+WistreamVirtualDtorThunk_106820    globalize WistreamVirtualDtorThunk_106820                      # mwcc emits thunks LOCAL; retail unit symbol is global
+DecimalRoundToDigits_106b50    dropfn    __dt__12RoundStorageFv    # unused out-of-line stack-wrapper destructor
+DecimalRoundToDigits_106b50    rename    __dt__3StrFv StringDtor_107b00    # existing string destructor
+
+StringReplace_106f90 drop .exceptix
+StringReplace_106f90 drop .exception
+StringReplace_106f90 dropfn __dt__3StrFv
+StringReplace_106f90 rename __vt__Q23std11logic_error D_0046FF80
+StringReplace_106f90 rename __vt__Q23std12out_of_range D_0046FF70
+StringReplace_106f90 rename __vt__Q23std12length_error D_0046FF60
+StringReplace_106f90 rename __dt__Q23std12out_of_rangeFv OutOfRangeDtor_1074c0
+StringReplace_106f90 rename __dt__Q23std12length_errorFv LengthErrorDtor_107430
+StringReplace_106f90 rename __ct__5RcPtrFPc SharedArrayPtrCtor_102b30
+StringReplace_106f90 redirect .rodata D_00455AC0
+StringReplace_106f90 redirect .rodata D_00455B20
+StringReplaceFill_1075d0 drop .exceptix
+StringReplaceFill_1075d0 drop .exception
+StringReplaceFill_1075d0 rename __vt__Q23std11logic_error D_0046FF80
+StringReplaceFill_1075d0 rename __vt__Q23std12out_of_range D_0046FF70
+StringReplaceFill_1075d0 rename __vt__Q23std12length_error D_0046FF60
+StringReplaceFill_1075d0 rename __dt__Q23std12out_of_rangeFv OutOfRangeDtor_1074c0
+StringReplaceFill_1075d0 rename __dt__Q23std12length_errorFv LengthErrorDtor_107430
+StringReplaceFill_1075d0 rename __ct__5RcPtrFPc SharedArrayPtrCtor_102b30
+StringReplaceFill_1075d0 redirect .rodata D_00455AC0
+StringReplaceFill_1075d0 redirect .rodata D_00455B20
+
+StringReplaceSubstr_107cd0 drop .exceptix
+StringReplaceSubstr_107cd0 drop .exception
+StringReplaceSubstr_107cd0 rename __vt__Q23std11logic_error D_0046FF80
+StringReplaceSubstr_107cd0 rename __vt__Q23std12out_of_range D_0046FF70
+StringReplaceSubstr_107cd0 rename __dt__Q23std12out_of_rangeFv OutOfRangeDtor_1074c0
+StringReplaceSubstr_107cd0 rename __ct__5RcPtrFPc SharedArrayPtrCtor_102b30
+StringReplaceSubstr_107cd0 redirect .rodata D_00455AC0
+StringReserve_107e80 drop .exceptix
+StringReserve_107e80 drop .exception
+StringReserve_107e80 rename __vt__Q23std11logic_error D_0046FF80
+StringReserve_107e80 rename __vt__Q23std12length_error D_0046FF60
+StringReserve_107e80 rename __dt__Q23std12length_errorFv LengthErrorDtor_107430
+StringReserve_107e80 redirect .rodata D_00455B20
+StringReplace_106f90 rename __dt__5RcPtrFv SharedArrayPtrDtor_102ab0   # RcPtr dtor (retail); referenced only by the dropped .exception
+StringReplaceFill_1075d0 rename __dt__5RcPtrFv SharedArrayPtrDtor_102ab0   # RcPtr dtor (retail); referenced only by the dropped .exception
+StringReplaceSubstr_107cd0 rename __dt__5RcPtrFv SharedArrayPtrDtor_102ab0   # RcPtr dtor (retail); referenced only by the dropped .exception
+StringReserve_107e80 rename __dt__5RcPtrFv SharedArrayPtrDtor_102ab0   # RcPtr dtor (retail); referenced only by the dropped .exception
+StringReplace_106f90 rename __dt__Q23std9exceptionFv ExceptionDtor_1008a0   # std::exception dtor (retail ExceptionDtor_1008a0); only the dropped .exception used it
+StringReplaceFill_1075d0 rename __dt__Q23std9exceptionFv ExceptionDtor_1008a0   # std::exception dtor (retail ExceptionDtor_1008a0); only the dropped .exception used it
+StringReplaceSubstr_107cd0 rename __dt__Q23std9exceptionFv ExceptionDtor_1008a0   # std::exception dtor (retail ExceptionDtor_1008a0); only the dropped .exception used it
+StringReserve_107e80 rename __dt__Q23std9exceptionFv ExceptionDtor_1008a0   # std::exception dtor (retail ExceptionDtor_1008a0); only the dropped .exception used it

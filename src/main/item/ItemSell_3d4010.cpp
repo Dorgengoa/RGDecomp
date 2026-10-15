@@ -1,0 +1,4 @@
+#include "types.h"
+class O{public:virtual void v8();virtual void vc();virtual void v10();virtual void v14();virtual void v18();virtual void v1c();virtual void v20();virtual void v24();virtual void v28();virtual void v2c();virtual void v30();virtual void v34();virtual void v38();virtual void v3c();virtual void v40();virtual void v44();virtual void v48();virtual void v4c();virtual s32 value();u8 pad[6];u8 b0:1;u8 b1:1;u8 rest:6;};
+extern "C" {extern void *D_004838E8;s32 ItemIsSellable_3d4360(void);void ItemConsume_3d41b0(O*,s32,s32);s32 ItemGetSellPrice_3d4320(O*);void PartyAddMoney_3c8e90(void*,s64);}
+extern "C" s32 ItemSell_3d4010(O*p,s32 x){s32 before,after,delta,prod;if(!D_004838E8)return 0;if(!ItemIsSellable_3d4360())return 0;before=p->value();ItemConsume_3d41b0(p,x,0);after=0;if(!p->b1)after=p->value();before-=after;if(before>0){prod=before*ItemGetSellPrice_3d4320(p);PartyAddMoney_3c8e90(*(void**)((u8*)D_004838E8+0x18),(s64)prod);return 1;}return 0;}

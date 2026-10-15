@@ -1,0 +1,36 @@
+#include "types.h"
+typedef struct { f32 w[4]; } SD4_0047E7F0;
+extern SD4_0047E7F0 D_0047E7F0 __attribute__((section(".sdata")));
+typedef struct { f32 w[4]; } SD4_0047E800;
+extern SD4_0047E800 D_0047E800 __attribute__((section(".sdata")));
+
+extern s32 ScriptGetInt_2490f0(void);
+extern s32 MenuWinGet_2653e0(s32 arg0);
+extern void MenuWinSetBlendMode_26c270(s32 arg0, s32 arg1);
+extern void MenuWinSetSize_26c320(s32 arg0, s32 arg1, s32 arg2);
+extern void MenuWinSetColor_26c380(s32 arg0, f32 *arg1);
+extern void MenuWinSetPos_26c3b0(s32 arg0, f32 *arg1);
+extern void MenuWinSetDrawMode_26c3e0(s32 arg0, s32 arg1);
+extern void MenuWinInit_26c450(s32 arg0);
+
+
+s32 EvCmdMenuWinReset_243c70(void) {
+    f32 a[4];
+    f32 b[4];
+    s32 temp_2;
+
+    temp_2 = MenuWinGet_2653e0(ScriptGetInt_2490f0());
+    if (temp_2 == 0) {
+        return 0;
+    }
+    MenuWinInit_26c450(temp_2);
+    *(SD4_0047E7F0 *)a = D_0047E7F0;
+    *(SD4_0047E800 *)b = D_0047E800;
+    MenuWinSetDrawMode_26c3e0(temp_2, 0);
+    MenuWinSetBlendMode_26c270(temp_2, 1);
+    MenuWinSetPos_26c3b0(temp_2, a);
+    MenuWinSetColor_26c380(temp_2, b);
+    MenuWinSetSize_26c320(temp_2, 0x200, 0x1C0);
+    return 1;
+    return 0;
+}

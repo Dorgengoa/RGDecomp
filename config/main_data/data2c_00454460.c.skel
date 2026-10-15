@@ -1,0 +1,22 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void InsectMenuCageCollectState_3956d0(void);
+extern void InsectMenuCageFullMsgState_397500(void);
+extern void InsectMenuCageSelectMaybe_395a20(void);
+extern void InsectMenuCaptureReportState_3977e0(void);
+extern void InsectMenuCaughtChoiceOpen_396b60(void);
+extern void InsectMenuCaughtChoiceSelect_396640(void);
+extern void InsectMenuChangeLocationExit_397090(void);
+extern void InsectMenuEmptyCageChoiceOpen_397370(void);
+extern void InsectMenuEmptyCageChoiceSelect_3970f0(void);
+extern void InsectMenuFadeOutMaybe_3962d0(void);
+extern void InsectMenuPlacePromptOpen_3976b0(void);
+extern void InsectMenuPlacePromptWaitMaybe_397630(void);
+extern void InsectMenuPlacedInCageMsgState_396100(void);
+extern void InsectMenuReleaseConfirm_3963e0(void);
+extern void InsectMenuStateResetMaybe_3970e0(void);
+extern void InsectMenuStateResetMaybe_397620(void);
+const u32 D_00454460[36] = {
+    $h, (u32)&InsectMenuCaptureReportState_3977e0, $h, (u32)&InsectMenuPlacePromptOpen_3976b0, $h, (u32)&InsectMenuPlacePromptWaitMaybe_397630, $h, (u32)&InsectMenuStateResetMaybe_397620, $h, (u32)&InsectMenuEmptyCageChoiceOpen_397370, $h, (u32)&InsectMenuEmptyCageChoiceSelect_3970f0, $h, (u32)&InsectMenuStateResetMaybe_3970e0, $h, (u32)&InsectMenuChangeLocationExit_397090, $h, (u32)&InsectMenuCaughtChoiceOpen_396b60, $h, (u32)&InsectMenuCageCollectState_3956d0, $h, (u32)&InsectMenuCaughtChoiceSelect_396640, $h, (u32)&InsectMenuReleaseConfirm_3963e0, $h, (u32)&InsectMenuCageSelectMaybe_395a20, $h, (u32)&InsectMenuFadeOutMaybe_3962d0, $h, (u32)&InsectMenuPlacedInCageMsgState_396100, $h, (u32)&InsectMenuCageFullMsgState_397500, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00454460[(sizeof(D_00454460) == 144) ? 1 : -1];

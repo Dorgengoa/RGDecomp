@@ -1,0 +1,11 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void AttackChainCfgChrEndCmd_1f96e0(void);
+extern void AttackChainCfgChrStrCmd_1f96f0(void);
+extern void AttackChainCfgCmbEndCmd_1f9680(void);
+extern void AttackChainCfgCmbStrCmd_1f9690(void);
+extern void AttackChainCfgStateCmd_1f9460(void);
+const u32 D_0044B620[12] = {
+    $h, (u32)&AttackChainCfgChrStrCmd_1f96f0, $h, (u32)&AttackChainCfgChrEndCmd_1f96e0, $h, (u32)&AttackChainCfgCmbStrCmd_1f9690, $h, (u32)&AttackChainCfgCmbEndCmd_1f9680, $h, (u32)&AttackChainCfgStateCmd_1f9460, $h, $h
+};
+typedef char data2c_sizecheck_0044B620[(sizeof(D_0044B620) == 48) ? 1 : -1];

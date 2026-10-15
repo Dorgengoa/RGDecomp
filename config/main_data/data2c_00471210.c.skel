@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void GameSceneReset_1cfd30(void);
+extern void SceneInit_1c4460(void);
+u32 D_00471210[4] = {
+    $h, $h, (u32)&SceneInit_1c4460, (u32)&GameSceneReset_1cfd30
+};
+typedef char data2c_sizecheck_00471210[(sizeof(D_00471210) == 16) ? 1 : -1];

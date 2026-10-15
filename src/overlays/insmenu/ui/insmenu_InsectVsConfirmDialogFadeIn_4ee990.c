@@ -1,0 +1,16 @@
+#include "types.h"
+/* insmenu 0x004EE990 -- the insmenu_FUN_004EFD20 guard shape with only the
+ * second call: `bnel $2, $0, <epilogue>` carrying `ld $31`, so the body is the
+ * == 0 arm. */
+extern s32 insmenu_InsectVsConfirmDialogIsOpaque_4ee8e0(void);
+extern const u8 D_004FA180[];
+extern f32 D_0047D240;
+extern u8 D_0048430C;
+extern void func_290690(const void *a, s32 b, f32 x, f32 y, f32 z);
+void insmenu_InsectVsConfirmDialogFadeIn_4ee990(void)
+{
+    if (insmenu_InsectVsConfirmDialogIsOpaque_4ee8e0() == 0) {
+        func_290690(D_004FA180, 6, 1.0f, D_0047D240, 0.0f);
+        D_0048430C = 1;
+    }
+}

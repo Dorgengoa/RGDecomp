@@ -1,0 +1,5 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+const char data2c_gap_0045E95C[60] = "$s";
+typedef char data2c_sizecheck_0045E95C[(sizeof(data2c_gap_0045E95C) == 60) ? 1 : -1];

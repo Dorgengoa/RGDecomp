@@ -1,0 +1,131 @@
+#include "types.h"
+
+asm void sceDmaPutEnv(void)
+{
+    .set noreorder;
+    lui        $2, (0x1000E000 >> 16);
+    lui        $3, (0x1000E020 >> 16);
+    ori        $2, $2, (0x1000E000 & 0xFFFF);
+    ori        $3, $3, (0x1000E020 & 0xFFFF);
+    lw         $10, 0x0($2);
+    lui        $5, (0x1000E030 >> 16);
+    lw         $6, 0x0($3);
+    daddu      $9, $4, $0;
+    ori        $5, $5, (0x1000E030 & 0xFFFF);
+    lui        $3, (0x1000E050 >> 16);
+    lw         $5, 0x0($5);
+    ori        $3, $3, (0x1000E050 & 0xFFFF);
+    lui        $2, (0x1000E040 >> 16);
+    lbu        $4, 0x0($9);
+    lw         $6, 0x0($3);
+    ori        $2, $2, (0x1000E040 & 0xFFFF);
+    lw         $8, 0x0($2);
+    sltiu      $4, $4, 0xA;
+    bnel       $4, $0, L00109E70;
+    lbu       $2, 0x1($9);
+    jr         $31;
+    addiu     $2, $0, -0x1;
+  L00109E70:
+    sltiu      $2, $2, 0xA;
+    bnel       $2, $0, L00109E84;
+    lbu       $2, 0x2($9);
+    jr         $31;
+    addiu     $2, $0, -0x2;
+  L00109E84:
+    sltiu      $2, $2, 0xA;
+    bnel       $2, $0, L00109E98;
+    lbu       $11, 0x3($9);
+    jr         $31;
+    addiu     $2, $0, -0x3;
+  L00109E98:
+    sltiu      $2, $11, 0x7;
+    bnez       $2, L00109EAC;
+    lui       $2, 0x45;
+    jr         $31;
+    addiu     $2, $0, -0x4;
+  L00109EAC:
+    lbu        $3, 0x0($9);
+    addiu      $2, $2, 0x6050;
+    lui        $4, 0x45;
+    lbu        $5, 0x1($9);
+    addu       $3, $3, $2;
+    addiu      $4, $4, 0x6060;
+    lbu        $8, 0x0($3);
+    addu       $5, $5, $4;
+    lui        $2, (0xFFFFFFCF >> 16);
+    ori        $2, $2, (0xFFFFFFCF & 0xFFFF);
+    lui        $4, 0x45;
+    lbu        $7, 0x2($9);
+    and        $2, $10, $2;
+    addiu      $4, $4, 0x6070;
+    sll        $8, $8, 4;
+    lbu        $6, 0x0($5);
+    lui        $3, (0xFFFFFF3F >> 16);
+    or         $10, $2, $8;
+    addu       $7, $7, $4;
+    ori        $3, $3, (0xFFFFFF3F & 0xFFFF);
+    sll        $6, $6, 6;
+    and        $3, $10, $3;
+    lbu        $4, 0x0($7);
+    lui        $2, (0xFFFFFFF3 >> 16);
+    or         $10, $3, $6;
+    ori        $2, $2, (0xFFFFFFF3 & 0xFFFF);
+    sll        $4, $4, 2;
+    and        $2, $10, $2;
+    beqz       $11, L00109F48;
+    or        $10, $2, $4;
+    lbu        $3, 0x3($9);
+    lui        $2, (0xFFFFFCFF >> 16);
+    ori        $10, $10, 0x2;
+    ori        $2, $2, (0xFFFFFCFF & 0xFFFF);
+    addiu      $3, $3, -0x1;
+    and        $2, $10, $2;
+    sll        $3, $3, 8;
+    b          L00109F54;
+    or        $10, $2, $3;
+  L00109F48:
+    lui        $2, (0xFFFFFFFD >> 16);
+    ori        $2, $2, (0xFFFFFFFD & 0xFFFF);
+    and        $10, $10, $2;
+  L00109F54:
+    lhu        $2, 0x4($9);
+    lui        $4, (0x1000E000 >> 16);
+    lhu        $6, 0x6($9);
+    ori        $4, $4, (0x1000E000 & 0xFFFF);
+    lhu        $5, 0xA($9);
+    sll        $2, $2, 16;
+    lw         $8, 0x10($9);
+    or         $6, $2, $6;
+    lhu        $7, 0x8($9);
+    lui        $3, (0x1000E020 >> 16);
+    sw         $10, 0x0($4);
+    ori        $3, $3, (0x1000E020 & 0xFFFF);
+    sll        $5, $5, 16;
+    lui        $2, (0x1000E030 >> 16);
+    sw         $6, 0x0($3);
+    or         $5, $5, $7;
+    ori        $2, $2, (0x1000E030 & 0xFFFF);
+    lw         $6, 0xC($9);
+    sw         $5, 0x0($2);
+    lui        $3, (0x1000E050 >> 16);
+    ori        $3, $3, (0x1000E050 & 0xFFFF);
+    lui        $2, (0x1000E040 >> 16);
+    sw         $6, 0x0($3);
+    ori        $2, $2, (0x1000E040 & 0xFFFF);
+    sw         $8, 0x0($2);
+    lui        $3, 0x48;
+    addiu      $6, $3, 0x5978;
+    ldl        $2, 0x7($9);
+    ldr        $2, 0x0($9);
+    ldl        $4, 0xF($9);
+    ldr        $4, 0x8($9);
+    lw         $5, 0x10($9);
+    sdl        $2, 0x7($6);
+    sdr        $2, 0x0($6);
+    sdl        $4, 0xF($6);
+    sdr        $4, 0x8($6);
+    sw         $5, 0x10($6);
+    jr         $31;
+    daddu     $2, $0, $0;
+}
+

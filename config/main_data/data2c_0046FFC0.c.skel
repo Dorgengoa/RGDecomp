@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ModelBindRootFrameXformsMaybe_1517b0(void);
+extern void ModelCloneFrames_151860(void);
+u32 D_0046FFC0[4] = {
+    $h, $h, (u32)&ModelCloneFrames_151860, (u32)&ModelBindRootFrameXformsMaybe_1517b0
+};
+typedef char data2c_sizecheck_0046FFC0[(sizeof(D_0046FFC0) == 16) ? 1 : -1];

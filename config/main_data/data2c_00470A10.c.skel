@@ -1,0 +1,13 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffectParamBaseApplyNop_1a17b0(void);
+extern void EffectParamBaseGetType_1a17a0(void);
+extern void EffectParamBaseRandomizeNop_1a17c0(void);
+extern void EffectParamNopSlot18_19a560(void);
+extern void EffectParamNopSlot1C_19a570(void);
+extern void EffectParamReturnZero_19a590(void);
+extern void func_0019A540_e1(void);
+u32 D_00470A10[12] = {
+    $h, $h, (u32)&EffectParamBaseGetType_1a17a0, (u32)&func_0019A540_e1, (u32)&EffectParamBaseRandomizeNop_1a17c0, (u32)&EffectParamBaseApplyNop_1a17b0, (u32)&EffectParamNopSlot18_19a560, (u32)&EffectParamNopSlot1C_19a570, (u32)&EffectParamReturnZero_19a590, $h, $h, $h
+};
+typedef char data2c_sizecheck_00470A10[(sizeof(D_00470A10) == 48) ? 1 : -1];

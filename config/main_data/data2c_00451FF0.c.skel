@@ -1,0 +1,32 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void CfgVmCmdNop_42f4f0(void);
+extern void EvScriptCmdParamRecAdd_300990(void);
+extern void EvScriptCmdPathPointAddPos_300ea0(void);
+extern void EvScriptCmdPathPointAddRot_300e10(void);
+extern void EvScriptCmdPathPointAddScale_300d80(void);
+extern void EvScriptCmdPathPointAdd_300f30(void);
+extern void EvScriptCmdPathRecAddBackPath_300a50(void);
+extern void EvScriptCmdPathRecAddClosePath_300a90(void);
+extern void EvScriptCmdPathRecAddGoPath_300a60(void);
+extern void EvScriptCmdPathRecAddMovePath_300a70(void);
+extern void EvScriptCmdPathRecAddOpenPath_300aa0(void);
+extern void EvScriptCmdPathRecAddPath_300b50(void);
+extern void EvScriptCmdPathRecAddStayPath_300a80(void);
+extern void EvScriptCmdPathRecEndPath_300ab0(void);
+extern void EvScriptCmdPathRecInit_301210(void);
+extern void EvScriptCmdPathRecRegister_3011a0(void);
+extern void EvScriptCmdPathSegAdd_300c60(void);
+extern void EvScriptCmdPosRecAdd_3007e0(void);
+extern void EvScriptCmdScriptRecAddCall_3016b0(void);
+extern void EvScriptCmdScriptRecInit_301900(void);
+extern void EvScriptCmdScriptRecRegister_3018a0(void);
+extern void EvScriptCmdVolumeAdd_3012e0(void);
+extern void EvScriptCmdVolumeRecInit_301620(void);
+extern void EvScriptCmdVolumeRecRegister_3015c0(void);
+extern void EvScriptCmdVolumeSetMass_3014d0(void);
+extern void EvScriptCmdVolumeSetPoint_301530(void);
+const u32 D_00451FF0[56] = {
+    $h, (u32)&CfgVmCmdNop_42f4f0, $h, (u32)&CfgVmCmdNop_42f4f0, $h, (u32)&EvScriptCmdScriptRecInit_301900, $h, (u32)&EvScriptCmdScriptRecRegister_3018a0, $h, (u32)&EvScriptCmdScriptRecAddCall_3016b0, $h, (u32)&EvScriptCmdVolumeRecInit_301620, $h, (u32)&EvScriptCmdVolumeRecRegister_3015c0, $h, (u32)&EvScriptCmdVolumeSetPoint_301530, $h, (u32)&EvScriptCmdVolumeSetMass_3014d0, $h, (u32)&EvScriptCmdVolumeAdd_3012e0, $h, (u32)&EvScriptCmdPathRecInit_301210, $h, (u32)&EvScriptCmdPathRecRegister_3011a0, $h, (u32)&EvScriptCmdPathRecAddPath_300b50, $h, (u32)&EvScriptCmdPathRecEndPath_300ab0, $h, (u32)&EvScriptCmdPathPointAdd_300f30, $h, (u32)&EvScriptCmdPathPointAddPos_300ea0, $h, (u32)&EvScriptCmdPathPointAddRot_300e10, $h, (u32)&EvScriptCmdPathPointAddScale_300d80, $h, (u32)&EvScriptCmdPathSegAdd_300c60, $h, (u32)&EvScriptCmdPathRecAddOpenPath_300aa0, $h, (u32)&EvScriptCmdPathRecAddClosePath_300a90, $h, (u32)&EvScriptCmdPathRecAddStayPath_300a80, $h, (u32)&EvScriptCmdPathRecAddMovePath_300a70, $h, (u32)&EvScriptCmdPathRecAddGoPath_300a60, $h, (u32)&EvScriptCmdPathRecAddBackPath_300a50, $h, (u32)&EvScriptCmdParamRecAdd_300990, $h, (u32)&EvScriptCmdPosRecAdd_3007e0, $h, $h
+};
+typedef char data2c_sizecheck_00451FF0[(sizeof(D_00451FF0) == 224) ? 1 : -1];

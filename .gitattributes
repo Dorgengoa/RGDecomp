@@ -1,0 +1,4 @@
+# A byte-matching decomp: store and check out every file EXACTLY as it is.
+# Line-ending normalisation would rewrite 20k .s listings and would flip the
+# CRLF/LF distinction that config/ocunits/factory.txt depends on.
+* -text

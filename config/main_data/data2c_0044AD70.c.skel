@@ -1,0 +1,14 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ParamScriptAmixerCmd_1afa50(void);
+extern void ParamScriptEffectCmd_1aeff0(void);
+extern void ParamScriptMotionCmd_1afac0(void);
+extern void ParamScriptMotionEventCmd_1af180(void);
+extern void ParamScriptSeCmd_1af6a0(void);
+extern void ParamScriptSeEndCmd_1af300(void);
+extern void ParamScriptSeLoopCmd_1af490(void);
+extern void ParamScriptSeStartCmd_1af8d0(void);
+const u32 D_0044AD70[20] = {
+    $h, (u32)&ParamScriptMotionCmd_1afac0, $h, (u32)&ParamScriptAmixerCmd_1afa50, $h, (u32)&ParamScriptSeStartCmd_1af8d0, $h, (u32)&ParamScriptSeCmd_1af6a0, $h, (u32)&ParamScriptSeLoopCmd_1af490, $h, (u32)&ParamScriptSeEndCmd_1af300, $h, (u32)&ParamScriptMotionEventCmd_1af180, $h, (u32)&ParamScriptEffectCmd_1aeff0, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044AD70[(sizeof(D_0044AD70) == 80) ? 1 : -1];

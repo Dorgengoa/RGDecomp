@@ -1,0 +1,12 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void GameDataDeserialize_3e5fe0(void);
+extern void GameDataGetSaveHeaderSize_3ee5f0(void);
+extern void GameDataLoadBlobStub_3e3ee0(void);
+extern void GameDataSerialize_3e6330(void);
+extern void SaveObjGetDataSize_370670(void);
+extern void SaveObjGetObjSize_370660(void);
+u32 D_00476180[8] = {
+    $h, $h, (u32)&GameDataGetSaveHeaderSize_3ee5f0, (u32)&SaveObjGetObjSize_370660, (u32)&SaveObjGetDataSize_370670, (u32)&GameDataSerialize_3e6330, (u32)&GameDataDeserialize_3e5fe0, (u32)&GameDataLoadBlobStub_3e3ee0
+};
+typedef char data2c_sizecheck_00476180[(sizeof(D_00476180) == 32) ? 1 : -1];

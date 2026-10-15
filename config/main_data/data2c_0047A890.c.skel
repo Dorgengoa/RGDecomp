@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void PlanetAreaMatrixQueryCount_414f20(void);
+extern void PlanetAreaMatrixQueryGetAt_414ee0(void);
+extern void func_00418AB0_e7(void);
+u32 D_0047A890[8] = {
+    $h, $h, (u32)&PlanetAreaMatrixQueryCount_414f20, (u32)&func_00418AB0_e7, (u32)&PlanetAreaMatrixQueryGetAt_414ee0, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047A890[(sizeof(D_0047A890) == 32) ? 1 : -1];

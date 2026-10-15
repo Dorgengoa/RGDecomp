@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void BadExceptionDtor_1016a0(void);
+extern void BadExceptionWhat_102540(void);
+extern u8 jtbl_00455620[];
+u32 D_0046FD90[4] = {
+    (u32)((u8*)&jtbl_00455620 + 0x68u), $h, (u32)&BadExceptionDtor_1016a0, (u32)&BadExceptionWhat_102540
+};
+typedef char data2c_sizecheck_0046FD90[(sizeof(D_0046FD90) == 16) ? 1 : -1];

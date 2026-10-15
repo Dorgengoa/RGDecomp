@@ -1,0 +1,29 @@
+#include "types.h"
+
+/* Drain a list, then two teardowns. The iterator ADVANCES BEFORE it uses the
+   node: DListGetNext_42eb30 is called on the current entry and its result becomes
+   the next one, while the payload pointer (entry + 0x10) is computed in that
+   call's delay slot and only handed to EvDoorObjSetClosed_303bb0 afterwards. That order is
+   what lets the loop body destroy the entry it is standing on. */
+
+extern void *EventObjMgrGetTypeList_2e9d60(void *self, s32 which);
+extern void *DListGetHead_42ea60(void *list);
+extern void *DListGetNext_42eb30(void *entry);
+extern void EvDoorObjSetClosed_303bb0(void *payload, s32 flag);
+extern void EventObjMgrPreUpdateAllMaybe_2e8440(void *self);
+extern void EventObjMgrUpdateAll_2e8290(void *self);
+
+void EventObjMgrSetAllDoorsClosed_2e8be0(void *self)
+{
+    void *entry;
+    void *payload;
+
+    entry = DListGetHead_42ea60(EventObjMgrGetTypeList_2e9d60(self, 9));
+    while (entry != 0) {
+        payload = (u8 *)entry + 0x10;
+        entry = DListGetNext_42eb30(entry);
+        EvDoorObjSetClosed_303bb0(payload, 1);
+    }
+    EventObjMgrPreUpdateAllMaybe_2e8440(self);
+    EventObjMgrUpdateAll_2e8290(self);
+}

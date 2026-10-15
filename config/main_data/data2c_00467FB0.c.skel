@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void PtalkTextCmdEntryText_41f5c0(void);
+extern void PtalkTextCmdNopThunk_41f7a0(void);
+const u32 D_00467FB0[10] = {
+    $h, (u32)&PtalkTextCmdNopThunk_41f7a0, $h, (u32)&PtalkTextCmdNopThunk_41f7a0, $h, (u32)&PtalkTextCmdNopThunk_41f7a0, $h, (u32)&PtalkTextCmdEntryText_41f5c0, $h, $h
+};
+typedef char data2c_sizecheck_00467FB0[(sizeof(D_00467FB0) == 40) ? 1 : -1];

@@ -1,0 +1,27 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ModelBindRootFrameXformsMaybe_1517b0(void);
+extern void ModelCloneFrames_151860(void);
+extern void ModelObjBaseInitThunk_1970a0(void);
+extern void ModelObjClothClearFloorAll_1ad1e0(void);
+extern void ModelObjClothClearWindAll_1ad2b0(void);
+extern void ModelObjClothSetFloorAll_1ad240(void);
+extern void ModelObjClothSetWindAll_1ad310(void);
+extern void ModelObjDistanceFadeUpdate_186b60(void);
+extern void ModelObjDistanceToCamera_186c50(void);
+extern void ModelObjDrawShadowCaster_1868d0(void);
+extern void ModelObjDrawShadowModelCaster_1ad5e0(void);
+extern void ModelObjDrawShadowModel_1ad690(void);
+extern void ModelObjDrawSorted_186910(void);
+extern void ModelObjExDraw_1ad7a0(void);
+extern void ModelObjFadeIsVisible_1869d0(void);
+extern void ModelObjGetFadeAlpha_186f40(void);
+extern void ModelObjInit_1ae420(void);
+extern void ModelObjIsVisible_186a20(void);
+extern void ModelObjRemoveAttachById_1ae2b0(void);
+extern void ModelObjReset_1ae2a0(void);
+extern void ModelObjUpdate_1adf90(void);
+u32 D_00470ED0[24] = {
+    $h, $h, (u32)&ModelCloneFrames_151860, (u32)&ModelBindRootFrameXformsMaybe_1517b0, (u32)&ModelObjDistanceToCamera_186c50, (u32)&ModelObjFadeIsVisible_1869d0, (u32)&ModelObjDistanceFadeUpdate_186b60, (u32)&ModelObjGetFadeAlpha_186f40, (u32)&ModelObjIsVisible_186a20, (u32)&ModelObjExDraw_1ad7a0, (u32)&ModelObjDrawSorted_186910, (u32)&ModelObjDrawShadowCaster_1868d0, (u32)&ModelObjBaseInitThunk_1970a0, (u32)&ModelObjClothSetWindAll_1ad310, (u32)&ModelObjClothClearWindAll_1ad2b0, (u32)&ModelObjClothSetFloorAll_1ad240, (u32)&ModelObjClothClearFloorAll_1ad1e0, (u32)&ModelObjUpdate_1adf90, (u32)&ModelObjDrawShadowModel_1ad690, (u32)&ModelObjDrawShadowModelCaster_1ad5e0, (u32)&ModelObjInit_1ae420, (u32)&ModelObjRemoveAttachById_1ae2b0, (u32)&ModelObjReset_1ae2a0, $h
+};
+typedef char data2c_sizecheck_00470ED0[(sizeof(D_00470ED0) == 96) ? 1 : -1];

@@ -1,0 +1,5 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+const char func_00455BC0[12] = "$s";
+typedef char data2c_sizecheck_00455BC0[(sizeof(func_00455BC0) == 12) ? 1 : -1];

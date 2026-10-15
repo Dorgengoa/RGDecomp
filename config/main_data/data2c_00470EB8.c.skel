@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffObjCollectDrawEntries_1a87a0(void);
+u32 D_00470EB8[6] = {
+    $h, $h, (u32)&EffObjCollectDrawEntries_1a87a0, $h, $h, $h
+};
+typedef char data2c_sizecheck_00470EB8[(sizeof(D_00470EB8) == 24) ? 1 : -1];

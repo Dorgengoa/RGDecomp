@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void GameSessionInit_1f5d80(void);
+extern void title_TitleSessionInit_4f0cb0(void);
+u32 D_0047E230[2] = {
+    (u32)&GameSessionInit_1f5d80, (u32)&title_TitleSessionInit_4f0cb0
+};
+typedef char data2c_sizecheck_0047E230[(sizeof(D_0047E230) == 8) ? 1 : -1];

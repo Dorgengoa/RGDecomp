@@ -1,0 +1,10 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ModelMeshBaseGetTypeId_15c9f0(void);
+extern void ModelMeshBaseInitMaybe_15c970(void);
+extern void ModelMeshBaseIsKindOf_14e4c0(void);
+extern void ModelMeshBaseWriteVuHeaderNopMaybe_14fec0(void);
+u32 D_00470070[8] = {
+    $h, $h, (u32)&ModelMeshBaseGetTypeId_15c9f0, (u32)&ModelMeshBaseIsKindOf_14e4c0, $h, (u32)&ModelMeshBaseWriteVuHeaderNopMaybe_14fec0, $h, (u32)&ModelMeshBaseInitMaybe_15c970
+};
+typedef char data2c_sizecheck_00470070[(sizeof(D_00470070) == 32) ? 1 : -1];

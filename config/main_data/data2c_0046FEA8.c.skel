@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_004556F0[];
+extern void IosDtor_103700(void);
+u32 D_0046FEA8[6] = {
+    (u32)((u8*)&D_004556F0 + 0x250u), $h, (u32)&IosDtor_103700, $h, $h, $h
+};
+typedef char data2c_sizecheck_0046FEA8[(sizeof(D_0046FEA8) == 24) ? 1 : -1];

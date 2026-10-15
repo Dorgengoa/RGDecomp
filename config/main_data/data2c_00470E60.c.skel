@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffQuadDrawNodes_1a7890(void);
+extern void EffQuadResGetType_1a7870(void);
+extern void EffQuadResResetMaybe_1a7880(void);
+u32 D_00470E60[8] = {
+    $h, $h, (u32)&EffQuadResGetType_1a7870, (u32)&EffQuadDrawNodes_1a7890, (u32)&EffQuadResResetMaybe_1a7880, $h, $h, $h
+};
+typedef char data2c_sizecheck_00470E60[(sizeof(D_00470E60) == 32) ? 1 : -1];

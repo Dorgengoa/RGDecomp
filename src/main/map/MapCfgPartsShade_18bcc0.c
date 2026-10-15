@@ -1,0 +1,20 @@
+#include "types.h"
+
+extern void VariantReadVec3_15f6c0(void *, s32);
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+extern s32 D_004812A0;
+extern s32 D_004812B0;
+extern s32 D_004812C0;
+
+s32 MapCfgPartsShade_18bcc0(s32 p0)
+{
+    D_004812C0 = 1;
+    VariantReadVec3_15f6c0(&D_004812A0, p0);
+    VariantReadVec3_15f6c0(&D_004812B0, (p0 + 0x18));
+    return 1;
+}

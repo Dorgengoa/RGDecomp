@@ -1,0 +1,41 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ResGroupCmdElemNext_42a8c0(void);
+extern void ResGroupCmdElemNext_42b250(void);
+extern void ResGroupCmdElemSet_42acc0(void);
+extern void ResGroupCmdElemSet_42ae50(void);
+extern void ResGroupCmdElemSet_42b090(void);
+extern void ResGroupCmdGlyphListDefine_42a770(void);
+extern void ResGroupCmdLinkById_42b450(void);
+extern void ResGroupCmdLinkById_42b4b0(void);
+extern void ResGroupCmdLinkById_42b510(void);
+extern void ResGroupCmdListDefine_42a650(void);
+extern void ResGroupCmdListDefine_42ac00(void);
+extern void ResGroupCmdListDefine_42adc0(void);
+extern void ResGroupCmdListDefine_42b000(void);
+extern void ResGroupCmdListDefine_42b1c0(void);
+extern void ResGroupCmdListDefine_42b5f0(void);
+extern void ResGroupCmdListEnd_42a620(void);
+extern void ResGroupCmdListEnd_42a740(void);
+extern void ResGroupCmdListEnd_42a890(void);
+extern void ResGroupCmdListEnd_42ac90(void);
+extern void ResGroupCmdListEnd_42ae20(void);
+extern void ResGroupCmdListEnd_42b060(void);
+extern void ResGroupCmdListEnd_42b220(void);
+extern void ResGroupCmdObjLinkSlot_42a8f0(void);
+extern void ResGroupCmdObjSetDrawCb_42b280(void);
+extern void ResGroupCmdObjSetFloat_42b2f0(void);
+extern void ResGroupCmdObjSetFloat_42b340(void);
+extern void ResGroupCmdObjSetIdMaybe_42aba0(void);
+extern void ResGroupCmdObjSetIdMaybe_42b570(void);
+extern void ResGroupCmdObjSetPair_42aae0(void);
+extern void ResGroupCmdObjSetPair_42ab40(void);
+extern void ResGroupCmdObjSetRectMaybe_42a9e0(void);
+extern void ResGroupCmdObjSetRectMaybe_42aa60(void);
+extern void ResGroupCmdObjSetValue_42a990(void);
+extern void ResGroupCmdObjSetValue_42b3a0(void);
+extern void ResGroupCmdSetName_42b3f0(void);
+const u32 D_004685C0[72] = {
+    $h, (u32)&ResGroupCmdListDefine_42b5f0, $h, (u32)&ResGroupCmdObjSetIdMaybe_42b570, $h, (u32)&ResGroupCmdLinkById_42b510, $h, (u32)&ResGroupCmdLinkById_42b4b0, $h, (u32)&ResGroupCmdLinkById_42b450, $h, (u32)&ResGroupCmdSetName_42b3f0, $h, (u32)&ResGroupCmdObjSetValue_42b3a0, $h, (u32)&ResGroupCmdObjSetFloat_42b340, $h, (u32)&ResGroupCmdObjSetFloat_42b2f0, $h, (u32)&ResGroupCmdObjSetDrawCb_42b280, $h, (u32)&ResGroupCmdElemNext_42b250, $h, (u32)&ResGroupCmdListEnd_42b220, $h, (u32)&ResGroupCmdListDefine_42b1c0, $h, (u32)&ResGroupCmdElemSet_42b090, $h, (u32)&ResGroupCmdListEnd_42b060, $h, (u32)&ResGroupCmdListDefine_42b000, $h, (u32)&ResGroupCmdElemSet_42ae50, $h, (u32)&ResGroupCmdListEnd_42ae20, $h, (u32)&ResGroupCmdListDefine_42adc0, $h, (u32)&ResGroupCmdElemSet_42acc0, $h, (u32)&ResGroupCmdListEnd_42ac90, $h, (u32)&ResGroupCmdListDefine_42ac00, $h, (u32)&ResGroupCmdObjSetIdMaybe_42aba0, $h, (u32)&ResGroupCmdObjSetPair_42ab40, $h, (u32)&ResGroupCmdObjSetPair_42aae0, $h, (u32)&ResGroupCmdObjSetRectMaybe_42aa60, $h, (u32)&ResGroupCmdObjSetRectMaybe_42a9e0, $h, (u32)&ResGroupCmdObjSetValue_42a990, $h, (u32)&ResGroupCmdObjLinkSlot_42a8f0, $h, (u32)&ResGroupCmdElemNext_42a8c0, $h, (u32)&ResGroupCmdListEnd_42a890, $h, (u32)&ResGroupCmdGlyphListDefine_42a770, $h, (u32)&ResGroupCmdListEnd_42a740, $h, (u32)&ResGroupCmdListDefine_42a650, $h, (u32)&ResGroupCmdListEnd_42a620, $h, $h
+};
+typedef char data2c_sizecheck_004685C0[(sizeof(D_004685C0) == 288) ? 1 : -1];

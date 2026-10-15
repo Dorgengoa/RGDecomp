@@ -1,0 +1,33 @@
+# GUEST          HOST            -- GUEST is `static` in HOST's source (the original TU);
+#                                   link.py carves its .text out of HOST.o. See scripts/hosted.py.
+ReadBufEndGet_1d32c0     MovieReadThread_1d4f50    # retail keeps $a2 live across MovieReadThread_1d4f50's jal: static callee clobber set
+CharIsNotSpace_15e8e0     TextReaderSkipSpace_15e940    # static: retail keeps caller-saved regs live across TextReaderSkipSpace_15e940's jal (s56m)
+ScriptSetRefInt_26a1e0     EvCmdStateFlagGet_26a2d0    # static slot writer, same TU as its callers (s56m)
+ScriptGetCodeAddr_26a200     EvCmdStateFlagGet_26a2d0    # static: EvCmdStateFlagGet_26a2d0/480 keep $a1 live across its jal
+ScriptGetInt_26a2a0     EvCmdStateFlagGet_26a2d0    # static: EvCmdStateFlagGet_26a2d0/370/480 keep $a1/$a2/$t0 live across its jal
+EvCmdStateFlagSet_26a370     EvCmdStateFlagGet_26a2d0    # global command, carved from the host object
+EvCmdStateVarGet_26a480     EvCmdStateFlagGet_26a2d0    # global command, carved from the host object
+EvCmdStateVarSet_26a520     EvCmdStateFlagGet_26a2d0    # global command, keeps $t0 live across the jals to 200/2a0
+GsCalcBufferBlocks_140db0     GfxSetVideoMode_1451f0    # static: 00144a00/00144cc0/001451f0 keep t0/t1/a3 live across its jal
+DrawEnvGetDispFbTexDesc_144a00     GfxSetVideoMode_1451f0    # global, carved from the host object (same TU as its static callee)
+DrawEnvGetFrameTexDesc_144cc0     GfxSetVideoMode_1451f0    # global, carved from the host object (same TU as its static callee)
+TextReaderReadTextArgs_15ebc0     TextReaderSkipSpace_15e940    # same TU as its static callee CharIsNotSpace_15e8e0 (s59m)
+SoundCategoryGetChanMapMaybe_1bab00     SoundSetCategoryVolume_1bb230    # static: SoundSetCategoryVolume_1bb230's TU (#pragma optimization_level 3) (s59m)
+AudioDecBeginPut_1d2550     AudioDecPcmCallback_1d4ca0    # static: retail keeps values in caller-saved regs across AudioDecPcmCallback_1d4ca0's jal (s59m)
+# Sony ee-gcc 2.9 island 0x165608-0x1660D4: ONE TU, host SdRemoteInitMasterVolume_165608 (config/toolchain.txt) (s59m)
+SdRemoteNopStubRelated_165690    SdRemoteInitMasterVolume_165608
+SdRemoteQuit_165698     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG0S2_1656b8     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG0SA_165778     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG1S0_165828     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG1S1_165900     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG1S2_1659a8     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG1S3_165a68     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG2S0_165b20     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG2S1_165bd0     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG2S2_165c70     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG2S3_165d28     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG3S0_165dc8     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG3S1_165e78     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG3S2_165f20     SdRemoteInitMasterVolume_165608
+SoundIopSendCmdG3S3_166020     SdRemoteInitMasterVolume_165608

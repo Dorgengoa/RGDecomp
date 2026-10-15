@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ContainerViewCountNop_370160(void);
+extern void ContainerViewGetAtFwd_428400(void);
+extern void ContainerViewGetAtImplNop_4283f0(void);
+u32 D_0047C7F0[8] = {
+    $h, $h, (u32)&ContainerViewCountNop_370160, (u32)&ContainerViewGetAtFwd_428400, (u32)&ContainerViewGetAtImplNop_4283f0, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047C7F0[(sizeof(D_0047C7F0) == 32) ? 1 : -1];

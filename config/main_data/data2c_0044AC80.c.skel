@@ -1,0 +1,29 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void InfoCfgAmixerCmd_1ab3c0(void);
+extern void InfoCfgBodySizeCmd_1abf30(void);
+extern void InfoCfgClothCmd_1aa5f0(void);
+extern void InfoCfgClothEndCmd_1aa5e0(void);
+extern void InfoCfgClothStartCmd_1aa950(void);
+extern void InfoCfgImgCmd_1aba00(void);
+extern void InfoCfgImgEndCmd_1ab9e0(void);
+extern void InfoCfgKeyCmd_1ab2a0(void);
+extern void InfoCfgKeyEndCmd_1ab210(void);
+extern void InfoCfgKeyStartCmd_1ab380(void);
+extern void InfoCfgMaterialAnimeCmd_1abea0(void);
+extern void InfoCfgModelCmd_1ab910(void);
+extern void InfoCfgMotionCmd_1ab520(void);
+extern void InfoCfgNameCmd_1abfc0(void);
+extern void InfoCfgObjectName2Cmd_1aaaa0(void);
+extern void InfoCfgObjectName3Cmd_1aaa90(void);
+extern void InfoCfgObjectNameNumCmd_1aae30(void);
+extern void InfoCfgOutlineCmd_1aaf20(void);
+extern void InfoCfgOutlineLevelCmd_1ab1e0(void);
+extern void InfoCfgPolyNumCmd_1abe10(void);
+extern void InfoCfgScaleCmd_1abeb0(void);
+extern void InfoCfgShadowModelCmd_1ab730(void);
+extern void InfoCfgV2Cmd_1abfd0(void);
+const u32 D_0044AC80[48] = {
+    $h, (u32)&InfoCfgV2Cmd_1abfd0, $h, (u32)&InfoCfgNameCmd_1abfc0, $h, (u32)&InfoCfgImgCmd_1aba00, $h, (u32)&InfoCfgImgEndCmd_1ab9e0, $h, (u32)&InfoCfgBodySizeCmd_1abf30, $h, (u32)&InfoCfgScaleCmd_1abeb0, $h, (u32)&InfoCfgMaterialAnimeCmd_1abea0, $h, (u32)&InfoCfgPolyNumCmd_1abe10, $h, (u32)&InfoCfgModelCmd_1ab910, $h, (u32)&InfoCfgShadowModelCmd_1ab730, $h, (u32)&InfoCfgObjectNameNumCmd_1aae30, $h, (u32)&InfoCfgObjectName2Cmd_1aaaa0, $h, (u32)&InfoCfgObjectName3Cmd_1aaa90, $h, (u32)&InfoCfgMotionCmd_1ab520, $h, (u32)&InfoCfgAmixerCmd_1ab3c0, $h, (u32)&InfoCfgOutlineCmd_1aaf20, $h, (u32)&InfoCfgOutlineLevelCmd_1ab1e0, $h, (u32)&InfoCfgKeyStartCmd_1ab380, $h, (u32)&InfoCfgKeyCmd_1ab2a0, $h, (u32)&InfoCfgKeyEndCmd_1ab210, $h, (u32)&InfoCfgClothStartCmd_1aa950, $h, (u32)&InfoCfgClothCmd_1aa5f0, $h, (u32)&InfoCfgClothEndCmd_1aa5e0, $h, $h
+};
+typedef char data2c_sizecheck_0044AC80[(sizeof(D_0044AC80) == 192) ? 1 : -1];

@@ -1,0 +1,16 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_0045AB20[];
+extern void MotionEventCfgEffectCmd_1b3e90(void);
+extern void MotionEventCfgEndCmd_1b4450(void);
+extern void MotionEventCfgEventCmd_1b4180(void);
+extern void MotionEventCfgEventEndCmd_1b4160(void);
+extern void MotionEventCfgEventNameCmd_1b40f0(void);
+extern void MotionEventCfgFootSeCmd_1b3ff0(void);
+extern void MotionEventCfgSeCmd_1b4070(void);
+extern void MotionEventCfgStartCmd_1b4460(void);
+extern void MotionEventCfgTexAnimeCmd_1b3f80(void);
+const u32 D_0044ADC0[20] = {
+    $h, (u32)&MotionEventCfgStartCmd_1b4460, $h, (u32)&MotionEventCfgEndCmd_1b4450, $h, (u32)&MotionEventCfgEventCmd_1b4180, $h, (u32)&MotionEventCfgEventEndCmd_1b4160, $h, (u32)&MotionEventCfgEventNameCmd_1b40f0, (u32)&D_0045AB20, (u32)&MotionEventCfgSeCmd_1b4070, $h, (u32)&MotionEventCfgFootSeCmd_1b3ff0, $h, (u32)&MotionEventCfgTexAnimeCmd_1b3f80, $h, (u32)&MotionEventCfgEffectCmd_1b3e90, $h, $h
+};
+typedef char data2c_sizecheck_0044ADC0[(sizeof(D_0044ADC0) == 80) ? 1 : -1];

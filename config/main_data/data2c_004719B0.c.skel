@@ -1,0 +1,22 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EvObjApplyInitialStateNop_2f99d0(void);
+extern void EvObjDebugDrawNop_2f98d0(void);
+extern void EvObjDrawNop_2f9900(void);
+extern void EvObjGetCharaCollIgnoreMaskNone_2f9a90(void);
+extern void EvObjGetType_2f9aa0(void);
+extern void EvObjHitTestNone_2f99e0(void);
+extern void EvObjIsTargetActive_2f9a20(void);
+extern void EvObjLockNop_2f9a10(void);
+extern void EvObjOnAreaLoadedNop_2f9a00(void);
+extern void EvObjOnAreaUnloadNop_2f99f0(void);
+extern void EvObjOnTouchNop_2f99c0(void);
+extern void EvObjPreUpdateBase_2f9930(void);
+extern void EvObjResolveTarget_2f9a60(void);
+extern void EvObjResumeNop_2f98e0(void);
+extern void EvObjSuspendNop_2f98f0(void);
+extern void EvObjUpdateBase_2f9910(void);
+u32 D_004719B0[20] = {
+    $h, $h, (u32)&EvObjGetType_2f9aa0, (u32)&EvObjGetCharaCollIgnoreMaskNone_2f9a90, (u32)&EvObjResolveTarget_2f9a60, (u32)&EvObjIsTargetActive_2f9a20, (u32)&EvObjLockNop_2f9a10, (u32)&EvObjOnAreaLoadedNop_2f9a00, (u32)&EvObjOnAreaUnloadNop_2f99f0, (u32)&EvObjHitTestNone_2f99e0, (u32)&EvObjApplyInitialStateNop_2f99d0, (u32)&EvObjOnTouchNop_2f99c0, (u32)&EvObjPreUpdateBase_2f9930, (u32)&EvObjUpdateBase_2f9910, (u32)&EvObjDrawNop_2f9900, (u32)&EvObjSuspendNop_2f98f0, (u32)&EvObjResumeNop_2f98e0, (u32)&EvObjDebugDrawNop_2f98d0, $h, $h
+};
+typedef char data2c_sizecheck_004719B0[(sizeof(D_004719B0) == 80) ? 1 : -1];

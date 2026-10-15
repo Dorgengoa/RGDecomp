@@ -1,0 +1,12 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ContainerViewGetAtFwd_41f3c0(void);
+extern void DataTableCompareEntries_41eb00(void);
+extern void DataTableGetCount_41f390(void);
+extern void DataTableViewCountThunk_41f560(void);
+extern void DataTableViewGetAtThunk_41f570(void);
+extern void func_0041F3E0(void);
+u32 D_0047B724[11] = {
+    $h, $h, (u32)&DataTableViewCountThunk_41f560, (u32)&ContainerViewGetAtFwd_41f3c0, (u32)&DataTableViewGetAtThunk_41f570, (u32)&DataTableCompareEntries_41eb00, (u32)&DataTableGetCount_41f390, (u32)&func_0041F3E0, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047B724[(sizeof(D_0047B724) == 44) ? 1 : -1];

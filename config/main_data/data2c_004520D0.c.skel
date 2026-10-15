@@ -1,0 +1,52 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EvScriptCmdCreatePointObj_300540(void);
+extern void EvScriptCmdDoorObjAddRefIndex_2ff390(void);
+extern void EvScriptCmdDoorObjAddRefList_2ff160(void);
+extern void EvScriptCmdDoorObjInit_2ff5d0(void);
+extern void EvScriptCmdDoorObjRegister_2ff560(void);
+extern void EvScriptCmdDoorObjSetAreaExtents_2ff430(void);
+extern void EvScriptCmdDoorObjSetFlags_2ff4b0(void);
+extern void EvScriptCmdDoorObjSetStateFlagName_2ff510(void);
+extern void EvScriptCmdEvTargetAddNamed_2fdbe0(void);
+extern void EvScriptCmdEvTargetAddPoint_2fdac0(void);
+extern void EvScriptCmdFollowObjInit_300010(void);
+extern void EvScriptCmdFollowObjRegister_2fffd0(void);
+extern void EvScriptCmdFollowObjSetFlagBit_2ffcb0(void);
+extern void EvScriptCmdFollowObjSetParamRec_2ffd40(void);
+extern void EvScriptCmdFollowObjSetPathRec_2ffe20(void);
+extern void EvScriptCmdFollowObjSetRatio_2ffd00(void);
+extern void EvScriptCmdFollowObjSetTargetRef_2ffe90(void);
+extern void EvScriptCmdFollowObjSetVolumeRec_2ffdb0(void);
+extern void EvScriptCmdM05ChangeInit_2fdd20(void);
+extern void EvScriptCmdM05ChangeRegister_2fdcc0(void);
+extern void EvScriptCmdMapNameRefAdd_2ff8f0(void);
+extern void EvScriptCmdMapObjInit_2ffaa0(void);
+extern void EvScriptCmdMapObjNodeAdd_2ff860(void);
+extern void EvScriptCmdMapObjRegister_2ffa30(void);
+extern void EvScriptCmdMapObjSetParams_2ff970(void);
+extern void EvScriptCmdNodeAttachObjCreate_2fdf60(void);
+extern void EvScriptCmdObjAreaFadeCreate_300620(void);
+extern void EvScriptCmdObjLiftInit_2feb60(void);
+extern void EvScriptCmdObjLiftRegister_2feaf0(void);
+extern void EvScriptCmdObjLiftSetFlagBit_2fea40(void);
+extern void EvScriptCmdObjLiftSetFlags_2fea90(void);
+extern void EvScriptCmdObjLiftSetStateFlagName_2fe9f0(void);
+extern void EvScriptCmdObjLiftTargetPairAdd_2fe880(void);
+extern void EvScriptCmdObjLiftTargetSetAddNamed_2fe4c0(void);
+extern void EvScriptCmdObjLiftTargetSetAddPoint_2fe200(void);
+extern void EvScriptCmdObjLinkCreate_2ff790(void);
+extern void EvScriptCmdObjSwitchCreate_300470(void);
+extern void EvScriptCmdSwitchObjInit_3002d0(void);
+extern void EvScriptCmdSwitchObjRegister_300270(void);
+extern void EvScriptCmdSwitchSetOffPos_3001b0(void);
+extern void EvScriptCmdSwitchSetOnPos_3000f0(void);
+extern void EvScriptCmdTargetPointObjCreate_3006e0(void);
+extern void EvScriptCmdVehicleInit_2fef20(void);
+extern void EvScriptCmdVehicleRegister_2feec0(void);
+extern void EvScriptCmdVehicleSetFlags_2fee60(void);
+extern void EvScriptCmdVehicleTargetPairAdd_2fed70(void);
+const u32 D_004520D0[96] = {
+    $h, (u32)&EvScriptCmdTargetPointObjCreate_3006e0, $h, (u32)&EvScriptCmdObjAreaFadeCreate_300620, $h, (u32)&EvScriptCmdCreatePointObj_300540, $h, (u32)&EvScriptCmdObjSwitchCreate_300470, $h, (u32)&EvScriptCmdSwitchObjInit_3002d0, $h, (u32)&EvScriptCmdSwitchObjRegister_300270, $h, (u32)&EvScriptCmdSwitchSetOffPos_3001b0, $h, (u32)&EvScriptCmdSwitchSetOnPos_3000f0, $h, (u32)&EvScriptCmdFollowObjInit_300010, $h, (u32)&EvScriptCmdFollowObjRegister_2fffd0, $h, (u32)&EvScriptCmdFollowObjSetTargetRef_2ffe90, $h, (u32)&EvScriptCmdFollowObjSetPathRec_2ffe20, $h, (u32)&EvScriptCmdFollowObjSetVolumeRec_2ffdb0, $h, (u32)&EvScriptCmdFollowObjSetParamRec_2ffd40, $h, (u32)&EvScriptCmdFollowObjSetRatio_2ffd00, $h, (u32)&EvScriptCmdFollowObjSetFlagBit_2ffcb0, $h, (u32)&EvScriptCmdMapObjInit_2ffaa0, $h, (u32)&EvScriptCmdMapObjRegister_2ffa30, $h, (u32)&EvScriptCmdMapObjSetParams_2ff970, $h, (u32)&EvScriptCmdMapNameRefAdd_2ff8f0, $h, (u32)&EvScriptCmdMapObjNodeAdd_2ff860, $h, (u32)&EvScriptCmdObjLinkCreate_2ff790, $h, (u32)&EvScriptCmdDoorObjInit_2ff5d0, $h, (u32)&EvScriptCmdDoorObjSetFlags_2ff4b0, $h, (u32)&EvScriptCmdDoorObjSetAreaExtents_2ff430, $h, (u32)&EvScriptCmdDoorObjRegister_2ff560, $h, (u32)&EvScriptCmdDoorObjSetStateFlagName_2ff510, $h, (u32)&EvScriptCmdDoorObjAddRefIndex_2ff390, $h, (u32)&EvScriptCmdDoorObjAddRefList_2ff160, $h, (u32)&EvScriptCmdVehicleInit_2fef20, $h, (u32)&EvScriptCmdVehicleRegister_2feec0, $h, (u32)&EvScriptCmdVehicleSetFlags_2fee60, $h, (u32)&EvScriptCmdVehicleTargetPairAdd_2fed70, $h, (u32)&EvScriptCmdObjLiftInit_2feb60, $h, (u32)&EvScriptCmdObjLiftRegister_2feaf0, $h, (u32)&EvScriptCmdObjLiftSetFlags_2fea90, $h, (u32)&EvScriptCmdObjLiftSetFlagBit_2fea40, $h, (u32)&EvScriptCmdObjLiftSetStateFlagName_2fe9f0, $h, (u32)&EvScriptCmdObjLiftTargetPairAdd_2fe880, $h, (u32)&EvScriptCmdObjLiftTargetSetAddNamed_2fe4c0, $h, (u32)&EvScriptCmdObjLiftTargetSetAddPoint_2fe200, $h, (u32)&EvScriptCmdNodeAttachObjCreate_2fdf60, $h, (u32)&EvScriptCmdM05ChangeInit_2fdd20, $h, (u32)&EvScriptCmdM05ChangeRegister_2fdcc0, $h, (u32)&EvScriptCmdEvTargetAddNamed_2fdbe0, $h, (u32)&EvScriptCmdEvTargetAddPoint_2fdac0, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_004520D0[(sizeof(D_004520D0) == 384) ? 1 : -1];

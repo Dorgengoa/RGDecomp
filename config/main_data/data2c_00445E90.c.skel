@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DefaultUnexpectedHandler_100d10(void);
+const u32 D_00445E90[2] = {
+    (u32)&DefaultUnexpectedHandler_100d10, $h
+};
+typedef char data2c_sizecheck_00445E90[(sizeof(D_00445E90) == 8) ? 1 : -1];

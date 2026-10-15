@@ -1,0 +1,10 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MotionEventHandlerReleaseNop_1b19e0(void);
+extern void MotionEventTexAnimeBeginThunk_1c4c10(void);
+extern void MotionEventTexAnimeEndThunk_1c4c20(void);
+extern void MotionEventTexAnimeFireThunk_1c4c00(void);
+u32 D_00471160[8] = {
+    $h, $h, (u32)&MotionEventTexAnimeFireThunk_1c4c00, (u32)&MotionEventTexAnimeBeginThunk_1c4c10, (u32)&MotionEventTexAnimeEndThunk_1c4c20, (u32)&MotionEventHandlerReleaseNop_1b19e0, $h, $h
+};
+typedef char data2c_sizecheck_00471160[(sizeof(D_00471160) == 32) ? 1 : -1];

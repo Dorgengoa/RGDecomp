@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void InfoEdgeCfgDataNum_39a290(void);
+extern void InfoEdgeCfgData_39a100(void);
+const u32 D_00454540[8] = {
+    $h, (u32)&InfoEdgeCfgDataNum_39a290, $h, (u32)&InfoEdgeCfgData_39a100, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00454540[(sizeof(D_00454540) == 32) ? 1 : -1];

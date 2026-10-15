@@ -1,0 +1,20 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void NodeCopyTo_185cf0(void);
+extern void NodeGetFadeAlpha_185cb0(void);
+extern void NodeObjClone_193a50(void);
+extern void NodeObjDistanceFadeUpdate_194670(void);
+extern void NodeObjDistanceToCamera_194250(void);
+extern void NodeObjDrawLitThunk_187f50(void);
+extern void NodeObjDrawLitThunk_188580(void);
+extern void NodeObjInitThunk_1938f0(void);
+extern void NodeObjIsVisible_194e20(void);
+extern void NodeObjNopSlot38_194e80(void);
+extern void NodeObjResetMatrix_194f80(void);
+extern void NodeObjSyncMatrix_194fe0(void);
+extern void NodeObjUpdateFuncAnimes_193ff0(void);
+extern void NodeObjUpdateMotions_194070(void);
+u32 D_004705D0[16] = {
+    $h, $h, (u32)&NodeObjDistanceToCamera_194250, (u32)&NodeGetFadeAlpha_185cb0, (u32)&NodeObjSyncMatrix_194fe0, (u32)&NodeObjResetMatrix_194f80, (u32)&NodeCopyTo_185cf0, (u32)&NodeObjDistanceFadeUpdate_194670, (u32)&NodeObjIsVisible_194e20, (u32)&NodeObjDrawLitThunk_188580, (u32)&NodeObjDrawLitThunk_187f50, (u32)&NodeObjInitThunk_1938f0, (u32)&NodeObjUpdateMotions_194070, (u32)&NodeObjUpdateFuncAnimes_193ff0, (u32)&NodeObjNopSlot38_194e80, (u32)&NodeObjClone_193a50
+};
+typedef char data2c_sizecheck_004705D0[(sizeof(D_004705D0) == 64) ? 1 : -1];

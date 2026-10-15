@@ -1,0 +1,42 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void CompleteCheckCategoryMsgState_39e0b0(void);
+extern void CompleteCheckCategorySelectState_39e410(void);
+extern void CompleteCheckCloseState_39e390(void);
+extern void CompleteCheckCursorPlace_39e2c0(void);
+extern void CompleteCheckRatesShow_39e530(void);
+extern void GoTitleMenuChoiceHighlightCb_39bb70(void);
+extern void GoTitleMenuPromptClose_39bc60(void);
+extern void GoTitleMenuPromptInput_39bcc0(void);
+extern void GoTitleMenuPromptOpen_39bda0(void);
+extern void LeaderSwitchCloseState_39c6f0(void);
+extern void LeaderSwitchFrameLayoutCb_39c580(void);
+extern void LeaderSwitchOpenState_39ca50(void);
+extern void LeaderSwitchSelectState_39c7e0(void);
+extern void LeaderSwitchTooFarState_39c150(void);
+extern void MenuGridCursorBobCb_394930(void);
+extern void MenuGridCursorBobCb_39bbd0(void);
+extern void MenuGridCursorBobCb_39c4a0(void);
+extern void MenuGridCursorBobCb_39e300(void);
+extern void SeventhMysteryAnswerCommitMaybe_394780(void);
+extern void SeventhMysteryCloseState_394a90(void);
+extern void SeventhMysteryCursorMoveCb_394a50(void);
+extern void SeventhMysteryExitState_394150(void);
+extern void SeventhMysteryNextQuestion_394610(void);
+extern void SeventhMysteryPanelFadeIn_3946d0(void);
+extern void SeventhMysteryQuizAnswer_394b40(void);
+extern void SeventhMysteryQuizResult_394380(void);
+extern void SeventhMysteryQuizStart_394ed0(void);
+extern void SeventhMysteryReward_3941c0(void);
+extern void TextEntryDialogCursorBobThunk_432700(void);
+extern void TextEntryDialogHighlightThunk_432740(void);
+extern void TextEntryHandlePadInputThunk_432920(void);
+extern void TextEntryNameCursorAnimateThunk_432810(void);
+extern void TextEntryNameCursorSkipBlankThunk_432850(void);
+extern void TextEntryPaletteCursorBobThunk_432960(void);
+extern void TextEntryPaletteCursorSkipBlankThunk_4329a0(void);
+extern void func_4F6ED0(void);
+const u32 D_00454760[688] = {
+    $h, $h, $h, $h, $h, $h, $h, $h, $h, (u32)&LeaderSwitchFrameLayoutCb_39c580, $h, (u32)&MenuGridCursorBobCb_39c4a0, $h, (u32)&GoTitleMenuChoiceHighlightCb_39bb70, $h, (u32)&MenuGridCursorBobCb_39bbd0, $h, $h, $h, $h, $h, (u32)&CompleteCheckCursorPlace_39e2c0, $h, (u32)&MenuGridCursorBobCb_39e300, $h, $h, $h, $h, $h, (u32)&SeventhMysteryCursorMoveCb_394a50, $h, (u32)&MenuGridCursorBobCb_394930, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, (u32)&TextEntryPaletteCursorSkipBlankThunk_4329a0, $h, (u32)&TextEntryPaletteCursorBobThunk_432960, $h, (u32)&TextEntryNameCursorSkipBlankThunk_432850, $h, (u32)&TextEntryNameCursorAnimateThunk_432810, $h, (u32)&TextEntryHandlePadInputThunk_432920, $h, (u32)&TextEntryDialogHighlightThunk_432740, $h, (u32)&TextEntryDialogCursorBobThunk_432700, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, (u32)&func_4F6ED0, $h, $h, $h, $h, $h, (u32)&LeaderSwitchOpenState_39ca50, $h, (u32)&LeaderSwitchSelectState_39c7e0, $h, (u32)&LeaderSwitchCloseState_39c6f0, $h, (u32)&LeaderSwitchTooFarState_39c150, $h, (u32)&GoTitleMenuPromptOpen_39bda0, $h, (u32)&GoTitleMenuPromptInput_39bcc0, $h, (u32)&GoTitleMenuPromptClose_39bc60, $h, $h, $h, (u32)&CompleteCheckRatesShow_39e530, $h, (u32)&CompleteCheckCategorySelectState_39e410, $h, (u32)&CompleteCheckCloseState_39e390, $h, (u32)&CompleteCheckCategoryMsgState_39e0b0, $h, $h, $h, $h, $h, (u32)&SeventhMysteryQuizStart_394ed0, $h, (u32)&SeventhMysteryQuizAnswer_394b40, $h, (u32)&SeventhMysteryCloseState_394a90, $h, (u32)&SeventhMysteryAnswerCommitMaybe_394780, $h, (u32)&SeventhMysteryPanelFadeIn_3946d0, $h, (u32)&SeventhMysteryNextQuestion_394610, $h, (u32)&SeventhMysteryQuizResult_394380, $h, (u32)&SeventhMysteryReward_3941c0, $h, (u32)&SeventhMysteryExitState_394150, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00454760[(sizeof(D_00454760) == 2752) ? 1 : -1];

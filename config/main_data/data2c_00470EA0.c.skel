@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffDrawResBaseDrawNop_1a0460(void);
+extern void EffDrawResBaseGetType_19c1f0(void);
+extern void EffDrawResBaseResetMaybe_1a8400(void);
+u32 D_00470EA0[6] = {
+    $h, $h, (u32)&EffDrawResBaseGetType_19c1f0, (u32)&EffDrawResBaseDrawNop_1a0460, (u32)&EffDrawResBaseResetMaybe_1a8400, $h
+};
+typedef char data2c_sizecheck_00470EA0[(sizeof(D_00470EA0) == 24) ? 1 : -1];

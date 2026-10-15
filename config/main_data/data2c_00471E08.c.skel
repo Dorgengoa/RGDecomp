@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void HatenaMarkNodeReset_345040(void);
+u32 D_00471E08[6] = {
+    $h, $h, (u32)&HatenaMarkNodeReset_345040, $h, $h, $h
+};
+typedef char data2c_sizecheck_00471E08[(sizeof(D_00471E08) == 24) ? 1 : -1];

@@ -1,0 +1,26 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MapDefCmdBlockAttr_1ebb90(void);
+extern void MapDefCmdBlockBox1Count_1eb8c0(void);
+extern void MapDefCmdBlockBox1_1eb730(void);
+extern void MapDefCmdBlockBox2Count_1eb620(void);
+extern void MapDefCmdBlockBox2_1eb490(void);
+extern void MapDefCmdBlockColor_1eba90(void);
+extern void MapDefCmdBlockCount_1ec860(void);
+extern void MapDefCmdBlockEnd_1ec2a0(void);
+extern void MapDefCmdBlockLinkIds_1ebce0(void);
+extern void MapDefCmdBlockLocationId_1ebfe0(void);
+extern void MapDefCmdBlockNavGraphId_1ebef0(void);
+extern void MapDefCmdBlockPlaceNameMsgId_1ebe30(void);
+extern void MapDefCmdBlockSetName_1eb9d0(void);
+extern void MapDefCmdBlockShareId_1ec0d0(void);
+extern void MapDefCmdBlockSoundEnvPresetId_1ec1d0(void);
+extern void MapDefCmdBlock_1ec390(void);
+extern void MapDefCmdMapBoxCount_1ec7a0(void);
+extern void MapDefCmdMapBox_1eb2d0(void);
+extern void MapDefCmdShareCount_1ec940(void);
+extern void MapDefCmdShare_1ec540(void);
+const u32 D_0044B490[44] = {
+    $h, (u32)&MapDefCmdShareCount_1ec940, $h, (u32)&MapDefCmdShare_1ec540, $h, (u32)&MapDefCmdBlockCount_1ec860, $h, (u32)&MapDefCmdBlock_1ec390, $h, (u32)&MapDefCmdBlockEnd_1ec2a0, $h, (u32)&MapDefCmdBlockSoundEnvPresetId_1ec1d0, $h, (u32)&MapDefCmdBlockShareId_1ec0d0, $h, (u32)&MapDefCmdBlockLocationId_1ebfe0, $h, (u32)&MapDefCmdBlockNavGraphId_1ebef0, $h, (u32)&MapDefCmdBlockPlaceNameMsgId_1ebe30, $h, (u32)&MapDefCmdBlockLinkIds_1ebce0, $h, (u32)&MapDefCmdBlockAttr_1ebb90, $h, (u32)&MapDefCmdBlockColor_1eba90, $h, (u32)&MapDefCmdBlockSetName_1eb9d0, $h, (u32)&MapDefCmdBlockBox1Count_1eb8c0, $h, (u32)&MapDefCmdBlockBox1_1eb730, $h, (u32)&MapDefCmdBlockBox2Count_1eb620, $h, (u32)&MapDefCmdBlockBox2_1eb490, $h, (u32)&MapDefCmdMapBoxCount_1ec7a0, $h, (u32)&MapDefCmdMapBox_1eb2d0, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044B490[(sizeof(D_0044B490) == 176) ? 1 : -1];

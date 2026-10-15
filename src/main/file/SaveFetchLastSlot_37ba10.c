@@ -1,0 +1,26 @@
+#include "types.h"
+
+extern s32 SaveGetLastSlot_3761f0(void);
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+struct Obj0;
+
+struct Obj0 {
+    s32 m00;
+};
+
+s32 SaveFetchLastSlot_37ba10(struct Obj0 *p0)
+{
+    s32 r0;
+
+    if (p0 != 0) {
+        p0->m00 = 0;
+    }
+    r0 = SaveGetLastSlot_3761f0();
+    p0->m00 = r0;
+    return r0;
+}

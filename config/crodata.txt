@@ -1,0 +1,197 @@
+# Where a compiled unit's OWN .rodata belongs in the image.
+#
+# A C `switch` emits its jump table into the unit's .rodata.  Retail keeps
+# those tables inside asm/main.s, so they cut out of the text exactly the way
+# a function does and the compiled section takes the hole.  Without this the
+# only home the lcf had for a unit's rodata was the trailing *(.rodata)
+# wildcard -- past the end of the image -- which is why admission condition 3
+# refused every switch-dispatch function until now.
+#
+#   <symbol>  <table addr>  <table size>
+TaskApplyPresetMaybe_27af70  0045FE80  30    # jtbl_0045FE80, 12 cases
+# ---- passes 1-7 merge, 2026-08-27 (each unit re-verified byte-identical this session)
+CharaTintGetColor_21f1b0  0045D020  28   # jtbl_0045D020, 10 cases
+EvCmdOptionsGet_2408b0  0045E9C0  1C   # jtbl_0045E9C0, 7 cases
+EvCmdOptionsSet_240930  0045E9E0  1C   # jtbl_0045E9E0, 7 cases
+EvCmdMesWinSetParam_242650  0045EA50  24   # jtbl_0045EA50, 9 cases
+EvCmdSceneInfoGetRelated_25d500  0045EFB0  3C   # jtbl_0045EFB0, 15 cases
+EvCmdGetSoundSlotHandle_2623c0  0045F140  18   # jtbl_0045F140, 6 cases
+EvCmdMesWinSetParam_265f00  0045F160  2C   # jtbl_0045F160, 11 cases
+AiCmdOptionsGet_2c5d80  00461510  34   # jtbl_00461510, 13 cases
+TargetRefSetScaleRotPos_2e5a50  00461820  2C   # jtbl_00461820, 11 cases
+TargetRefSetTranslation_2e5bf0  00461850  2C   # jtbl_00461850, 11 cases
+TargetRefSetRotation_2e5d10  00461880  2C   # jtbl_00461880, 11 cases
+TargetRefSetScale_2e5e10  004618B0  2C   # jtbl_004618B0, 11 cases
+TargetRefGetMatrix_2e6870  00461920  34   # jtbl_00461920, 13 cases
+TargetRefGetPos_2e6a60  00461960  34   # jtbl_00461960, 13 cases
+TargetRefGetLocalPosMaybe_2e6bf0  004619A0  34   # jtbl_004619A0, 13 cases
+VariantGetDouble_36f6c0  00463600  2C   # jtbl_00463600, 11 cases
+UiQuadSetByModeRelated_3934d0  00464260  18   # jtbl_00464260, 6 cases
+ScriptBinaryOpExec_3da740  00466700  60   # jtbl_00466700, 24 cases
+RecordSetMode_431310  00468FE0  20   # jtbl_00468FE0, 8 cases
+# --- session 18, MAIN ---
+EffDefCmdObjRand_19d670  0045A540  20   # jtbl_0045A540, 8 cases
+EffDefCmdObjTexUv_19e210  0045A580  20   # jtbl_0045A580, 8 cases
+EffDefCmdObjAlpha_19e450  0045A5A0  20   # jtbl_0045A5A0, 8 cases
+EffDefCmdObjScl_19e8f0  0045A5E0  20   # jtbl_0045A5E0, 8 cases
+EffDefCmdObjRot_19eb30  0045A600  20   # jtbl_0045A600, 8 cases
+EffDefCmdObjPos_19ed70  0045A620  20   # jtbl_0045A620, 8 cases
+ActInfoVert_23ec60  0045E940  1C   # jtbl_0045E940, 7 cases
+StatusEffectSlotSetup_33d080  00462670  34   # jtbl_00462670, 13 cases
+# --- session 34, MAIN (lane W) ---
+VariantHasValue_36e9f0  004634B0  2C   # jtbl_004634B0, 11 cases
+InvCategoryGetMaxId_3d5170  004664E0  28   # jtbl_004664E0, 10 cases
+InvCategoryGetMinId_3d5210  00466510  28   # jtbl_00466510, 10 cases
+WorldDataGetPurposePacPath_3f0230  00466D10  24   # jtbl_00466D10, 9 cases
+MainCharaIdToNumber_4016b0  004673D0  28   # jtbl_004673D0, 10 cases
+MapModelCfgType_195e80  0045A010  1C   # jtbl_0045A010, 7 cases
+VariantGetS64_36f9a0  00463690  2C   # jtbl_00463690, 11 cases
+VariantGetS32_36fb30  004636F0  2C   # jtbl_004636F0, 11 cases
+VariantGetS16_36fcc0  00463750  2C   # jtbl_00463750, 11 cases
+VariantGetS8_36fe50  004637B0  2C   # jtbl_004637B0, 11 cases
+TargetRefDetachFromParent_2e5890  004617F0  2C   # jtbl_004617F0, 11 cases
+VariantCopy_36f5e0  004635D0  2C   # jtbl_004635D0, 11 cases
+VariantGetU32_36fa50  004636C0  2C   # jtbl_004636C0, 11 cases
+VariantGetU16_36fbe0  00463720  2C   # jtbl_00463720, 11 cases
+VariantGetU8_36fd70  00463780  2C   # jtbl_00463780, 11 cases
+VariantGetFloat_36f7a0  00463630  2C   # jtbl_00463630, 11 cases
+InvIdGetMajorIndex_3d55f0  004665A0  28   # jtbl_004665A0, 10 cases
+VariantLogicalNot_36b2b0  00462EE0  2C   # jtbl_00462EE0, MAIN s36
+VariantBitNot_36b480  00462F10  2C   # jtbl_00462F10, MAIN s36
+VariantShl_36b620  00462F40  2C   # jtbl_00462F40, MAIN s36
+VariantShr_36b880  00462F70  2C   # jtbl_00462F70, MAIN s36
+VariantXor_36bae0  00462FA0  2C   # jtbl_00462FA0, MAIN s36
+VariantOr_36bd40  00462FD0  2C   # jtbl_00462FD0, MAIN s36
+VariantAnd_36bfa0  00463000  2C   # jtbl_00463000, MAIN s36
+VariantMod_36c200  00463030  2C   # jtbl_00463030, MAIN s36
+VariantDiv_36c4d0  00463060  2C   # jtbl_00463060, MAIN s36
+VariantMul_36c7a0  00463090  2C   # jtbl_00463090, MAIN s36
+VariantSub_36ca80  004630C0  2C   # jtbl_004630C0, MAIN s36
+VariantAdd_36ccf0  004630F0  2C   # jtbl_004630F0, MAIN s36
+VariantLogicalOr_36cf60  00463120  2C   # jtbl_00463120, MAIN s36
+VariantLogicalAnd_36d230  00463150  2C   # jtbl_00463150, MAIN s36
+VariantLessEqual_36d500  00463180  2C   # jtbl_00463180, MAIN s36
+VariantGreaterEqual_36d7a0  004631B0  2C   # jtbl_004631B0, MAIN s36
+VariantLess_36da40  004631E0  2C   # jtbl_004631E0, MAIN s36
+VariantGreater_36dcc0  00463210  2C   # jtbl_00463210, MAIN s36
+VariantNotEqual_36df40  00463240  2C   # jtbl_00463240, MAIN s36
+VariantEqual_36e1e0  00463270  2C   # jtbl_00463270, MAIN s36
+VariantGetU64_36f8f0  00463660  2C   # jtbl_00463660, MAIN s36
+# --- session 39, MAIN (INFRA lane -- multi-slot .rodata patch) ---
+VariantPromoteTypes_36e510  004632A0  20C   # 11 jtbl_ tables, 004632A0..00463480
+# --- session 40, MAIN (INFRA lane) ---
+ActionPacketInitTendencyMaybe_3e2c00  00466970  74   # 2 jtbl_ tables (13+3+13 words), 00466970..004669E4, 12-byte align gap before 2nd table
+# --- s40m merge, 2026-09-23 ---
+VariantIsZero_36ed10  00463510  2C   # jtbl_00463510, 11 cases
+ResGroupLoadByKind_42b840  004686E0  40   # jtbl_004686E0, 16 cases
+MenuModelPageCharaLabelLayoutMaybe_359120  00462BF0  20   # jtbl_00462BF0, 8 cases
+ScriptEvalQueryOpMaybe_3daaf0  00466760  7C   # 4 jtbl_ tables (6+6+6+7 words, 16-aligned), 00466760..004667DC
+# --- s41m merge, 2026-09-23 ---
+MenuFormat3Digits_35cb40  00462C30  28   # jtbl_00462C30, 10 cases
+UnitActionGaugeRegen_3bd520  004661D0  30   # jtbl_004661D0, 12 cases
+CharaActionGaugeRegen_3b6490  00465F30  30   # jtbl_00465F30, 12 cases
+# --- s46m merge, 2026-09-24 ---
+FuncDataTableCalcKindFlags_18fef0  00459D20  24   # jtbl_00459D20, 9 cases
+EvSubMachineUpdate_251980  0045EDB0  1C   # jtbl_0045EDB0, 7 cases
+InsectCageMenuRename_38be70  00464030  20   # jtbl_00464030, 8 cases
+InsectCageMenuTopCommandState_38fe00  004640C0  18   # jtbl_004640C0, 6 cases
+InvIdGetMidIndex_3d52b0  00466540  28   # jtbl_00466540, 10 cases
+InvIdGetMinorIndex_3d5440  00466570  28   # jtbl_00466570, 10 cases
+# --- MAIN s49m 2026-09-26 ---
+EffDefCmdObjVelo_19d510  0045A520  20   # jtbl_0045A520, 8 cases
+GameSceneSoundMakeBankPath_1d0c40  0045B0D0  1C   # jtbl_0045B0D0, 7 cases
+MenuOptionLoadValue_350240  00462970  28   # jtbl_00462970, 10 cases
+VariantSetRaw_36ee90  00463540  2C   # jtbl_00463540, 11 cases
+McSetErrorResult_375890  004639B0  20   # jtbl_004639B0, 8 cases
+CharaCanPerformAction_3b67f0  00465F60  50   # jtbl_00465F60, 20 cases
+CharaActionKindAllowed_3b8830  00465FB0  50   # jtbl_00465FB0, 20 cases
+InvFindByRecKey_3c8140  004662D0  30   # jtbl_004662D0, 12 cases
+InvMakeIdFromCategory_3c88b0  00466330  28   # jtbl_00466330, 10 cases
+RevelationBoardCellLinkMask_409b50  00467720  20   # jtbl_00467720, 8 cases
+# --- MAIN s50m+s51m 2026-09-27 ---
+CharaTableMtnDefineEnd_23c150  0045E920  18   # jtbl_0045E920, 6 cases
+# --- MAIN s52m residue-class wave (33 lanes), 2026-09-27 ---
+MeshMaterialBuildPkt_14ac90  00458AC0  2C   # jtbl_00458AC0, 11 cases
+# --- MAIN s55m: s54m carried 297 + s55m wrong-length/near-miss wave (411) ---
+EffDefCmdGravity_19d080  0045A4E0  20   # jtbl_0045A4E0, 8 cases
+EffDefCmdObjAccele_19d3b0  0045A500  20   # jtbl_0045A500, 8 cases
+SoundSetCategoryVolume_1bb230  0045AC10  30   # jtbl_0045AC10, 12 cases (SoundCategoryGetChanMapMaybe_1bab00, hosted static in SoundSetCategoryVolume_1bb230 since s59m)
+SoundStreamSlotGetState_1be710  0045AC90  24   # jtbl_0045AC90, 9 cases
+MapAreaLoadUpdate_1d9300  0045B330  48   # jtbl_0045B330, 18 cases
+CharaUseActionGaugeOnce_214010  0045CA40  20   # jtbl_0045CA40, 8 cases
+CharaSpawnClsnJudge_227c70  0045D0B0  20   # jtbl_0045D0B0, 8 cases
+EventCueStep_2491b0  0045EB30  2C   # jtbl_0045EB30, 11 cases
+EventCastRecordRelease_24dc90  0045EC10  28   # jtbl_0045EC10, 10 cases
+EvCmdTreasureBoxQuery_25e700  0045EFF0  24   # jtbl_0045EFF0, 9 cases
+GameModeDispatch_27c670  00460D00  58   # jtbl_00460D00, 22 cases
+TransporterWarpModeUpdate_27f140  00460D90  18   # jtbl_00460D90, 6 cases
+EasingEval_2e4820  004617D0  1C   # jtbl_004617D0, 7 cases
+TargetRefResolve_2e5ed0  004618E0  38   # jtbl_004618E0, 14 cases
+VariantSetS32_36f040  00463570  2C   # jtbl_00463570, 11 cases
+VariantSetS8_36f300  004635A0  2C   # jtbl_004635A0, 11 cases
+TransMenuItemCmdDispatchState_37e280  00463B40  18   # jtbl_00463B40, 6 cases
+TransMenuItemCommandSelectState_37e880  00463B60  38   # jtbl_00463B60, 14 cases
+InsectCageMenuBattleState_38de90  004640A0  18   # jtbl_004640A0, 6 cases
+WorldDataCmdSetPartyMember_3b9b00  004660E0  1C   # jtbl_004660E0, 7 cases
+InvObjCreateByKind_3c75c0  004662B0  1C   # jtbl_004662B0, 7 cases
+InvFindInCategoryRange_3c8370  00466300  30   # jtbl_00466300, 12 cases
+ScriptExecOpStream_3dffa0  004667E0  24   # jtbl_004667E0, 9 cases
+SaveDataDeserialize_3e5c30  00466B80  1C   # jtbl_00466B80, 7 cases
+# --- MAIN s56m continuation wave (16 lanes), 2026-09-29 ---
+EffDefCmdObjAnimation_19c2c0  0045A4C0  20   # jtbl_0045A4C0, 8 cases
+SoundStreamSlotUpdate_1bea70  0045ACC0  1C   # jtbl_0045ACC0, 7 cases
+CharaActionUpdateMaybe_215ca0  0045CB70  34   # jtbl_0045CB70, 13 cases
+CharaTryStartAction_216700  0045CBB0  20   # jtbl_0045CBB0, 8 cases
+CharaActHang_21a890  0045CE60  18   # jtbl_0045CE60, 6 cases
+CharaActBattleInOut_21bbf0  0045CEF0  18   # jtbl_0045CEF0, 6 cases
+CharaSelectLocoState_21e190  0045CFD0  18   # jtbl_0045CFD0, 6 cases
+ActionMgrRunActions_231f90  0045D6E0  20   # jtbl_0045D6E0, 8 cases
+EventCastLoadPoll_24c230  0045EB80  28   # jtbl_0045EB80, 10 cases
+FieldExploreModeUpdate_2833a0  00460E20  48   # jtbl_00460E20, 18 cases
+MenuTopSelectState_2953b0  004611C0  60   # jtbl_004611C0, 24 cases
+TopMenuSelectFlashStep_295ec0  00461220  1C   # jtbl_00461220, 7 cases
+NpcObjUpdate_2fc450  00461E20  38   # jtbl_00461E20, 14 cases
+MenuWeaponCombineAnimTickMaybe_361cd0  00462D90  24   # jtbl_00462D90, 9 cases
+MenuWeaponCombineUpdate_362920  00462DF0  78   # jtbl_00462DF0, 30 cases
+VariantToInteger_36ea70  004634E0  2C   # jtbl_004634E0, 11 cases
+McSaveSlotScanStep_374b00  00463940  20   # jtbl_00463940, 8 cases
+InsectCageMenuBreedState_38d6b0  00464070  24   # jtbl_00464070, 9 cases
+BattleSetupEncounter_3a3970  00465DC0  18   # jtbl_00465DC0, 6 cases
+InvFindFreeSlotId_3c4900  00466250  2C   # jtbl_00466250, 11 cases
+InvMoveItemMaybe_3c5b10  00466280  24   # jtbl_00466280, 9 cases
+ScriptEmitCmdHandlerMaybe_3da110  004665D0  124   # jtbl_004665D0, 73 cases
+GfxSetVideoMode_1451f0  00458A60  4C   # jtbl_00458A60, 19 cases (hosted TU, s56m)
+# --- s58m wave + s57m carried ---
+GameSessionInit_1f5d80  0045BC70  1C   # jtbl_0045BC70, 7 cases
+CharaSelectLadderState_21a500  0045CDF0  1C   # jtbl_0045CDF0, 7 cases
+CharaTintUpdate_21ea90  0045CFF0  28   # jtbl_0045CFF0, 10 cases
+DoorCursorFadePulseUpdate_305120  00462200  40   # jtbl_00462200, 16 cases
+EvObjLiftUpdate_334ac0  00462590  40   # jtbl_00462590, 16 cases
+PartyTendencyUpdateMaybe_3c8f60  00466360  70   # jtbl_00466360, 28 cases
+# --- MAIN s59m 2026-09-30: fenced group + climb ---
+EffDefCmdObjRgba_19db50  0045A560  20   # jtbl_0045A560, 8 cases
+EffDefCmdObjCol_19e6a0  0045A5C0  20   # jtbl_0045A5C0, 8 cases
+SaveDataSerialize_3e6100  00466BA0  1C   # jtbl_00466BA0, 7 cases
+# --- MAIN s65m 2026-09-30: s60m/s61m/s62m/s63m/s64m/wlx solo MATCHes ---
+CharaSelectStateFromFlagsMaybe_20e9f0  0045C880  48   # jtbl_0045C880, 18 cases
+BattleApplyHit_2ef930  00461B60  20   # jtbl_00461B60, 8 cases
+# --- MAIN s70m 2026-10-01: s67m solo/big MATCHes + CharaResolveActionHitMaybe_3b28d0 (2nd largest) + KernelSetAlarm_447260 (gcc) ---
+CharaResolveActionHitMaybe_3b28d0  00465F10  1C   # jtbl_00465F10, 7 cases
+# --- MAIN s79m 2026-10-02: s68m/s74m/s76m/s77m/s60m solo MATCHes (BattleModeUpdate_280220, ScriptVmExec_173b00, CharaUpdateMovement_20a7d0 ...) ---
+ScriptVmExec_173b00  00459550  BC   # jtbl_00459550, 47 cases
+CharaUpdateMovement_20a7d0  0045C710  30   # jtbl_0045C710, 12 cases
+# --- MAIN s88m 2026-10-04 ---
+FuncAnimeUpdate_191650  00459D50  30   # jtbl_00459D50, 12 cases
+SoundCategoryTableInitMaybe_1bbbb0  0045AC40  18   # jtbl_0045AC40, 6 cases
+CharaActDispatch_20d190  0045C7E0  4C   # jtbl_0045C7E0, 19 cases
+CharaTableEntryCondMatchesMaybe_226110  0045D060  18   # jtbl_0045D060, 6 cases
+FontDrawGlyphOutline_26e450  0045F540  1C   # jtbl_0045F540, 7 cases
+AiCmdCountObjsInRangeMaybe_2c51b0  004614E0  28   # jtbl_004614E0, 10 cases
+ItemUseApplyToCharaMaybe_2eeb20  00461AE0  2C   # jtbl_00461AE0, 11 cases
+PartyLoadAndPlaceMembersMaybe_2f4b00  00461BB0  3C   # jtbl_00461BB0, 15 cases
+LoadingScreenFrame_3435d0  00462840  24   # jtbl_00462840, 9 cases
+McSaveCreateStep_375090  00463960  48   # jtbl_00463960, 18 cases
+CharaSysEncounterSetupMaybe_3a4440  00465DE0  38   # jtbl_00465DE0, 14 cases
+CharaCountAbilitiesFilteredMaybe_3add30  00465E60  40   # jtbl_00465E60, 16 cases
+WorldDataPurposeLoadMaybe_3eefe0  00466C30  DC   # jtbl_00466C30, 55 cases
+CharaPcResNameBuildMaybe_40dc60  004678E0  40   # jtbl_004678E0, 16 cases

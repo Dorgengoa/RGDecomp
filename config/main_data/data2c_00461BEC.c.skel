@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+const u32 data2c_gap_00461BEC[1] = {
+    $h
+};
+typedef char data2c_sizecheck_00461BEC[(sizeof(data2c_gap_00461BEC) == 4) ? 1 : -1];

@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void SaveSysResultCbMaybe_373e10(void);
+u32 D_0047FAA4[1] = {
+    (u32)&SaveSysResultCbMaybe_373e10
+};
+typedef char data2c_sizecheck_0047FAA4[(sizeof(D_0047FAA4) == 4) ? 1 : -1];

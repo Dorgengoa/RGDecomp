@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void CharaListInsertSortedById_1fe1f0(void);
+u32 D_004712F0[4] = {
+    $h, $h, (u32)&CharaListInsertSortedById_1fe1f0, $h
+};
+typedef char data2c_sizecheck_004712F0[(sizeof(D_004712F0) == 16) ? 1 : -1];

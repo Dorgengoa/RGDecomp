@@ -1,0 +1,46 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EvSubNodeCastSetFloatStubMaybe_2524e0(void);
+extern void EvSubNodeCastSetFloatStubMaybe_252510(void);
+extern void EvSubNodeCastSlotValid_2525d0(void);
+extern void EvSubNodeClothReset_252e20(void);
+extern void EvSubNodeFollowNode_2530a0(void);
+extern void EvSubNodeJumpTo_253140(void);
+extern void EvSubNodeMoveByVel_252f40(void);
+extern void EvSubNodeMoveToCameraFront_252e50(void);
+extern void EvSubNodeMoveToEased_2533f0(void);
+extern void EvSubNodeMoveTo_253610(void);
+extern void EvSubNodePlayMotionNow_2526d0(void);
+extern void EvSubNodePlayMotion_252630(void);
+extern void EvSubNodePlaySound_252160(void);
+extern void EvSubNodeResetMotions_252540(void);
+extern void EvSubNodeReturnTrue_252120(void);
+extern void EvSubNodeReturnTrue_2524c0(void);
+extern void EvSubNodeReturnZero_2524d0(void);
+extern void EvSubNodeRotateToLinear_252c10(void);
+extern void EvSubNodeRotateTo_252920(void);
+extern void EvSubNodeScaleTo_2521c0(void);
+extern void EvSubNodeSetMotionBlendSpeed_252570(void);
+extern void EvSubNodeSetMotionRate_2525a0(void);
+extern void EvSubNodeSetPos_253740(void);
+extern void EvSubNodeSetRot_252dc0(void);
+extern void EvSubNodeSetTexAnim_252410(void);
+extern void EvSubNodeSplineAddPoint_253370(void);
+extern void EvSubNodeSplineMove_2531f0(void);
+extern void EvSubNodeSplineReset_2533d0(void);
+extern void EvSubNodeSplineSetDuration_2533a0(void);
+extern void EvSubNodeStopSound_252130(void);
+extern void EvSubNodeTurnToPoint_252790(void);
+extern void EvSubNodeWaitFrames_252190(void);
+extern void EvSubNodeWaitFrames_2522c0(void);
+extern void EvSubNodeWaitFrames_2523e0(void);
+extern void EvSubNodeWaitFrames_252490(void);
+extern void EvSubNodeWaitFrames_252760(void);
+extern void EvSubNodeWaitFrames_252df0(void);
+extern void EvSubNodeWaitFrames_253770(void);
+extern void EvSubNodeWaitMotionEnd_252600(void);
+extern void EvSubNodeWinColorTo_2522f0(void);
+const u32 D_0044D640[44] = {
+    (u32)&EvSubNodeReturnTrue_252120, (u32)&EvSubNodeWaitFrames_253770, (u32)&EvSubNodeSetPos_253740, (u32)&EvSubNodeMoveTo_253610, (u32)&EvSubNodeMoveToEased_2533f0, (u32)&EvSubNodeSplineReset_2533d0, (u32)&EvSubNodeSplineSetDuration_2533a0, (u32)&EvSubNodeSplineAddPoint_253370, (u32)&EvSubNodeSplineMove_2531f0, (u32)&EvSubNodeJumpTo_253140, (u32)&EvSubNodeFollowNode_2530a0, (u32)&EvSubNodeMoveByVel_252f40, (u32)&EvSubNodeMoveToCameraFront_252e50, (u32)&EvSubNodeWaitFrames_252df0, (u32)&EvSubNodeSetRot_252dc0, (u32)&EvSubNodeRotateToLinear_252c10, (u32)&EvSubNodeRotateTo_252920, (u32)&EvSubNodeTurnToPoint_252790, (u32)&EvSubNodeWaitFrames_252760, (u32)&EvSubNodePlayMotionNow_2526d0, (u32)&EvSubNodePlayMotion_252630, (u32)&EvSubNodeWaitMotionEnd_252600, (u32)&EvSubNodeCastSlotValid_2525d0, (u32)&EvSubNodeReturnTrue_2524c0, (u32)&EvSubNodeSetMotionRate_2525a0, (u32)&EvSubNodeSetMotionBlendSpeed_252570, (u32)&EvSubNodeResetMotions_252540, (u32)&EvSubNodeCastSetFloatStubMaybe_252510, (u32)&EvSubNodeCastSetFloatStubMaybe_2524e0, (u32)&EvSubNodeReturnZero_2524d0, (u32)&EvSubNodeWaitFrames_252490, (u32)&EvSubNodeSetTexAnim_252410, (u32)&EvSubNodeWaitFrames_2523e0, (u32)&EvSubNodeWinColorTo_2522f0, (u32)&EvSubNodeWaitFrames_2522c0, (u32)&EvSubNodeScaleTo_2521c0, (u32)&EvSubNodeWaitFrames_252190, (u32)&EvSubNodePlaySound_252160, (u32)&EvSubNodeClothReset_252e20, (u32)&EvSubNodeStopSound_252130, (u32)&EvSubNodeReturnTrue_252120, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044D640[(sizeof(D_0044D640) == 176) ? 1 : -1];

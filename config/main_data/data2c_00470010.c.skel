@@ -1,0 +1,15 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ModelMeshBuildUnpackPktThunkMaybe_15aef0(void);
+extern void ModelMeshGetPktMaybe_15ae90(void);
+extern void ModelMeshGetPktMaybe_15aea0(void);
+extern void ModelMeshLinksBuildFromResMaybe_15af00(void);
+extern void ModelMeshLinksGetGroupPktsMaybe_15aeb0(void);
+extern void ModelMeshLinksGetTypeId_15ae80(void);
+extern void ModelMeshLinksInitThunkMaybe_15b0f0(void);
+extern void ModelMeshLinksIsKindOf_15b120(void);
+extern void ModelMeshWriteVuHeaderMaybe_15b1d0(void);
+u32 D_00470010[12] = {
+    $h, $h, (u32)&ModelMeshLinksGetTypeId_15ae80, (u32)&ModelMeshLinksIsKindOf_15b120, (u32)&ModelMeshGetPktMaybe_15ae90, (u32)&ModelMeshWriteVuHeaderMaybe_15b1d0, (u32)&ModelMeshLinksGetGroupPktsMaybe_15aeb0, (u32)&ModelMeshLinksInitThunkMaybe_15b0f0, (u32)&ModelMeshGetPktMaybe_15aea0, (u32)&ModelMeshLinksBuildFromResMaybe_15af00, (u32)&ModelMeshBuildUnpackPktThunkMaybe_15aef0, $h
+};
+typedef char data2c_sizecheck_00470010[(sizeof(D_00470010) == 48) ? 1 : -1];

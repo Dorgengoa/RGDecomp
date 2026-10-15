@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EventScriptRecListInsert_2d2360(void);
+u32 D_004715D8[4] = {
+    $h, $h, (u32)&EventScriptRecListInsert_2d2360, $h
+};
+typedef char data2c_sizecheck_004715D8[(sizeof(D_004715D8) == 16) ? 1 : -1];

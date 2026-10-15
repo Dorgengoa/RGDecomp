@@ -1,0 +1,41 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MapSceneCfgActiveLightSet_193500(void);
+extern void MapSceneCfgAllScissor_192900(void);
+extern void MapSceneCfgAmbient_192f30(void);
+extern void MapSceneCfgBgColor2_192fb0(void);
+extern void MapSceneCfgBgColor_193070(void);
+extern void MapSceneCfgCharaLightAdjust_192890(void);
+extern void MapSceneCfgCharaPos_192ae0(void);
+extern void MapSceneCfgDefFoot_192a30(void);
+extern void MapSceneCfgDofDist_192740(void);
+extern void MapSceneCfgDofFlag_192840(void);
+extern void MapSceneCfgDofTime_1927c0(void);
+extern void MapSceneCfgEnvCol_192eb0(void);
+extern void MapSceneCfgFloor_192b10(void);
+extern void MapSceneCfgFogEnable_192cc0(void);
+extern void MapSceneCfgFog_192bb0(void);
+extern void MapSceneCfgFovName_192700(void);
+extern void MapSceneCfgFov_1930f0(void);
+extern void MapSceneCfgImg_193600(void);
+extern void MapSceneCfgLensFlare_192960(void);
+extern void MapSceneCfgLightGroupEnd_193230(void);
+extern void MapSceneCfgLightGroup_193410(void);
+extern void MapSceneCfgLightSetEnd_192b40(void);
+extern void MapSceneCfgLightSet_193120(void);
+extern void MapSceneCfgLight_192dd0(void);
+extern void MapSceneCfgPcp_193530(void);
+extern void MapSceneCfgPlight_192d00(void);
+extern void MapSceneCfgSkyInfo_192990(void);
+extern void MapSceneCfgTimeCFade_192930(void);
+extern void MapSceneCfgTimeFlag_192a90(void);
+extern void MapSceneCfgTimeLightNum_192a60(void);
+extern void MapSceneCfgVariableInfoEnd_192570(void);
+extern void MapSceneCfgVariableInfoStart_192630(void);
+extern void MapSceneCfgVariableInfo_192580(void);
+extern void MapSceneCfgWindName_1926c0(void);
+extern u8 data2c_gap_00459D80[];
+const u32 D_0044A880[72] = {
+    (u32)&data2c_gap_00459D80, (u32)&MapSceneCfgImg_193600, $h, (u32)&MapSceneCfgPcp_193530, $h, (u32)&MapSceneCfgActiveLightSet_193500, $h, (u32)&MapSceneCfgLightGroup_193410, $h, (u32)&MapSceneCfgLightGroupEnd_193230, $h, (u32)&MapSceneCfgLightSet_193120, $h, (u32)&MapSceneCfgFov_1930f0, $h, (u32)&MapSceneCfgBgColor_193070, $h, (u32)&MapSceneCfgBgColor2_192fb0, $h, (u32)&MapSceneCfgAmbient_192f30, $h, (u32)&MapSceneCfgEnvCol_192eb0, $h, (u32)&MapSceneCfgLight_192dd0, $h, (u32)&MapSceneCfgPlight_192d00, $h, (u32)&MapSceneCfgFogEnable_192cc0, $h, (u32)&MapSceneCfgFog_192bb0, $h, (u32)&MapSceneCfgLightSetEnd_192b40, $h, (u32)&MapSceneCfgFloor_192b10, $h, (u32)&MapSceneCfgCharaPos_192ae0, $h, (u32)&MapSceneCfgTimeFlag_192a90, $h, (u32)&MapSceneCfgTimeLightNum_192a60, $h, (u32)&MapSceneCfgDefFoot_192a30, $h, (u32)&MapSceneCfgSkyInfo_192990, $h, (u32)&MapSceneCfgLensFlare_192960, $h, (u32)&MapSceneCfgTimeCFade_192930, $h, (u32)&MapSceneCfgAllScissor_192900, $h, (u32)&MapSceneCfgCharaLightAdjust_192890, $h, (u32)&MapSceneCfgDofFlag_192840, $h, (u32)&MapSceneCfgDofTime_1927c0, $h, (u32)&MapSceneCfgDofDist_192740, $h, (u32)&MapSceneCfgFovName_192700, $h, (u32)&MapSceneCfgWindName_1926c0, $h, (u32)&MapSceneCfgVariableInfoStart_192630, $h, (u32)&MapSceneCfgVariableInfo_192580, $h, (u32)&MapSceneCfgVariableInfoEnd_192570, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044A880[(sizeof(D_0044A880) == 288) ? 1 : -1];

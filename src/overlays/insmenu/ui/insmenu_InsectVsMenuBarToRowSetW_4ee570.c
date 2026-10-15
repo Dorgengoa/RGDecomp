@@ -1,0 +1,41 @@
+#include "types.h"
+/* insmenu 0x004EE570 -- the 004EE250 caption call with the fourth argument a
+ * REAL multiply of two members (`mult $7, $3, $2`), not the *57 shift
+ * chain the siblings use, then an if/else on field12 re-read across the
+ * call.  The `beql` delay slot carries the ELSE arm's `lui %hi`, which
+ * is what says the `< 4` arm is the fall-through.
+ *
+ * `slti $1, $2, 0x4` into $at is the DEFAULT polarity of the $at class
+ * ([[at-compare-class]]): the branch is taken on `>=`, so the natural
+ * `< 4` spelling already gives $at and there is nothing to steer.
+ *
+ * THREE call sites share the colour: written as `(u16)colour` at each,
+ * mwcc CSEs the mask into the callee-saved register and copies it out
+ * three times, where retail keeps the RAW value in $16 and re-issues
+ * `andi $5, $16, 0xFFFF` at every site.  The mask is the CALLEE's u16
+ * parameter, not something to write -- declare it and pass the s32.
+ *
+ * field06/field12 are STRUCT MEMBERS, not casts -- written as casts mwcc
+ * CSEs the address into the callee-saved register where retail caches
+ * the base. */
+typedef struct {
+    u8 pad00[0x6];
+    s16 field06;
+    u8 pad08[0xA];
+    s16 field12;
+} Widget;
+
+extern const u8 D_004FA180[];
+extern void func_290F60(const void *a, u16 b, s32 c, s32 d);
+extern void func_28FBF0(const void *w, u16 id, s32 a, s32 k);
+
+s32 insmenu_InsectVsMenuBarToRowSetW_4ee570(Widget *o, s32 unused, s32 colour)
+{
+    func_290F60(D_004FA180, colour, 0, o->field12 * o->field06);
+    if (o->field12 < 4) {
+        func_28FBF0(D_004FA180, colour, 0x126, 0);
+    } else {
+        func_28FBF0(D_004FA180, colour, 0x76, 0);
+    }
+    return 1;
+}

@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_00463E60[];
+u32 D_0047FC80[4] = {
+    (u32)((u8*)&D_00463E60 + 0x10u), (u32)((u8*)&D_00463E60 + 0x20u), (u32)((u8*)&D_00463E60 + 0x30u), $h
+};
+typedef char data2c_sizecheck_0047FC80[(sizeof(D_0047FC80) == 16) ? 1 : -1];

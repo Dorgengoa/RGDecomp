@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void NpcTalkTextCmdEntryText_41da90(void);
+extern void NpcTalkTextCmdNopThunk_41dc90(void);
+const u32 D_00467F20[10] = {
+    $h, (u32)&NpcTalkTextCmdNopThunk_41dc90, $h, (u32)&NpcTalkTextCmdNopThunk_41dc90, $h, (u32)&NpcTalkTextCmdNopThunk_41dc90, $h, (u32)&NpcTalkTextCmdEntryText_41da90, $h, $h
+};
+typedef char data2c_sizecheck_00467F20[(sizeof(D_00467F20) == 40) ? 1 : -1];

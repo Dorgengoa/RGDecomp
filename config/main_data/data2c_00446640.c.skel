@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+const u32 D_00446640[2] = {
+    $h, $h
+};
+typedef char data2c_sizecheck_00446640[(sizeof(D_00446640) == 8) ? 1 : -1];

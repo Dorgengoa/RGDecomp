@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ContainerViewGetAtFwd_4293a0(void);
+extern void RowRangeIterGetAt_428690(void);
+extern void RowRangeIterGetCount_428710(void);
+u32 D_0047CA10[8] = {
+    $h, $h, (u32)&RowRangeIterGetCount_428710, (u32)&ContainerViewGetAtFwd_4293a0, (u32)&RowRangeIterGetAt_428690, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047CA10[(sizeof(D_0047CA10) == 32) ? 1 : -1];

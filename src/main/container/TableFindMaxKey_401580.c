@@ -1,0 +1,26 @@
+#include "types.h"
+
+extern s16 *IterNext_370040(void *);
+extern void IterInit_370170(void *, s32);
+
+s16 *TableFindMaxKey_401580(s32 arg0)
+{
+    u8 sp28[8];
+    s16 *temp_2;
+    s16 *best;
+    s32 v;
+
+    v = arg0;
+    best = NULL;
+    if (arg0 != 0) {
+        v += 4;
+    }
+    IterInit_370170(sp28, v);
+    while ((temp_2 = IterNext_370040(sp28)) != 0) {
+        if (best == NULL ||
+            (s64)((s64)*best << 0x36) >> 0x36 < (s64)((s64)*temp_2 << 0x36) >> 0x36) {
+            best = temp_2;
+        }
+    }
+    return best;
+}

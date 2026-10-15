@@ -1,0 +1,60 @@
+#include "types.h"
+
+extern s32 LookupNameValueNoCase_1cab50(s32 arg0, void *arg1, s32 arg2);
+extern s32 GetCurrentScene_1f5be0(void);
+extern void CharaNormalTableInit_2259c0(void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+extern s32 ScriptArgGetStr_23fba0(s32 arg0);
+extern s32 ScriptArenaAlloc16_23fcb0(s32 arg0);
+extern void ActCfgTablesReset_23fdd0(void);
+extern u8 D_0044BAD0[];
+extern u8 D_0044C3E0[];
+extern s32 D_00481E70;
+extern s32 D_00481EA0;
+extern s32 D_00481EA8;
+extern s32 D_00481EB0;
+extern s32 D_00481EB8;
+extern s32 D_00481EC0;
+extern s32 D_00481EC8;
+extern s32 D_00481ED0;
+extern s32 D_00481ED8;
+extern s32 D_00481EEC;
+extern s32 D_00481EFC;
+extern u8 D_004BCDB0[];
+
+s32 CharaNormalTableActNormalStart_23cee0(s32 arg0, s32 arg1)
+{
+    s32 a;
+    s32 b;
+    s32 c;
+    s32 e;
+    s32 d;
+
+    ActCfgTablesReset_23fdd0();
+    if (arg1 != 1 && arg1 != 2) {
+        return 0;
+    }
+    if (D_00481EEC == 0) {
+        return 1;
+    }
+    GetCurrentScene_1f5be0();
+    b = 0;
+    if (arg1 > 1) {
+        b = LookupNameValueNoCase_1cab50(ScriptArgGetStr_23fba0(arg0 + 8), D_0044C3E0, 0);
+    }
+    a = LookupNameValueNoCase_1cab50(ScriptArgGetStr_23fba0(arg0), D_0044BAD0, 0);
+    e = ScriptArenaAlloc16_23fcb0(0x340);
+    d = ScriptArenaAlloc16_23fcb0(0x180);
+    c = ScriptArenaAlloc16_23fcb0(0x180);
+    CharaNormalTableInit_2259c0(D_004BCDB0, a, b, 0, 0, e, 0, d, 0, c, 0, ScriptArenaAlloc16_23fcb0(0x100), 0);
+    D_00481EA0 = ScriptArenaAlloc16_23fcb0(0x80);
+    D_00481EA8 = ScriptArenaAlloc16_23fcb0(0x400);
+    D_00481EB0 = ScriptArenaAlloc16_23fcb0(0x800);
+    D_00481EB8 = ScriptArenaAlloc16_23fcb0(0x400);
+    D_00481EC0 = ScriptArenaAlloc16_23fcb0(0x500);
+    D_00481EC8 = ScriptArenaAlloc16_23fcb0(0x400);
+    D_00481ED0 = ScriptArenaAlloc16_23fcb0(0x500);
+    D_00481ED8 = ScriptArenaAlloc16_23fcb0(0x500);
+    D_00481E70 = ScriptArenaAlloc16_23fcb0(0x2800);
+    D_00481EFC = 1;
+    return 1;
+}

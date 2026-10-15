@@ -1,0 +1,28 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EntryScriptCmdAllocChildren_3231b0(void);
+extern void EntryScriptCmdAllocEntries_323030(void);
+extern void EntryScriptCmdNop_3228e0(void);
+extern void EntryScriptCmdNop_323280(void);
+extern void EntryScriptCmdSelectEntry_322f90(void);
+extern void EntryScriptCmdSetBlockName_322700(void);
+extern void EntryScriptCmdSetBlockPos_3227d0(void);
+extern void EntryScriptCmdSetBlockScale_322840(void);
+extern void EntryScriptCmdSetBlockSize_322770(void);
+extern void EntryScriptCmdSetChild_3230f0(void);
+extern void EntryScriptCmdSetExploredOffset_322640(void);
+extern void EntryScriptCmdSetGrid_322c20(void);
+extern void EntryScriptCmdSetKind_323090(void);
+extern void EntryScriptCmdSetListTileSize_323220(void);
+extern void EntryScriptCmdSetName_3226a0(void);
+extern void EntryScriptCmdSetOrigin_322e20(void);
+extern void EntryScriptCmdSetPair20Related_322cf0(void);
+extern void EntryScriptCmdSetRange_322d90(void);
+extern void EntryScriptCmdSetScale_322eb0(void);
+extern void EntryScriptCmdSetTileSize_322f20(void);
+extern void EntryScriptCmdSetWriteMode_322890(void);
+extern void EntryScriptCmdWriteCells_3228f0(void);
+const u32 D_00452710[48] = {
+    $h, (u32)&EntryScriptCmdNop_323280, $h, (u32)&EntryScriptCmdSetListTileSize_323220, $h, (u32)&EntryScriptCmdSetTileSize_322f20, $h, (u32)&EntryScriptCmdAllocChildren_3231b0, $h, (u32)&EntryScriptCmdSetChild_3230f0, $h, (u32)&EntryScriptCmdSetKind_323090, $h, (u32)&EntryScriptCmdAllocEntries_323030, $h, (u32)&EntryScriptCmdSelectEntry_322f90, $h, (u32)&EntryScriptCmdSetScale_322eb0, $h, (u32)&EntryScriptCmdSetOrigin_322e20, $h, (u32)&EntryScriptCmdSetRange_322d90, $h, (u32)&EntryScriptCmdSetPair20Related_322cf0, $h, (u32)&EntryScriptCmdSetGrid_322c20, $h, (u32)&EntryScriptCmdWriteCells_3228f0, $h, (u32)&EntryScriptCmdNop_3228e0, $h, (u32)&EntryScriptCmdSetWriteMode_322890, $h, (u32)&EntryScriptCmdSetBlockScale_322840, $h, (u32)&EntryScriptCmdSetBlockPos_3227d0, $h, (u32)&EntryScriptCmdSetBlockSize_322770, $h, (u32)&EntryScriptCmdSetBlockName_322700, $h, (u32)&EntryScriptCmdSetName_3226a0, $h, (u32)&EntryScriptCmdSetExploredOffset_322640, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00452710[(sizeof(D_00452710) == 192) ? 1 : -1];

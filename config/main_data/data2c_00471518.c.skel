@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EvObjListInsert_2d2340(void);
+u32 D_00471518[4] = {
+    $h, $h, (u32)&EvObjListInsert_2d2340, $h
+};
+typedef char data2c_sizecheck_00471518[(sizeof(D_00471518) == 16) ? 1 : -1];

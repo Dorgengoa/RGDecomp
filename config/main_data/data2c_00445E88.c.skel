@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DefaultTerminateHandler_100d40(void);
+const u32 D_00445E88[2] = {
+    (u32)&DefaultTerminateHandler_100d40, $h
+};
+typedef char data2c_sizecheck_00445E88[(sizeof(D_00445E88) == 8) ? 1 : -1];

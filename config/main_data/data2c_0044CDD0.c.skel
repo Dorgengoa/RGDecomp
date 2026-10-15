@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MotionMixerCfgAmixerCmd_24e200(void);
+extern void MotionMixerCfgMotionCmd_24e210(void);
+const u32 D_0044CDD0[8] = {
+    $h, (u32)&MotionMixerCfgMotionCmd_24e210, $h, (u32)&MotionMixerCfgAmixerCmd_24e200, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044CDD0[(sizeof(D_0044CDD0) == 32) ? 1 : -1];

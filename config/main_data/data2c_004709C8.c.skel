@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffResBaseGetType_1a1750(void);
+u32 D_004709C8[6] = {
+    $h, $h, (u32)&EffResBaseGetType_1a1750, $h, $h, $h
+};
+typedef char data2c_sizecheck_004709C8[(sizeof(D_004709C8) == 24) ? 1 : -1];

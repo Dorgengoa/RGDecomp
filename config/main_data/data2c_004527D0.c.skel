@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void CfgVmCmdNop_42f4f0(void);
+extern void MinimapScriptCmdAddPos_32ad30(void);
+extern void MinimapScriptCmdAllocSub_32ae20(void);
+const u32 D_004527D0[12] = {
+    $h, (u32)&CfgVmCmdNop_42f4f0, $h, (u32)&MinimapScriptCmdAllocSub_32ae20, $h, (u32)&MinimapScriptCmdAddPos_32ad30, $h, (u32)&CfgVmCmdNop_42f4f0, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_004527D0[(sizeof(D_004527D0) == 48) ? 1 : -1];

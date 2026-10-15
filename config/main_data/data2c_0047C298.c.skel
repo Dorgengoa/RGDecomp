@@ -1,0 +1,11 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableRowViewCountThunk_4243b0(void);
+extern void DataTableRowViewCount_423660(void);
+extern void DataTableRowViewGetAtThunk_4243c0(void);
+extern void DataTableRowViewGetAt_423530(void);
+extern void func_00423F50_e1(void);
+u32 D_0047C298[10] = {
+    $h, $h, (u32)&DataTableRowViewCountThunk_4243b0, (u32)&func_00423F50_e1, (u32)&DataTableRowViewGetAtThunk_4243c0, (u32)&DataTableRowViewCount_423660, (u32)&DataTableRowViewGetAt_423530, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047C298[(sizeof(D_0047C298) == 40) ? 1 : -1];

@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MotionEventEffectGetKind_1b1450(void);
+extern void MotionEventEffectGetTag_1b1460(void);
+extern void MotionEventEffectWriteText_1b1470(void);
+u32 D_00471030[6] = {
+    $h, $h, (u32)&MotionEventEffectGetKind_1b1450, (u32)&MotionEventEffectGetTag_1b1460, (u32)&MotionEventEffectWriteText_1b1470, $h
+};
+typedef char data2c_sizecheck_00471030[(sizeof(D_00471030) == 24) ? 1 : -1];

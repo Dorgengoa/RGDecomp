@@ -1,0 +1,251 @@
+#include "types.h"
+
+extern "C" s32 ExecInfoInit_3a7940(void *);
+
+extern "C" s32 TableFindByNameHashed_3f86e0(s32, s32);
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+extern "C" struct Obj0 * D_004837B0;
+
+struct Obj0;
+struct Obj1;
+struct Obj2;
+struct Obj3;
+struct Obj4;
+
+struct Obj0 {
+    u8 pad000[0x8];
+    struct Obj2 *m08;
+    u8 pad00C[0xC];
+    s32 m18;
+};
+
+struct Obj1 {
+    u8 pad000[0x10];
+    s32 m10;
+};
+
+struct Obj2 {
+    u8 pad000[0x50];
+    struct Obj3 *m50;
+};
+
+struct Obj3 {
+    u8 pad000[0x8];
+    s32 m08;
+};
+
+struct Obj4 {
+    u8 pad000[0x4];
+    s16 m04;
+    u8 pad006[0x2];
+    s16 m08;
+    s16 m0A;
+    s32 m0C;
+    s32 m10;
+};
+
+class V { public:
+virtual void v8();
+virtual void v12();
+virtual void v16();
+virtual void v20();
+virtual void v24();
+virtual void v28();
+virtual void v32();
+virtual void v36();
+virtual void v40();
+virtual void v44();
+virtual void v48();
+virtual void v52();
+virtual void v56();
+virtual void v60();
+virtual void v64();
+virtual void v68();
+virtual void v72();
+virtual void v76();
+virtual void v80();
+virtual void v84();
+virtual void v88();
+virtual void v92();
+virtual void v96();
+virtual void v100();
+virtual void v104();
+virtual void v108();
+virtual void v112();
+virtual void v116();
+virtual void v120();
+virtual void v124();
+virtual void v128();
+virtual void v132();
+virtual void v136();
+virtual void v140();
+virtual void v144();
+virtual void v148();
+virtual void v152();
+virtual void v156();
+virtual void v160();
+virtual void v164();
+virtual void v168();
+virtual void v172();
+virtual void v176();
+virtual void v180();
+virtual void v184();
+virtual void v188();
+virtual void v192();
+virtual void v196();
+virtual void v200();
+virtual void v204();
+virtual void v208();
+virtual void v212();
+virtual void v216();
+virtual void v220();
+virtual void v224();
+virtual void v228();
+virtual void v232();
+virtual void v236();
+virtual void v240();
+virtual void v244();
+virtual void v248();
+virtual void v252();
+virtual void v256();
+virtual void v260();
+virtual void v264();
+virtual void v268();
+virtual void v272();
+virtual void v276();
+virtual void v280();
+virtual void v284();
+virtual void v288();
+virtual void v292();
+virtual void v296();
+virtual void v300();
+virtual void v304();
+virtual void v308();
+virtual void v312();
+virtual void v316();
+virtual void v320();
+virtual void v324();
+virtual void v328();
+virtual void v332();
+virtual void v336();
+virtual void v340();
+virtual void v344();
+virtual void v348();
+virtual void v352();
+virtual void v356();
+virtual void v360();
+virtual void v364();
+virtual void v368();
+virtual void v372();
+virtual void v376();
+virtual void v380();
+virtual void v384();
+virtual void v388();
+virtual void v392();
+virtual void v396();
+virtual void v400();
+virtual void v404();
+virtual void v408();
+virtual void v412();
+virtual void v416();
+virtual void v420();
+virtual void v424();
+virtual void v428();
+virtual void v432();
+virtual void v436();
+virtual void v440();
+virtual void v444();
+virtual void v448();
+virtual void v452();
+virtual void v456();
+virtual void v460();
+virtual void v464();
+virtual void v468();
+virtual void v472();
+virtual void v476();
+virtual void v480();
+virtual void v484();
+virtual void v488();
+virtual void v492();
+virtual void v496();
+virtual void v500();
+virtual void v504();
+virtual void v508();
+virtual void v512();
+virtual void v516();
+virtual void v520();
+virtual void v524();
+virtual void v528();
+virtual void v532();
+virtual void v536();
+virtual void v540();
+virtual void v544();
+virtual void v548();
+virtual void v552();
+virtual void v556();
+virtual void v560();
+virtual void v564();
+virtual void v568();
+virtual void v572();
+virtual void v576();
+virtual void v580();
+virtual void v584();
+virtual void v588();
+virtual void v592();
+virtual void v596();
+virtual void v600();
+virtual void v604();
+virtual void v608();
+virtual void v612();
+virtual void v616();
+virtual void v620();
+virtual void v624();
+virtual void v628();
+virtual void v632();
+virtual void v636();
+virtual void v640();
+virtual void v644();
+virtual void v648();
+virtual void v652();
+virtual void v656();
+virtual void v660();
+virtual void v664();
+virtual void v668();
+virtual void v672();
+virtual void v676();
+virtual void v680();
+virtual void v684();
+virtual void v688();
+virtual void v692();
+virtual void v696();
+virtual void v700();
+virtual void v704();
+virtual void v708();
+virtual void v712();
+virtual void *lookup(s32);
+};
+extern "C" V *ActorFindById_3eb870(Obj0 *,s32);
+extern "C" s32 EquipSlotGetRec_3a0790(void *);
+extern "C" s32 ExecInfoInitFromEquipSlot_3a7690(Obj4 *self,s32 id,s32 idx,s32 name){
+    V *v;
+    void *p;
+    s32 handle;
+    s32 r;
+    ExecInfoInit_3a7940(self);
+    if(D_004837B0==0)return 0;
+    v=ActorFindById_3eb870(D_004837B0,id);
+    if(v==0)return 0;
+    p=v->lookup(idx);
+    if(p==0)return 0;
+    handle=EquipSlotGetRec_3a0790(p);
+    if(handle==0)return 0;
+    r=0;
+    if(name!=0)r=TableFindByNameHashed_3f86e0(D_004837B0->m08->m50->m08,name);
+    self->m04=3;self->m08=id;self->m0C=handle;self->m10=r;
+    return 1;
+}

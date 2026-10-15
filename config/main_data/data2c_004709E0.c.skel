@@ -1,0 +1,13 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffParamRootApplyNop_1a1770(void);
+extern void EffParamRootRandomizeNop_1a1780(void);
+extern void EffParamRootReturnZero_1a1790(void);
+extern void EffTexParamBaseGetType_1a1760(void);
+extern void EffectParamNopSlot18_19a560(void);
+extern void EffectParamNopSlot1C_19a570(void);
+extern void func_0019A540_e1(void);
+u32 D_004709E0[12] = {
+    $h, $h, (u32)&EffTexParamBaseGetType_1a1760, (u32)&func_0019A540_e1, (u32)&EffParamRootRandomizeNop_1a1780, (u32)&EffParamRootApplyNop_1a1770, (u32)&EffectParamNopSlot18_19a560, (u32)&EffectParamNopSlot1C_19a570, (u32)&EffParamRootReturnZero_1a1790, $h, $h, $h
+};
+typedef char data2c_sizecheck_004709E0[(sizeof(D_004709E0) == 48) ? 1 : -1];

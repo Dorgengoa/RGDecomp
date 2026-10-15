@@ -1,0 +1,12 @@
+#include "types.h"
+
+/* Zero the s32 at +0x0. */
+
+typedef struct Obj_FUN_003675f0 {
+    s32 field;         /* +0x00 */
+} Obj_FUN_003675f0;
+
+void EvMapNameRefReset_3675f0(Obj_FUN_003675f0 *o)
+{
+    o->field = 0;
+}

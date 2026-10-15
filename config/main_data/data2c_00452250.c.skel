@@ -1,0 +1,19 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EvScriptCmdBgLoadWait_301ed0(void);
+extern void EvScriptCmdBsPlay_302500(void);
+extern void EvScriptCmdDoorClose_301f60(void);
+extern void EvScriptCmdDoorOpen_301ff0(void);
+extern void EvScriptCmdEvPlay_302460(void);
+extern void EvScriptCmdFgPlay_3024b0(void);
+extern void EvScriptCmdMapLoadWait_301e40(void);
+extern void EvScriptCmdMapPartsShow_3021d0(void);
+extern void EvScriptCmdMapPieceShow_302130(void);
+extern void EvScriptCmdObjPieceShow_302090(void);
+extern void EvScriptCmdSpPlay_302270(void);
+extern void EvScriptCmdSysPlay_3025b0(void);
+extern void EvScriptCmdTransporterReset_301dd0(void);
+const u32 D_00452250[28] = {
+    $h, (u32)&EvScriptCmdSysPlay_3025b0, $h, (u32)&EvScriptCmdBsPlay_302500, $h, (u32)&EvScriptCmdFgPlay_3024b0, $h, (u32)&EvScriptCmdEvPlay_302460, $h, (u32)&EvScriptCmdSpPlay_302270, $h, (u32)&EvScriptCmdMapPartsShow_3021d0, $h, (u32)&EvScriptCmdMapPieceShow_302130, $h, (u32)&EvScriptCmdObjPieceShow_302090, $h, (u32)&EvScriptCmdDoorOpen_301ff0, $h, (u32)&EvScriptCmdDoorClose_301f60, $h, (u32)&EvScriptCmdBgLoadWait_301ed0, $h, (u32)&EvScriptCmdMapLoadWait_301e40, $h, (u32)&EvScriptCmdTransporterReset_301dd0, $h, $h
+};
+typedef char data2c_sizecheck_00452250[(sizeof(D_00452250) == 112) ? 1 : -1];

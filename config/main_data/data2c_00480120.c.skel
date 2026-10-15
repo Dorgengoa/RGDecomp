@@ -1,0 +1,5 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+char D_00480120[4] = "$s";
+typedef char data2c_sizecheck_00480120[(sizeof(D_00480120) == 4) ? 1 : -1];

@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EventIconCountActive_278710(void);
+u32 D_0047E9D0[4] = {
+    $h, $h, (u32)&EventIconCountActive_278710, $h
+};
+typedef char data2c_sizecheck_0047E9D0[(sizeof(D_0047E9D0) == 16) ? 1 : -1];

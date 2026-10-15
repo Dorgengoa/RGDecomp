@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+const s16 D_00462AC6[1] = {
+    $d
+};
+typedef char data2c_sizecheck_00462AC6[(sizeof(D_00462AC6) == 2) ? 1 : -1];

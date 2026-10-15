@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void KCopyBody_120b00(void);
+const u32 D_004470F8[2] = {
+    $h, (u32)&KCopyBody_120b00
+};
+typedef char data2c_sizecheck_004470F8[(sizeof(D_004470F8) == 8) ? 1 : -1];

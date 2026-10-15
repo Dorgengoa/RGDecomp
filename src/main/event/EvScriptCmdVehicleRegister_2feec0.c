@@ -1,0 +1,39 @@
+#include "types.h"
+
+extern void ObjTypeVehicleSetTargetPairCount_338020(void *, s32);
+extern s32 GetEventObjMgr_2d1960(void);
+extern s32 EventObjMgrCreateVehicle_2e9fd0(s32, s32, s32, void *);
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+extern s32 D_0047F0C0;
+extern s32 D_0047F0C4;
+extern s32 D_0048287C;
+extern u8 D_004E6EC0[];
+
+s32 EvScriptCmdVehicleRegister_2feec0(s32 p0, s32 p1)
+{
+    s32 rv3;
+    s32 t0;
+    s32 r1;
+    s32 t1;
+    s32 t2;
+    s32 r2;
+
+    rv3 = 1;
+    if (p1 != 0) {
+        rv3 = 0;
+    } else {
+        t0 = D_0048287C;
+        ObjTypeVehicleSetTargetPairCount_338020(D_004E6EC0, t0);
+        r1 = GetEventObjMgr_2d1960();
+        t1 = D_0047F0C0;
+        t2 = D_0047F0C4;
+        r2 = EventObjMgrCreateVehicle_2e9fd0(r1, t1, t2, D_004E6EC0);
+        rv3 = 1;
+    }
+    return rv3;
+}

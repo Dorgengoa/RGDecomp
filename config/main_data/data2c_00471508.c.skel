@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void UskMemoryListInsertSorted_2d23b0(void);
+u32 D_00471508[4] = {
+    $h, $h, (u32)&UskMemoryListInsertSorted_2d23b0, $h
+};
+typedef char data2c_sizecheck_00471508[(sizeof(D_00471508) == 16) ? 1 : -1];

@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ContainerViewGetAtFwd_426970(void);
+extern void GroupViewGetAt_425190(void);
+extern void GroupViewGetCount_425180(void);
+u32 D_0047C450[8] = {
+    $h, $h, (u32)&GroupViewGetCount_425180, (u32)&ContainerViewGetAtFwd_426970, (u32)&GroupViewGetAt_425190, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047C450[(sizeof(D_0047C450) == 32) ? 1 : -1];

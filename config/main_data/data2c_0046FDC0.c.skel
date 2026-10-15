@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_004556F0[];
+extern void WistreamDtor_1035b0(void);
+u32 D_0046FDC0[3] = {
+    (u32)((u8*)&D_004556F0 + 0xC8u), $h, (u32)&WistreamDtor_1035b0
+};
+typedef char data2c_sizecheck_0046FDC0[(sizeof(D_0046FDC0) == 12) ? 1 : -1];

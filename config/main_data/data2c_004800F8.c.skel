@@ -1,0 +1,5 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+char D_004800F8[4] = "$s";
+typedef char data2c_sizecheck_004800F8[(sizeof(D_004800F8) == 4) ? 1 : -1];

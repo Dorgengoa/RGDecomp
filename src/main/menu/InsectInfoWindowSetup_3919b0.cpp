@@ -1,0 +1,247 @@
+#include "types.h"
+
+typedef struct Info {
+    u8 pad0[0xC];
+    s8 *xC;
+    u8 pad10[0x20];
+    s8 *x30;
+} Info;
+
+class Chr {
+public:
+    virtual void d0();
+    virtual void d1();
+    virtual void d2();
+    virtual void d3();
+    virtual void d4();
+    virtual void d5();
+    virtual void d6();
+    virtual void d7();
+    virtual void d8();
+    virtual void d9();
+    virtual void d10();
+    virtual void d11();
+    virtual void d12();
+    virtual void d13();
+    virtual void d14();
+    virtual void d15();
+    virtual void d16();
+    virtual void d17();
+    virtual void d18();
+    virtual void d19();
+    virtual void d20();
+    virtual void d21();
+    virtual void d22();
+    virtual void d23();
+    virtual void d24();
+    virtual void d25();
+    virtual void d26();
+    virtual void d27();
+    virtual void d28();
+    virtual void d29();
+    virtual void d30();
+    virtual void d31();
+    virtual void d32();
+    virtual void d33();
+    virtual void d34();
+    virtual void d35();
+    virtual void d36();
+    virtual void d37();
+    virtual void d38();
+    virtual void d39();
+    virtual void d40();
+    virtual void d41();
+    virtual void d42();
+    virtual void d43();
+    virtual void d44();
+    virtual void d45();
+    virtual void d46();
+    virtual void d47();
+    virtual void d48();
+    virtual void d49();
+    virtual void d50();
+    virtual void d51();
+    virtual void d52();
+    virtual void d53();
+    virtual void d54();
+    virtual void d55();
+    virtual void d56();
+    virtual void d57();
+    virtual void d58();
+    virtual void d59();
+    virtual void d60();
+    virtual void d61();
+    virtual void d62();
+    virtual void d63();
+    virtual void d64();
+    virtual void d65();
+    virtual void d66();
+    virtual void d67();
+    virtual s32 Name(s32);
+    virtual void d69();
+    virtual void d70();
+    virtual void d71();
+    virtual void d72();
+    virtual void d73();
+    virtual void d74();
+    virtual void d75();
+    virtual void d76();
+    virtual void d77();
+    virtual void d78();
+    virtual void d79();
+    virtual void d80();
+    virtual void d81();
+    virtual void d82();
+    virtual s32 V154();
+    virtual s32 V158();
+    virtual void d85();
+    virtual void d86();
+    virtual s32 V164();
+    virtual void d88();
+    virtual void d89();
+    virtual s32 V170();
+    virtual void d91();
+    virtual void d92();
+    virtual s32 V17C();
+    virtual void d94();
+    virtual void d95();
+    virtual s32 Stat(s32);
+    virtual void d97();
+    virtual void d98();
+    virtual s32 V194();
+    virtual void d100();
+    virtual s32 V19C();
+    virtual s32 V1A0();
+    virtual s32 Lv();
+    virtual void d104();
+    virtual s32 V1AC();
+    virtual void d106();
+    virtual s32 V1B4();
+    u8 pad4[0xC];
+    struct Info *x10;
+};
+
+extern "C" {
+extern s32 Sprintf_1343b8(s8 *, void *, ...);
+extern s32 DrawEnvGetHeight_1451d0(s32);
+extern s32 DrawEnvGetWidth_1451e0(s32);
+extern s32 GetDrawCtx_15de80(void);
+extern s32 UiGetWidgetTextWidth_28f400(s32, s32, s32);
+extern void UiSetTextStringCopy_28f4b0(s32, s32, s8 *, s32);
+extern void UiSetTextPos_28f5d0(s32, s32, s32, s32, s32);
+extern s32 UiFindWidget_290460(s32, s32);
+extern void UiSetTextStringPos_290b20(s32, s32, s8 *, s32, s32, s32);
+extern void UiSetWidgetPos_290f60(s32, u16, s32, s32);
+extern void UiSetWidgetSubItemValue_291250(s32, s32, s32, s64);
+extern void UiNineSliceLayoutMaybe_392440(s32 *, s32, s32, s32);
+extern void UiIconSetUvByIndexMaybe_3925d0(s32 *, s32, s32, s32, s32);
+extern void UiToggleIconPairLayoutRelated_392660(s32 *, s32, s32, s32, s32, s32);
+extern void UiGaugeBarLayoutMaybe_392780(s32 *, s32, s32, f32, f32);
+extern void UiWindowFrameLayoutMaybe_392bb0(s32 *, s32, s32, s32, s32);
+extern void UiSpriteListFillColumnMaybe_3939e0(s32 *, s32, s32, s32, f32, f32);
+extern s32 strlen(s8 *);
+extern u8 D_00464250[];
+extern u8 D_00464258[];
+}
+
+extern "C" s32 InsectInfoWindowSetup_3919b0(s32 arg0, Chr *c) {
+    s32 wnd;
+    s8 buf[0x40];
+    s32 g;
+    s32 w;
+    s32 h;
+    s32 t;
+    s32 a;
+    s32 b;
+    u16 id;
+    s32 p;
+    f32 f;
+    s8 *s;
+    s32 len;
+
+    if (arg0 == 0) {
+        return 0;
+    }
+    g = GetDrawCtx_15de80();
+    w = DrawEnvGetWidth_1451e0(g);
+    h = DrawEnvGetHeight_1451d0(g);
+    if (c == 0) {
+        return 0;
+    }
+    UiSetWidgetPos_290f60(arg0, 0xC350, (w - 0x178) / 2, (h - 0x13E) / 2);
+    UiWindowFrameLayoutMaybe_392bb0(&wnd, UiFindWidget_290460(arg0, 0xC351), 0x178, 0x13E, 1);
+    UiNineSliceLayoutMaybe_392440(&wnd, UiFindWidget_290460(arg0, 0xC352), 0x6E, 0x6E);
+    UiSetWidgetPos_290f60(arg0, 0xC352, 0x10, 8);
+    UiSetWidgetPos_290f60(arg0, 0xC353, 0x72, 0);
+    UiSetTextStringPos_290b20(arg0, 0xC353, (s8 *)c->Name(0), -1, -1, 0);
+    UiSetWidgetPos_290f60(arg0, 0xC354, 0, 0x1C);
+    UiSetTextStringPos_290b20(arg0, 0xC354, c->x10->xC, -1, -1, 0);
+    t = UiGetWidgetTextWidth_28f400(arg0, 0xC354, 0) + 7;
+    if (c->Lv() >= 5 && !(c->V1B4() < c->V1AC())) {
+        Sprintf_1343b8(buf, D_00464250);
+    } else {
+        Sprintf_1343b8(buf, D_00464258, c->Lv());
+    }
+    UiSetTextStringCopy_28f4b0(arg0, 0xC355, buf, 0);
+    UiSetWidgetPos_290f60(arg0, 0xC355, t, 0);
+    a = UiFindWidget_290460(arg0, 0xC357);
+    b = (u8)c->V19C();
+    UiToggleIconPairLayoutRelated_392660(&wnd, a, b, (u8)c->V1A0(), 0, 0);
+    a = UiFindWidget_290460(arg0, 0xC358);
+    UiIconSetUvByIndexMaybe_3925d0(&wnd, a, c->V194(), 0, 0);
+    UiSetWidgetPos_290f60(arg0, 0xC357, 0, 0x1F);
+    UiSetWidgetPos_290f60(arg0, 0xC358, 0x64, -2);
+    if (c->Lv() >= 5 && !(c->V1B4() < c->V1AC())) {
+        id = 0xC35B;
+        p = UiFindWidget_290460(arg0, id);
+        f = (f32)c->V1B4();
+        UiGaugeBarLayoutMaybe_392780(&wnd, p, 2, f, (f32)c->V1AC());
+    } else {
+        id = 0xC35B;
+        p = UiFindWidget_290460(arg0, id);
+        f = (f32)c->V1B4();
+        UiGaugeBarLayoutMaybe_392780(&wnd, p, 1, f, (f32)c->V1AC());
+    }
+    UiSetWidgetPos_290f60(arg0, 0xC359, 4, 0x1C);
+    UiSetWidgetPos_290f60(arg0, id, 0x20, 4);
+    p = UiFindWidget_290460(arg0, 0xC35D);
+    UiGaugeBarLayoutMaybe_392780(&wnd, p, 0, (f32)c->V164(), 100.0f);
+    UiSetWidgetPos_290f60(arg0, 0xC35C, 0x69, -1);
+    UiSetWidgetPos_290f60(arg0, 0xC35D, 0x34, 5);
+    UiSpriteListFillColumnMaybe_3939e0(&wnd, UiFindWidget_290460(arg0, 0xC35E), 7, 1, 226.0f, 28.0f);
+    UiSetWidgetPos_290f60(arg0, 0xC35E, 0, 0x14);
+    UiSetWidgetPos_290f60(arg0, 0xC35F, -2, 0x1A);
+    UiSetWidgetPos_290f60(arg0, 0xC361, 0, 0x1C);
+    UiSetWidgetPos_290f60(arg0, 0xC362, 0, 0x1C);
+    UiSetWidgetPos_290f60(arg0, 0xC363, 0x71, 0);
+    UiSetWidgetPos_290f60(arg0, 0xC364, 0, 0x1C);
+    UiSetWidgetPos_290f60(arg0, 0xC365, 0, 0x1C);
+    UiSetWidgetSubItemValue_291250(arg0, 0xC360, 0, c->Stat(0));
+    UiSetWidgetSubItemValue_291250(arg0, 0xC363, 0, c->Stat(1));
+    UiSetWidgetSubItemValue_291250(arg0, 0xC361, 0, c->Stat(2));
+    UiSetWidgetSubItemValue_291250(arg0, 0xC364, 0, c->Stat(3));
+    UiSetWidgetSubItemValue_291250(arg0, 0xC362, 0, c->Stat(4));
+    UiSetWidgetSubItemValue_291250(arg0, 0xC365, 0, c->Stat(5));
+    UiSetWidgetPos_290f60(arg0, 0xC366, 0, 0x76);
+    UiSetWidgetPos_290f60(arg0, 0xC36B, 0, 0x1C);
+    UiSetWidgetPos_290f60(arg0, 0xC36C, 0, 0x1C);
+    UiSetWidgetPos_290f60(arg0, 0xC36A, 0x3C, 0);
+    UiSetWidgetSubItemValue_291250(arg0, 0xC36A, 0, c->V158());
+    UiSetWidgetSubItemValue_291250(arg0, 0xC36A, 1, c->V154());
+    UiSetWidgetSubItemValue_291250(arg0, 0xC36B, 0, c->V170());
+    UiSetWidgetSubItemValue_291250(arg0, 0xC36C, 0, c->V17C());
+    UiSpriteListFillColumnMaybe_3939e0(&wnd, UiFindWidget_290460(arg0, 0xC371), 3, 1, 102.0f, 28.0f);
+    UiSetWidgetPos_290f60(arg0, 0xC371, 4, 0xE);
+    UiSetWidgetPos_290f60(arg0, 0xC369, 0x6A, 0);
+    UiNineSliceLayoutMaybe_392440(&wnd, UiFindWidget_290460(arg0, 0xC36E), 0x158, 0x68);
+    s = c->x10->xC;
+    UiSetWidgetPos_290f60(arg0, 0xC36E, 0, 0x50);
+    UiSetTextStringPos_290b20(arg0, 0xC36E, s, -1, -1, 0);
+    len = strlen(s);
+    UiSetTextPos_28f5d0(arg0, 0xC36E, 6, 6, 0);
+    UiSetTextPos_28f5d0(arg0, 0xC36E, len * 8 + 6, 6, 1);
+    UiSetTextStringPos_290b20(arg0, 0xC36F, c->x10->x30, -1, -1, 0);
+    UiSpriteListFillColumnMaybe_3939e0(&wnd, UiFindWidget_290460(arg0, 0xC370), 1, 1, 328.0f, 0.0f);
+    UiSetWidgetPos_290f60(arg0, 0xC370, 6, 0x18);
+    return 1;
+}

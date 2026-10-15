@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void FuncDataRecBaseGetTypeId_18fee0(void);
+extern void FuncDataRecBaseIsKindOf_18a820(void);
+extern void FuncDataRecBaseReset_192270(void);
+u32 D_004705B0[8] = {
+    $h, $h, (u32)&FuncDataRecBaseGetTypeId_18fee0, (u32)&FuncDataRecBaseIsKindOf_18a820, (u32)&FuncDataRecBaseReset_192270, $h, $h, $h
+};
+typedef char data2c_sizecheck_004705B0[(sizeof(D_004705B0) == 32) ? 1 : -1];

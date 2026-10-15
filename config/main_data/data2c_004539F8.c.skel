@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCompareThunk_400040(void);
+const u32 data2c_fragment_004539F8[25] = {
+    $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, (u32)&DataTableCompareThunk_400040, $h
+};
+typedef char data2c_sizecheck_004539F8[(sizeof(data2c_fragment_004539F8) == 100) ? 1 : -1];

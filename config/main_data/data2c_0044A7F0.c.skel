@@ -1,0 +1,22 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MapCfgDrawOffRect_18a1e0(void);
+extern void MapCfgFuncDataEndMaybe_189f30(void);
+extern void MapCfgFuncData_18a090(void);
+extern void MapCfgFuncEventData_189f40(void);
+extern void MapCfgFuncName_18b000(void);
+extern void MapCfgFuncPos_18a3a0(void);
+extern void MapCfgOcclusionPlane_18a160(void);
+extern void MapCfgWaterDrawNum_189eb0(void);
+extern void MapCfgWaterDraw_189ea0(void);
+extern void MapCfgWaterParam_189ee0(void);
+extern void MapCfgWaterPos_189ef0(void);
+extern void MapCfgWaterShake_189ed0(void);
+extern void MapCfgWaterSurfaceEnd_189ec0(void);
+extern void MapCfgWaterSurfaceNum_189f20(void);
+extern void MapCfgWaterSurfaceStart_189f10(void);
+extern void MapCfgWaterVertex_189f00(void);
+const u32 D_0044A7F0[36] = {
+    $h, (u32)&MapCfgDrawOffRect_18a1e0, $h, (u32)&MapCfgOcclusionPlane_18a160, $h, (u32)&MapCfgFuncData_18a090, $h, (u32)&MapCfgFuncName_18b000, $h, (u32)&MapCfgFuncEventData_189f40, $h, (u32)&MapCfgFuncPos_18a3a0, $h, (u32)&MapCfgFuncDataEndMaybe_189f30, $h, (u32)&MapCfgWaterSurfaceNum_189f20, $h, (u32)&MapCfgWaterSurfaceStart_189f10, $h, (u32)&MapCfgWaterVertex_189f00, $h, (u32)&MapCfgWaterPos_189ef0, $h, (u32)&MapCfgWaterParam_189ee0, $h, (u32)&MapCfgWaterShake_189ed0, $h, (u32)&MapCfgWaterSurfaceEnd_189ec0, $h, (u32)&MapCfgWaterDrawNum_189eb0, $h, (u32)&MapCfgWaterDraw_189ea0, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044A7F0[(sizeof(D_0044A7F0) == 144) ? 1 : -1];

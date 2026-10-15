@@ -1,0 +1,11 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCmdAllocEntries_3f77f0(void);
+extern void DataTableCmdEntryDefine_3f7040(void);
+extern void DataTableCmdNopId1_369040(void);
+extern void DataTableCmdNopId2_369030(void);
+extern void DataTableCmdSubEntryAdd_3f6f30(void);
+const u32 D_00466EA0[12] = {
+    $h, (u32)&DataTableCmdNopId1_369040, $h, (u32)&DataTableCmdNopId2_369030, $h, (u32)&DataTableCmdAllocEntries_3f77f0, $h, (u32)&DataTableCmdEntryDefine_3f7040, $h, (u32)&DataTableCmdSubEntryAdd_3f6f30, $h, $h
+};
+typedef char data2c_sizecheck_00466EA0[(sizeof(D_00466EA0) == 48) ? 1 : -1];

@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffTexResGetType_1a1740(void);
+u32 D_004709B8[4] = {
+    $h, $h, (u32)&EffTexResGetType_1a1740, $h
+};
+typedef char data2c_sizecheck_004709B8[(sizeof(D_004709B8) == 16) ? 1 : -1];

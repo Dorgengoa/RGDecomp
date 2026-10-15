@@ -1,0 +1,19 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern u8 D_004556F0[];
+extern void FilebufDtor_102e80(void);
+extern void FilebufOverflow_1048d0(void);
+extern void FilebufPbackfail_104cb0(void);
+extern void FilebufSeekoff_104750(void);
+extern void FilebufSeekpos_104640(void);
+extern void FilebufSetbuf_1037c0(void);
+extern void FilebufShowmanyc_105020(void);
+extern void FilebufSync_104590(void);
+extern void FilebufUflow_104d80(void);
+extern void FilebufUnderflow_104eb0(void);
+extern void StreambufXsgetn_1039b0(void);
+extern void StreambufXsputn_103890(void);
+u32 D_0046FF20[16] = {
+    (u32)((u8*)&D_004556F0 + 0x368u), $h, (u32)&FilebufDtor_102e80, (u32)&FilebufSetbuf_1037c0, (u32)&FilebufSeekoff_104750, (u32)&FilebufSeekpos_104640, (u32)&FilebufSync_104590, (u32)&FilebufShowmanyc_105020, (u32)&StreambufXsgetn_1039b0, (u32)&FilebufUnderflow_104eb0, (u32)&FilebufUflow_104d80, (u32)&FilebufPbackfail_104cb0, (u32)&StreambufXsputn_103890, (u32)&FilebufOverflow_1048d0, $h, $h
+};
+typedef char data2c_sizecheck_0046FF20[(sizeof(D_0046FF20) == 64) ? 1 : -1];

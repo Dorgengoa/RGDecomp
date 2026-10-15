@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EntryPad_100000(void);
+u32 D_0047D130[1] = {
+    (u32)&EntryPad_100000
+};
+typedef char data2c_sizecheck_0047D130[(sizeof(D_0047D130) == 4) ? 1 : -1];

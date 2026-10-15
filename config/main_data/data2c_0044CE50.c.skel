@@ -1,0 +1,10 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EventCastCmdObjectNum_24dc30(void);
+extern void EventCastCmdObject_24d420(void);
+extern void EventCastCmdProject_24dc70(void);
+extern void EventCastCmdScript_24dc50(void);
+const u32 D_0044CE50[12] = {
+    $h, (u32)&EventCastCmdProject_24dc70, $h, (u32)&EventCastCmdScript_24dc50, $h, (u32)&EventCastCmdObjectNum_24dc30, $h, (u32)&EventCastCmdObject_24d420, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044CE50[(sizeof(D_0044CE50) == 48) ? 1 : -1];

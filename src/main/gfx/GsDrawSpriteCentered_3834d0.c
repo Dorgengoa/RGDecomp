@@ -1,0 +1,35 @@
+#include "types.h"
+
+extern f32 D_0047D7E4;
+extern s32 IsWidescreen_1c6ab0(void *);
+extern void GsDrawSpriteClipped_3839d0(void *, f32 *, f32 *, void *);
+
+void GsDrawSpriteCentered_3834d0(void *o, s32 *r, void *c, f32 x, f32 y, f32 w, f32 h)
+{
+    f32 k;
+
+    if (IsWidescreen_1c6ab0(o) != 0) {
+        k = 0.75f;
+    } else {
+        k = 1.0f;
+    }
+    w = w * (0.5f * k);
+    h = h * D_0047D7E4;
+    {
+        f32 b[4] = {0};
+
+        b[0] = (f32)r[0];
+        b[1] = (f32)r[1];
+        b[2] = (f32)(r[0] + r[2]);
+        b[3] = (f32)(r[1] + r[3]);
+        {
+            f32 a[4] = {0};
+
+            a[0] = x - w;
+            a[1] = y - h;
+            a[2] = x + w;
+            a[3] = y + h;
+            GsDrawSpriteClipped_3839d0(o, a, b, c);
+        }
+    }
+}

@@ -1,0 +1,22 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCmdAllocEntries_3f6000(void);
+extern void DataTableCmdEntryDefine_3f5420(void);
+extern void DataTableCmdEntrySetFlag_3f4bc0(void);
+extern void DataTableCmdEntrySetParams_3f4c40(void);
+extern void DataTableCmdEntrySetParams_3f4d00(void);
+extern void DataTableCmdEntrySetParams_3f4db0(void);
+extern void DataTableCmdEntrySetParams_3f4f10(void);
+extern void DataTableCmdEntrySetParams_3f5050(void);
+extern void DataTableCmdEntrySetParams_3f5150(void);
+extern void DataTableCmdEntrySetParams_3f5200(void);
+extern void DataTableCmdEntrySetParams_3f52b0(void);
+extern void DataTableCmdEntrySetParams_3f5360(void);
+extern void DataTableCmdEntrySetString_3f4ac0(void);
+extern void DataTableCmdEntrySetString_3f4b40(void);
+extern void DataTableCmdNopId1_369040(void);
+extern void DataTableCmdNopId2_369030(void);
+const u32 D_00466DA0[34] = {
+    $h, (u32)&DataTableCmdNopId1_369040, $h, (u32)&DataTableCmdNopId2_369030, $h, (u32)&DataTableCmdAllocEntries_3f6000, $h, (u32)&DataTableCmdEntryDefine_3f5420, $h, (u32)&DataTableCmdEntrySetParams_3f5360, $h, (u32)&DataTableCmdEntrySetParams_3f52b0, $h, (u32)&DataTableCmdEntrySetParams_3f5200, $h, (u32)&DataTableCmdEntrySetParams_3f5150, $h, (u32)&DataTableCmdEntrySetParams_3f5050, $h, (u32)&DataTableCmdEntrySetParams_3f4f10, $h, (u32)&DataTableCmdEntrySetParams_3f4db0, $h, (u32)&DataTableCmdEntrySetParams_3f4d00, $h, (u32)&DataTableCmdEntrySetParams_3f4c40, $h, (u32)&DataTableCmdEntrySetFlag_3f4bc0, $h, (u32)&DataTableCmdEntrySetString_3f4b40, $h, (u32)&DataTableCmdEntrySetString_3f4ac0, $h, $h
+};
+typedef char data2c_sizecheck_00466DA0[(sizeof(D_00466DA0) == 136) ? 1 : -1];

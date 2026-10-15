@@ -1,0 +1,74 @@
+#include "types.h"
+
+extern s32 sceSifAllocIopHeap(s32);
+extern void memset(s32, s32, s32);
+extern void SifDmaSendSync_1d2c20(s32, s32, s32);
+extern void AudioDecSetMasterVolume_1d2c00(s32);
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+extern s32 D_004817C4;
+
+struct Obj0;
+
+struct Obj0 {
+    s32 m00;
+    u8 pad004[0x28];
+    s32 m2C;
+    s32 m30;
+    s32 m34;
+    s32 m38;
+    s32 m3C;
+    s32 m40;
+    s32 m44;
+    s32 m48;
+    s32 m4C;
+    s32 m50;
+    s32 m54;
+    s32 m58;
+};
+
+s32 AudioDecCreate_1d3210(struct Obj0 *p0, s32 p1, s32 p2, s32 p3)
+{
+    s32 r0;
+    s32 r1;
+    s32 rv5;
+    s32 t0;
+    s32 t1;
+    s32 t2;
+
+    p0->m00 = 0;
+    p0->m2C = 0;
+    p0->m30 = p1;
+    p0->m34 = 0;
+    p0->m38 = 0;
+    p0->m3C = p2;
+    p0->m40 = 0;
+    p0->m54 = 0;
+    p0->m48 = p3;
+    p0->m4C = 0;
+    p0->m50 = 0;
+    r0 = sceSifAllocIopHeap(p3);
+    p0->m44 = r0;
+    if (r0 <= 0) {
+        return 0;
+    }
+    r1 = sceSifAllocIopHeap(0x800);
+    p0->m58 = r1;
+    rv5 = 1;
+    if (r1 <= 0) {
+        rv5 = 0;
+    } else {
+        t0 = D_004817C4;
+        memset(t0, 0, 0x800);
+        t1 = p0->m58;
+        t2 = D_004817C4;
+        SifDmaSendSync_1d2c20(t1, t2, 0x800);
+        AudioDecSetMasterVolume_1d2c00(0x3FFF);
+        rv5 = 1;
+    }
+    return rv5;
+}

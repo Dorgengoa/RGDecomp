@@ -1,0 +1,20 @@
+#include "types.h"
+
+typedef struct { f32 x, y, z, w; } V_0032ca30;
+
+extern void GameFlowGetBattleCenter_283390(V_0032ca30 *);
+extern void ScriptSlotStoreFloatRef_3347d0(void *, f32);
+extern f32 GameFlowGetBattleRadius_283380(void);
+
+s32 ScriptCmdGetBattleCenter_32ca30(void *p, s32 n)
+{
+    V_0032ca30 v;
+
+    if (n < 4) return 1;
+    GameFlowGetBattleCenter_283390(&v);
+    ScriptSlotStoreFloatRef_3347d0(p, v.x);
+    ScriptSlotStoreFloatRef_3347d0((void *)((s32)p + 8), v.y);
+    ScriptSlotStoreFloatRef_3347d0((void *)((s32)p + 0x10), v.z);
+    ScriptSlotStoreFloatRef_3347d0((void *)((s32)p + 0x18), GameFlowGetBattleRadius_283380());
+    return 1;
+}

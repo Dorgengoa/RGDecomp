@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ListNodeClear_190d90(void);
+u32 D_00470598[6] = {
+    $h, $h, (u32)&ListNodeClear_190d90, $h, $h, $h
+};
+typedef char data2c_sizecheck_00470598[(sizeof(D_00470598) == 24) ? 1 : -1];

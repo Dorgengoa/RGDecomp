@@ -1,0 +1,15 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DynColliderEllipsoidGetTypeId_16a4f0(void);
+extern void DynColliderEllipsoidHitSegmentMaybe_1668f0(void);
+extern void DynColliderEllipsoidHitSweptPointMaybe_166a50(void);
+extern void DynColliderEllipsoidInit_167050(void);
+extern void DynColliderEllipsoidIsKindOf_16a500(void);
+extern void DynColliderEllipsoidPushOut_166f30(void);
+extern void DynColliderEllipsoidPushSegmentMaybe_166ba0(void);
+extern void DynColliderEllipsoidSweepMovingMaybe_166560(void);
+extern void DynColliderEllipsoidSweepSegmentMaybe_1661c0(void);
+u32 D_00470220[12] = {
+    $h, $h, (u32)&DynColliderEllipsoidGetTypeId_16a4f0, (u32)&DynColliderEllipsoidIsKindOf_16a500, (u32)&DynColliderEllipsoidPushOut_166f30, (u32)&DynColliderEllipsoidPushSegmentMaybe_166ba0, (u32)&DynColliderEllipsoidHitSweptPointMaybe_166a50, (u32)&DynColliderEllipsoidHitSegmentMaybe_1668f0, (u32)&DynColliderEllipsoidSweepMovingMaybe_166560, (u32)&DynColliderEllipsoidSweepSegmentMaybe_1661c0, (u32)&DynColliderEllipsoidInit_167050, $h
+};
+typedef char data2c_sizecheck_00470220[(sizeof(D_00470220) == 48) ? 1 : -1];

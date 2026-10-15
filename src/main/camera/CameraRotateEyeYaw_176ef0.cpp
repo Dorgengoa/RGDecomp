@@ -1,0 +1,6 @@
+#include "types.h"
+typedef unsigned __int128 u128;
+typedef struct {u128 q;}Vec;
+class Obj{public:u8 pad[0xc0];virtual void d0();virtual void d1();virtual void d2();virtual void d3();virtual void d4();virtual void d5();virtual void d6();virtual void d7();virtual void d8();virtual void d9();virtual void d10();virtual void d11();virtual void d12();virtual void d13();virtual void d14();virtual void d15();virtual void d16();virtual void d17();virtual void d18();virtual void d19();virtual void d20();virtual void d21();virtual void d22();virtual void d23();virtual void d24();virtual void d25();virtual void d26();virtual void d27();virtual void d28();virtual void d29();virtual void d30();virtual void d31();virtual void d32();virtual void d33();virtual void d34();virtual void pos(Vec*);virtual void target(Vec*);u8 padc4[0x2c];Vec out;};
+extern "C" {void VecAdd_13be20(void*,void*,void*);void VecSub_13be40(void*,void*,void*);f32 WrapAngle_13c050(f32);void MtxMulDir_13c860(void*,void*,void*);void MtxIdentity_13d2e0(void*);void sceVu0RotMatrixY(void*,void*,f32);}
+extern "C" void CameraRotateEyeYaw_176ef0(Obj*p,f32 angle){Vec v90,v80,v70;Vec m30[4];p->pos(&v70);p->target(&v80);VecSub_13be40(&v90,&v80,&v70);MtxIdentity_13d2e0(m30);sceVu0RotMatrixY(m30,m30,WrapAngle_13c050(angle));MtxMulDir_13c860(&v90,m30,&v90);VecAdd_13be20(&v80,&v70,&v90);p->out=v80;}

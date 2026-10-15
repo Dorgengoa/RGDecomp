@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void AnimKeyEvalVec3Bezier_154d90(void);
+extern void AnimKeyEvalVec3Hermite_154cb0(void);
+extern void AnimKeyEvalVec3Linear_155180(void);
+u32 D_0047DEF0[4] = {
+    (u32)&AnimKeyEvalVec3Linear_155180, (u32)&AnimKeyEvalVec3Linear_155180, (u32)&AnimKeyEvalVec3Hermite_154cb0, (u32)&AnimKeyEvalVec3Bezier_154d90
+};
+typedef char data2c_sizecheck_0047DEF0[(sizeof(D_0047DEF0) == 16) ? 1 : -1];

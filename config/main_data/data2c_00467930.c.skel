@@ -1,0 +1,13 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCmdAllocEntries_410710(void);
+extern void DataTableCmdEntryBlob_40ff00(void);
+extern void DataTableCmdEntryBlob_4100e0(void);
+extern void DataTableCmdEntryDefine_410220(void);
+extern void DataTableCmdEntrySetParams_40ffc0(void);
+extern void DataTableCmdNopId1_369040(void);
+extern void DataTableCmdNopId2_369030(void);
+const u32 D_00467930[16] = {
+    $h, (u32)&DataTableCmdNopId1_369040, $h, (u32)&DataTableCmdNopId2_369030, $h, (u32)&DataTableCmdAllocEntries_410710, $h, (u32)&DataTableCmdEntryDefine_410220, $h, (u32)&DataTableCmdEntryBlob_4100e0, $h, (u32)&DataTableCmdEntrySetParams_40ffc0, $h, (u32)&DataTableCmdEntryBlob_40ff00, $h, $h
+};
+typedef char data2c_sizecheck_00467930[(sizeof(D_00467930) == 64) ? 1 : -1];

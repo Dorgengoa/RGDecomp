@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffModelDrawNodes_1a7b80(void);
+extern void EffModelResGetType_1a8700(void);
+extern void EffModelResResetMaybe_1a8360(void);
+u32 D_00470E80[8] = {
+    $h, $h, (u32)&EffModelResGetType_1a8700, (u32)&EffModelDrawNodes_1a7b80, (u32)&EffModelResResetMaybe_1a8360, $h, $h, $h
+};
+typedef char data2c_sizecheck_00470E80[(sizeof(D_00470E80) == 32) ? 1 : -1];

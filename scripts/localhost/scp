@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""Stand-in for `scp` when RGD_HOST=local: copy files on this machine.
+
+Put on PATH by scripts/rgd.py. `host:path` operands lose their `host:` and a
+leading `~` is expanded; options other than -r are ignored.
+"""
+import os
+import shutil
+import sys
+
+WITH_VALUE = {"-i", "-o", "-P", "-F", "-l", "-c", "-S"}
+args, ops, recursive, i = sys.argv[1:], [], False, 0
+while i < len(args):
+    a = args[i]
+    if a.startswith("-") and len(a) > 1:
+        recursive |= "r" in a and a not in WITH_VALUE
+        i += 2 if a in WITH_VALUE else 1
+        continue
+    if ":" in a and not (len(a) > 1 and a[1] == ":" and a[0].isalpha()):
+        a = a.split(":", 1)[1] or "."
+    ops.append(os.path.expanduser(a))
+    i += 1
+*srcs, dest = ops
+for s in srcs:
+    d = os.path.join(dest, os.path.basename(s.rstrip("/"))) if os.path.isdir(dest) else dest
+    if os.path.isdir(s):
+        if not recursive:
+            sys.exit(f"scp: {s}: not a regular file")
+        shutil.copytree(s, d, dirs_exist_ok=True)
+    else:
+        shutil.copyfile(s, d)

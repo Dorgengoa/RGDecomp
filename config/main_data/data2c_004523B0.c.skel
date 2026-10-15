@@ -1,0 +1,12 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void NavCfgCmdAddEdge_30a770(void);
+extern void NavCfgCmdAddNode_30a8b0(void);
+extern void NavCfgCmdEdgeFlags_30a630(void);
+extern void NavCfgCmdGraphCreate_30aa20(void);
+extern void NavCfgCmdNodeFlags_30a6d0(void);
+extern void NavCfgCmdSetUniformEdgeCostMaybe_30aa10(void);
+const u32 D_004523B0[16] = {
+    $h, (u32)&NavCfgCmdGraphCreate_30aa20, $h, (u32)&NavCfgCmdSetUniformEdgeCostMaybe_30aa10, $h, (u32)&NavCfgCmdAddNode_30a8b0, $h, (u32)&NavCfgCmdAddEdge_30a770, $h, (u32)&NavCfgCmdNodeFlags_30a6d0, $h, (u32)&NavCfgCmdEdgeFlags_30a630, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_004523B0[(sizeof(D_004523B0) == 64) ? 1 : -1];

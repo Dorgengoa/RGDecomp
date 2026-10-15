@@ -1,0 +1,14 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MpegMcChromaAvgHalfHV_10eea0(void);
+extern void MpegMcChromaAvgHalfH_10ecb0(void);
+extern void MpegMcChromaAvgHalfV_10eaf0(void);
+extern void MpegMcChromaAvg_10e960(void);
+extern void MpegMcChromaCopy_10e340(void);
+extern void MpegMcChromaHalfHV_10e7c0(void);
+extern void MpegMcChromaHalfH_10e610(void);
+extern void MpegMcChromaHalfV_10e490(void);
+const u32 D_00445FB0[20] = {
+    (u32)&MpegMcChromaCopy_10e340, (u32)&MpegMcChromaHalfV_10e490, (u32)&MpegMcChromaHalfH_10e610, (u32)&MpegMcChromaHalfHV_10e7c0, (u32)&MpegMcChromaAvg_10e960, (u32)&MpegMcChromaAvgHalfV_10eaf0, (u32)&MpegMcChromaAvgHalfH_10ecb0, (u32)&MpegMcChromaAvgHalfHV_10eea0, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_00445FB0[(sizeof(D_00445FB0) == 80) ? 1 : -1];

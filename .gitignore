@@ -1,0 +1,22 @@
+# retail files (never commit)
+retail/
+*.iso
+SCUS_974.90
+*.BIN
+
+# build output and tools
+build/
+tools/
+.ssh/
+
+# python
+__pycache__/
+*.pyc
+
+# generated from your retail files by scripts/extract.py (never commit)
+asm/main.s
+asm/overlays/*/*.s
+!asm/overlays/*/*_bss.s
+asm/overlays/*/data/
+asm/overlays/*/matchings/
+src/main_data/data2c_????????.c

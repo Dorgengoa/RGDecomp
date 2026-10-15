@@ -1,0 +1,40 @@
+#include "types.h"
+
+
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+struct Obj0;
+
+struct Obj0 {
+    s32 m00;
+    s32 m04;
+    u8 pad008[0x4];
+    s32 m0C;
+};
+
+s32 EventCastSlotSet_258ee0(struct Obj0 *p0, s32 p1, s32 p2, s32 p3)
+{
+    s32 rv1;
+    s32 rv0;
+
+    rv1 = rv0;
+    if (p3 == 0) {
+        rv1 = 0;
+    } else {
+        p0->m00 = p1;
+        rv0 = 1;
+        if (p1 != 0) {
+            rv0 = 0;
+        } else {
+            p0->m04 = p2;
+            p0->m0C = p3;
+            rv0 = 1;
+        }
+        rv1 = rv0;
+    }
+    return rv1;
+}

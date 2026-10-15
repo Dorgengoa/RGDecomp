@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ZonePhaseMatrixQueryCount_4144a0(void);
+extern void ZonePhaseMatrixQueryGetAt_414450(void);
+extern void func_00418AB0_e9(void);
+u32 D_0047A710[8] = {
+    $h, $h, (u32)&ZonePhaseMatrixQueryCount_4144a0, (u32)&func_00418AB0_e9, (u32)&ZonePhaseMatrixQueryGetAt_414450, $h, $h, $h
+};
+typedef char data2c_sizecheck_0047A710[(sizeof(D_0047A710) == 32) ? 1 : -1];

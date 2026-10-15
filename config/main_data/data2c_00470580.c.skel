@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void FuncDataSmallRecGetTypeId_192330(void);
+extern void FuncDataSmallRecIsKindOf_192340(void);
+extern void FuncDataSmallRecReset_192360(void);
+u32 D_00470580[6] = {
+    $h, $h, (u32)&FuncDataSmallRecGetTypeId_192330, (u32)&FuncDataSmallRecIsKindOf_192340, (u32)&FuncDataSmallRecReset_192360, $h
+};
+typedef char data2c_sizecheck_00470580[(sizeof(D_00470580) == 24) ? 1 : -1];

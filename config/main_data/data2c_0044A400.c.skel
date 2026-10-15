@@ -1,0 +1,20 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void AmixerCfgClipActionCmd_16f8a0(void);
+extern void AmixerCfgClipCmd_16f950(void);
+extern void AmixerCfgClipDataCmd_16f770(void);
+extern void AmixerCfgClipEndCmd_16f760(void);
+extern void AmixerCfgClipNumCmd_16f9f0(void);
+extern void AmixerCfgTrackCmd_16ff80(void);
+extern void AmixerCfgTrackEndCmd_16f650(void);
+extern void AmixerCfgTrackNumCmd_170030(void);
+extern void AmixerCfgTransCmd_16fe80(void);
+extern void AmixerCfgTransEndCmd_16fab0(void);
+extern void AmixerCfgTransFromCmd_16fc80(void);
+extern void AmixerCfgTransInterpCmd_16fe40(void);
+extern void AmixerCfgTransToCmd_16fac0(void);
+extern void AmixerCfgTransitionNumCmd_16fee0(void);
+const u32 D_0044A400[32] = {
+    $h, (u32)&AmixerCfgTrackNumCmd_170030, $h, (u32)&AmixerCfgTrackCmd_16ff80, $h, (u32)&AmixerCfgTransitionNumCmd_16fee0, $h, (u32)&AmixerCfgTransCmd_16fe80, $h, (u32)&AmixerCfgTransInterpCmd_16fe40, $h, (u32)&AmixerCfgTransFromCmd_16fc80, $h, (u32)&AmixerCfgTransToCmd_16fac0, $h, (u32)&AmixerCfgTransEndCmd_16fab0, $h, (u32)&AmixerCfgClipNumCmd_16f9f0, $h, (u32)&AmixerCfgClipCmd_16f950, $h, (u32)&AmixerCfgClipActionCmd_16f8a0, $h, (u32)&AmixerCfgClipDataCmd_16f770, $h, (u32)&AmixerCfgClipEndCmd_16f760, $h, (u32)&AmixerCfgTrackEndCmd_16f650, $h, $h, $h, $h
+};
+typedef char data2c_sizecheck_0044A400[(sizeof(D_0044A400) == 128) ? 1 : -1];

@@ -1,0 +1,13 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EffAttachInitRandomizedThunk_1973b0(void);
+extern void EffAttachInitRandomized_197a80(void);
+extern void EffAttachIntegrateScale_197960(void);
+extern void EffAttachNopSlot18_1973c0(void);
+extern void EffAttachReturnTrue_1973d0(void);
+extern void EffAttachScaleGetType_19a480(void);
+extern void EffAttachSetWorkSlot_1973a0(void);
+u32 D_00470730[12] = {
+    $h, $h, (u32)&EffAttachScaleGetType_19a480, (u32)&EffAttachSetWorkSlot_1973a0, (u32)&EffAttachInitRandomized_197a80, (u32)&EffAttachInitRandomizedThunk_1973b0, (u32)&EffAttachNopSlot18_1973c0, (u32)&EffAttachIntegrateScale_197960, (u32)&EffAttachReturnTrue_1973d0, $h, $h, $h
+};
+typedef char data2c_sizecheck_00470730[(sizeof(D_00470730) == 48) ? 1 : -1];

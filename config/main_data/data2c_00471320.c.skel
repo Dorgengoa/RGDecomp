@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ActCfgTableListInsertSortedByScopeId_1fe090(void);
+u32 D_00471320[4] = {
+    $h, $h, (u32)&ActCfgTableListInsertSortedByScopeId_1fe090, $h
+};
+typedef char data2c_sizecheck_00471320[(sizeof(D_00471320) == 16) ? 1 : -1];

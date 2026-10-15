@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EventPlayerInit_249c60(void);
+extern void EventPlayerIsArgZeroOrOneRelated_23ff70(void);
+extern void EventPlayerVslot0CTrueRelated_23ff60(void);
+u32 D_00471480[6] = {
+    $h, $h, (u32)&EventPlayerInit_249c60, (u32)&EventPlayerVslot0CTrueRelated_23ff60, (u32)&EventPlayerIsArgZeroOrOneRelated_23ff70, $h
+};
+typedef char data2c_sizecheck_00471480[(sizeof(D_00471480) == 24) ? 1 : -1];

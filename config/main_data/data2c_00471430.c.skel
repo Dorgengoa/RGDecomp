@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DListInsertSortedByName_227240(void);
+u32 D_00471430[4] = {
+    $h, $h, (u32)&DListInsertSortedByName_227240, $h
+};
+typedef char data2c_sizecheck_00471430[(sizeof(D_00471430) == 16) ? 1 : -1];

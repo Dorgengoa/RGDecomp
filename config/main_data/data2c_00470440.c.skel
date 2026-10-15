@@ -1,0 +1,17 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ModelBindRootFrameXformsMaybe_1517b0(void);
+extern void ModelCloneFrames_151860(void);
+extern void ModelObjBaseInitNoMotion_186f60(void);
+extern void ModelObjDistanceFadeUpdate_186b60(void);
+extern void ModelObjDistanceToCamera_186c50(void);
+extern void ModelObjDrawShadowCaster_1868d0(void);
+extern void ModelObjDrawSorted_186910(void);
+extern void ModelObjDraw_186970(void);
+extern void ModelObjFadeIsVisible_1869d0(void);
+extern void ModelObjGetFadeAlpha_186f40(void);
+extern void ModelObjIsVisible_186a20(void);
+u32 D_00470440[16] = {
+    $h, $h, (u32)&ModelCloneFrames_151860, (u32)&ModelBindRootFrameXformsMaybe_1517b0, (u32)&ModelObjDistanceToCamera_186c50, (u32)&ModelObjFadeIsVisible_1869d0, (u32)&ModelObjDistanceFadeUpdate_186b60, (u32)&ModelObjGetFadeAlpha_186f40, (u32)&ModelObjIsVisible_186a20, (u32)&ModelObjDraw_186970, (u32)&ModelObjDrawSorted_186910, (u32)&ModelObjDrawShadowCaster_1868d0, (u32)&ModelObjBaseInitNoMotion_186f60, $h, $h, $h
+};
+typedef char data2c_sizecheck_00470440[(sizeof(D_00470440) == 64) ? 1 : -1];

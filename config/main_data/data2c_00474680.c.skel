@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void ContainerViewGetAtFwd_3bf300(void);
+extern void ObjMgrCountLive_3ba3f0(void);
+extern void ObjMgrGetNthLive_3ba320(void);
+u32 D_00474680[8] = {
+    $h, $h, (u32)&ObjMgrCountLive_3ba3f0, (u32)&ContainerViewGetAtFwd_3bf300, (u32)&ObjMgrGetNthLive_3ba320, $h, $h, $h
+};
+typedef char data2c_sizecheck_00474680[(sizeof(D_00474680) == 32) ? 1 : -1];

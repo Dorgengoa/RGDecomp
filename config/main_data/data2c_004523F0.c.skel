@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MovCfgCmdMove_311bc0(void);
+extern void MovCfgCmdMtnEnd_311cb0(void);
+extern void MovCfgCmdMtnStart_311d50(void);
+const u32 D_004523F0[8] = {
+    $h, (u32)&MovCfgCmdMtnStart_311d50, $h, (u32)&MovCfgCmdMtnEnd_311cb0, $h, (u32)&MovCfgCmdMove_311bc0, $h, $h
+};
+typedef char data2c_sizecheck_004523F0[(sizeof(D_004523F0) == 32) ? 1 : -1];

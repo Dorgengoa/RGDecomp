@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+u32 D_0047FF48[1] = {
+    $h
+};
+typedef char data2c_sizecheck_0047FF48[(sizeof(D_0047FF48) == 4) ? 1 : -1];

@@ -1,0 +1,8 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MeshPktGetTypeIdMaybe_152c90(void);
+extern void MeshPktIsKindOfMaybe_152ca0(void);
+u32 D_0046FFE0[4] = {
+    $h, $h, (u32)&MeshPktGetTypeIdMaybe_152c90, (u32)&MeshPktIsKindOfMaybe_152ca0
+};
+typedef char data2c_sizecheck_0046FFE0[(sizeof(D_0046FFE0) == 16) ? 1 : -1];

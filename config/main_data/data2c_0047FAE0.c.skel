@@ -1,0 +1,5 @@
+/* Generated: do not edit. */
+#include "types.h"
+
+char D_0047FAE0[16] = "$s";
+typedef char data2c_sizecheck_0047FAE0[(sizeof(D_0047FAE0) == 16) ? 1 : -1];

@@ -1,0 +1,13 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void SpatialMgrDtor_313e70(void);
+extern void SpatialMgrGridInsertRef_316830(void);
+extern void SpatialMgrListAddRef_315d60(void);
+extern void SpatialMgrNewGridNode_316910(void);
+extern void SpatialMgrNewHitShapeList_315e40(void);
+extern void SpatialMgrQuadTreeInsertRef_315c70(void);
+extern void SpatialMgrVslot10NopRelated_313e10(void);
+u32 D_00471B10[12] = {
+    $h, $h, (u32)&SpatialMgrNewGridNode_316910, (u32)&SpatialMgrGridInsertRef_316830, (u32)&SpatialMgrVslot10NopRelated_313e10, (u32)&SpatialMgrNewHitShapeList_315e40, (u32)&SpatialMgrListAddRef_315d60, (u32)&SpatialMgrQuadTreeInsertRef_315c70, (u32)&SpatialMgrDtor_313e70, $h, $h, $h
+};
+typedef char data2c_sizecheck_00471B10[(sizeof(D_00471B10) == 48) ? 1 : -1];

@@ -1,0 +1,29 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void DataTableCmdNopId1_369040(void);
+extern void DataTableCmdNopId2_369030(void);
+extern void ItemDataCmdAddItem_40d7d0(void);
+extern void ItemDataCmdAllocEntries_40e6d0(void);
+extern void ItemDataCmdEntrySetParamsMaybe_40c950(void);
+extern void ItemDataCmdExtSetElementResistsMaybe_40cf50(void);
+extern void ItemDataCmdExtSetStatusResists_40ce90(void);
+extern void ItemDataCmdInsectSetParams_40ca00(void);
+extern void ItemDataCmdKind2SetDefenseMaybe_40d260(void);
+extern void ItemDataCmdSetDescription_40c8c0(void);
+extern void ItemDataCmdSetEffect28IdMaybe_40cca0(void);
+extern void ItemDataCmdSetFlags_40d570(void);
+extern void ItemDataCmdSetParamsMaybe_40d740(void);
+extern void ItemDataCmdSetPrices_40d4a0(void);
+extern void ItemDataCmdSetUseEffectIdMaybe_40ce20(void);
+extern void ItemDataCmdSetWeaponScale_40dad0(void);
+extern void ItemDataCmdSpecialWeaponSetParams_40cbc0(void);
+extern void ItemDataCmdWeaponSetAbltName_40cd10(void);
+extern void ItemDataCmdWeaponSetAttrMax_40d0e0(void);
+extern void ItemDataCmdWeaponSetAttrMin_40d1a0(void);
+extern void ItemDataCmdWeaponSetField4Maybe_40d3b0(void);
+extern void ItemDataCmdWeaponSetFloats_40d010(void);
+extern void ItemDataCmdWeaponSetPowerMaybe_40d300(void);
+const u32 D_00467820[48] = {
+    $h, (u32)&DataTableCmdNopId1_369040, $h, (u32)&DataTableCmdNopId2_369030, $h, (u32)&ItemDataCmdSetWeaponScale_40dad0, $h, (u32)&ItemDataCmdAllocEntries_40e6d0, $h, (u32)&ItemDataCmdAddItem_40d7d0, $h, (u32)&ItemDataCmdSetParamsMaybe_40d740, $h, (u32)&ItemDataCmdSetFlags_40d570, $h, (u32)&ItemDataCmdSetPrices_40d4a0, $h, (u32)&ItemDataCmdWeaponSetField4Maybe_40d3b0, $h, (u32)&ItemDataCmdWeaponSetPowerMaybe_40d300, $h, (u32)&ItemDataCmdKind2SetDefenseMaybe_40d260, $h, (u32)&ItemDataCmdWeaponSetAttrMin_40d1a0, $h, (u32)&ItemDataCmdWeaponSetAttrMax_40d0e0, $h, (u32)&ItemDataCmdWeaponSetFloats_40d010, $h, (u32)&ItemDataCmdExtSetElementResistsMaybe_40cf50, $h, (u32)&ItemDataCmdExtSetStatusResists_40ce90, $h, (u32)&ItemDataCmdSetUseEffectIdMaybe_40ce20, $h, (u32)&ItemDataCmdWeaponSetAbltName_40cd10, $h, (u32)&ItemDataCmdSetEffect28IdMaybe_40cca0, $h, (u32)&ItemDataCmdSpecialWeaponSetParams_40cbc0, $h, (u32)&ItemDataCmdInsectSetParams_40ca00, $h, (u32)&ItemDataCmdEntrySetParamsMaybe_40c950, $h, (u32)&ItemDataCmdSetDescription_40c8c0, $h, $h
+};
+typedef char data2c_sizecheck_00467820[(sizeof(D_00467820) == 192) ? 1 : -1];

@@ -1,0 +1,22 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EvDoorObjApplyInitialState_303440(void);
+extern void EvDoorObjDebugDraw_3038b0(void);
+extern void EvDoorObjGetCharaCollIgnoreMask_303810(void);
+extern void EvDoorObjGetType_3038a0(void);
+extern void EvDoorObjHitTest_303450(void);
+extern void EvDoorObjIsTargetActive_3036a0(void);
+extern void EvDoorObjLock_3035f0(void);
+extern void EvDoorObjPreUpdate_303430(void);
+extern void EvDoorObjResolve_3036f0(void);
+extern void EvDoorObjUpdate_303110(void);
+extern void EvObjDrawNop_2f9900(void);
+extern void EvObjOnAreaLoadedNop_2f9a00(void);
+extern void EvObjOnAreaUnloadNop_2f99f0(void);
+extern void EvObjOnTouchNop_2f99c0(void);
+extern void EvObjResumeNop_2f98e0(void);
+extern void EvObjSuspendNop_2f98f0(void);
+u32 D_00471A00[20] = {
+    $h, $h, (u32)&EvDoorObjGetType_3038a0, (u32)&EvDoorObjGetCharaCollIgnoreMask_303810, (u32)&EvDoorObjResolve_3036f0, (u32)&EvDoorObjIsTargetActive_3036a0, (u32)&EvDoorObjLock_3035f0, (u32)&EvObjOnAreaLoadedNop_2f9a00, (u32)&EvObjOnAreaUnloadNop_2f99f0, (u32)&EvDoorObjHitTest_303450, (u32)&EvDoorObjApplyInitialState_303440, (u32)&EvObjOnTouchNop_2f99c0, (u32)&EvDoorObjPreUpdate_303430, (u32)&EvDoorObjUpdate_303110, (u32)&EvObjDrawNop_2f9900, (u32)&EvObjSuspendNop_2f98f0, (u32)&EvObjResumeNop_2f98e0, (u32)&EvDoorObjDebugDraw_3038b0, $h, $h
+};
+typedef char data2c_sizecheck_00471A00[(sizeof(D_00471A00) == 80) ? 1 : -1];

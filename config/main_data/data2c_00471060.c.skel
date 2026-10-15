@@ -1,0 +1,9 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void MotionEventBaseGetKind_1b2290(void);
+extern void MotionEventBaseGetTag_1b2550(void);
+extern void MotionEventBaseWriteTextNop_1b1de0(void);
+u32 D_00471060[8] = {
+    $h, $h, (u32)&MotionEventBaseGetKind_1b2290, (u32)&MotionEventBaseGetTag_1b2550, (u32)&MotionEventBaseWriteTextNop_1b1de0, $h, $h, $h
+};
+typedef char data2c_sizecheck_00471060[(sizeof(D_00471060) == 32) ? 1 : -1];

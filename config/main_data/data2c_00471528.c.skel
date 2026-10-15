@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EventRecListInsertSorted_2d2bf0(void);
+u32 D_00471528[4] = {
+    $h, $h, (u32)&EventRecListInsertSorted_2d2bf0, $h
+};
+typedef char data2c_sizecheck_00471528[(sizeof(D_00471528) == 16) ? 1 : -1];

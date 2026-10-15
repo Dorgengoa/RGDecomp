@@ -1,0 +1,7 @@
+/* Generated: do not edit. */
+#include "types.h"
+extern void EventParamRecListInsert_2d2370(void);
+u32 D_004715A8[4] = {
+    $h, $h, (u32)&EventParamRecListInsert_2d2370, $h
+};
+typedef char data2c_sizecheck_004715A8[(sizeof(D_004715A8) == 16) ? 1 : -1];
