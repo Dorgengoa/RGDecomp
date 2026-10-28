@@ -1,0 +1,386 @@
+# census: misc
+# source: ../RGDecomp
+# commit: 2efa6b43548fed253fafdee4d22c8d61d506acde
+# binaries: ../work/SCUS_974.90 + BIN/*.BIN (retail)
+# generator: tools/census/platform/misc.py
+# rows: 378
+# kinds: api=136, hwreg=233, spr=9
+kind	area	name	addr	func	is_game	count	detail
+hwreg	0x1000F130	0x1000F130		kputchar	no(libkernl/deci2/tty)	1	R image=main
+hwreg	0x1000F180	0x1000F180		kputchar	no(libkernl/deci2/tty)	1	W image=main
+hwreg	DMA	D1_VIF1_CHCR		sceGsExecStoreImage	no(libgraph/gs)	8	RW image=main
+hwreg	DMA	D1_VIF1_CHCR		sceGsSyncPath_109030	no(libgraph/gs)	3	R image=main
+hwreg	DMA	D1_VIF1_MADR		sceGsExecStoreImage	no(libgraph/gs)	2	W image=main
+hwreg	DMA	D1_VIF1_QWC		sceGsExecStoreImage	no(libgraph/gs)	2	W image=main
+hwreg	DMA	D2_GIF_CHCR		sceGsPutDrawEnv	no(libgraph/gs)	3	RW image=main
+hwreg	DMA	D2_GIF_CHCR		sceGsSyncPath_109030	no(libgraph/gs)	3	R image=main
+hwreg	DMA	D2_GIF_MADR		sceGsPutDrawEnv	no(libgraph/gs)	1	W image=main
+hwreg	DMA	D2_GIF_QWC		sceGsPutDrawEnv	no(libgraph/gs)	1	W image=main
+hwreg	DMA	D3_fromIPU_CHCR		DmaIpuFromSetChcr_115b28	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_CHCR		DmaIpuFromStart_10efb8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_CHCR		IpuStopDmaAndReset_115928	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_CHCR		IpuStopDma_115c18	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D3_fromIPU_CHCR		MpegCscDmaHandler_112900	no(libmpeg/mpeg+ipu)	3	RW image=main
+hwreg	DMA	D3_fromIPU_CHCR		MpegIpuCsc_112268	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_CHCR		MpegIpuDmaTransferMaybe_112428	no(libmpeg/mpeg+ipu)	4	RW image=main
+hwreg	DMA	D3_fromIPU_CHCR		MpegIpuErrorReset_1159c8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_CHCR		MpegResetHwMaybe_1107e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_CHCR		MpegStopDmaMaybe_111050	no(libmpeg/mpeg+ipu)	2	RW image=main
+hwreg	DMA	D3_fromIPU_CHCR		ViBufSetD3Chcr_1d4800	yes	1	W image=main
+hwreg	DMA	D3_fromIPU_CHCR		ViBufStopDma_1d4180	yes	1	R image=main
+hwreg	DMA	D3_fromIPU_MADR		DmaIpuFromStart_10efb8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_MADR		IpuRestartDma_115d00	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_MADR		IpuStopDma_115c18	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D3_fromIPU_MADR		MpegCscDmaHandler_112900	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D3_fromIPU_MADR		MpegIpuCsc_112268	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_MADR		MpegIpuDmaTransferMaybe_112428	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D3_fromIPU_MADR		ViBufRestartDma_1d3e70	yes	1	W image=main
+hwreg	DMA	D3_fromIPU_MADR		ViBufStopDma_1d4180	yes	1	R image=main
+hwreg	DMA	D3_fromIPU_QWC		DmaIpuFromStart_10efb8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_QWC		IpuRestartDma_115d00	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_QWC		IpuStopDmaAndReset_115928	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_QWC		IpuStopDma_115c18	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D3_fromIPU_QWC		MpegCscDmaHandler_112900	no(libmpeg/mpeg+ipu)	3	RW image=main
+hwreg	DMA	D3_fromIPU_QWC		MpegDecodePictureBodyMaybe_10c798	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D3_fromIPU_QWC		MpegDecodeSlices_10c9d8	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D3_fromIPU_QWC		MpegIpuCsc_112268	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_QWC		MpegIpuDmaTransferMaybe_112428	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D3_fromIPU_QWC		MpegIpuErrorReset_1159c8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_QWC		MpegResetHwMaybe_1107e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_QWC		MpegStopDmaMaybe_111050	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D3_fromIPU_QWC		ViBufRestartDma_1d3e70	yes	1	W image=main
+hwreg	DMA	D3_fromIPU_QWC		ViBufStopDma_1d4180	yes	1	R image=main
+hwreg	DMA	D4_toIPU_CHCR		DmaIpuToSetChcr_115ba0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_CHCR		DmaIpuToSetChcr_115eb8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_CHCR		IpuDmaSendChainMaybe_1106e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_CHCR		IpuStopDmaAndReset_115928	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_CHCR		IpuStopDma_115c18	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_CHCR		MpegDecodePictureBodyMaybe_10c798	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_CHCR		MpegDecodeSlices_10c9d8	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_CHCR		MpegIpuDmaTransferMaybe_112428	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D4_toIPU_CHCR		MpegParseSequenceHeader_10f510	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D4_toIPU_CHCR		MpegResetHwMaybe_1107e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_CHCR		MpegStopDmaMaybe_111050	no(libmpeg/mpeg+ipu)	2	RW image=main
+hwreg	DMA	D4_toIPU_CHCR		MpegToIpuDmaHandler_112a48	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D4_toIPU_CHCR		ViBufAddDma_1d4240	yes	1	R image=main
+hwreg	DMA	D4_toIPU_CHCR		ViBufSetD4Chcr_1d47a0	yes	1	W image=main
+hwreg	DMA	D4_toIPU_CHCR		ViBufStopDma_1d4180	yes	1	R image=main
+hwreg	DMA	D4_toIPU_MADR		IpuRestartDma_115d00	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_MADR		IpuStopDma_115c18	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_MADR		MpegIpuDmaTransferMaybe_112428	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D4_toIPU_MADR		MpegParseSequenceHeader_10f510	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D4_toIPU_MADR		MpegToIpuDmaHandler_112a48	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D4_toIPU_MADR		ViBufAddDma_1d4240	yes	1	R image=main
+hwreg	DMA	D4_toIPU_MADR		ViBufDelete_1d3e20	yes	1	W image=main
+hwreg	DMA	D4_toIPU_MADR		ViBufGetTs_1d3990	yes	1	R image=main
+hwreg	DMA	D4_toIPU_MADR		ViBufReset_1d45b0	yes	1	W image=main
+hwreg	DMA	D4_toIPU_MADR		ViBufRestartDma_1d3e70	yes	1	W image=main
+hwreg	DMA	D4_toIPU_MADR		ViBufStopDma_1d4180	yes	1	R image=main
+hwreg	DMA	D4_toIPU_QWC		IpuDmaSendChainMaybe_1106e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_QWC		IpuRestartDma_115d00	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_QWC		IpuStopDmaAndReset_115928	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_QWC		IpuStopDma_115c18	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_QWC		IpuSyncWithRefill_10d9a0	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_QWC		IpuWaitCmd_10db08	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_QWC		MpegDecodePictureBodyMaybe_10c798	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_QWC		MpegDecodeSlices_10c9d8	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_QWC		MpegIpuDmaTransferMaybe_112428	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D4_toIPU_QWC		MpegParseSequenceHeader_10f510	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D4_toIPU_QWC		MpegResetHwMaybe_1107e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_QWC		MpegToIpuDmaHandler_112a48	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_QWC		ViBufDelete_1d3e20	yes	1	W image=main
+hwreg	DMA	D4_toIPU_QWC		ViBufReset_1d45b0	yes	1	W image=main
+hwreg	DMA	D4_toIPU_QWC		ViBufRestartDma_1d3e70	yes	1	W image=main
+hwreg	DMA	D4_toIPU_QWC		ViBufStopDma_1d4180	yes	1	R image=main
+hwreg	DMA	D4_toIPU_TADR		IpuDmaSendChainMaybe_1106e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_TADR		IpuRestartDma_115d00	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D4_toIPU_TADR		IpuStopDma_115c18	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D4_toIPU_TADR		ViBufDelete_1d3e20	yes	1	W image=main
+hwreg	DMA	D4_toIPU_TADR		ViBufRestartDma_1d3e70	yes	1	W image=main
+hwreg	DMA	D4_toIPU_TADR		ViBufStopDma_1d4180	yes	1	R image=main
+hwreg	DMA	D5_SIF0_CHCR		sceSifInitCmd	no(libkernl/sifcmd)	1	R image=main
+hwreg	DMA	D8_fromSPR_CHCR		MpegCopyMbViaSprMaybe_1117a8	no(libmpeg/mpeg+ipu)	2	RW image=main
+hwreg	DMA	D8_fromSPR_MADR		MpegCopyMbViaSprMaybe_1117a8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D8_fromSPR_QWC		MpegCopyMbViaSprMaybe_1117a8	no(libmpeg/mpeg+ipu)	2	RW image=main
+hwreg	DMA	D8_fromSPR_SADR		MpegCopyMbViaSprMaybe_1117a8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D9_toSPR_CHCR		MpegCopyMbViaSprMaybe_1117a8	no(libmpeg/mpeg+ipu)	2	RW image=main
+hwreg	DMA	D9_toSPR_CHCR		MpegDecodePictureBodyMaybe_10c798	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	DMA	D9_toSPR_CHCR		MpegKickSprDmaMaybe_10e148	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D9_toSPR_CHCR		MpegMotionCompensateMaybe_10bea0	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D9_toSPR_CHCR		MpegResetHwMaybe_1107e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D9_toSPR_MADR		MpegCopyMbViaSprMaybe_1117a8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D9_toSPR_QWC		MpegCopyMbViaSprMaybe_1117a8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D9_toSPR_QWC		MpegKickSprDmaMaybe_10e148	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D9_toSPR_QWC		MpegResetHwMaybe_1107e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D9_toSPR_SADR		MpegCopyMbViaSprMaybe_1117a8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D9_toSPR_SADR		MpegKickSprDmaMaybe_10e148	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D9_toSPR_TADR		MpegKickSprDmaMaybe_10e148	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D_CTRL		MovieOpen_1d5cf0	yes	2	RW image=main
+hwreg	DMA	D_CTRL		sceDmaPause_10a350	no(libdma/dma)	1	R image=main
+hwreg	DMA	D_CTRL		sceDmaPutEnv	no(libdma/dma)	2	RW image=main
+hwreg	DMA	D_CTRL		sceDmaReset	no(libdma/dma)	3	RW image=main
+hwreg	DMA	D_ENABLER		DmaIpuFromSetChcr_115b28	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D_ENABLER		DmaIpuToSetChcr_115ba0	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D_ENABLER		DmaIpuToSetChcr_115eb8	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D_ENABLER		IpuStopDmaAndReset_115928	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D_ENABLER		MpegIpuErrorReset_1159c8	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D_ENABLER		MpegResetHwMaybe_1107e0	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D_ENABLER		MpegStopDmaMaybe_111050	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	DMA	D_ENABLER		ViBufSetD3Chcr_1d4800	yes	2	R image=main
+hwreg	DMA	D_ENABLER		ViBufSetD4Chcr_1d47a0	yes	2	R image=main
+hwreg	DMA	D_ENABLER		sceDmaPause_10a350	no(libdma/dma)	1	R image=main
+hwreg	DMA	D_ENABLEW		DmaIpuFromSetChcr_115b28	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D_ENABLEW		DmaIpuToSetChcr_115ba0	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D_ENABLEW		DmaIpuToSetChcr_115eb8	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D_ENABLEW		IpuStopDmaAndReset_115928	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D_ENABLEW		MpegIpuErrorReset_1159c8	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D_ENABLEW		MpegResetHwMaybe_1107e0	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D_ENABLEW		MpegStopDmaMaybe_111050	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	DMA	D_ENABLEW		ViBufSetD3Chcr_1d4800	yes	1	W image=main
+hwreg	DMA	D_ENABLEW		ViBufSetD4Chcr_1d47a0	yes	1	W image=main
+hwreg	DMA	D_ENABLEW		sceDmaPause_10a350	no(libdma/dma)	2	W image=main
+hwreg	DMA	D_PCR		sceDmaPutEnv	no(libdma/dma)	2	RW image=main
+hwreg	DMA	D_RBOR		sceDmaPutEnv	no(libdma/dma)	2	RW image=main
+hwreg	DMA	D_RBSR		sceDmaPutEnv	no(libdma/dma)	2	RW image=main
+hwreg	DMA	D_SQWC		sceDmaPutEnv	no(libdma/dma)	2	RW image=main
+hwreg	DMA	D_STADR		sceDmaPutStallAddr_10a028	no(libdma/dma)	2	RW image=main
+hwreg	DMA	D_STAT		MovieOpen_1d5cf0	yes	1	W image=main
+hwreg	DMA	D_STAT		MpegCscDmaHandler_112900	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D_STAT		MpegToIpuDmaHandler_112a48	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	DMA	D_STAT		sceDmaReset	no(libdma/dma)	2	RW image=main
+hwreg	DMA	D_STAT		sceSifInitCmd	no(libkernl/sifcmd)	2	RW image=main
+hwreg	GIF	GIF_CTRL		sceGsExecStoreImage	no(libgraph/gs)	1	W image=main
+hwreg	GIF	GIF_CTRL		sceGsResetPath	no(libgraph/gs)	1	W image=main
+hwreg	GIF	GIF_STAT		sceGsSyncPath_109030	no(libgraph/gs)	3	R image=main
+hwreg	INTC	INTC_STAT		KernelReleaseAlarm_4473a0	no(libkernl/kernel-patch(copied to kernel))	1	R image=main
+hwreg	INTC	INTC_STAT		KernelVblankResetRelated_446d00	no(libkernl/kernel-patch(copied to kernel))	3	RW image=main
+hwreg	INTC	INTC_STAT		VSync2_116ac0	no(libkernl/vsync)	3	RW image=main
+hwreg	INTC	INTC_STAT		VSync_116a30	no(libkernl/vsync)	3	RW image=main
+hwreg	IPU	IPU_BP		IpuByteAlign_110168	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_BP		IpuDecodeMacroblock_10d2d0	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_BP		IpuDecodeMbAddrInc_10d828	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_BP		IpuDecodeMotionVectorMaybe_10cd08	no(libmpeg/mpeg+ipu)	4	R image=main
+hwreg	IPU	IPU_BP		IpuStopDma_115c18	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_BP		IpuSyncWithRefill_10d9a0	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_BP		IpuWaitCmd_10db08	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_BP		MpegDecodePictureBodyMaybe_10c798	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_BP		MpegDecodeSlices_10c9d8	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_BP		ViBufGetTs_1d3990	yes	1	R image=main
+hwreg	IPU	IPU_BP		ViBufStopDma_1d4180	yes	1	R image=main
+hwreg	IPU	IPU_CMD		IpuDecodeMacroblock_10d2d0	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	IPU	IPU_CMD		IpuDecodeMbAddrInc_10d828	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	IPU	IPU_CMD		IpuDecodeMotionVectorMaybe_10cd08	no(libmpeg/mpeg+ipu)	4	W image=main
+hwreg	IPU	IPU_CMD		IpuGetBits_10dc88	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	IPU	IPU_CMD		IpuInit_115f30	no(libmpeg/mpeg+ipu)	6	W image=main
+hwreg	IPU	IPU_CMD		IpuRestartDma_115d00	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	IPU	IPU_CMD		IpuShowBits_10dd70	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	IPU	IPU_CMD		IpuSkipBits_10de00	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	IPU	IPU_CMD		IpuWaitCmd_10db08	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	IPU	IPU_CMD		MpegCscDmaHandler_112900	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	IPU	IPU_CMD		MpegIpuCsc_112268	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	IPU	IPU_CMD		MpegIpuDmaTransferMaybe_112428	no(libmpeg/mpeg+ipu)	3	W image=main
+hwreg	IPU	IPU_CMD		MpegParseQuantMatrixExt_10fae8	no(libmpeg/mpeg+ipu)	2	W image=main
+hwreg	IPU	IPU_CMD		MpegParseSequenceHeader_10f510	no(libmpeg/mpeg+ipu)	4	W image=main
+hwreg	IPU	IPU_CMD		ViBufRestartDma_1d3e70	yes	1	W image=main
+hwreg	IPU	IPU_CTRL		IpuDecodeMacroblock_10d2d0	no(libmpeg/mpeg+ipu)	2	RW image=main
+hwreg	IPU	IPU_CTRL		IpuInit_115f30	no(libmpeg/mpeg+ipu)	10	RW image=main
+hwreg	IPU	IPU_CTRL		IpuRestartDma_115d00	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	IPU	IPU_CTRL		IpuStopDmaAndReset_115928	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	IPU	IPU_CTRL		IpuStopDma_115c18	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	IPU	IPU_CTRL		IpuSyncIfBusy_10de98	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_CTRL		IpuSyncIfBusy_10ffc8	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_CTRL		IpuSyncWithRefill_10d9a0	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	IPU	IPU_CTRL		IpuSync_115e50	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	IPU	IPU_CTRL		IpuWaitCmd_10db08	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	IPU	IPU_CTRL		MpegDecodePictureBodyMaybe_10c798	no(libmpeg/mpeg+ipu)	3	R image=main
+hwreg	IPU	IPU_CTRL		MpegDecodeSlices_10c9d8	no(libmpeg/mpeg+ipu)	3	R image=main
+hwreg	IPU	IPU_CTRL		MpegIpuCsc_112268	no(libmpeg/mpeg+ipu)	2	R image=main
+hwreg	IPU	IPU_CTRL		MpegIpuDmaTransferMaybe_112428	no(libmpeg/mpeg+ipu)	8	RW image=main
+hwreg	IPU	IPU_CTRL		MpegIpuErrorReset_1159c8	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	IPU	IPU_CTRL		MpegParsePictureCodingExt_10fbf0	no(libmpeg/mpeg+ipu)	7	RW image=main
+hwreg	IPU	IPU_CTRL		MpegParseSequenceExt_10f9a8	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_CTRL		MpegResetHwMaybe_1107e0	no(libmpeg/mpeg+ipu)	1	W image=main
+hwreg	IPU	IPU_CTRL		MpegReset_1111e8	no(libmpeg/mpeg+ipu)	2	RW image=main
+hwreg	IPU	IPU_CTRL		MpegSetupBufferType_1103d8	no(libmpeg/mpeg+ipu)	2	RW image=main
+hwreg	IPU	IPU_CTRL		ViBufRestartDma_1d3e70	yes	3	RW image=main
+hwreg	IPU	IPU_CTRL		ViBufStopDma_1d4180	yes	2	R image=main
+hwreg	IPU	IPU_TOP		IpuDecodeMacroblock_10d2d0	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_TOP		IpuDecodeMbAddrInc_10d828	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_TOP		IpuDecodeMotionVectorMaybe_10cd08	no(libmpeg/mpeg+ipu)	4	R image=main
+hwreg	IPU	IPU_TOP		MpegDecodePictureBodyMaybe_10c798	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_TOP		MpegDecodeSlices_10c9d8	no(libmpeg/mpeg+ipu)	1	R image=main
+hwreg	IPU	IPU_in_FIFO		IpuInit_115f30	no(libmpeg/mpeg+ipu)	10	W image=main
+hwreg	T0	T0_COUNT		GfxEndFrame_141c20	yes	3	RW image=main
+hwreg	T0	T0_COUNT		GfxFlipBuffersMaybe_143650	yes	2	R image=main
+hwreg	T0	T0_COUNT		Vif1IntcHandler_15e170	yes	1	R image=main
+hwreg	T0	T0_MODE		GfxSysInit_15dd20	yes	1	W image=main
+hwreg	T2	T2_COUNT		GetTimerSystemTime_121808	no(libkernl/timer/alarm)	2	R image=main
+hwreg	T2	T2_COUNT		SetNextComp_1212c0	no(libkernl/timer/alarm)	1	R image=main
+hwreg	T2	T2_COUNT		TimerAlarmIntcHandler_121510	no(libkernl/timer/alarm)	6	R image=main
+hwreg	T2	T2_COUNT		iGetTimerSystemTime_1217b8	no(libkernl/timer/alarm)	2	R image=main
+hwreg	T2	T2_MODE		GetTimerPreScaleFactor_121180	no(libkernl/timer/alarm)	1	R image=main
+hwreg	T2	T2_MODE		GetTimerSystemTime_121808	no(libkernl/timer/alarm)	1	R image=main
+hwreg	T2	T2_MODE		InitTimer_120f70	no(libkernl/timer/alarm)	1	R image=main
+hwreg	T2	T2_MODE		SetNextComp_1212c0	no(libkernl/timer/alarm)	1	R image=main
+hwreg	T2	T2_MODE		StartTimerSystemTime_1211b0	no(libkernl/timer/alarm)	1	R image=main
+hwreg	T2	T2_MODE		StopTimerSystemTime_121240	no(libkernl/timer/alarm)	1	R image=main
+hwreg	T2	T2_MODE		TimerAlarmIntcHandler_121510	no(libkernl/timer/alarm)	4	R image=main
+hwreg	T2	T2_MODE		iGetTimerSystemTime_1217b8	no(libkernl/timer/alarm)	1	R image=main
+hwreg	T3	T3_MODE		InitAlarm_120df8	no(libkernl/tlb/init/patch)	1	R image=main
+hwreg	VIF0	VIF0_ERR		sceVpu0Reset	no(libvu0/vu0)	1	W image=main
+hwreg	VIF0	VIF0_FBRST		sceVpu0Reset	no(libvu0/vu0)	1	W image=main
+hwreg	VIF0	VIF0_FIFO		sceVpu0Reset	no(libvu0/vu0)	2	W image=main
+hwreg	VIF0	VIF0_MARK		sceVpu0Reset	no(libvu0/vu0)	1	W image=main
+hwreg	VIF1	VIF1_ERR		sceGsResetPath	no(libgraph/gs)	1	W image=main
+hwreg	VIF1	VIF1_FBRST		Vif1IntcHandler_15e170	yes	1	W image=main
+hwreg	VIF1	VIF1_FBRST		sceGsExecStoreImage	no(libgraph/gs)	1	W image=main
+hwreg	VIF1	VIF1_FBRST		sceGsResetPath	no(libgraph/gs)	1	W image=main
+hwreg	VIF1	VIF1_FIFO		sceGsExecStoreImage	no(libgraph/gs)	5	RW image=main
+hwreg	VIF1	VIF1_FIFO		sceGsResetPath	no(libgraph/gs)	2	W image=main
+hwreg	VIF1	VIF1_STAT		sceGsExecStoreImage	no(libgraph/gs)	8	RW image=main
+hwreg	VIF1	VIF1_STAT		sceGsSyncPath_109030	no(libgraph/gs)	3	R image=main
+spr	scratchpad	SPR		GfxEndFrame_141c20	yes	0	only `lui 0x7000`: AMBIGUOUS -- 0x7000xxxx is also a DMA END tag (id 7, e.g. GfxEndFrame writes 0x70000003); no constant-address SPR load/store in this function image=main
+spr	scratchpad	SPR		KernelTlbMapPageRelated_446470	no(libkernl/kernel-patch(copied to kernel))	0	only `lui 0x7000`: AMBIGUOUS -- 0x7000xxxx is also a DMA END tag (id 7, e.g. GfxEndFrame writes 0x70000003); no constant-address SPR load/store in this function image=main
+spr	scratchpad	SPR		MpegCscDmaHandler_112900	no(libmpeg/mpeg+ipu)	0	only `lui 0x7000`: AMBIGUOUS -- 0x7000xxxx is also a DMA END tag (id 7, e.g. GfxEndFrame writes 0x70000003); no constant-address SPR load/store in this function image=main
+spr	scratchpad	SPR		MpegIpuCsc_112268	no(libmpeg/mpeg+ipu)	0	only `lui 0x7000`: AMBIGUOUS -- 0x7000xxxx is also a DMA END tag (id 7, e.g. GfxEndFrame writes 0x70000003); no constant-address SPR load/store in this function image=main
+spr	scratchpad	SPR		MpegIpuDmaTransferMaybe_112428	no(libmpeg/mpeg+ipu)	0	only `lui 0x7000`: AMBIGUOUS -- 0x7000xxxx is also a DMA END tag (id 7, e.g. GfxEndFrame writes 0x70000003); no constant-address SPR load/store in this function image=main
+spr	scratchpad	SPR		MpegSetupBufferType_1103d8	no(libmpeg/mpeg+ipu)	0	only `lui 0x7000`: AMBIGUOUS -- 0x7000xxxx is also a DMA END tag (id 7, e.g. GfxEndFrame writes 0x70000003); no constant-address SPR load/store in this function image=main
+spr	scratchpad	SPR		sceGifPkEnd	no(libpkt/gifpk)	0	only `lui 0x7000`: AMBIGUOUS -- 0x7000xxxx is also a DMA END tag (id 7, e.g. GfxEndFrame writes 0x70000003); no constant-address SPR load/store in this function image=main
+spr	scratchpad	SPR		sceGsExecStoreImage	no(libgraph/gs)	0	only `lui 0x7000`: AMBIGUOUS -- 0x7000xxxx is also a DMA END tag (id 7, e.g. GfxEndFrame writes 0x70000003); no constant-address SPR load/store in this function image=main
+spr	scratchpad	SPR		sceGsPutDrawEnv	no(libgraph/gs)	0	only `lui 0x7000`: AMBIGUOUS -- 0x7000xxxx is also a DMA END tag (id 7, e.g. GfxEndFrame writes 0x70000003); no constant-address SPR load/store in this function image=main
+api	movie/IPU	MpegCreate_1104a8	0x1104A8	VideoDecCreate_1d5470	yes	1	libmpeg/mpeg+ipu
+api	movie/IPU	MpegStopDmaMaybe_111050	0x111050	MovieOpen_1d5cf0	yes	1	libmpeg/mpeg+ipu
+api	movie/IPU	MpegDelete_111100	0x111100	VideoDecDelete_1d53f0	yes	1	libmpeg/mpeg+ipu
+api	movie/IPU	MpegGetPicture_111148	0x111148	VideoDecDecodeBs_1d29e0	yes	1	libmpeg/mpeg+ipu
+api	movie/IPU	MpegReset_1111e8	0x1111E8	VideoDecDecodeBs_1d29e0	yes	1	libmpeg/mpeg+ipu
+api	movie/IPU	MpegIsEnd_111268	0x111268	VideoDecDecodeBs_1d29e0	yes	1	libmpeg/mpeg+ipu
+api	movie/IPU	MpegAddCallback_1112c0	0x1112C0	VideoDecCreate_1d5470	yes	1	libmpeg/mpeg+ipu
+api	movie/IPU	MpegDemuxPssRing_115340	0x115340	MovieReadThread_1d4f50	yes	1	libmpeg/mpeg+ipu
+api	movie/IPU	MpegAddStrCallback_115740	0x115740	VideoDecSetStream_1d5430	yes	1	libmpeg/mpeg+ipu
+api	memory card	sceMcInit_12c648	0x12C648	McPollCardChange_372db0 SaveMcInitStatus_375ea0 title_TitleObjectsCreate_4ecbc0	yes	3	libmc/mc
+api	memory card	sceMcEnd_12c870	0x12C870	McEndSession_372d60 McPollCardChange_372db0 sceMcEndThunk_12c870	yes	3	libmc/mc
+api	memory card	sceMcOpen_12ca58	0x12CA58	McLoadStep_373890 McSaveCreateStep_375090 McSaveSlotScanStep_374b00 McSaveStep_374110	yes	4	libmc/mc
+api	memory card	sceMcMkdir	0x12CB80	McSaveCreateStep_375090	yes	1	libmc/mc
+api	memory card	sceMcClose_12cbb8	0x12CBB8	McLoadStep_373890 McSaveCreateStep_375090 McSaveSlotScanStep_374b00 McSaveStep_374110	yes	4	libmc/mc
+api	memory card	sceMcRead_12ce08	0x12CE08	McLoadStep_373890 McSaveSlotScanStep_374b00	yes	2	libmc/mc
+api	memory card	sceMcWrite_12cf20	0x12CF20	McSaveCreateStep_375090 McSaveStep_374110	yes	2	libmc/mc
+api	memory card	sceMcSync_12d098	0x12D098	McEndSession_372d60 McFormatStep_3736b0 McGetInfoStep_375640 McLoadStep_373890 McPollCardChange_372db0 (+5)	yes	10	libmc/mc
+api	memory card	sceMcGetInfo_12d1b8	0x12D1B8	McFormatStep_3736b0 McGetInfoStep_375640 McPollCardChange_372db0 McSaveStep_374110	yes	4	libmc/mc
+api	memory card	sceMcGetDir_12d3a8	0x12D3A8	McSaveDirScan_3748c0 McSaveSlotScanStep_374b00	yes	2	libmc/mc
+api	memory card	sceMcChdir_12d588	0x12D588	SaveDirRenameJpToUs_373160	yes	1	libmc/mc
+api	memory card	sceMcFormat_12d6c8	0x12D6C8	McFormatStep_3736b0	yes	1	libmc/mc
+api	memory card	sceMcFlush_12d8b8	0x12D8B8	McSaveCreateStep_375090 McSaveStep_374110	yes	2	libmc/mc
+api	memory card	sceMcRename_12db48	0x12DB48	McSaveStep_374110 SaveDirRenameJpToUs_373160	yes	2	libmc/mc
+api	pad	scePadInit	0x12AF88	PadSysInit_185080	yes	1	libpad/pad
+api	pad	scePadPortOpen	0x12B3B0	PadPortOpen_184ed0	yes	1	libpad/pad
+api	pad	scePadRead	0x12B800	PadReadData_184df0	yes	1	libpad/pad
+api	pad	scePadGetState	0x12B878	PadIsAnalogMode_184960 PadUpdateConnection_184a50 PadUpdateVibration_184250 PadWaitReady_1849e0	yes	4	libpad/pad
+api	pad	scePadGetReqState	0x12B9E0	PadUpdateConnection_184a50	yes	1	libpad/pad
+api	pad	scePadInfoAct	0x12BA70	PadUpdateConnection_184a50	yes	1	libpad/pad
+api	pad	scePadInfoMode	0x12BCA0	PadIsAnalogMode_184960 PadUpdateConnection_184a50	yes	2	libpad/pad
+api	pad	scePadSetMainMode	0x12BDD8	PadUpdateConnection_184a50	yes	1	libpad/pad
+api	pad	scePadSetActDirect	0x12BE90	PadUpdateVibration_184250	yes	1	libpad/pad
+api	pad	scePadSetActAlign	0x12BF58	PadUpdateConnection_184a50	yes	1	libpad/pad
+api	cdvd	sceCdPOffCallback_129690	0x129690	CdDiskWatchInit_17ff70	yes	1	libcdvd/cdvd
+api	cdvd	sceCdLayerSearchFile_1297e0	0x1297E0	CdDatArchiveOpen_183110 CdWaitFileFound_180290 FileCdSearchLocked_180360 FileSlotOpenPath_1810a0	yes	4	libcdvd/cdvd
+api	cdvd	sceCdSearchFile_129ae0	0x129AE0	CdDatArchiveOpen_183110 CdWaitFileFound_180290 FileCdSearchLocked_180360 FileSlotOpenPath_1810a0	yes	4	libcdvd/cdvd
+api	cdvd	sceCdSync	0x129CF0	CdDatArchiveOpen_183110 FileSlotRead_180aa0	yes	2	libcdvd/cdvd
+api	cdvd	sceCdInit_12a008	0x12A008	CdInitDvdMode_15e5d0	yes	1	libcdvd/cdvd
+api	cdvd	CdDiskReadyNewMaybe_12a508	0x12A508	CdDatArchivesInit_182e70 CdWaitFileFound_180290	yes	2	libcdvd/cdvd
+api	cdvd	sceCdRead_12a728	0x12A728	CdDatArchiveOpen_183110 FileSlotRead_180aa0	yes	2	libcdvd/cdvd
+api	cdvd	sceCdSeek_12a908	0x12A908	OverlayCdSeek_1c32b0	yes	1	libcdvd/cdvd
+api	cdvd	sceCdGetDiskType_12a9d8	0x12A9D8	CdDiskWatchThread_17fdc0	yes	1	libcdvd/cdvd
+api	cdvd	sceCdGetError_12aa98	0x12AA98	CdDatArchiveOpen_183110 CdDatArchivesInit_182e70 CdWaitFileFound_180290 FileSlotOpenPath_1810a0 FileSlotRead_180aa0	yes	5	libcdvd/cdvd
+api	cdvd	sceCdChangeThreadPriority_12ab30	0x12AB30	SoundRpcInit_1bc840	yes	1	libcdvd/cdvd
+api	cdvd	sceCdReadDvdDualInfo_12acd0	0x12ACD0	CdDatArchivesInit_182e70	yes	1	libcdvd/cdvd
+api	cdvd	sceCdMmode_12ada0	0x12ADA0	CdInitDvdMode_15e5d0	yes	1	libcdvd/cdvd
+api	cdvd	sceCdTrayReq_12ae98	0x12AE98	CdWaitFileFound_180290	yes	1	libcdvd/cdvd
+api	file I/O (fileio RPC)	sceFsReset	0x11B6C0	IopRebootWithImage_15e560	yes	1	libkernl/fileio
+api	file I/O (fileio RPC)	sceOpen_11b928	0x11B928	FileSlotOpenPath_1810a0 FileWriteAll_180060	yes	2	libkernl/fileio
+api	file I/O (fileio RPC)	sceClose_11bbb8	0x11BBB8	FileSlotClose_180540 FileWriteAll_180060	yes	2	libkernl/fileio
+api	file I/O (fileio RPC)	sceLseek_11bd30	0x11BD30	FileSlotGetSize_180d50 FileSlotSeek_180ed0	yes	2	libkernl/fileio
+api	file I/O (fileio RPC)	sceRead_11bf70	0x11BF70	FileSlotRead_180aa0	yes	1	libkernl/fileio
+api	file I/O (fileio RPC)	sceWrite_11c1e0	0x11C1E0	FileWriteAll_180060	yes	1	libkernl/fileio
+api	IOP memory/modules	sceSifInitIopHeap	0x11E850	IopHeapInitOnce_1c2310 IopRebootWithImage_15e560	yes	2	libkernl/iopheap
+api	IOP memory/modules	sceSifAllocIopHeap	0x11E8D8	AudioDecCreate_1d3210 IopHeapAllocLocked_1c22d0	yes	2	libkernl/iopheap
+api	IOP memory/modules	sceSifFreeSysMemory_11ea40	0x11EA40	AudioDecDelete_1d31d0 IopHeapFreeLocked_1c2290	yes	2	libkernl/iopheap
+api	IOP memory/modules	sceSifLoadModule_11f7a0	0x11F7A0	IopLoadModuleRetry_15e420	yes	1	libkernl/loadfile
+api	IOP memory/modules	sceSifSyncIop_11fc80	0x11FC80	IopRebootWithImage_15e560	yes	1	libkernl/iopcontrol
+api	IOP memory/modules	sceSifRebootIop_11fcd0	0x11FCD0	IopRebootWithImage_15e560	yes	1	libkernl/iopcontrol
+api	SIF DMA/RPC	sceSifDmaStat	0x116940	SifDmaSendSync_1c21e0 SifDmaSendSync_1d2c20	yes	2	libkernl/syscall-stubs
+api	SIF DMA/RPC	sceSifSetDma	0x116960	SifDmaSendSync_1c21e0 SifDmaSendSync_1d2c20	yes	2	libkernl/syscall-stubs
+api	SIF DMA/RPC	sceSifInitRpc_119b60	0x119B60	IopRebootWithImage_15e560 SoundRpcInit_1bc840 SysInitHardware_15e670	yes	3	libkernl/sifrpc
+api	SIF DMA/RPC	sceSifBindRpc	0x11A308	SoundRpcInit_1bc840	yes	1	libkernl/sifrpc
+api	SIF DMA/RPC	sceSifCallRpc	0x11A4E8	SoundRpcCall_1bc5e0	yes	1	libkernl/sifrpc
+api	sound (sdremote)	sceSdRemote_1229e8	0x1229E8	SoundThreadCmdEffectEnable_1b6700 SoundThreadCmdSdRemote_1b6540 SoundThreadCmdSetInputVolume_1b6570 SoundThreadCmdSetReverbDepth_1b6630 SoundThreadCmdSetReverbEndAddr_1b65d0 (+1)	yes	6	libsdr/sdremote
+api	sound (sdremote)	SdRemoteInitMasterVolume_165608	0x165608	SoundIopInit_1b7160	yes	1	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG0S2_1656b8	0x1656B8	SoundIopInit_1b7160 SoundThreadCmdSetMasterVolume_1b6ae0	yes	2	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG0SA_165778	0x165778	SoundThreadCmdSpuTransferMaybe_1b6b20	yes	1	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG1S0_165828	0x165828	SoundThreadCmdBankAttach_1b6b40 SoundThreadCmdBankUpload_1b6ba0	yes	2	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG1S1_165900	0x165900	SoundThreadCmdBankDetach_1b69b0 SoundThreadCmdBankRelease_1b69e0	yes	2	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG1S2_1659a8	0x1659A8	SoundThreadCmd01Related_1b6c00 SoundThreadCmd02Related_1b6bf0 SoundThreadCmdSetOutputMode_1b6b10	yes	3	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG1S3_165a68	0x165A68	SoundThreadCmd0BRelated_1b6b00	yes	1	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG2S0_165b20	0x165B20	SoundThreadCmdSeqAttach_1b6b80 SoundThreadCmdSeqDataUpload_1b6bd0	yes	2	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG2S1_165bd0	0x165BD0	SoundThreadCmdSeqDataRelease_1b6a00 SoundThreadCmdSeqDetach_1b69d0	yes	2	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG2S2_165c70	0x165C70	SoundThreadCmd10Related_1b6a80 SoundThreadCmd11Related_1b6a60 SoundThreadCmdPause_1b6ad0 SoundThreadCmdSeqPlay_1b6ab0 SoundThreadCmdSeqSetVolume_1b6a40 (+1)	yes	6	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG2S3_165d28	0x165D28	SoundThreadCmd13Related_1b6a30	yes	1	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG3S0_165dc8	0x165DC8	SoundThreadCmdNoteStreamAttachMaybe_1b6b60 SoundThreadCmdNoteStreamCreateMaybe_1b6bc0	yes	2	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG3S1_165e78	0x165E78	SoundThreadCmdNoteStreamDetachMaybe_1b69c0 SoundThreadCmdNoteStreamReleaseMaybe_1b69f0	yes	2	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG3S2_165f20	0x165F20	SoundThreadCmdKeyOff_1b6970 SoundThreadCmdKeyOnMutedMaybe_1b6900 SoundThreadCmdKeyOn_1b6800 SoundThreadCmdSetPan_1b68c0 SoundThreadCmdSetPitchBend_1b68a0 (+1)	yes	6	libsdr-gcc/sdremote-cmd-island(gcc)
+api	sound (sdremote)	SoundIopSendCmdG3S3_166020	0x166020	SoundThreadCmd14Related_1b6a10	yes	1	libsdr-gcc/sdremote-cmd-island(gcc)
+api	timers/clock	DelayThread_117618	0x117618	CdDatArchiveOpen_183110 CdWaitFileFound_180290 CfgVmRun_42fa20 DataTableBubbleSort_368220 DataTableRunCfg_3683e0 (+13)	yes	18	libkernl/intc/dmac/thread
+api	graphics (libgraph/libdma/libpkt)	sceGsResetGraph_108110	0x108110	GfxSetVideoMode_1451f0 SysInitHardware_15e670	yes	2	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsResetPath	0x1082B0	GfxSysInit_15dd20 SysInitHardware_15e670	yes	2	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsSetDefDispEnv_1083c8	0x1083C8	GfxSetVideoMode_1451f0	yes	1	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsPutDispEnv	0x108740	GsDbufPutEnv_144150	yes	1	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsSetDefDrawEnv	0x1088C8	GfxSetVideoMode_1451f0	yes	1	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsPutDrawEnv	0x108BB8	GfxFlipBuffersMaybe_143650 GsClearDoubleBuffers_15e600 GsDbufPutEnv_144150	yes	3	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsSetDefDBuff	0x108CA0	GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600	yes	2	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsSwapDBuff	0x108F38	GfxSetVideoMode_1451f0	yes	1	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsSyncV	0x108F98	GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600 GsDbufPutEnv_144150 PadPortOpen_184ed0 PadWaitReady_1849e0 (+2)	yes	7	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsSyncPath_109030	0x109030	FixedTexUploadImpl_15d680 GfxEndFrame_141c20 GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600 GsDownloadImage_140f20	yes	5	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsSetDefStoreImage	0x109348	GfxEndFrame_141c20 GsDownloadImage_140f20	yes	2	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsExecStoreImage	0x109488	GfxEndFrame_141c20 GsDownloadImage_140f20	yes	2	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceGsSyncVCallback_109b18	0x109B18	GfxSysInit_15dd20	yes	1	libgraph/gs
+api	graphics (libgraph/libdma/libpkt)	sceDmaGetChan	0x109D10	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GfxSysInit_15dd20 GsDbufPutEnv_144150 MovieFrameQueueSendNext_1d4b20 (+4)	yes	9	libdma/dma
+api	graphics (libgraph/libdma/libpkt)	sceDmaReset	0x109D38	GfxSysInit_15dd20 SysInitHardware_15e670	yes	2	libdma/dma
+api	graphics (libgraph/libdma/libpkt)	sceDmaPutEnv	0x109E18	GfxSysInit_15dd20	yes	1	libdma/dma
+api	graphics (libgraph/libdma/libpkt)	sceDmaGetEnv	0x109FF0	GfxSysInit_15dd20	yes	1	libdma/dma
+api	graphics (libgraph/libdma/libpkt)	sceDmaSend_10a040	0x10A040	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 MovieFrameQueueSendNext_1d4b20 MovieFrameResend_1d4be0 Vif0SendInitPacketMaybe_13bcc0 (+1)	yes	6	libdma/dma
+api	graphics (libgraph/libdma/libpkt)	sceDmaSync_10a2e0	0x10A2E0	GfxFlipBuffersMaybe_143650 GsDbufPutEnv_144150 MovieFrameQueueSendNext_1d4b20 MovieFrameResend_1d4be0 Vif0SendInitPacketMaybe_13bcc0 (+1)	yes	6	libdma/dma
+api	graphics (libgraph/libdma/libpkt)	sceGifPkInit_10a400	0x10A400	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0	yes	3	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkReset_10a410	0x10A410	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0	yes	3	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkTerminate_10a420	0x10A420	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0	yes	3	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkCnt	0x10A478	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0	yes	3	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkRef	0x10A4F0	GsUploadImage16Blocks_1d27a0	yes	1	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkEnd	0x10A588	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0	yes	3	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkReserve	0x10A600	GsUploadImage16Blocks_1d27a0	yes	1	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkOpenGifTag	0x10A618	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0	yes	3	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkCloseGifTag	0x10A630	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0	yes	3	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkAddGsAD	0x10A6D8	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0	yes	3	libpkt/gifpk
+api	graphics (libgraph/libdma/libpkt)	sceGifPkRefLoadImage	0x10A700	FixedTexUploadImpl_15d680	yes	1	libpkt/gifpk
+api	vu0 math (libvu0)	MtxMulVec4_10a8c0	0x10A8C0	CameraFindClearYawMaybe_160730 CameraTrackUpdate_305960 CompassHudRender_370fb0 EventCameraUpdate_2544f0 NpcObjUpdate_2fc450 (+7)	yes	12	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0MulMatrix	0x10A8F0	HeadLookUpdate_1c5460 SplineSampleCatmullRom_2d77c0 XformRecUpdateMaybe_1c5ee0	yes	3	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0OuterProduct	0x10A938	AiCmdCountObjsInRangeMaybe_2c51b0 AiCmdGetRelativeAngleMaybe_2c72e0 AiCmdObjGetYawOrTurnAngle_2c9ab0 AiCmdStepTowardMaybe_2c9210 AxisAngleBetweenVecs_1d7da0 (+16)	yes	21	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0InnerProduct	0x10A958	AxisAngleBetweenVecs_1d7da0 CameraModeLockTargetUpdateMaybe_3062e0 MtxTurnTowardsY_2cdbe0 TargetMngPickAttachPoint_31f860	yes	4	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0Normalize	0x10A980	CollMoveCharacterMaybe_16e530 GuardEffectInitStreak_2d54c0 GuardEffectStart_2d53e0 GuardEffectStepMaybe_2d5260 LightningBoltBuild_2d6960 (+5)	yes	10	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0TransposeMatrix	0x10A9C0	LightStateWritePacket_1484a0 SweptSphereTriContactsMaybe_17f970 ViewSetPerspective_1564a0	yes	3	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0InversMatrix	0x10AA08	CameraBaseGetViewMatrix_15fa70 EvMapObjNodeApplyPartMatrixMaybe_367230 FuncAnimeUpdate_191650	yes	3	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0DivVector	0x10AA78	EvCmdVecDiv_25dbe0 EvSubNodeMoveToEased_2533f0 EvSubNodeMoveTo_253610 EvSubNodeRotateTo_252920 EvSubNodeScaleTo_2521c0 (+8)	yes	13	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0InterVector	0x10AAB8	Character2DrawTintedMaybe_1ae620 Character2DrawWithLightBlendMaybe_1ae540 Character2DrawWithOwnLightMaybe_1ae720 factory_FactoryCameraUpdate_5050c0 factory_FactoryStep_5069e0	yes	5	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0AddVector	0x10AAE0	BladeLineDraw_2d5c40 GuardEffectDraw_2d50b0 GuardEffectStepMaybe_2d5260 LightningBoltBuild_2d6960 NpcObjUpdate_2fc450 (+5)	yes	10	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0SubVector	0x10AAF8	BladeLineDraw_2d5c40 HeadLookUpdate_1c5460 LightningBoltBuild_2d6960 MtxTurnTowardsY_2cdbe0 NpcObjUpdate_2fc450 (+2)	yes	7	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0ScaleVector	0x10AB28	BladeLineDraw_2d5c40 CollMoveCharacterMaybe_16e530 GuardEffectDraw_2d50b0 GuardEffectStepMaybe_2d5260 LightningBoltBuild_2d6960 (+2)	yes	7	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0CopyVector	0x10AB70	BattleEffectBurstSpawn_2d4760 BladeLineDraw_2d5c40 Character2Draw_1ae920 Character2LightBlendSetTarget_1aebe0 Character2LightBlendStep_1ae820 (+92)	yes	97	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0CopyMatrix	0x10AB80	MtxTurnTowardsY_2cdbe0	yes	1	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0UnitMatrix	0x10ABE8	CameraTrackUpdate_305960 EvMapObjPartCalcMatrix_363a70 EventSysUpdate_26ac10 FrameUpdateWorld_149680 HeadLookUpdate_1c5460 (+5)	yes	10	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0RotMatrixZ	0x10AC88	CameraBaseLookAt_15fae0 CameraBaseRotateLocalZ_15f9a0 EventSysUpdate_26ac10 HeadLookUpdate_1c5460 SunGlareFanDrawMaybe_17af60 (+2)	yes	7	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0RotMatrixX	0x10AD30	CameraBaseRotateLocalX_15f8d0 EventSysUpdate_26ac10 HeadLookUpdate_1c5460 XformRecUpdateMaybe_1c5ee0	yes	4	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0RotMatrixY	0x10ADD8	CameraBaseRotateLocalY_15f800 CameraFindClearYawMaybe_160730 CameraRotateEyeYaw_176ef0 CameraSetEyeYaw_176e10 EventSysUpdate_26ac10 (+7)	yes	12	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0RotMatrix	0x10AE80	CameraTrackUpdate_305960	yes	1	libvu0/vu0
+api	vu0 math (libvu0)	sceVu0ScaleVectorXYZ	0x10B458	CompassHudRender_370fb0	yes	1	libvu0/vu0
+api	cache/intc	SyncDCache	0x116E98	GfxFlipBuffersMaybe_143650	yes	1	libkernl/cache
+api	cache/intc	DisableIntc_117080	0x117080	SoundRpcInit_1bc840 SoundRpcShutdown_1bc760 Vif1DmaHandlerShutdown_15dfb0	yes	3	libkernl/intc/dmac/thread
+api	cache/intc	EnableIntc_1170e8	0x1170E8	MoviePlayerStart_1d5b50 SoundRpcInit_1bc840 Vif1DmaStart_15e070	yes	3	libkernl/intc/dmac/thread
+api	cache/intc	DisableDmac_117150	0x117150	MoviePlayerShutdown_1d56c0	yes	1	libkernl/intc/dmac/thread
+api	cache/intc	EnableDmac_1171b8	0x1171B8	MoviePlayerStart_1d5b50	yes	1	libkernl/intc/dmac/thread

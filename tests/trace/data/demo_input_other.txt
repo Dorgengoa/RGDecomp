@@ -1,0 +1,4 @@
+# as demo_input.txt, but CROSS released 10 vbls earlier (input arming)
+40 70 CROSS
+120 START
+200 230 RIGHT

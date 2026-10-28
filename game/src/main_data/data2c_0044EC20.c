@@ -1,0 +1,11 @@
+/* rgp:protos */
+#include "port/game_protos.h"
+#line 1
+/* rg:datareloc */
+/* Generated: do not edit. */
+#include "types.h"
+
+u32 D_0044EC20[52] __attribute__((section(".data$rg0044EC20"), aligned(16))) = {
+    @X@0044EC20@, @X@0044EC24@, @X@0044EC28@, @X@0044EC2C@, @X@0044EC30@, @X@0044EC34@, @X@0044EC38@, @X@0044EC3C@, @X@0044EC40@, @X@0044EC44@, @X@0044EC48@, @X@0044EC4C@, @X@0044EC50@, @X@0044EC54@, @X@0044EC58@, @X@0044EC5C@, @X@0044EC60@, @X@0044EC64@, @X@0044EC68@, @X@0044EC6C@, @X@0044EC70@, @X@0044EC74@, @X@0044EC78@, @X@0044EC7C@, @X@0044EC80@, @X@0044EC84@, @X@0044EC88@, @X@0044EC8C@, @X@0044EC90@, @X@0044EC94@, @X@0044EC98@, @X@0044EC9C@, @X@0044ECA0@, @X@0044ECA4@, @X@0044ECA8@, @X@0044ECAC@, @X@0044ECB0@, @X@0044ECB4@, @X@0044ECB8@, @X@0044ECBC@, @X@0044ECC0@, @X@0044ECC4@, @X@0044ECC8@, @X@0044ECCC@, @X@0044ECD0@, @X@0044ECD4@, @X@0044ECD8@, @X@0044ECDC@, @X@0044ECE0@, @X@0044ECE4@, @X@0044ECE8@, @X@0044ECEC@
+};
+typedef char data2c_sizecheck_0044EC20[(sizeof(D_0044EC20) == 208) ? 1 : -1];

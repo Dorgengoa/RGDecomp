@@ -1,0 +1,4 @@
+# rg-runtime-demo trace input (game-vbl keyed, tools/trace/input.py format)
+40 80 CROSS
+120 START
+200 230 RIGHT

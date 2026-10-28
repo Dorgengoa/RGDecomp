@@ -1,0 +1,75 @@
+# fs_census.py static: callers of the disc/file SDK surface (level 1) and
+# their callers (levels 2-3).  callee = an SDK symbol or a lower-level caller.
+level	function	file	callee	sites	facts
+1	CdDatArchiveOpen_183110	src/main/file/CdDatArchiveOpen_183110.cpp	sceCdGetError_12aa98	3	
+1	CdDatArchiveOpen_183110	src/main/file/CdDatArchiveOpen_183110.cpp	sceCdLayerSearchFile_1297e0	2	
+1	CdDatArchiveOpen_183110	src/main/file/CdDatArchiveOpen_183110.cpp	sceCdSearchFile_129ae0	2	
+1	CdDatArchiveOpen_183110	src/main/file/CdDatArchiveOpen_183110.cpp	sceCdSync	3	sync-mode=0
+1	CdDatArchivesInit_182e70	src/main/file/CdDatArchivesInit_182e70.c	CdDiskReadyNewMaybe_12a508	1	
+1	CdDatArchivesInit_182e70	src/main/file/CdDatArchivesInit_182e70.c	sceCdGetError_12aa98	1	
+1	CdDatArchivesInit_182e70	src/main/file/CdDatArchivesInit_182e70.c	sceCdReadDvdDualInfo_12acd0	1	
+1	CdDiskWatchInit_17ff70	src/main/file/CdDiskWatchInit_17ff70.c	sceCdPOffCallback_129690	1	
+1	CdDiskWatchThread_17fdc0	src/main/file/CdDiskWatchThread_17fdc0.c	sceCdGetDiskType_12a9d8	1	
+1	CdInitDvdMode_15e5d0	src/main/file/CdInitDvdMode_15e5d0.c	sceCdInit_12a008	1	
+1	CdInitDvdMode_15e5d0	src/main/file/CdInitDvdMode_15e5d0.c	sceCdMmode_12ada0	1	
+1	CdWaitFileFound_180290	src/main/file/CdWaitFileFound_180290.c	CdDiskReadyNewMaybe_12a508	1	
+1	CdWaitFileFound_180290	src/main/file/CdWaitFileFound_180290.c	sceCdGetError_12aa98	1	
+1	CdWaitFileFound_180290	src/main/file/CdWaitFileFound_180290.c	sceCdLayerSearchFile_1297e0	1	
+1	CdWaitFileFound_180290	src/main/file/CdWaitFileFound_180290.c	sceCdSearchFile_129ae0	1	
+1	CdWaitFileFound_180290	src/main/file/CdWaitFileFound_180290.c	sceCdTrayReq_12ae98	1	
+1	FileCdSearchLocked_180360	src/main/file/FileCdSearchLocked_180360.c	sceCdLayerSearchFile_1297e0	1	
+1	FileCdSearchLocked_180360	src/main/file/FileCdSearchLocked_180360.c	sceCdSearchFile_129ae0	1	
+1	FileSlotClose_180540	src/main/file/FileSlotClose_180540.c	sceClose_11bbb8	1	
+1	FileSlotGetSize_180d50	src/main/file/FileSlotGetSize_180d50.c	sceLseek_11bd30	2	
+1	FileSlotOpenPath_1810a0	src/main/file/FileSlotOpenPath_1810a0.c	sceCdGetError_12aa98	1	
+1	FileSlotOpenPath_1810a0	src/main/file/FileSlotOpenPath_1810a0.c	sceCdLayerSearchFile_1297e0	1	
+1	FileSlotOpenPath_1810a0	src/main/file/FileSlotOpenPath_1810a0.c	sceCdSearchFile_129ae0	1	
+1	FileSlotOpenPath_1810a0	src/main/file/FileSlotOpenPath_1810a0.c	sceOpen_11b928	1	
+1	FileSlotRead_180aa0	src/main/file/FileSlotRead_180aa0.c	sceCdGetError_12aa98	1	
+1	FileSlotRead_180aa0	src/main/file/FileSlotRead_180aa0.c	sceCdRead_12a728	1	sector-math
+1	FileSlotRead_180aa0	src/main/file/FileSlotRead_180aa0.c	sceCdSync	1	sync-mode=0
+1	FileSlotRead_180aa0	src/main/file/FileSlotRead_180aa0.c	sceRead_11bf70	1	
+1	FileSlotSeek_180ed0	src/main/file/FileSlotSeek_180ed0.c	sceLseek_11bd30	1	
+1	FileWriteAll_180060	src/main/file/FileWriteAll_180060.c	sceClose_11bbb8	1	
+1	FileWriteAll_180060	src/main/file/FileWriteAll_180060.c	sceOpen_11b928	1	
+1	FileWriteAll_180060	src/main/file/FileWriteAll_180060.c	sceWrite_11c1e0	1	
+1	IopLoadModuleRetry_15e420	src/main/sys/IopLoadModuleRetry_15e420.c	sceSifLoadModule_11f7a0	1	
+1	IopRebootWithImage_15e560	src/main/sys/IopRebootWithImage_15e560.c	sceFsReset	1	
+1	OverlayCdSeek_1c32b0	src/main/file/OverlayCdSeek_1c32b0.c	sceCdSeek_12a908	1	
+1	OverlayLoad_1c3210	src/main/sys/OverlayLoad_1c3210.cpp	OverlayLoadFile_100410	1	
+1	ReadOk	src/main/file/CdDatArchiveOpen_183110.cpp	sceCdRead_12a728	1	sector-math
+1	SoundRpcInit_1bc840	src/main/sound/SoundRpcInit_1bc840.c	sceCdChangeThreadPriority_12ab30	1	
+2	CdDatArchivesOpenOnLayer_182dc0	src/main/file/CdDatArchivesOpenOnLayer_182dc0.c	CdDatArchiveOpen_183110	1	
+2	CdDiscInit_1c3130	src/main/sys/CdDiscInit_1c3130.c	CdDatArchivesInit_182e70	1	
+2	FactoryModeUpdate_27db40	src/main/sys/FactoryModeUpdate_27db40.c	OverlayLoad_1c3210	2	
+2	FileGetSizeByPath_181ee0	src/main/file/FileGetSizeByPath_181ee0.c	FileSlotGetSize_180d50	1	
+2	FileReadByPath_181f80	src/main/file/FileReadByPath_181f80.c	FileSlotGetSize_180d50	1	
+2	FileReadByPath_181f80	src/main/file/FileReadByPath_181f80.c	FileSlotSeek_180ed0	1	
+2	FileReadChunked_180400	src/main/file/FileReadChunked_180400.c	FileSlotRead_180aa0	2	
+2	FileReqSubmit_1827a0	src/main/file/FileReqSubmit_1827a0.c	FileSlotGetSize_180d50	1	
+2	FileReqSubmit_1827a0	src/main/file/FileReqSubmit_1827a0.c	FileSlotSeek_180ed0	1	
+2	FileSlotCloseThunk_180540	src/main/file/FileSlotCloseThunk_180540.c	FileSlotClose_180540	1	
+2	FileSlotGetSizeThunk_180d50	src/main/file/FileSlotGetSizeThunk_180d50.c	FileSlotGetSize_180d50	1	
+2	FileSlotSeekThunk_180ed0	src/main/file/FileSlotSeekThunk_180ed0.c	FileSlotSeek_180ed0	1	
+2	GameSessionShutdown_1f5bf0	src/main/sys/GameSessionShutdown_1f5bf0.c	OverlayLoad_1c3210	1	
+2	InsectBattleModeUpdate_27e0d0	src/main/sys/InsectBattleModeUpdate_27e0d0.c	OverlayLoad_1c3210	3	
+2	LoadIopModules_15e240	src/main/sys/LoadIopModules_15e240.c	IopLoadModuleRetry_15e420	15	
+2	MainLoop_1c2c10	src/main/sys/MainLoop_1c2c10.c	OverlayLoad_1c3210	5	
+2	OverlayLocateFiles_1c3300	src/main/sys/OverlayLocateFiles_1c3300.c	FileCdSearchLocked_180360	1	
+2	SoundStreamProcessCmds_1c05f0	src/main/sound/SoundStreamProcessCmds_1c05f0.cpp	FileSlotClose_180540	1	
+2	SysInitHardware_15e670	src/main/sys/SysInitHardware_15e670.c	CdInitDvdMode_15e5d0	1	
+2	SysInitHardware_15e670	src/main/sys/SysInitHardware_15e670.c	IopRebootWithImage_15e560	1	
+2	closeFile	src/main/sound/SoundStreamProcessCmds_1c05f0.cpp	FileSlotClose_180540	1	
+3	CdDiscSelect_1c3090	src/main/sys/CdDiscSelect_1c3090.c	CdDatArchivesOpenOnLayer_182dc0	1	
+3	CdDiscSelect_1c3090	src/main/sys/CdDiscSelect_1c3090.c	OverlayLocateFiles_1c3300	1	
+3	FileReqCancelAll_182510	src/main/file/FileReqCancelAll_182510.c	FileSlotCloseThunk_180540	1	
+3	FileReqSubmitWhole_1829f0	src/main/file/FileReqSubmitWhole_1829f0.c	FileReqSubmit_1827a0	1	
+3	FileReqThread_182c30	src/main/file/FileReqThread_182c30.c	FileReadChunked_180400	1	
+3	FileReqThread_182c30	src/main/file/FileReqThread_182c30.c	FileSlotCloseThunk_180540	1	
+3	GameModeDispatch_27c670	src/main/sys/GameModeDispatch_27c670.c	FactoryModeUpdate_27db40	1	
+3	GameModeDispatch_27c670	src/main/sys/GameModeDispatch_27c670.c	InsectBattleModeUpdate_27e0d0	1	
+3	LoaderTick_1ccc30	src/main/file/LoaderTick_1ccc30.c	FileGetSizeByPath_181ee0	1	
+3	Main_15e700	src/main/sys/Main_15e700.c	MainLoop_1c2c10	1	
+3	Main_15e700	src/main/sys/Main_15e700.c	SysInitHardware_15e670	1	
+3	ResidentFileReadMaybe_1820a0	src/main/file/ResidentFileReadMaybe_1820a0.c	FileReadByPath_181f80	1	
+3	SoundStreamThreadMain_1c1050	src/main/sound/SoundStreamThreadMain_1c1050.c	SoundStreamProcessCmds_1c05f0	1	

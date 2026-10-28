@@ -1,0 +1,25 @@
+/* rgp:protos */
+#define RGP_SELF_DynNotResetFrameCmd_167400 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+extern struct Obj0 * D_00481154;
+
+struct Obj0;
+
+struct Obj0 {
+    u8 pad000[0x150];
+    s32 m150;
+};
+
+s32 DynNotResetFrameCmd_167400(void)
+{
+    D_00481154->m150 = 0;
+    return 1;
+}

@@ -1,0 +1,256 @@
+path	function	scope	written	livein	lanein	addr	callees	first_livein_stmt
+game/src/main/anim/AnimApplyMaterialKeys_154200.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/anim/AnimBlendTwoApplyMaterials_153500.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/anim/AnimKeyBlendFrame_155bf0.c	InterVector_155bf0		acc.xyzw,g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw		g8.zw			
+game/src/main/anim/AnimKeyBlendMaterial_1559e0.c	InterVector_1559e0		acc.xyzw,g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw		g8.zw			
+game/src/main/anim/AnimKeyEvalQuat_1555b0.c	Dec		vf1.xyzw,vf2.xyzw					
+game/src/main/anim/AnimKeyEvalScalarLinear_154a10.c	InterVector_154a10		acc.xyzw,g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw		g8.zw			
+game/src/main/anim/AnimKeyEvalVec3Linear_155180.c	InterVector_155180		acc.xyzw,g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw		g8.zw			
+game/src/main/anim/AnimSlotApplyToMaterial_154540.c	AnimSlotApplyToMaterial_154540		vf1.xyzw,vf2.xyzw					
+game/src/main/anim/DynClothSolveSpring_16a480.c	DynClothSolveSpring_16a480		acc.x,g7.xy,g8.xy,q,vf1.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf14.x,vf2.xyz,vf20.x,vf21.xyzw,vf22.xyzw,vf31.xyzw,vf6.x		g7.zw,g8.zw			
+game/src/main/anim/DynColliderEllipsoidPushSegmentMaybe_166ba0.c	DynColliderEllipsoidPushSegmentMaybe_166ba0						MtxMulPoint_13c890,PointSegmentClosest_13dcc0,VecAddInPlace_13e070,VecAdd_13be20,VecScale_13be00,VecSub_13be40,__attribute__,aligned	
+game/src/main/camera/CameraBaseGetMatrix_15fc60.c	CameraBaseGetMatrix_15fc60							
+game/src/main/camera/CameraBaseGetPos_142e40.c	CameraBaseGetPos_142e40		vf1.xyzw,vf2.xyzw					
+game/src/main/camera/CameraBaseSetPos_154520.c	CameraBaseSetPos_154520		vf1.xyzw,vf2.xyzw					
+game/src/main/camera/CameraBaseSetRotation_15fc20.c	CameraBaseSetRotation_15fc20		vf1.xyzw,vf2.xyzw					
+game/src/main/container/ParticleSwirlReset_17d750.c	ParticleSwirlReset_17d750						memset	
+game/src/main/effect/EffDefCmdObjCol_19e6a0.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/effect/EffDefCmdObjRgba_19db50.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/effect/ParticleEmitterSpawnMaybe_1a8ad0.cpp	CopyXYZ1a8ad0		vf1.xyzw,vf2.xyzw					
+game/src/main/effect/ParticleEmitterSpawnMaybe_1a8ad0.cpp	CopyXYZb1a8ad0		vf1.xyzw,vf2.xyzw					
+game/src/main/gfx/MeshMaterialReset_14b230.c	MeshMaterialReset_14b230							
+game/src/main/gfx/SunGlareFanDrawMaybe_17af60.c	SunGlareFanDrawMaybe_17af60						Cosf_128d30,DrawEnvGetHeight_1451d0,DrawEnvGetWidth_1451e0,DrawListBeginPrim_141b00,DrawListEndPrim_141a20,GetDrawCtxCamera_15de60,GetDrawCtx_15de80,GsPktClose_13f5b0,GsPktEnableAlphaTest_13e4d0,GsPktEnableZTest_13e460,GsPktOpenPrim_13f730,GsPktSetAlphaBlend_13e500,GsPktSetBlendMode_13e4f0,GsPktSetG	
+game/src/main/map/MapAreaModelInit_1899c0.c	MapAreaModelInit_1899c0						FuncDataTableInit_18fc00,NodeInit_185f60,memset	
+game/src/main/math/SweptSphereTriContactsMaybe_17f970.c	SweptSphereTriContactsMaybe_17f970						MtxTransformPoints_13c810,SphereTriIntersectMaybe_17fb20,VecNormalize_13bd90,VecTriCross_13de70,__attribute__,aligned,sceVu0OuterProduct,sceVu0TransposeMatrix	
+game/src/main/math/TriCalcBounds_1cb540.c	TriCalcBounds_1cb540		vf12.xyzw,vf13.xyzw,vf14.xyzw,vf17.xyzw,vf18.xyzw					
+game/src/main/math/VecScalePoint_1cbc60.c	VecScalePoint_1cbc60		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+game/src/main/math/VecSinCos_1cbfb0.c	VecSinCos_1cbfb0		acc.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf14.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+game/src/main/math/VecSolveDistanceConstraint_364740.c	VecSolveDistanceConstraint_364740		acc.x,g7.xy,g8.xy,q,vf1.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf14.x,vf2.xyz,vf20.x,vf21.xyzw,vf22.xyzw,vf31.xyzw,vf6.x		g7.zw,g8.zw			
+game/src/main/matrix/MatDecomposeScaleRotPos_1cad20.c	MatDecomposeScaleRotPos_1cad20		g5.xy,q,vf4.xyzw				MatToRotPos_1cade0,RowLength,__attribute__,aligned	
+game/src/main/matrix/MatDecomposeScaleRotPos_1cad20.c	RowLength		g5.xy,q,vf4.xyzw					
+game/src/main/matrix/MatFromPosScale_1cb2b0.c	MatFromPosScale_1cb2b0		g5.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf9.xyzw		g5.zw			
+game/src/main/matrix/MatFromQuatFull_13c4c0.c	MatFromQuatFull_13c4c0						MatFromQuat_13c440	
+game/src/main/matrix/MatFromRotPos_1caf90.c	MatFromRotPos_1caf90		vf4.xyzw			vf4	VecSinCos_1cbfb0,__attribute__,aligned	
+game/src/main/matrix/MatIdentity_1cbe40.c	MatIdentity_1cbe40		vf1.xyzw,vf2.xyzw,vf3.xyzw					
+game/src/main/matrix/MatMulPointRelMaybe_1cb5d0.c	MatMulPointRelMaybe_1cb5d0		acc.xyz,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+game/src/main/matrix/MatMulPointXyz_1cb780.c	MatMulPointXyz_1cb780		acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw				__attribute__,aligned	
+game/src/main/matrix/MatMulPoint_1cb8e0.c	MatMulPoint_1cb8e0		acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+game/src/main/matrix/MatMulVec4Args_1cb7f0.c	MatMulVec4Args_1cb7f0		acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw				__attribute__,aligned	
+game/src/main/matrix/MatMulVec4_1cb940.c	MatMulVec4_1cb940		acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+game/src/main/matrix/MatMul_1cb700.c	MatMul_1cb700		acc.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf14.xyzw,vf15.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+game/src/main/matrix/MatOrthonormalizeY_1cb300.c	MatOrthonormalizeY_1cb300		acc.xyz,q,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyz					
+game/src/main/matrix/MatScaleRows_1cbc20.c	MatScaleRows_1cbc20		vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw					
+game/src/main/matrix/MatToRotPos_1cade0.c	Vu0CopyVectorW1		vf4.xyzw					
+game/src/main/matrix/MtxCopy_1cbde0.c	MtxCopy_1cbde0		g5.xyzw,g6.xyzw,g7.xyzw,g8.xyzw					
+game/src/main/matrix/MtxInverseAffine_1cb640.c	MtxInverseAffine_1cb640		acc.xyz,g5.xyzw,g6.xy,g7.xy,g8.xy,q,vf1.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyz		vf9.w			
+game/src/main/matrix/MtxMulDir_1cb910.c	MtxMulDir_1cb910		acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf8.xyzw,vf9.xyzw					
+game/src/main/matrix/MtxMulPoint_13c890.c	MtxMulPoint_13c890		acc.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf16.xyzw,vf17.xyzw					
+game/src/main/matrix/MtxMulVec4_10a8c0.c	MtxMulVec4_10a8c0		acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+game/src/main/matrix/MtxMulVec4_13c900.c	MtxMulVec4_13c900		acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+game/src/main/matrix/XformPairInit_19a240.c	XformPairInit_19a240						VecSetOnes4_13e170,VecSetOnes_13e180	
+game/src/main/model/ClothSolveDistance_185450.c	ClothSolveDistance_185450		acc.x,g7.xy,g8.xy,q,vf1.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf14.x,vf2.xyz,vf20.x,vf21.xyzw,vf22.xyzw,vf31.xyzw,vf6.x		g7.zw,g8.zw			
+game/src/main/model/FrameCalcLocalMatrix_149b40.c	FrameCalcLocalMatrix_149b40		vf1.xyzw,vf10.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw				MatRotateVu0_13bc20,StoreMatrix,StoreZero,VecAdd_13be20,__attribute__,aligned	
+game/src/main/model/FrameCalcLocalMatrix_149b40.c	StoreMatrix	tu-helper		vf1.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw				d[0] = (*(rgvb_v1_149b40_t *)(void *)&rg_vu0.vf[1])
+game/src/main/model/FrameCalcLocalMatrix_149b40.c	StoreZero							
+game/src/main/model/FrameCalcWorldMatrix_148ff0.c	FrameCalcWorldMatrix_148ff0		acc.xyzw,q,vf1.xyzw,vf10.xyzw,vf2.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyzw,vf23.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw				FrameCalcLocalMatrix_149b40,FrameCalcWorldMatrix_148ff0,InvScaleLoad,InvScaleMul,LoadScaleVec,MatMul33_13d180,MtxMulPoint_13c890,ScaleLoad,ScaleMul,StoreMatrix,VecLength_13d4a0,VecMul_13bd40,__attribute__,aligned	
+game/src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleLoad		vf1.xyzw,vf10.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw					
+game/src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleMul	tu-helper	q,vf1.xyzw,vf2.xyzw,vf3.xyzw	vf1.xyzw,vf10.xyz,vf2.xyzw,vf3.xyzw				(*(rgvb_q148ff0_t *)(void *)&rg_vu0.q) = (((*(rgvb_q148ff0_t *)(void *)&rg_vu0.q)) = rg_vbi_vdiv(((*(rgvb_q148ff0_t *)(void *)&rg_vu0.q)), (*(rgvb_vz148ff0_t *)
+game/src/main/model/FrameCalcWorldMatrix_148ff0.c	LoadScaleVec		vf10.xyzw					
+game/src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleLoad		vf1.xyzw,vf10.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw					
+game/src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleMul	tu-helper	vf1.xyzw,vf2.xyzw,vf3.xyzw	vf1.xyzw,vf10.xyz,vf2.xyzw,vf3.xyzw				(*(rgvb_v1_148ff0_t *)(void *)&rg_vu0.vf[1]) = (((*(rgvb_v1_148ff0_t *)(void *)&rg_vu0.vf[1])) = rg_vbi_vmulbc(((*(rgvb_v1_148ff0_t *)(void *)&rg_vu0.vf[1])), 0
+game/src/main/model/FrameCalcWorldMatrix_148ff0.c	StoreMatrix	tu-helper		vf1.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw				d[0] = (*(rgvb_v1_148ff0_t *)(void *)&rg_vu0.vf[1])
+game/src/main/model/FrameCopyXform_148ae0.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/model/FrameGetRot_14a1f0.c	FrameGetRot_14a1f0		vf1.xyzw,vf2.xyzw					
+game/src/main/model/FrameResetXform_14a550.c	FrameResetXform_14a550						MtxIdentity_13d2e0	
+game/src/main/model/FrameSetRotMode_14a250.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/model/FrameSetRot_14a390.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/model/FrameUpdateWorld_149680.c	FrameUpdateWorld_149680		q,vf1.xyzw,vf10.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw				FrameCalcLocalMatrix_149b40,FrameUpdateWorld_149680,InvScaleLoad,InvScaleMul,LoadScaleVec,MatMul33_13d180,MtxMulAffine_13d110,MtxMulPoint_13c890,ScaleLoad,ScaleMul,StoreMatrix,VecLength_13d4a0,VecMul_13bd40,VecNormalize_13bd90,VecSub_13be40,Vu0ScaleMatrix,__attribute__,aligned,sceVu0OuterProduct,sce	
+game/src/main/model/FrameUpdateWorld_149680.c	InvScaleLoad		vf1.xyzw,vf10.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw					
+game/src/main/model/FrameUpdateWorld_149680.c	InvScaleMul	tu-helper	q,vf1.xyzw,vf2.xyzw,vf3.xyzw	vf1.xyzw,vf10.xyz,vf2.xyzw,vf3.xyzw				(*(rgvb_q149680_t *)(void *)&rg_vu0.q) = (((*(rgvb_q149680_t *)(void *)&rg_vu0.q)) = rg_vbi_vdiv(((*(rgvb_q149680_t *)(void *)&rg_vu0.q)), (*(rgvb_vz149680_t *)
+game/src/main/model/FrameUpdateWorld_149680.c	LoadScaleVec		vf10.xyzw					
+game/src/main/model/FrameUpdateWorld_149680.c	ScaleLoad		vf1.xyzw,vf10.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw					
+game/src/main/model/FrameUpdateWorld_149680.c	ScaleMul	tu-helper	vf1.xyzw,vf2.xyzw,vf3.xyzw	vf1.xyzw,vf10.xyz,vf2.xyzw,vf3.xyzw				(*(rgvb_v1_149680_t *)(void *)&rg_vu0.vf[1]) = (((*(rgvb_v1_149680_t *)(void *)&rg_vu0.vf[1])) = rg_vbi_vmulbc(((*(rgvb_v1_149680_t *)(void *)&rg_vu0.vf[1])), 0
+game/src/main/model/FrameUpdateWorld_149680.c	StoreMatrix	tu-helper		vf1.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw				d[0] = (*(rgvb_v1_149680_t *)(void *)&rg_vu0.vf[1])
+game/src/main/model/FrameUpdateWorld_149680.c	Vu0ScaleMatrix		vf1.xyzw,vf10.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw					
+game/src/main/model/ModelInit_151d50.c	ModelInit_151d50						ArrayGetChecked_152fd0,FrameSetDirty_14a5e0,VecSetOnes_13e180	
+game/src/main/model/ModelSetPos_151110.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/model/ModelSetRot_151080.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/model/ModelSetScale_150ff0.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/model/NodeObjInit_1951b0.c	NodeObjInit_1951b0						FarClipRecInit_186e30,FuncDataTableInit_18fc00,NodeInit_185f60	
+game/src/main/model/VertsPackQuantized_164bb0.c	Quant		vf15.xyzw,vf16.xyzw,vf17.xyzw					
+game/src/main/obj/ProjectileDrawModel_317640.c	CopyXYZ		vf1.xyzw,vf2.xyzw					
+game/src/main/script/FixCameraRecInit_193860.c	FixCameraRecInit_193860							
+game/src/main/sdk/sceVu0Normalize.c	sceVu0Normalize		q,vf4.xyzw,vf5.xyz,vf6.xyzw					
+game/src/main/sdk/sceVu0UnitMatrix.c	sceVu0UnitMatrix		vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw					
+game/src/main/util/Swap128_1cb4f0.c	Swap128_1cb4f0		g5.xyzw,g6.xyzw					
+game/src/main/vec/TriNormalDot_1cb600.c	TriNormalDot_1cb600		acc.xyz,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyz			vf8		
+game/src/main/vec/TriNormal_1cb970.c	TriNormal_1cb970		acc.xyz,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw					
+game/src/main/vec/VecAdd3_1cbd60.c	VecAdd3_1cbd60		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+game/src/main/vec/VecAddInPlace_13e070.c	VecAddInPlace_13e070		vf15.xyzw,vf16.xyzw					
+game/src/main/vec/VecAddMaxZero_1cbd40.c	VecAddMaxZero_1cbd40		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+game/src/main/vec/VecAddMinZero_1cbd20.c	VecAddMinZero_1cbd20		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+game/src/main/vec/VecAddXyzW0_1cbda0.c	VecAddXyzW0_1cbda0		vf4.xyzw,vf5.xyzw					
+game/src/main/vec/VecAddXyzW1_1cbd80.c	VecAddXyzW1_1cbd80		vf4.xyzw,vf5.xyzw					
+game/src/main/vec/VecAdd_13be20.c	VecAdd_13be20		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+game/src/main/vec/VecAdd_1cbdc0.c	VecAdd_1cbdc0		vf4.xyzw,vf5.xyzw					
+game/src/main/vec/VecCopyAsDir_1cbe20.c	VecCopyAsDir_1cbe20		vf4.xyzw					
+game/src/main/vec/VecCopyAsPoint_1cbe10.c	VecCopyAsPoint_1cbe10		vf4.xyzw					
+game/src/main/vec/VecCopy_1cbe30.c	VecCopy_1cbe30		g5.xyzw					
+game/src/main/vec/VecCross_1cb9f0.c	VecCross_1cb9f0		acc.xyz,vf4.xyzw,vf5.xyzw,vf6.xyzw					
+game/src/main/vec/VecDistSqXZ_1cb390.c	VecDistSqXZ_1cb390		vf4.xyzw,vf5.xyzw			vf4		
+game/src/main/vec/VecDistSq_1cb3c0.c	VecDistSq_1cb3c0		vf4.xyzw,vf5.xyzw			vf4		
+game/src/main/vec/VecDistXZ_1cb3f0.c	VecDistXZ_1cb3f0		g5.xy,q,vf4.xyzw,vf5.xyzw					
+game/src/main/vec/VecDist_1cb420.c	VecDist_1cb420		g5.xy,q,vf4.xyzw,vf5.xyzw					
+game/src/main/vec/VecDivScalarPoint_1cbbc0.c	VecDivScalarPoint_1cbbc0		g5.xy,q,vf4.xyzw,vf5.xyzw,vf6.xyzw		g5.zw			
+game/src/main/vec/VecDivScalar_1cbbf0.c	VecDivScalar_1cbbf0		g5.xy,q,vf4.xyzw,vf5.xyzw,vf6.xyzw		g5.zw			
+game/src/main/vec/VecDot3_1cba90.c	VecDot3_1cba90		vf4.xyzw,vf5.xyzw			vf4		
+game/src/main/vec/VecDotDiff_1cba40.c	VecDotDiff_1cba40		vf4.xyzw,vf5.xyzw,vf6.xyzw			vf4		
+game/src/main/vec/VecDotXZ_1cba70.c	VecDotXZ_1cba70		vf4.xyzw,vf5.xyzw			vf4		
+game/src/main/vec/VecLengthSqXZ_1cb450.c	VecLengthSqXZ_1cb450		vf4.xyzw			vf4		
+game/src/main/vec/VecLengthSq_1cb470.c	VecLengthSq_1cb470		vf4.xyzw			vf4		
+game/src/main/vec/VecLengthXZ_1cb490.c	VecLengthXZ_1cb490		g5.xy,q,vf4.xyzw					
+game/src/main/vec/VecLength_13d4a0.c	VecLength_13d4a0		g2.xy,q,vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+game/src/main/vec/VecLength_1cb4c0.c	VecLength_1cb4c0		g5.xy,q,vf4.xyzw					
+game/src/main/vec/VecLerpDir_1cbaf0.c	VecLerpDir_1cbaf0		acc.xyz,g5.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.x,vf8.x,vf9.xyzw		g5.zw			
+game/src/main/vec/VecLerpPoint_1cbac0.c	VecLerpPoint_1cbac0		acc.xyz,g5.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.x,vf8.x,vf9.xyzw		g5.zw			
+game/src/main/vec/VecLerp_1cbb20.c	VecLerp_1cbb20		acc.xyzw,g5.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.x,vf8.x,vf9.xyzw		g5.zw			
+game/src/main/vec/VecLinearCombine_1cb8b0.c	VecLinearCombine_1cb8b0		acc.xyzw,g5.xy,g6.xy,vf4.xyzw,vf5.xyzw,vf8.xyzw,vf9.xyzw		g5.zw,g6.zw			
+game/src/main/vec/VecMax_1cb5b0.c	VecMax_1cb5b0		vf12.xyzw,vf13.xyzw,vf18.xyzw					
+game/src/main/vec/VecMinMax_1cb570.c	VecMinMax_1cb570		vf12.xyzw,vf13.xyzw,vf17.xyzw,vf18.xyzw					
+game/src/main/vec/VecMin_1cb590.c	VecMin_1cb590		vf12.xyzw,vf13.xyzw,vf18.xyzw					
+game/src/main/vec/VecNegate_1cb9a0.c	VecNegate_1cb9a0		vf6.xyzw,vf7.xyzw,vf8.xyzw					
+game/src/main/vec/VecNormalizeXZ_1cbb50.c	VecNormalizeXZ_1cbb50		q,vf4.xyzw,vf5.xyz,vf6.xyzw					
+game/src/main/vec/VecNormalize_13bd90.c	VecNormalize_13bd90		q,vf4.xyzw,vf5.xyz,vf6.xyzw					
+game/src/main/vec/VecNormalize_1cbb80.c	VecNormalize_1cbb80		q,vf4.xyzw,vf5.xyz,vf6.xyzw					
+game/src/main/vec/VecScaleDir_1cbc80.c	VecScaleDir_1cbc80		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+game/src/main/vec/VecScaleToLength_1cb510.c	VecScaleToLength_1cb510		g5.xy,q,vf4.xyzw,vf5.xyzw,vf6.xyzw		g5.zw			
+game/src/main/vec/VecScale_13be00.c	VecScale_13be00		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+game/src/main/vec/VecScale_1cbca0.c	VecScale_1cbca0		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+game/src/main/vec/VecSubAsPoint_1cbcc0.c	VecSubAsPoint_1cbcc0		vf4.xyzw,vf5.xyzw					
+game/src/main/vec/VecSubCross_1cb9c0.c	VecSubCross_1cb9c0		acc.xyz,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw					
+game/src/main/vec/VecSubDotXZ_1cba10.c	VecSubDotXZ_1cba10		vf4.xyzw,vf5.xyzw,vf6.xyzw			vf4		
+game/src/main/vec/VecSubXyzW0_1cbce0.c	VecSubXyzW0_1cbce0		vf4.xyzw,vf5.xyzw					
+game/src/main/vec/VecSub_13be40.c	VecSub_13be40		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+game/src/main/vec/VecSub_1cbd00.c	VecSub_1cbd00		vf4.xyzw,vf5.xyzw					
+game/src/main/vec/VecWeightedSum3_1cb860.c	VecWeightedSum3_1cb860		acc.xyzw,g5.xy,g6.xy,g7.xy,vf10.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf8.xyzw,vf9.xyzw		g5.zw,g6.zw,g7.zw			
+game/src/main/vec/VecWrapAngle_1cbe90.c	Wrap		vf4.xyzw,vf5.xyzw,vf8.xyzw,vf9.xyzw					
+overrides/src/main/camera/AabbLoadToVu_13bfc0.c	AabbLoadToVu_13bfc0		acc.xyzw,g3.xy,vf1.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf2.xyzw,vf3.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw					
+overrides/src/main/camera/AabbPlaneDistances_13bf50.c	AabbPlaneDistances_13bf50	ctx:xfbox	acc.xyzw,vf1.xyzw,vf2.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyzw,vf25.xyzw,vf26.xyzw,vf3.xyzw,vf4.xyzw	vf10.xyz,vf11.xyz,vf12.xyz,vf7.xyz				rg_vu0s_fmac(&rg_vu0, RG_VMULA, RG_XYZW, 0, 1, 10, RG_BC_X)
+overrides/src/main/gs/GsPktSetRGBAQVec_13edd0.c	GsPktSetRGBAQVec_13edd0		vf10.xyzw				__attribute__,aligned	
+overrides/src/main/gs/GsPktSetXYZfVec_13efe0.c	GsPktSetXYZfVec_13efe0		vf10.xyzw				__attribute__,aligned	
+overrides/src/main/gs/GsPktSetXYZf_13f060.c	GsPktSetXYZf_13f060		vf10.xyzw				__attribute__,__builtin_memset,aligned	
+overrides/src/main/math/BoxToCenterExtentsVu0Maybe_14ff40.c	BoxToCenterExtentsVu0Maybe_14ff40		acc.xyzw,vf1.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf2.xyzw,vf3.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw					
+overrides/src/main/math/BoxTransformExtentsVu0Maybe_14fed0.c	BoxTransformExtentsVu0Maybe_14fed0	ctx:xfbox	acc.xyzw,vf1.xyzw,vf2.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyzw,vf25.xyzw,vf26.xyzw,vf3.xyzw,vf4.xyzw	vf10.xyz,vf11.xyz,vf12.xyz,vf7.xyz				rg_vu0s_fmac(&rg_vu0, RG_VMULA, RG_XYZW, 0, 1, 10, RG_BC_X)
+overrides/src/main/math/MtxPlaneProjection_13c930.c	MtxPlaneProjection_13c930		vf4.xyzw,vf5.xyzw				VecNormalize_13bd90,__builtin_memcpy	
+overrides/src/main/math/PointInTriangle_13d720.c	rg_vadd		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/math/PointInTriangle_13d720.c	rg_vdot		vf4.xyzw,vf5.xyzw					
+overrides/src/main/math/PointInTriangle_13d720.c	rg_vlensq		vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/math/PointInTriangle_13d720.c	rg_vscale		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+overrides/src/main/math/PointInTriangle_13d720.c	rg_vsub		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/math/PointSegmentClosest_13dcc0.c	PointSegmentClosest_13dcc0		g8.xy,q,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.x				VecDistance_13d3d0,__builtin_memcpy,rg_vadd,rg_vdot,rg_vlensq,rg_vscale,rg_vsub	
+overrides/src/main/math/PointSegmentClosest_13dcc0.c	rg_vadd		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/math/PointSegmentClosest_13dcc0.c	rg_vdot		vf4.xyzw,vf5.xyzw					
+overrides/src/main/math/PointSegmentClosest_13dcc0.c	rg_vlensq		vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/math/PointSegmentClosest_13dcc0.c	rg_vscale		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+overrides/src/main/math/PointSegmentClosest_13dcc0.c	rg_vsub		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/math/QuatSlerp_13c270.c	QuatSlerp_13c270	param-reg	g8.xy,q,vf1.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf?.xyzw	vf11.x,vf12.x			Acosf_129178,Sinf_128fd0,__builtin_memcpy,rg_f2vf	rg_vu0s_fmac(&rg_vu0, RG_VMUL, RG_XYZW, 1, 1, 11, RG_BC_X)
+overrides/src/main/math/QuatSlerp_13c270.c	rg_f2vf		g8.xy,vf?.xyzw		g8.zw			
+overrides/src/main/math/RayTriIntersect_13d8c0.c	rg_vadd		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/math/RayTriIntersect_13d8c0.c	rg_vdot		vf4.xyzw,vf5.xyzw					
+overrides/src/main/math/RayTriIntersect_13d8c0.c	rg_vlensq		vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/math/RayTriIntersect_13d8c0.c	rg_vscale		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+overrides/src/main/math/RayTriIntersect_13d8c0.c	rg_vsub		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/math/SegmentSphereIntersectWorld_13d9d0.c	SegmentSphereIntersectWorld_13d9d0		vf15.xyzw,vf16.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw				SegmentSphereIntersect_13da60,rg_vsub	
+overrides/src/main/math/SegmentSphereIntersectWorld_13d9d0.c	rg_vadd		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/math/SegmentSphereIntersectWorld_13d9d0.c	rg_vdot		vf4.xyzw,vf5.xyzw					
+overrides/src/main/math/SegmentSphereIntersectWorld_13d9d0.c	rg_vlensq		vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/math/SegmentSphereIntersectWorld_13d9d0.c	rg_vscale		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+overrides/src/main/math/SegmentSphereIntersectWorld_13d9d0.c	rg_vsub		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/math/SegmentSphereIntersect_13da60.c	rg_vadd		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/math/SegmentSphereIntersect_13da60.c	rg_vdot		vf4.xyzw,vf5.xyzw					
+overrides/src/main/math/SegmentSphereIntersect_13da60.c	rg_vlensq		vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/math/SegmentSphereIntersect_13da60.c	rg_vscale		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+overrides/src/main/math/SegmentSphereIntersect_13da60.c	rg_vsub		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/matrix/CameraBaseLookAt_15fae0.cpp	CameraBaseLookAt_15fae0		vf1.xyzw,vf2.xyzw				MtxIdentity_13d2e0,MtxMul_13d240,VecLength_13d4a0,VecNormalize_13bd90,VecSub_13be40,WrapAngle_13c050,__attribute__,aligned,sceVu0OuterProduct,sceVu0RotMatrixZ,setDir	
+overrides/src/main/matrix/MatFromQuat_13c440.c	MatFromQuat_13c440		acc.xyz,g3.xy,vf1.xyz,vf10.xyzw,vf11.xyzw,vf12.xyz,vf15.xyzw,vf16.xyzw,vf17.xyzw,vf2.xyzw,vf3.xyz		vf3.w			
+overrides/src/main/matrix/MatFromSRTVu0_13bc90.c	MatFromSRTVu0_13bc90		vf1.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw					
+overrides/src/main/matrix/MatMul33_13d180.c	MatMul33_13d180		acc.xyzw,vf1.xyzw,vf2.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyzw,vf3.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw					
+overrides/src/main/matrix/MatRotateVu0_13bc20.c	MatRotateVu0_13bc20		acc.xyzw,vf1.xyz,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf2.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyzw,vf23.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw					
+overrides/src/main/matrix/MatScaleRows_13cf00.c	MatScaleRows_13cf00		vf1.xyzw,vf10.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw					
+overrides/src/main/matrix/MatZero_13d2c0.c	MatZero_13d2c0		vf1.xyzw					
+overrides/src/main/matrix/MtxIdentity_13d2e0.c	MtxIdentity_13d2e0		vf1.xyzw,vf2.xyzw,vf3.xyzw					
+overrides/src/main/matrix/MtxInverse_13cf40.c	MtxInverse_13cf40		acc.xyzw,q,vf1.xyzw,vf10.xyz,vf11.xyz,vf12.xyz,vf15.xyz,vf2.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw					
+overrides/src/main/matrix/MtxLookAtKeepScale_13cc50.c	rg_rowlen		q,vf4.xyzw,vf5.xy,vf6.x,vf7.x				rg_vlensq	
+overrides/src/main/matrix/MtxLookAtKeepScale_13cc50.c	rg_vadd		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/matrix/MtxLookAtKeepScale_13cc50.c	rg_vdot		vf4.xyzw,vf5.xyzw					
+overrides/src/main/matrix/MtxLookAtKeepScale_13cc50.c	rg_vlensq		vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/matrix/MtxLookAtKeepScale_13cc50.c	rg_vscale		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+overrides/src/main/matrix/MtxLookAtKeepScale_13cc50.c	rg_vsub		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/matrix/MtxMulAffine_13d110.c	MtxMulAffine_13d110		acc.xyzw,vf1.xyzw,vf2.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyzw,vf23.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw					
+overrides/src/main/matrix/MtxMulAffine_13d1d0.c	MtxMulAffine_13d1d0		acc.xyzw,vf1.xyzw,vf2.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyzw,vf23.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw					
+overrides/src/main/matrix/MtxMulChain4_13cff0.c	MtxMulChain4_13cff0		acc.xyzw,vf1.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf14.xyzw,vf15.xyzw,vf16.xyzw,vf2.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyzw,vf23.xyzw,vf24.xyzw,vf25.xyzw,vf26.xyzw,vf27.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+overrides/src/main/matrix/MtxMulDir_13c860.c	MtxMulDir_13c860		acc.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf16.xyzw,vf17.xyzw					
+overrides/src/main/matrix/MtxMul_13d240.c	MtxMul_13d240		acc.xyzw,vf1.xyzw,vf2.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyzw,vf23.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw					
+overrides/src/main/matrix/MtxProjectPoint_13c8c0.c	MtxProjectPoint_13c8c0		acc.xyzw,q,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+overrides/src/main/matrix/MtxRotX_13ce90.c	MtxRotX_13ce90		vf1.xyzw,vf2.xyzw,vf3.xyzw				Cosf_128d30,Sinf_128fd0	
+overrides/src/main/matrix/MtxRotY_13ce20.c	MtxRotY_13ce20		vf1.xyzw,vf2.xyzw,vf3.xyzw				Cosf_128d30,Sinf_128fd0	
+overrides/src/main/matrix/MtxRotZ_13cdb0.c	MtxRotZ_13cdb0		vf1.xyzw,vf2.xyzw,vf3.xyzw				Cosf_128d30,Sinf_128fd0	
+overrides/src/main/matrix/MtxTransformPointsMinMax_13c780.c	MtxTransformPointsMinMax_13c780		acc.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf16.xyzw,vf17.xyzw,vf20.xyzw,vf21.xyzw					
+overrides/src/main/matrix/MtxTransformPoints_13c810.c	MtxTransformPoints_13c810		acc.xyzw,vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw,vf16.xyzw,vf17.xyzw					
+overrides/src/main/matrix/MtxYawFaceTarget_13cb30.c	rg_rowlen		q,vf4.xyzw,vf5.xy,vf6.x,vf7.x				rg_vlensq	
+overrides/src/main/matrix/MtxYawFaceTarget_13cb30.c	rg_vadd		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/matrix/MtxYawFaceTarget_13cb30.c	rg_vdot		vf4.xyzw,vf5.xyzw					
+overrides/src/main/matrix/MtxYawFaceTarget_13cb30.c	rg_vlensq		vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/matrix/MtxYawFaceTarget_13cb30.c	rg_vscale		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+overrides/src/main/matrix/MtxYawFaceTarget_13cb30.c	rg_vsub		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/model/CollFrameTreeCollectTris_16bfb0.cpp	CollFrameTreeCollectTris_16bfb0		vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw				AabbTransformBounds_13c710,CollFrameTreeCollectTris_16bfb0,CollTriTransform_16c1a0,FrameCalcInvWorldMatrix_148fb0,FrameCalcWorldMatrix_148ff0,__attribute__,aligned,run	
+overrides/src/main/model/CollTriTransform_16c1a0.c	CollTriTransform_16c1a0	ctx:colltri	acc.xyzw,vf16.xyzw,vf17.xyzw,vf18.xyzw,vf20.xyzw,vf21.xyzw,vf22.xyz	vf10.xyzw,vf11.xyzw,vf12.xyzw,vf13.xyzw	vf22.w			rg_vu0s_fmac(&rg_vu0, RG_VMULA, RG_XYZW, 0, 10, 16, RG_BC_X)
+overrides/src/main/vec/AabbContainsPoint_13e130.c	AabbContainsPoint_13e130		vf1.xyzw,vf10.xyzw,vf11.xyzw,vf25.xyz				rg_sign_xyz	
+overrides/src/main/vec/AabbContainsPoint_13e130.c	rg_sign_xyz							
+overrides/src/main/vec/AabbContains_13e090.c	AabbContains_13e090		vf1.xyzw,vf10.xyzw,vf11.xyzw,vf2.xyzw,vf25.xyz				rg_sign_xyz	
+overrides/src/main/vec/AabbContains_13e090.c	rg_sign_xyz							
+overrides/src/main/vec/AabbCorners_13e190.c	AabbCorners_13e190		vf1.xyzw,vf2.xyzw,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw					
+overrides/src/main/vec/AabbOverlap_13e0e0.c	AabbOverlap_13e0e0		vf1.xyzw,vf10.xyzw,vf11.xyzw,vf2.xyzw,vf25.xyz				rg_sign_xyz	
+overrides/src/main/vec/AabbOverlap_13e0e0.c	rg_sign_xyz							
+overrides/src/main/vec/BBoxUnion_13dea0.c	BBoxUnion_13dea0		vf15.xyzw,vf16.xyzw,vf17.xyzw,vf18.xyzw,vf20.xyzw,vf21.xyzw					
+overrides/src/main/vec/BoundsAddPoint_13dee0.c	BoundsAddPoint_13dee0		vf15.xyzw,vf16.xyzw,vf17.xyzw					
+overrides/src/main/vec/BoundsFrom4Points_13df00.c	BoundsFrom4Points_13df00		vf15.xyzw,vf16.xyzw,vf17.xyzw,vf18.xyzw,vf20.xyzw,vf21.xyzw					
+overrides/src/main/vec/VecAddScaled_13bdd0.c	VecAddScaled_13bdd0		acc.xyzw,g8.xy,vf3.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+overrides/src/main/vec/VecDistSqXZ_13d330.c	VecDistSqXZ_13d330		vf2.xyzw,vf3.xyzw,vf4.xyz,vf5.xy,vf6.x,vf7.x		vf4.w,vf5.zw			
+overrides/src/main/vec/VecDistSq_13d360.c	VecDistSq_13d360		vf2.xyzw,vf3.xyzw,vf4.xyz,vf5.xy,vf6.x,vf7.x		vf4.w,vf5.zw			
+overrides/src/main/vec/VecDistanceXZ_13d390.c	VecDistanceXZ_13d390		q,vf2.xyzw,vf3.xyzw,vf4.xyz,vf5.xy,vf6.x,vf7.x		vf4.w,vf5.zw			
+overrides/src/main/vec/VecDistance_13d3d0.c	VecDistance_13d3d0		q,vf2.xyzw,vf3.xyzw,vf4.xyz,vf5.xy,vf6.x,vf7.x		vf4.w,vf5.zw			
+overrides/src/main/vec/VecLengthSqXZ_13d410.c	VecLengthSqXZ_13d410		vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/vec/VecLengthSq_13d440.c	VecLengthSq_13d440		vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/vec/VecLengthXZ_13d470.c	VecLengthXZ_13d470		q,vf4.xyzw,vf5.xy,vf6.x,vf7.x		vf5.zw			
+overrides/src/main/vec/VecMax4_13dfb0.c	VecMax4_13dfb0		vf15.xyzw,vf16.xyzw,vf17.xyzw,vf18.xyzw,vf20.xyzw					
+overrides/src/main/vec/VecMaxMin_13df70.c	VecMaxMin_13df70		vf15.xyzw,vf16.xyzw,vf18.xyzw,vf20.xyzw					
+overrides/src/main/vec/VecMax_13dfe0.c	VecMax_13dfe0		vf15.xyzw,vf16.xyzw,vf18.xyzw					
+overrides/src/main/vec/VecMinMax3_13df40.c	VecMinMax3_13df40		vf15.xyzw,vf16.xyzw,vf17.xyzw,vf18.xyzw,vf19.xyzw,vf20.xyzw,vf21.xyzw					
+overrides/src/main/vec/VecMin_13df90.c	VecMin_13df90		vf15.xyzw,vf16.xyzw,vf18.xyzw					
+overrides/src/main/vec/VecMulXyz_13bd20.c	VecMulXyz_13bd20		vf4.xyzw,vf5.xyzw					
+overrides/src/main/vec/VecMul_13bd40.c	VecMul_13bd40		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+overrides/src/main/vec/VecReflectNeg_13dc30.c	VecReflectNeg_13dc30		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw			
+overrides/src/main/vec/VecSetLength_13e000.c	VecSetLength_13e000		g8.xy,vf4.xyzw,vf5.xyzw,vf6.xyzw		g8.zw		VecNormalize_13bd90	
+overrides/src/main/vec/VecSetOnes4_13e170.c	VecSetOnes4_13e170		vf1.xyzw					
+overrides/src/main/vec/VecSetOnes_13e180.c	VecSetOnes_13e180		vf1.xyzw					
+overrides/src/main/vec/VecSubInPlace_13e050.c	VecSubInPlace_13e050		vf15.xyzw,vf16.xyzw					
+overrides/src/main/vec/VecTriCross_13de70.c	VecTriCross_13de70		acc.xyz,vf10.xyzw,vf11.xyzw,vf12.xyz,vf15.xyzw,vf16.xyzw,vf17.xyzw		vf12.w			
+overrides/src/main/vec/Vu0InnerProduct_13bd60.c	Vu0InnerProduct_13bd60		vf4.xyzw,vf5.xyzw					
+overrides/src/main/vec/Vu0InnerProduct_13d300.c	Vu0InnerProduct_13d300		vf4.xyzw,vf5.xyzw					
+src/sce/vu0/libvu0.c	ecossin	provider	q,vf4.xyzw,vf5.xyzw,vf6.xw,vf7.xw,vf8.xyzw	vf6.xyzw	vf4.yzw,vf6.x			rg_vu0s_mr32(&rg_vu0, RG_W, 6, 6)
+src/sce/vu0/libvu0.c	qmtc2_float		g8.xy,vf?.xyzw		g8.zw			
+src/sce/vu0/libvu0.c	rot_apply	tu-helper	acc.xyzw,vf4.xyzw,vf5.xyzw	vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw				rg_vu0s_fmac(&rg_vu0, RG_VMULA, (RG_XYZW), (0), (6), (4), (RG_BC_X))
+src/sce/vu0/libvu0.c	sceVu0AddVector		vf4.xyzw,vf5.xyzw,vf6.xyzw					
+src/sce/vu0/libvu0.c	sceVu0DivVector	param-reg	g8.xy,q,vf4.xyzw,vf?.xyzw	vf5.x			qmtc2_float	rg_vu0s_div(&rg_vu0, 0, 3, 5, 0)
+src/sce/vu0/libvu0.c	sceVu0InnerProduct		vf4.xyzw,vf5.xyzw					
+src/sce/vu0/libvu0.c	sceVu0InterVector	param-reg	acc.xyzw,g8.xy,vf4.xyzw,vf5.xyzw,vf7.x,vf8.x,vf9.xyzw,vf?.xyzw	vf6.x			qmtc2_float	rg_vu0s_fmac(&rg_vu0, RG_VSUB, (RG_X), (8), (7), (6), (RG_BC_NONE))
+src/sce/vu0/libvu0.c	sceVu0InversMatrix		acc.xyz,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw				memcpy	
+src/sce/vu0/libvu0.c	sceVu0MulMatrix		acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw					
+src/sce/vu0/libvu0.c	sceVu0OuterProduct		acc.xyz,vf4.xyzw,vf5.xyzw,vf6.xyzw					
+src/sce/vu0/libvu0.c	sceVu0RotMatrixX	provider	acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw	vf5.xyzw	vf4.xy		rot_angle,rot_apply	rg_vu0s_move(&rg_vu0, RG_XYZW, 6, 5)
+src/sce/vu0/libvu0.c	sceVu0RotMatrixY	provider	acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw	vf5.xyzw	vf4.xy		rot_angle,rot_apply	rg_vu0s_move(&rg_vu0, RG_XYZW, 6, 5)
+src/sce/vu0/libvu0.c	sceVu0RotMatrixZ	provider	acc.xyzw,vf4.xyzw,vf5.xyzw,vf6.xyzw,vf7.xyzw,vf8.xyzw,vf9.xyzw	vf5.xyzw	vf4.xy		rot_angle,rot_apply	rg_vu0s_move(&rg_vu0, RG_XYZW, 6, 5)
+src/sce/vu0/libvu0.c	sceVu0ScaleVector	param-reg	g8.xy,vf4.xyzw,vf6.xyzw,vf?.xyzw	vf5.x			qmtc2_float	rg_vu0s_fmac(&rg_vu0, RG_VMUL, (RG_XYZW), (6), (4), (5), (RG_BC_X))
+src/sce/vu0/libvu0.c	sceVu0ScaleVectorXYZ	param-reg	g8.xy,vf4.xyzw,vf?.xyzw	vf5.x			qmtc2_float	rg_vu0s_fmac(&rg_vu0, RG_VMUL, (RG_XYZ), (4), (4), (5), (RG_BC_X))
+src/sce/vu0/libvu0.c	sceVu0SubVector		vf4.xyzw,vf5.xyzw,vf6.xyzw					

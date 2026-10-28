@@ -1,0 +1,17 @@
+/* rgp:protos */
+#define RGP_SELF_NodeGetFarClip_18bc20 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/* Address of the sub-object at +0x3C. */
+
+typedef struct Obj_FUN_0018bc20 {
+    u8 pad000[0x3C];
+    u8 sub[1];         /* +0x3C */
+} Obj_FUN_0018bc20;
+
+void *NodeGetFarClip_18bc20(Obj_FUN_0018bc20 *o)
+{
+    return o->sub;
+}

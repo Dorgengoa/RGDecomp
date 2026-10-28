@@ -1,0 +1,28 @@
+/* rgp:protos */
+#define RGP_SELF_EventCameraNodeAddShake_253840 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/*rgp*/
+/*rgp*/
+
+struct Obj0 {
+    s32 m00;
+    u8 pad004[0xC];
+    u8 m10[0x10];
+    u8 pad020[0x10];
+    s32 m30;
+};
+
+void EventCameraNodeAddShake_253840(s32 p0, const void *p1, s32 p2)
+{
+    struct Obj0 *r0;
+
+    r0 = PoolAllocAppendNode_254330(p0);
+    if (r0 != 0) {
+        r0->m00 = 0x20;
+        sceVu0CopyVector(r0->m10, p1);
+        r0->m30 = p2;
+    }
+}

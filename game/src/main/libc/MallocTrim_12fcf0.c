@@ -1,0 +1,104 @@
+#include "types.h"
+
+extern void MallocLock_131c20(void);
+extern void SbrkR_133f78(void);
+extern void MallocUnlock_131ca0(void);
+
+asm void MallocTrim_12fcf0(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0x30;
+    sd         $16, 0x0($29);
+    daddu      $16, $5, $0;
+    sd         $17, 0x8($29);
+    daddu      $17, $4, $0;
+    sd         $18, 0x10($29);
+    dsll32     $16, $16, 0;
+    sd         $20, 0x20($29);
+    sd         $19, 0x18($29);
+    sd         $31, 0x28($29);
+    jal        MallocLock_131c20;
+    dsrl32    $16, $16, 0;
+    lui        $2, 0x45;
+    addiu      $6, $0, -0x4;
+    addiu      $20, $2, -0x6798;
+    daddu      $4, $17, $0;
+    lw         $3, 0x8($20);
+    lw         $2, 0x4($3);
+    and        $2, $2, $6;
+    dsll32     $2, $2, 0;
+    dsrl32     $18, $2, 0;
+    dsubu      $16, $18, $16;
+    daddiu     $16, $16, 0xFEF;
+    dsrl       $16, $16, 12;
+    daddiu     $16, $16, -0x1;
+    dsll       $16, $16, 12;
+    slti       $2, $16, 0x1000;
+    bnez       $2, L0012FDF8;
+    daddu     $5, $0, $0;
+    jal        SbrkR_133f78;
+    daddu     $4, $17, $0;
+    lw         $3, 0x8($20);
+    dsll32     $5, $18, 0;
+    dsra32     $5, $5, 0;
+    addu       $3, $3, $5;
+    bne        $2, $3, L0012FDF8;
+    daddu     $4, $17, $0;
+    dsll32     $19, $16, 0;
+    dsra32     $19, $19, 0;
+    daddu      $4, $17, $0;
+    jal        SbrkR_133f78;
+    negu      $5, $19;
+    daddu      $4, $17, $0;
+    lui        $3, 0x45;
+    addiu      $6, $0, -0x1;
+    daddu      $5, $0, $0;
+    bne        $2, $6, L0012FE08;
+    addiu     $7, $3, -0x6368;
+    jal        SbrkR_133f78;
+    nop;
+    lw         $6, 0x8($20);
+    daddu      $7, $2, $0;
+    addiu      $2, $0, 0x1;
+    subu       $18, $7, $6;
+    or         $2, $18, $2;
+    slti       $3, $18, 0x10;
+    dsll32     $5, $2, 0;
+    dsra32     $5, $5, 0;
+    bnez       $3, L0012FDF8;
+    daddu     $4, $17, $0;
+    lui        $2, 0x45;
+    lw         $3, -0x6380($2);
+    lui        $2, 0x45;
+    subu       $3, $7, $3;
+    sw         $3, -0x6368($2);
+    sw         $5, 0x4($6);
+  L0012FDF8:
+    jal        MallocUnlock_131ca0;
+    nop;
+    b          L0012FE3C;
+    daddu     $2, $0, $0;
+  L0012FE08:
+    addiu      $2, $0, 0x1;
+    dsubu      $3, $18, $16;
+    lw         $5, 0x8($20);
+    or         $3, $3, $2;
+    dsll32     $3, $3, 0;
+    dsra32     $3, $3, 0;
+    daddu      $4, $17, $0;
+    sw         $3, 0x4($5);
+    lw         $2, 0x0($7);
+    subu       $2, $2, $19;
+    jal        MallocUnlock_131ca0;
+    sw        $2, 0x0($7);
+    addiu      $2, $0, 0x1;
+  L0012FE3C:
+    ld         $16, 0x0($29);
+    ld         $17, 0x8($29);
+    ld         $18, 0x10($29);
+    ld         $19, 0x18($29);
+    ld         $20, 0x20($29);
+    ld         $31, 0x28($29);
+    jr         $31;
+    addiu     $29, $29, 0x30;
+}

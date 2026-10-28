@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: CC0-1.0
+# BRINGUP item 7 repro: power-on with the library card out/fixtures/cards/late_game
+# (Zerard spaceport, Ch13) as the memory card, CONTINUE, main menu -> Items -> Heal Potion
+# -> context menu -> Use -> target select -> back out.  Keys = fields of a plain rg-game run.
+# Broken build (game/ before the 2026-10-23 dialect const-data fix): after Use (4060) the
+# context menu stays, the hand cursor disappears and no input is taken (soft lock).
+# Fixed: the party target panel is up by ~4100; CIRCLE x2 returns to the field menu.
+# Run: copy the card dir to <out>/saves; rg-game --headless --fields 4320 --saves <out>/saves
+#      --input this --shot 4100:<out>/s4100.png  (RG_DATA, RG_GPU=hw as fxlib.game_env)
+1900 1905 CROSS  # title menu: CONTINUE
+2150 2155 CROSS  # MEMORY CARD slot 1
+2350 2355 CROSS  # FILE 01
+2450 2455 CROSS  # Load the data in file 1? -> Yes
+2650 2655 CROSS  # File 1 loaded.
+3700 3703 CROSS  # chapter recap
+3790 3793 TRIANGLE  # main menu (game mode 17)
+3900 3905 CROSS  # main menu: Items
+3960 3963 DOWN
+3975 3978 DOWN
+3990 3993 DOWN   # row 4: Heal Potion
+4010 4015 CROSS  # context menu
+4060 4065 CROSS  # Use
+4140 4145 CROSS  # target select: first ally
+4220 4225 CIRCLE
+4280 4285 CIRCLE

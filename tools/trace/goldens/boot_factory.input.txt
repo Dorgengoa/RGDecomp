@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: CC0-1.0
+# Boot the manufactured game-save fixture "factory" (docs/TEST-FIXTURES.md "Manufactured
+# saves", docs/SAVE-FORMAT.md): out/fixtures/cards/factory/ = save2 + story flag 0x3E8
+# (tools/fixtures/saveedit.py patch --set-flag 0x3E8), which unlocks the main menu's Factory
+# row (TopMenuRow6UnlockedMaybe_29ac20).  CONTINUE -> Salgin transporter (as boot_save2),
+# TRIANGLE main menu -> Factory -> "Linking to the factory via remote control..." -> FACTORY
+# overlay (loader index 4, game mode 16); Blueprints grid, back, Go Back -> "Halt factory
+# operations?" Yes -> NORMAL reloaded, main menu -> CIRCLE -> field.  Keys = fields of a
+# plain rg-game run (port).  Milestones (RG_STATUS_EVERY):
+#   ~4,200  ovl=4 gamemode=16: FACTORY loaded; 4,400 factory menu (16/100)
+#   ~5,250  ovl=3 gamemode=17: back in the main menu (NORMAL); ~6,350 gamemode 6 (field)
+# Needs the FACTORY data fix (overrides/src/main_data/data2c_00480390.c, BRINGUP.md
+# 2026-10-18 (d)); without it rg-game faults at ~4,200 in factory_FactoryMenuBuildWidgets_4ea1d0.
+# boot-end: 4400   (FACTORY menu open)
+1900 1905 CROSS  # title menu: CONTINUE (the default cursor when the card holds a save)
+2150 2155 CROSS  # "Select a MEMORY CARD slot": slot 1
+2350 2355 CROSS  # FILE 01
+2450 2455 CROSS  # "Load the data in file 1?" -> Yes (default)
+2650 2655 CROSS  # "File 1 loaded."
+3700 3705 CROSS  # story recap ("Press X") -> field
+3770 3773 TRIANGLE # main menu
+3850 3853 DOWN
+3870 3873 DOWN
+3890 3893 DOWN
+3910 3913 DOWN
+3930 3933 DOWN
+3950 3953 DOWN     # row 6: Factory
+3990 3993 CROSS
+4100 4103 CROSS    # "Linking to the factory via remote control..."
+4600 4603 CROSS    # Blueprints
+4800 4803 CIRCLE   # back
+4900 4903 DOWN
+4920 4923 DOWN
+4940 4943 DOWN
+4960 4963 DOWN
+4980 4983 DOWN
+5000 5003 DOWN     # Go Back
+5050 5053 CROSS
+5150 5153 CROSS    # "Halt factory operations?" Yes
+6250 6253 CIRCLE   # close the main menu

@@ -1,0 +1,379 @@
+# tools/native/thread_census.py dynamic: RG_KCENSUS runs summarised (docs/NATIVE-THREADS.md)
+kind	run	key	what	ctx	site	count	rate	note
+thread	poweron9000-hle	T1	rg_ps2_main	prio=1/20	creator=- stack=?	1726961	191.88/field	vbl 0..8999
+thread	poweron9000-hle	T2	FileReqThread_182c30	prio=19	creator=FileReqThreadInit_182af0 stack=0x2000	2127	0.24/field	vbl 17..8998
+thread	poweron9000-hle	T3	SoundCmdWorkerThread_1b6c10	prio=10	creator=SoundSysInit_1b6f70 stack=0x2000	1	0.00/field	vbl 32..32
+thread	poweron9000-hle	T4	SoundThreadMain_1b6260	prio=9	creator=SoundThreadStart_1b6160 stack=0x800	1	0.00/field	vbl 32..32
+thread	poweron9000-hle	T5	SoundStreamSlotThreadMain_1bc520	prio=15	creator=SoundRpcInit_1bc840 stack=0x1000	8972	1.00/field	vbl 32..8999
+thread	poweron9000-hle	T6	CdDiskWatchThread_17fdc0	prio=15	creator=CdDiskWatchInit_17ff70 stack=0x800	99	0.01/field	vbl 32..8975
+thread	poweron9000-hle	T7	SysTickThreadMain_1c33f0	prio=18	creator=SysTickThreadStart_1c3470 stack=0x1000	8966	1.00/field	vbl 32..8999
+thread	poweron9000-hle	T8	SoundStreamThreadMain_1c1050	prio=15	creator=SoundStreamInit_1c0ea0 stack=0x1000	1311	0.15/field	vbl 2108..8999
+thread	poweron9000-hle	T9	SoundStreamThreadMain_1c1050	prio=15	creator=SoundStreamInit_1c0ea0 stack=0x1000	848	0.09/field	vbl 2108..8999
+thread	poweron9000-hle	T10	SoundStreamThreadMain_1c1050	prio=15	creator=SoundStreamInit_1c0ea0 stack=0x1000	353	0.04/field	vbl 2108..8334
+thread	poweron9000-hle	T11	LoadingScreenThread_343510	prio=20	creator=LoadingScreenStart_343240 stack=0x40000	1033	0.11/field	vbl 2109..3140
+sema	poweron9000-hle	S0/5@PadSysInit_185080 x2	init=1 max=1	creator=PadSysInit_185080	blocked_waits=0	13048		
+sema_op	poweron9000-hle	S0/5@PadSysInit_185080 x2	WS	T1:rg_ps2_main	PadUpdateConnection_184a50	6002	0.67/field	
+sema_op	poweron9000-hle	S0/5@PadSysInit_185080 x2	SS	T1:rg_ps2_main	PadUpdateConnection_184a50	6002	0.67/field	
+sema_op	poweron9000-hle	S0/5@PadSysInit_185080 x2	WS	T11:LoadingScreenThread_343510	PadUpdateConnection_184a50	517	0.06/field	
+sema_op	poweron9000-hle	S0/5@PadSysInit_185080 x2	SS	T11:LoadingScreenThread_343510	PadUpdateConnection_184a50	517	0.06/field	
+sema_op	poweron9000-hle	S0/5@PadSysInit_185080 x2	WS	T1:rg_ps2_main	PadPortOpen_184ed0	4	0.00/field	
+sema_op	poweron9000-hle	S0/5@PadSysInit_185080 x2	SS	T1:rg_ps2_main	PadPortOpen_184ed0	4	0.00/field	
+sema_op	poweron9000-hle	S0/5@PadSysInit_185080 x2	WS	T11:LoadingScreenThread_343510	PadUpdateVibration_184250	1	0.00/field	
+sema_op	poweron9000-hle	S0/5@PadSysInit_185080 x2	SS	T11:LoadingScreenThread_343510	PadUpdateVibration_184250	1	0.00/field	
+sema	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	init=1 max=1	creator=FileSysInit_1818e0	blocked_waits=0	1682		
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T1:rg_ps2_main	FileSlotAlloc_1814d0	199	0.02/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T1:rg_ps2_main	FileSlotAlloc_1814d0	199	0.02/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T1:rg_ps2_main	FileSlotOpen_180710	199	0.02/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T1:rg_ps2_main	FileSlotOpen_180710	199	0.02/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T1:rg_ps2_main	FileSlotClose_180540	172	0.02/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T1:rg_ps2_main	FileSlotClose_180540	172	0.02/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T6:CdDiskWatchThread_17fdc0	CdDiskWatchThread_17fdc0	98	0.01/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T6:CdDiskWatchThread_17fdc0	CdDiskWatchThread_17fdc0	98	0.01/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T1:rg_ps2_main	FileSlotRead_180aa0	87	0.01/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T1:rg_ps2_main	FileSlotRead_180aa0	87	0.01/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T2:FileReqThread_182c30	FileSlotClose_180540	24	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T2:FileReqThread_182c30	FileSlotClose_180540	24	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T2:FileReqThread_182c30	FileSlotRead_180aa0	24	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T2:FileReqThread_182c30	FileSlotRead_180aa0	24	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T8:SoundStreamThreadMain_1c1050	FileSlotRead_180aa0	9	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T8:SoundStreamThreadMain_1c1050	FileSlotRead_180aa0	9	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T1:rg_ps2_main	FileCdSearchLocked_180360	7	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T1:rg_ps2_main	FileCdSearchLocked_180360	7	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T9:SoundStreamThreadMain_1c1050	FileSlotRead_180aa0	6	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T9:SoundStreamThreadMain_1c1050	FileSlotRead_180aa0	6	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T10:SoundStreamThreadMain_1c1050	FileSlotRead_180aa0	3	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T10:SoundStreamThreadMain_1c1050	FileSlotRead_180aa0	3	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T9:SoundStreamThreadMain_1c1050	FileSlotAlloc_1814d0	2	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T9:SoundStreamThreadMain_1c1050	FileSlotAlloc_1814d0	2	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T9:SoundStreamThreadMain_1c1050	FileSlotOpen_180710	2	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T9:SoundStreamThreadMain_1c1050	FileSlotOpen_180710	2	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T10:SoundStreamThreadMain_1c1050	FileSlotAlloc_1814d0	2	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T10:SoundStreamThreadMain_1c1050	FileSlotAlloc_1814d0	2	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T10:SoundStreamThreadMain_1c1050	FileSlotOpen_180710	2	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T10:SoundStreamThreadMain_1c1050	FileSlotOpen_180710	2	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T8:SoundStreamThreadMain_1c1050	FileSlotAlloc_1814d0	1	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T8:SoundStreamThreadMain_1c1050	FileSlotAlloc_1814d0	1	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T8:SoundStreamThreadMain_1c1050	FileSlotOpen_180710	1	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T8:SoundStreamThreadMain_1c1050	FileSlotOpen_180710	1	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T9:SoundStreamThreadMain_1c1050	FileSlotClose_180540	1	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T9:SoundStreamThreadMain_1c1050	FileSlotClose_180540	1	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T10:SoundStreamThreadMain_1c1050	FileSlotClose_180540	1	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T10:SoundStreamThreadMain_1c1050	FileSlotClose_180540	1	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	WS	T1:rg_ps2_main	FileSlotOpenPath_1810a0	1	0.00/field	
+sema_op	poweron9000-hle	S1/2@FileSysInit_1818e0 x2	SS	T1:rg_ps2_main	FileSlotOpenPath_1810a0	1	0.00/field	
+sema	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	init=0 max=1	creator=FileReqThreadInit_182af0	blocked_waits=2127	6381		
+sema_op	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	WS	T2:FileReqThread_182c30	FileReqThread_182c30	2127	0.24/field	
+sema_op	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	PS	T1:rg_ps2_main	FileReqThreadResume_182670	1814	0.20/field	
+sema_op	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	SS	T1:rg_ps2_main	FileReqThreadResume_182670	1814	0.20/field	
+sema_op	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	PS	T1:rg_ps2_main	FileReqAnyIncomplete_1825f0	311	0.03/field	
+sema_op	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	SS	T1:rg_ps2_main	FileReqAnyIncomplete_1825f0	311	0.03/field	
+sema_op	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	PS	T1:rg_ps2_main	FileReqCancelAll_182510	1	0.00/field	
+sema_op	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	SS	T1:rg_ps2_main	FileReqCancelAll_182510	1	0.00/field	
+sema_op	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	SS	T2:FileReqThread_182c30	FileReqThread_182c30	1	0.00/field	
+sema_op	poweron9000-hle	S3/4@FileReqThreadInit_182af0 x2	WS	T1:rg_ps2_main	FileReqCancelAll_182510	1	0.00/field	
+sema	poweron9000-hle	S6@IopHeapInitOnce_1c2310	init=1 max=1	creator=IopHeapInitOnce_1c2310	blocked_waits=0	0		
+sema	poweron9000-hle	S7/8@SoundSysInit_1b6f70 x2	init=0 max=1	creator=SoundSysInit_1b6f70	blocked_waits=1	1		
+sema_op	poweron9000-hle	S7/8@SoundSysInit_1b6f70 x2	WS	T3:SoundCmdWorkerThread_1b6c10	SoundCmdWorkerThread_1b6c10	1	0.00/field	
+sema	poweron9000-hle	S9@SoundSysInit_1b6f70	init=1 max=1	creator=SoundSysInit_1b6f70	blocked_waits=0	0		
+sema	poweron9000-hle	S10@SoundThreadStart_1b6160	init=0 max=1	creator=SoundThreadStart_1b6160	blocked_waits=1	1		
+sema_op	poweron9000-hle	S10@SoundThreadStart_1b6160	WS	T4:SoundThreadMain_1b6260	SoundThreadMain_1b6260	1	0.00/field	
+sema	poweron9000-hle	S11@SoundThreadStart_1b6160	init=1 max=1	creator=SoundThreadStart_1b6160	blocked_waits=0	2		
+sema_op	poweron9000-hle	S11@SoundThreadStart_1b6160	WS	T4:SoundThreadMain_1b6260	SoundThreadMain_1b6260	1	0.00/field	
+sema_op	poweron9000-hle	S11@SoundThreadStart_1b6160	SS	T4:SoundThreadMain_1b6260	SoundThreadMain_1b6260	1	0.00/field	
+sema	poweron9000-hle	S12@SoundRpcInit_1bc840	init=0 max=1	creator=SoundRpcInit_1bc840	blocked_waits=8972	26914		
+sema_op	poweron9000-hle	S12@SoundRpcInit_1bc840	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotThreadMain_1bc520	8972	1.00/field	
+sema_op	poweron9000-hle	S12@SoundRpcInit_1bc840	iPS	H:INTC:VBLANK_END:SoundVblankIntrHandler_1bd6f0	SoundVblankIntrHandler_1bd6f0	8969	1.00/field	
+sema_op	poweron9000-hle	S12@SoundRpcInit_1bc840	iSS	H:INTC:VBLANK_END:SoundVblankIntrHandler_1bd6f0	SoundVblankIntrHandler_1bd6f0	8969	1.00/field	
+sema_op	poweron9000-hle	S12@SoundRpcInit_1bc840	PS	T1:rg_ps2_main	SoundStreamSlotQueueStop_1bcd40	2	0.00/field	
+sema_op	poweron9000-hle	S12@SoundRpcInit_1bc840	SS	T1:rg_ps2_main	SoundStreamSlotQueueStop_1bcd40	2	0.00/field	
+sema	poweron9000-hle	S13@SoundRpcInit_1bc840	init=1 max=1	creator=SoundRpcInit_1bc840	blocked_waits=0	0		
+sema	poweron9000-hle	S14@SoundSpuInit_1bb710	init=1 max=1	creator=SoundSpuInit_1bb710	blocked_waits=0	0		
+sema	poweron9000-hle	S15@CdDiskWatchInit_17ff70	init=0 max=1	creator=CdDiskWatchInit_17ff70	blocked_waits=99	295		
+sema_op	poweron9000-hle	S15@CdDiskWatchInit_17ff70	WS	T6:CdDiskWatchThread_17fdc0	CdDiskWatchThread_17fdc0	99	0.01/field	
+sema_op	poweron9000-hle	S15@CdDiskWatchInit_17ff70	iPS	H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	CdDiskWatchWakeIsr_17ff10	98	0.01/field	
+sema_op	poweron9000-hle	S15@CdDiskWatchInit_17ff70	iSS	H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	CdDiskWatchWakeIsr_17ff10	98	0.01/field	
+sema	poweron9000-hle	S16@SysTickThreadStart_1c3470	init=0 max=1	creator=SysTickThreadStart_1c3470	blocked_waits=8966	17932		
+sema_op	poweron9000-hle	S16@SysTickThreadStart_1c3470	WS	T7:SysTickThreadMain_1c33f0	SysTickThreadMain_1c33f0	8966	1.00/field	
+sema_op	poweron9000-hle	S16@SysTickThreadStart_1c3470	iSS	H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	SysTickThreadSignalIsr_1c34f0	8966	1.00/field	
+sema	poweron9000-hle	S17@GfxSysInit_15dd20	init=0 max=1	creator=GfxSysInit_15dd20	blocked_waits=8900	17800		
+sema_op	poweron9000-hle	S17@GfxSysInit_15dd20	iSS	H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	GfxVblankStartHandler_15df20	8900	0.99/field	
+sema_op	poweron9000-hle	S17@GfxSysInit_15dd20	WS	T1:rg_ps2_main	WaitVsyncCount_15de90	7870	0.87/field	
+sema_op	poweron9000-hle	S17@GfxSysInit_15dd20	WS	T11:LoadingScreenThread_343510	WaitVsyncCount_15de90	1030	0.11/field	
+sema	poweron9000-hle	S18@GfxSysInit_15dd20	init=1 max=1	creator=GfxSysInit_15dd20	blocked_waits=0	24128		
+sema_op	poweron9000-hle	S18@GfxSysInit_15dd20	WS	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	7032	0.78/field	
+sema_op	poweron9000-hle	S18@GfxSysInit_15dd20	SS	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	7032	0.78/field	
+sema_op	poweron9000-hle	S18@GfxSysInit_15dd20	WS	T1:rg_ps2_main	Vif1DmaStart_15e070	3999	0.44/field	
+sema_op	poweron9000-hle	S18@GfxSysInit_15dd20	SS	T1:rg_ps2_main	Vif1DmaStart_15e070	3999	0.44/field	
+sema_op	poweron9000-hle	S18@GfxSysInit_15dd20	WS	T11:LoadingScreenThread_343510	Vif1DmaHandlerShutdown_15dfb0	517	0.06/field	
+sema_op	poweron9000-hle	S18@GfxSysInit_15dd20	SS	T11:LoadingScreenThread_343510	Vif1DmaHandlerShutdown_15dfb0	517	0.06/field	
+sema_op	poweron9000-hle	S18@GfxSysInit_15dd20	WS	T11:LoadingScreenThread_343510	Vif1DmaStart_15e070	516	0.06/field	
+sema_op	poweron9000-hle	S18@GfxSysInit_15dd20	SS	T11:LoadingScreenThread_343510	Vif1DmaStart_15e070	516	0.06/field	
+sema	poweron9000-hle	S19@title_TitleObjectsCreate_4ecbc0	init=11 max=1	creator=title_TitleObjectsCreate_4ecbc0	blocked_waits=0	0		
+sema	poweron9000-hle	S22/33/32@Vif1DmaStart_15e070 x4515	init=0 max=1	creator=Vif1DmaStart_15e070	blocked_waits=3011	13545		
+sema_op	poweron9000-hle	S22/33/32@Vif1DmaStart_15e070 x4515	iSS	H:INTC:VIF1:Vif1IntcHandler_15e170	Vif1IntcHandler_15e170	4515	0.50/field	
+sema_op	poweron9000-hle	S22/33/32@Vif1DmaStart_15e070 x4515	WS	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	3999	0.44/field	
+sema_op	poweron9000-hle	S22/33/32@Vif1DmaStart_15e070 x4515	DS	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	3999	0.44/field	
+sema_op	poweron9000-hle	S22/33/32@Vif1DmaStart_15e070 x4515	WS	T11:LoadingScreenThread_343510	Vif1DmaHandlerShutdown_15dfb0	516	0.06/field	
+sema_op	poweron9000-hle	S22/33/32@Vif1DmaStart_15e070 x4515	DS	T11:LoadingScreenThread_343510	Vif1DmaHandlerShutdown_15dfb0	516	0.06/field	
+sema	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	init=1 max=1	creator=RingBufInit_1c1710	blocked_waits=0	267744		
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufConsume_1c1bd0	62820	6.98/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufConsume_1c1bd0	62820	6.98/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufRead_1c1890	62819	6.98/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufRead_1c1890	62819	6.98/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T8:SoundStreamThreadMain_1c1050	RingBufGetWriteSpan_1c2010	1310	0.15/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T8:SoundStreamThreadMain_1c1050	RingBufGetWriteSpan_1c2010	1310	0.15/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T8:SoundStreamThreadMain_1c1050	RingBufFillFromFile_1c1090	1310	0.15/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T8:SoundStreamThreadMain_1c1050	RingBufFillFromFile_1c1090	1310	0.15/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T1:rg_ps2_main	RingBufGetWriteSpan_1c2010	1255	0.14/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T1:rg_ps2_main	RingBufGetWriteSpan_1c2010	1255	0.14/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T1:rg_ps2_main	RingBufGetReadSpan_1c1f30	1255	0.14/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T1:rg_ps2_main	RingBufGetReadSpan_1c1f30	1255	0.14/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T9:SoundStreamThreadMain_1c1050	RingBufFillFromFile_1c1090	1160	0.13/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T9:SoundStreamThreadMain_1c1050	RingBufFillFromFile_1c1090	1160	0.13/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T9:SoundStreamThreadMain_1c1050	RingBufGetWriteSpan_1c2010	846	0.09/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T9:SoundStreamThreadMain_1c1050	RingBufGetWriteSpan_1c2010	846	0.09/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T10:SoundStreamThreadMain_1c1050	RingBufFillFromFile_1c1090	698	0.08/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T10:SoundStreamThreadMain_1c1050	RingBufFillFromFile_1c1090	698	0.08/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T10:SoundStreamThreadMain_1c1050	RingBufGetWriteSpan_1c2010	351	0.04/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T10:SoundStreamThreadMain_1c1050	RingBufGetWriteSpan_1c2010	351	0.04/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufGetReadSpan_1c1f30	10	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufGetReadSpan_1c1f30	10	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T8:SoundStreamThreadMain_1c1050	RingBufCommitFill_1c1da0	9	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T8:SoundStreamThreadMain_1c1050	RingBufCommitFill_1c1da0	9	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T1:rg_ps2_main	RingBufInit_1c1710	6	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T1:rg_ps2_main	RingBufInit_1c1710	6	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufSetLimit_1c1b70	5	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufSetLimit_1c1b70	5	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T9:SoundStreamThreadMain_1c1050	RingBufCommitFill_1c1da0	5	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T9:SoundStreamThreadMain_1c1050	RingBufCommitFill_1c1da0	5	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufClearLoop_1c1610	4	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufClearLoop_1c1610	4	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufGetLoopFlag_1c15b0	2	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufGetLoopFlag_1c15b0	2	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufGetEndFlag_1c1b10	2	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufGetEndFlag_1c1b10	2	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufReset_1c1810	2	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufReset_1c1810	2	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T10:SoundStreamThreadMain_1c1050	RingBufCommitFill_1c1da0	2	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T10:SoundStreamThreadMain_1c1050	RingBufCommitFill_1c1da0	2	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufSetLoop_1c1670	1	0.00/field	
+sema_op	poweron9000-hle	S22/24/28@RingBufInit_1c1710 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufSetLoop_1c1670	1	0.00/field	
+sema	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	init=1 max=1	creator=SoundStreamInit_1c0ea0	blocked_waits=0	30202		
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	WS	T8:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	5245	0.58/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	SS	T8:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	5245	0.58/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueFill_1bfdf0	5014	0.56/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueFill_1bfdf0	5014	0.56/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	WS	T9:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	3398	0.38/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	SS	T9:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	3398	0.38/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	WS	T10:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	1418	0.16/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	SS	T10:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	1418	0.16/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueOpen_1c0360	10	0.00/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueOpen_1c0360	10	0.00/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	WS	T1:rg_ps2_main	SoundStreamSetFillThreshold_1bfd50	7	0.00/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	SS	T1:rg_ps2_main	SoundStreamSetFillThreshold_1bfd50	7	0.00/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamWaitIdle_1c0510	7	0.00/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamWaitIdle_1c0510	7	0.00/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueClose_1c01b0	2	0.00/field	
+sema_op	poweron9000-hle	S21/25/29@SoundStreamInit_1c0ea0 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueClose_1c01b0	2	0.00/field	
+sema	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	init=0 max=1	creator=SoundStreamInit_1c0ea0	blocked_waits=2512	7545		
+sema_op	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	PS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueFill_1bfdf0	2507	0.28/field	
+sema_op	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueFill_1bfdf0	2507	0.28/field	
+sema_op	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	WS	T8:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	1312	0.15/field	
+sema_op	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	WS	T9:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	850	0.09/field	
+sema_op	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	WS	T10:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	355	0.04/field	
+sema_op	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	PS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueOpen_1c0360	5	0.00/field	
+sema_op	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueOpen_1c0360	5	0.00/field	
+sema_op	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	PS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueClose_1c01b0	2	0.00/field	
+sema_op	poweron9000-hle	S20/26/30@SoundStreamInit_1c0ea0 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueClose_1c01b0	2	0.00/field	
+sema	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	init=1 max=1	creator=SemaHandleCreate_1c2190	blocked_waits=0	73032		
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotUpdate_1bea70	20689	2.30/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotUpdate_1bea70	20689	2.30/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	WS	T1:rg_ps2_main	SoundStreamSlotSetVolume_1bca60	8787	0.98/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	SS	T1:rg_ps2_main	SoundStreamSlotSetVolume_1bca60	8787	0.98/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	WS	T1:rg_ps2_main	SoundStreamSlotQueryState_1bd210	3512	0.39/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	SS	T1:rg_ps2_main	SoundStreamSlotQueryState_1bd210	3512	0.39/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	WS	T1:rg_ps2_main	SoundStreamSlotGetState_1be710	3510	0.39/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	SS	T1:rg_ps2_main	SoundStreamSlotGetState_1be710	3510	0.39/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	WS	T1:rg_ps2_main	SoundStreamSlotQueueOpen_1be8a0	10	0.00/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	SS	T1:rg_ps2_main	SoundStreamSlotQueueOpen_1be8a0	10	0.00/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	WS	T1:rg_ps2_main	SoundStreamSlotResume_1bcc30	4	0.00/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	SS	T1:rg_ps2_main	SoundStreamSlotResume_1bcc30	4	0.00/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	WS	T1:rg_ps2_main	SoundStreamSlotPause_1bcb20	2	0.00/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	SS	T1:rg_ps2_main	SoundStreamSlotPause_1bcb20	2	0.00/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	WS	T1:rg_ps2_main	SoundStreamSlotQueueStop_1bcd40	2	0.00/field	
+sema_op	poweron9000-hle	S23/27/31@SemaHandleCreate_1c2190 x3	SS	T1:rg_ps2_main	SoundStreamSlotQueueStop_1bcd40	2	0.00/field	
+handler	poweron9000-hle	ALARM	delay_alarm_cb			1713843	190.43/field	
+handler	poweron9000-hle	INTC:VBLANK_END	SoundVblankIntrHandler_1bd6f0			8969	1.00/field	
+handler	poweron9000-hle	INTC:VBLANK_START	GfxVblankStartHandler_15df20			8967	1.00/field	
+handler	poweron9000-hle	INTC:VIF1	Vif1IntcHandler_15e170			4515	0.50/field	
+handler	poweron9000-hle	DMAC:SIF0	sif0_dmac_handler			56	0.01/field	
+install	poweron9000-hle	INTC:VBLANK_END	SoundVblankIntrHandler_1bd6f0	T1:rg_ps2_main	SoundRpcInit_1bc840	1	next=-1	first vbl 32
+install	poweron9000-hle	INTC:VIF1	Vif1IntcHandler_15e170	T1:rg_ps2_main	Vif1DmaStart_15e070	3999	next=-1	first vbl 96
+install	poweron9000-hle	INTC:VIF1	Vif1IntcHandler_15e170	T11:LoadingScreenThread_343510	Vif1DmaStart_15e070	516	next=-1	first vbl 2110
+call	poweron9000-hle	CP	T1:rg_ps2_main->20	T1:rg_ps2_main	Main_15e700	1	0.00/field	
+call	poweron9000-hle	CT	SoundStreamThreadMain_1c1050 prio=15	T1:rg_ps2_main	SoundStreamInit_1c0ea0	3	0.00/field	
+call	poweron9000-hle	CT	FileReqThread_182c30 prio=19	T1:rg_ps2_main	FileReqThreadInit_182af0	1	0.00/field	
+call	poweron9000-hle	CT	SoundCmdWorkerThread_1b6c10 prio=10	T1:rg_ps2_main	SoundSysInit_1b6f70	1	0.00/field	
+call	poweron9000-hle	CT	SoundThreadMain_1b6260 prio=9	T1:rg_ps2_main	SoundThreadStart_1b6160	1	0.00/field	
+call	poweron9000-hle	CT	SoundStreamSlotThreadMain_1bc520 prio=15	T1:rg_ps2_main	SoundRpcInit_1bc840	1	0.00/field	
+call	poweron9000-hle	CT	CdDiskWatchThread_17fdc0 prio=15	T1:rg_ps2_main	CdDiskWatchInit_17ff70	1	0.00/field	
+call	poweron9000-hle	CT	SysTickThreadMain_1c33f0 prio=18	T1:rg_ps2_main	SysTickThreadStart_1c3470	1	0.00/field	
+call	poweron9000-hle	CT	LoadingScreenThread_343510 prio=20	T1:rg_ps2_main	LoadingScreenStart_343240	1	0.00/field	
+call	poweron9000-hle	DI	INTC:VIF1	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	3999	0.44/field	
+call	poweron9000-hle	DI	INTC:VIF1	T11:LoadingScreenThread_343510	Vif1DmaHandlerShutdown_15dfb0	516	0.06/field	
+call	poweron9000-hle	DI	INTC:VBLANK_END	T1:rg_ps2_main	SoundRpcInit_1bc840	1	0.00/field	
+call	poweron9000-hle	DL	10us	T1:rg_ps2_main	GameSessionInit_1f5d80	1697100	188.57/field	
+call	poweron9000-hle	DL	10us	T1:rg_ps2_main	DataTableBubbleSort_368220	15488	1.72/field	
+call	poweron9000-hle	DL	10us	T1:rg_ps2_main	CfgVmRun_42fa20	445	0.05/field	
+call	poweron9000-hle	DL	10us	T1:rg_ps2_main	DataTableRunCfg_3683e0	351	0.04/field	
+call	poweron9000-hle	DL	100us	T1:rg_ps2_main	LoadingScreenStop_3431e0	332	0.04/field	
+call	poweron9000-hle	DL	10us	T1:rg_ps2_main	MapLoadFromGameDataAndWait_2f4920	84	0.01/field	
+call	poweron9000-hle	DL	10us	T1:rg_ps2_main	WorldDataCmdSectionBegin_3b9f20	38	0.00/field	
+call	poweron9000-hle	DL	10us	T1:rg_ps2_main	PartyLoadAndPlaceMembersMaybe_2f4b00	5	0.00/field	
+call	poweron9000-hle	DT	T11:LoadingScreenThread_343510	T1:rg_ps2_main	LoadingScreenStop_3431e0	1	0.00/field	
+call	poweron9000-hle	DX		T1:rg_ps2_main	SoundCalcDistVolPan_1b7de0	10119	1.12/field	
+call	poweron9000-hle	DX		T1:rg_ps2_main	WaitVsyncCount_15de90	7870	0.87/field	
+call	poweron9000-hle	DX		T1:rg_ps2_main	VoBufIncCount_1d4a10	3007	0.33/field	
+call	poweron9000-hle	DX		T2:FileReqThread_182c30	FileReqThread_182c30	2173	0.24/field	
+call	poweron9000-hle	DX		T11:LoadingScreenThread_343510	WaitVsyncCount_15de90	1030	0.11/field	
+call	poweron9000-hle	DX		T1:rg_ps2_main	GfxSysInit_15dd20	1	0.00/field	
+call	poweron9000-hle	EI	INTC:VIF1	T1:rg_ps2_main	Vif1DmaStart_15e070	3999	0.44/field	
+call	poweron9000-hle	EI	INTC:VIF1	T11:LoadingScreenThread_343510	Vif1DmaStart_15e070	516	0.06/field	
+call	poweron9000-hle	EI	INTC:VBLANK_END	T1:rg_ps2_main	SoundRpcInit_1bc840	1	0.00/field	
+call	poweron9000-hle	EX		T1:rg_ps2_main	SoundCalcDistVolPan_1b7de0	10119	1.12/field	
+call	poweron9000-hle	EX		H:INTC:VBLANK_END:SoundVblankIntrHandler_1bd6f0	SoundVblankIntrHandler_1bd6f0	8969	1.00/field	
+call	poweron9000-hle	EX		H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	GfxVblankStartHandler_15df20	8967	1.00/field	
+call	poweron9000-hle	EX		T1:rg_ps2_main	WaitVsyncCount_15de90	7870	0.87/field	
+call	poweron9000-hle	EX		H:INTC:VIF1:Vif1IntcHandler_15e170	Vif1IntcHandler_15e170	4515	0.50/field	
+call	poweron9000-hle	EX		T1:rg_ps2_main	VoBufIncCount_1d4a10	3007	0.33/field	
+call	poweron9000-hle	EX		T2:FileReqThread_182c30	FileReqThread_182c30	2173	0.24/field	
+call	poweron9000-hle	EX		T11:LoadingScreenThread_343510	WaitVsyncCount_15de90	1030	0.11/field	
+call	poweron9000-hle	EX		T1:rg_ps2_main	GfxSysInit_15dd20	1	0.00/field	
+call	poweron9000-hle	RI		T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	3999	0.44/field	
+call	poweron9000-hle	RI		T11:LoadingScreenThread_343510	Vif1DmaHandlerShutdown_15dfb0	516	0.06/field	
+call	poweron9000-hle	RQ	prio=20	T1:rg_ps2_main	ThreadYield_1d2b70	12060	1.34/field	
+call	poweron9000-hle	ST	T2:FileReqThread_182c30	T1:rg_ps2_main	FileReqThreadInit_182af0	1	0.00/field	
+call	poweron9000-hle	ST	T3:SoundCmdWorkerThread_1b6c10	T1:rg_ps2_main	SoundSysInit_1b6f70	1	0.00/field	
+call	poweron9000-hle	ST	T4:SoundThreadMain_1b6260	T1:rg_ps2_main	SoundThreadStart_1b6160	1	0.00/field	
+call	poweron9000-hle	ST	T5:SoundStreamSlotThreadMain_1bc520	T1:rg_ps2_main	SoundRpcInit_1bc840	1	0.00/field	
+call	poweron9000-hle	ST	T6:CdDiskWatchThread_17fdc0	T1:rg_ps2_main	CdDiskWatchInit_17ff70	1	0.00/field	
+call	poweron9000-hle	ST	T7:SysTickThreadMain_1c33f0	T1:rg_ps2_main	SysTickThreadStart_1c3470	1	0.00/field	
+call	poweron9000-hle	ST	T8:SoundStreamThreadMain_1c1050	T1:rg_ps2_main	SoundStreamInit_1c0ea0	1	0.00/field	
+call	poweron9000-hle	ST	T9:SoundStreamThreadMain_1c1050	T1:rg_ps2_main	SoundStreamInit_1c0ea0	1	0.00/field	
+call	poweron9000-hle	ST	T10:SoundStreamThreadMain_1c1050	T1:rg_ps2_main	SoundStreamInit_1c0ea0	1	0.00/field	
+call	poweron9000-hle	ST	T11:LoadingScreenThread_343510	T1:rg_ps2_main	LoadingScreenStart_343240	1	0.00/field	
+call	poweron9000-hle	TT	T11:LoadingScreenThread_343510	T1:rg_ps2_main	LoadingScreenStop_3431e0	1	0.00/field	
+kwait	poweron9000-hle	vblank		T1:rg_ps2_main		98	0.01/field	
+kwait	poweron9000-hle	vblank		T11:LoadingScreenThread_343510		1	0.00/field	
+timer_read	poweron9000-hle	10000000		T1:rg_ps2_main		11999	1.33/field	
+timer_read	poweron9000-hle	10000000		H:INTC:VIF1:Vif1IntcHandler_15e170		4515	0.50/field	
+timer_read	poweron9000-hle	10000000		T11:LoadingScreenThread_343510		1548	0.17/field	
+thread	battle+90-native	T1	rg_ps2_main	prio=20	creator=- stack=?	180	2.00/field	vbl 23000..23089
+thread	battle+90-native	T2	FileReqThread_182c30	prio=19	creator=- stack=?	45	0.50/field	vbl 23000..23088
+thread	battle+90-native	T5	SoundStreamSlotThreadMain_1bc520	prio=15	creator=- stack=?	90	1.00/field	vbl 23000..23089
+thread	battle+90-native	T6	CdDiskWatchThread_17fdc0	prio=15	creator=- stack=?	3	0.03/field	vbl 23015..23075
+thread	battle+90-native	T7	SysTickThreadMain_1c33f0	prio=18	creator=- stack=?	90	1.00/field	vbl 23000..23089
+thread	battle+90-native	T8	SoundStreamThreadMain_1c1050	prio=15	creator=- stack=?	90	1.00/field	vbl 23000..23089
+sema	battle+90-native	S18@-	init=? max=?	creator=-	blocked_waits=0	180		
+sema_op	battle+90-native	S18@-	WS	T1:rg_ps2_main	Vif1DmaStart_15e070	45	0.50/field	
+sema_op	battle+90-native	S18@-	SS	T1:rg_ps2_main	Vif1DmaStart_15e070	45	0.50/field	
+sema_op	battle+90-native	S18@-	WS	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	45	0.50/field	
+sema_op	battle+90-native	S18@-	SS	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	45	0.50/field	
+sema	battle+90-native	S12@-	init=? max=?	creator=-	blocked_waits=90	270		
+sema_op	battle+90-native	S12@-	iPS	H:INTC:VBLANK_END:SoundVblankIntrHandler_1bd6f0	SoundVblankIntrHandler_1bd6f0	90	1.00/field	
+sema_op	battle+90-native	S12@-	iSS	H:INTC:VBLANK_END:SoundVblankIntrHandler_1bd6f0	SoundVblankIntrHandler_1bd6f0	90	1.00/field	
+sema_op	battle+90-native	S12@-	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotThreadMain_1bc520	90	1.00/field	
+sema	battle+90-native	S23@-	init=? max=?	creator=-	blocked_waits=0	450		
+sema_op	battle+90-native	S23@-	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotUpdate_1bea70	90	1.00/field	
+sema_op	battle+90-native	S23@-	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotUpdate_1bea70	90	1.00/field	
+sema_op	battle+90-native	S23@-	WS	T1:rg_ps2_main	SoundStreamSlotQueryState_1bd210	45	0.50/field	
+sema_op	battle+90-native	S23@-	SS	T1:rg_ps2_main	SoundStreamSlotQueryState_1bd210	45	0.50/field	
+sema_op	battle+90-native	S23@-	WS	T1:rg_ps2_main	SoundStreamSlotGetState_1be710	45	0.50/field	
+sema_op	battle+90-native	S23@-	SS	T1:rg_ps2_main	SoundStreamSlotGetState_1be710	45	0.50/field	
+sema_op	battle+90-native	S23@-	WS	T1:rg_ps2_main	SoundStreamSlotSetVolume_1bca60	45	0.50/field	
+sema_op	battle+90-native	S23@-	SS	T1:rg_ps2_main	SoundStreamSlotSetVolume_1bca60	45	0.50/field	
+sema	battle+90-native	S22@-	init=? max=?	creator=-	blocked_waits=0	9632		
+sema_op	battle+90-native	S22@-	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufRead_1c1890	2272	25.24/field	
+sema_op	battle+90-native	S22@-	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufRead_1c1890	2272	25.24/field	
+sema_op	battle+90-native	S22@-	WS	T5:SoundStreamSlotThreadMain_1bc520	RingBufConsume_1c1bd0	2272	25.24/field	
+sema_op	battle+90-native	S22@-	SS	T5:SoundStreamSlotThreadMain_1bc520	RingBufConsume_1c1bd0	2272	25.24/field	
+sema_op	battle+90-native	S22@-	WS	T8:SoundStreamThreadMain_1c1050	RingBufGetWriteSpan_1c2010	90	1.00/field	
+sema_op	battle+90-native	S22@-	SS	T8:SoundStreamThreadMain_1c1050	RingBufGetWriteSpan_1c2010	90	1.00/field	
+sema_op	battle+90-native	S22@-	WS	T8:SoundStreamThreadMain_1c1050	RingBufFillFromFile_1c1090	90	1.00/field	
+sema_op	battle+90-native	S22@-	SS	T8:SoundStreamThreadMain_1c1050	RingBufFillFromFile_1c1090	90	1.00/field	
+sema_op	battle+90-native	S22@-	WS	T1:rg_ps2_main	RingBufGetWriteSpan_1c2010	45	0.50/field	
+sema_op	battle+90-native	S22@-	SS	T1:rg_ps2_main	RingBufGetWriteSpan_1c2010	45	0.50/field	
+sema_op	battle+90-native	S22@-	WS	T1:rg_ps2_main	RingBufGetReadSpan_1c1f30	45	0.50/field	
+sema_op	battle+90-native	S22@-	SS	T1:rg_ps2_main	RingBufGetReadSpan_1c1f30	45	0.50/field	
+sema_op	battle+90-native	S22@-	WS	T8:SoundStreamThreadMain_1c1050	RingBufCommitFill_1c1da0	2	0.02/field	
+sema_op	battle+90-native	S22@-	SS	T8:SoundStreamThreadMain_1c1050	RingBufCommitFill_1c1da0	2	0.02/field	
+sema	battle+90-native	S21@-	init=? max=?	creator=-	blocked_waits=0	1080		
+sema_op	battle+90-native	S21@-	WS	T8:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	360	4.00/field	
+sema_op	battle+90-native	S21@-	SS	T8:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	360	4.00/field	
+sema_op	battle+90-native	S21@-	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueFill_1bfdf0	180	2.00/field	
+sema_op	battle+90-native	S21@-	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueFill_1bfdf0	180	2.00/field	
+sema	battle+90-native	S20@-	init=? max=?	creator=-	blocked_waits=90	270		
+sema_op	battle+90-native	S20@-	PS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueFill_1bfdf0	90	1.00/field	
+sema_op	battle+90-native	S20@-	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamQueueFill_1bfdf0	90	1.00/field	
+sema_op	battle+90-native	S20@-	WS	T8:SoundStreamThreadMain_1c1050	SoundStreamProcessCmds_1c05f0	90	1.00/field	
+sema	battle+90-native	S27@-	init=? max=?	creator=-	blocked_waits=0	630		
+sema_op	battle+90-native	S27@-	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotUpdate_1bea70	90	1.00/field	
+sema_op	battle+90-native	S27@-	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotUpdate_1bea70	90	1.00/field	
+sema_op	battle+90-native	S27@-	WS	T1:rg_ps2_main	SoundStreamSlotQueryState_1bd210	90	1.00/field	
+sema_op	battle+90-native	S27@-	SS	T1:rg_ps2_main	SoundStreamSlotQueryState_1bd210	90	1.00/field	
+sema_op	battle+90-native	S27@-	WS	T1:rg_ps2_main	SoundStreamSlotGetState_1be710	90	1.00/field	
+sema_op	battle+90-native	S27@-	SS	T1:rg_ps2_main	SoundStreamSlotGetState_1be710	90	1.00/field	
+sema_op	battle+90-native	S27@-	WS	T1:rg_ps2_main	SoundStreamSlotSetVolume_1bca60	45	0.50/field	
+sema_op	battle+90-native	S27@-	SS	T1:rg_ps2_main	SoundStreamSlotSetVolume_1bca60	45	0.50/field	
+sema	battle+90-native	S31@-	init=? max=?	creator=-	blocked_waits=0	630		
+sema_op	battle+90-native	S31@-	WS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotUpdate_1bea70	90	1.00/field	
+sema_op	battle+90-native	S31@-	SS	T5:SoundStreamSlotThreadMain_1bc520	SoundStreamSlotUpdate_1bea70	90	1.00/field	
+sema_op	battle+90-native	S31@-	WS	T1:rg_ps2_main	SoundStreamSlotQueryState_1bd210	90	1.00/field	
+sema_op	battle+90-native	S31@-	SS	T1:rg_ps2_main	SoundStreamSlotQueryState_1bd210	90	1.00/field	
+sema_op	battle+90-native	S31@-	WS	T1:rg_ps2_main	SoundStreamSlotGetState_1be710	90	1.00/field	
+sema_op	battle+90-native	S31@-	SS	T1:rg_ps2_main	SoundStreamSlotGetState_1be710	90	1.00/field	
+sema_op	battle+90-native	S31@-	WS	T1:rg_ps2_main	SoundStreamSlotSetVolume_1bca60	45	0.50/field	
+sema_op	battle+90-native	S31@-	SS	T1:rg_ps2_main	SoundStreamSlotSetVolume_1bca60	45	0.50/field	
+sema	battle+90-native	S32@Vif1DmaStart_15e070 x45	init=0 max=1	creator=Vif1DmaStart_15e070	blocked_waits=0	135		
+sema_op	battle+90-native	S32@Vif1DmaStart_15e070 x45	iSS	H:INTC:VIF1:Vif1IntcHandler_15e170	Vif1IntcHandler_15e170	45	0.50/field	
+sema_op	battle+90-native	S32@Vif1DmaStart_15e070 x45	WS	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	45	0.50/field	
+sema_op	battle+90-native	S32@Vif1DmaStart_15e070 x45	DS	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	45	0.50/field	
+sema	battle+90-native	S5@-	init=? max=?	creator=-	blocked_waits=0	180		
+sema_op	battle+90-native	S5@-	WS	T1:rg_ps2_main	PadUpdateConnection_184a50	90	1.00/field	
+sema_op	battle+90-native	S5@-	SS	T1:rg_ps2_main	PadUpdateConnection_184a50	90	1.00/field	
+sema	battle+90-native	S3@-	init=? max=?	creator=-	blocked_waits=45	135		
+sema_op	battle+90-native	S3@-	PS	T1:rg_ps2_main	FileReqThreadResume_182670	45	0.50/field	
+sema_op	battle+90-native	S3@-	SS	T1:rg_ps2_main	FileReqThreadResume_182670	45	0.50/field	
+sema_op	battle+90-native	S3@-	WS	T2:FileReqThread_182c30	FileReqThread_182c30	45	0.50/field	
+sema	battle+90-native	S17@-	init=? max=?	creator=-	blocked_waits=90	180		
+sema_op	battle+90-native	S17@-	WS	T1:rg_ps2_main	WaitVsyncCount_15de90	90	1.00/field	
+sema_op	battle+90-native	S17@-	iSS	H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	GfxVblankStartHandler_15df20	90	1.00/field	
+sema	battle+90-native	S16@-	init=? max=?	creator=-	blocked_waits=0	90		
+sema_op	battle+90-native	S16@-	iSS	H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	SysTickThreadSignalIsr_1c34f0	90	1.00/field	
+sema	battle+90-native	S15@-	init=? max=?	creator=-	blocked_waits=3	9		
+sema_op	battle+90-native	S15@-	iPS	H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	CdDiskWatchWakeIsr_17ff10	3	0.03/field	
+sema_op	battle+90-native	S15@-	iSS	H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	CdDiskWatchWakeIsr_17ff10	3	0.03/field	
+sema_op	battle+90-native	S15@-	WS	T6:CdDiskWatchThread_17fdc0	CdDiskWatchThread_17fdc0	3	0.03/field	
+sema	battle+90-native	S2@-	init=? max=?	creator=-	blocked_waits=0	10		
+sema_op	battle+90-native	S2@-	WS	T6:CdDiskWatchThread_17fdc0	CdDiskWatchThread_17fdc0	3	0.03/field	
+sema_op	battle+90-native	S2@-	SS	T6:CdDiskWatchThread_17fdc0	CdDiskWatchThread_17fdc0	3	0.03/field	
+sema_op	battle+90-native	S2@-	WS	T8:SoundStreamThreadMain_1c1050	FileSlotRead_180aa0	2	0.02/field	
+sema_op	battle+90-native	S2@-	SS	T8:SoundStreamThreadMain_1c1050	FileSlotRead_180aa0	2	0.02/field	
+handler	battle+90-native	INTC:VBLANK_END	SoundVblankIntrHandler_1bd6f0			90	1.00/field	
+handler	battle+90-native	INTC:VBLANK_START	GfxVblankStartHandler_15df20			90	1.00/field	
+handler	battle+90-native	INTC:VIF1	Vif1IntcHandler_15e170			45	0.50/field	
+install	battle+90-native	INTC:VIF1	Vif1IntcHandler_15e170	T1:rg_ps2_main	Vif1DmaStart_15e070	45	next=-1	first vbl 23000
+call	battle+90-native	DI	INTC:VIF1	T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	45	0.50/field	
+call	battle+90-native	DX		T1:rg_ps2_main	SoundCalcDistVolPan_1b7de0	1530	17.00/field	
+call	battle+90-native	DX		T1:rg_ps2_main	WaitVsyncCount_15de90	90	1.00/field	
+call	battle+90-native	DX		T2:FileReqThread_182c30	FileReqThread_182c30	45	0.50/field	
+call	battle+90-native	EI	INTC:VIF1	T1:rg_ps2_main	Vif1DmaStart_15e070	45	0.50/field	
+call	battle+90-native	EX		T1:rg_ps2_main	SoundCalcDistVolPan_1b7de0	1530	17.00/field	
+call	battle+90-native	EX		H:INTC:VBLANK_END:SoundVblankIntrHandler_1bd6f0	SoundVblankIntrHandler_1bd6f0	90	1.00/field	
+call	battle+90-native	EX		T1:rg_ps2_main	WaitVsyncCount_15de90	90	1.00/field	
+call	battle+90-native	EX		H:INTC:VBLANK_START:GfxVblankStartHandler_15df20	GfxVblankStartHandler_15df20	90	1.00/field	
+call	battle+90-native	EX		T2:FileReqThread_182c30	FileReqThread_182c30	45	0.50/field	
+call	battle+90-native	EX		H:INTC:VIF1:Vif1IntcHandler_15e170	Vif1IntcHandler_15e170	45	0.50/field	
+call	battle+90-native	RI		T1:rg_ps2_main	Vif1DmaHandlerShutdown_15dfb0	45	0.50/field	
+timer_read	battle+90-native	10000000		T1:rg_ps2_main		135	1.50/field	
+timer_read	battle+90-native	10000000		H:INTC:VIF1:Vif1IntcHandler_15e170		45	0.50/field	

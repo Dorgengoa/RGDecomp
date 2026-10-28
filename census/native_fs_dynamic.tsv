@@ -1,0 +1,6 @@
+# fs_census.py dynamic port.jsonl: 340 reads
+file	reads	bytes	sector_aligned	max_read	past_eof	first_vbl	last_vbl	source
+DATA0_0.DAT	205	36595712	205	1048576	0	2	22964	cdvd
+DATA0_1.DAT	133	15945728	133	331776	0	7383	23292	cdvd
+DATA0_0.HD6	1	286720	1	286720	1	0	0	cdvd
+DATA0_1.HD6	1	106496	1	106496	1	0	0	cdvd

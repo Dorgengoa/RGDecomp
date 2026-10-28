@@ -1,0 +1,40 @@
+# audio_census.py dynamic
+log	command	count	first_frame	last_frame
+cmdlog.tsv	B bank load	16	64796	5869833
+cmdlog.tsv	B sequence load	3	66397	2498442
+cmdlog.tsv	K engine voice key on	116	73000	7008200
+cmdlog.tsv	P200 pcm_mixer	1	2514460	2514460
+cmdlog.tsv	P8000 pcm_mixer	1	25556	25556
+cmdlog.tsv	P8100 pcm_mixer	1	2514460	2514460
+cmdlog.tsv	T01 AllNotesOff(track)	1161	64796	5869833
+cmdlog.tsv	T02 AllSoundOff(track)	1161	64796	5869833
+cmdlog.tsv	T04 MsinCreate	12	64796	5869833
+cmdlog.tsv	T06 SeqAttach	3	69601	2514460
+cmdlog.tsv	T07 MsinAttach	13	64796	5869833
+cmdlog.tsv	T08 BankAttach	21	64796	5869833
+cmdlog.tsv	T0A SetOutputMode	1	2514460	2514460
+cmdlog.tsv	T0C SetMasterVolume	5	25556	2520865
+cmdlog.tsv	T0E SeqPlay	3	69601	2514460
+cmdlog.tsv	T0F SeqStop	25	66397	5869833
+cmdlog.tsv	T12 SeqSetVolume	38	25556	5884247
+cmdlog.tsv	T15 SeqDataRelease	1	1687218	1687218
+cmdlog.tsv	T16 MsinRelease	6	1687218	2498442
+cmdlog.tsv	T17 BankRelease	7	1687218	2498442
+cmdlog.tsv	T18 SeqDetach	5	69601	2514460
+cmdlog.tsv	T19 MsinDetach	7	1687218	2498442
+cmdlog.tsv	T1A BankDetach	9	1687218	2498442
+cmdlog.tsv	T1B KeyOff track 7	1	2517699	2517699
+cmdlog.tsv	T1D SetVolume	2	2514460	2516119
+cmdlog.tsv	T1E SetPan	1	2514460	2514460
+cmdlog.tsv	T20 KeyOn track 0	1	2498442	2498442
+cmdlog.tsv	T20 KeyOn track 3	30	6086067	6488068
+cmdlog.tsv	T20 KeyOn track 7	1	2514460	2514460
+cmdlog.tsv	T20 KeyOn track 9	1	1521468	1521468
+cmdlog.tsv	T21 EffectEnable	4	25556	1688022
+cmdlog.tsv	T22 SetReverbMode	4	25556	59190
+cmdlog.tsv	T23 SetReverbDepth	10	25556	5868231
+cmdlog.tsv	T24 SetReverbEndAddr	2	25556	25556
+cmdlog.tsv	T25 SetInputVolume	566	179381	5860191
+cmdlog.tsv	T26 SdRemote(raw) fno 80D0	3	803935	5860191
+cmdlog.tsv	T26 SdRemote(raw) fno 80E0	6	179381	5860191
+cmdlog.tsv	T26 SdRemote(raw) fno 8100	9032	179381	5858590

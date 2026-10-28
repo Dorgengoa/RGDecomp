@@ -1,0 +1,187 @@
+/* rgp:protos */
+#define RGP_SELF_StaticInitCharaGlobals_46a890 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+extern u8 D_004B6860[];
+extern u8 D_004B68C0[];
+extern u8 D_004B6920[];
+extern u8 D_004B69C0[];
+extern u8 D_004B7840[];
+extern u8 D_004B7948[];
+extern u8 D_004B7960[];
+extern u8 D_004B8660[];
+extern u8 D_004B8664[];
+extern u8 D_004B8680[];
+extern u8 D_004B8690[];
+extern u8 D_004B8A10[];
+extern u8 D_004B8820[];
+extern u8 D_004B8830[];
+extern u8 D_004B8840[];
+extern u8 D_004B8850[];
+extern u8 D_004B8860[];
+extern u8 D_004B8870[];
+extern u8 D_004B8880[];
+extern u8 D_004B8890[];
+extern u8 D_004B88A0[];
+extern u8 D_004B88B0[];
+extern u8 D_004B88C0[];
+extern u8 D_004B88D0[];
+extern u8 D_004B88E0[];
+extern u8 D_004B88F0[];
+extern u8 D_004B8900[];
+extern u8 D_004B8910[];
+extern u8 D_004B8920[];
+extern u8 D_004B8930[];
+extern u8 D_004B8940[];
+extern u8 D_004B8950[];
+extern u8 D_004B8960[];
+extern u8 D_004B8970[];
+extern u8 D_004B8980[];
+extern u8 D_004B8990[];
+extern u8 D_004B89A0[];
+extern u8 D_004B89B0[];
+extern u8 D_004B89C0[];
+extern u8 D_004B89D0[];
+extern u8 D_004B89E0[];
+extern u8 D_004B89F0[];
+extern u8 D_004B8A00[];
+extern u8 D_00471370[];
+extern u8 D_00471360[];
+extern u8 D_00471350[];
+extern u8 D_00471340[];
+extern u8 D_00471330[];
+extern u8 D_00471320[];
+extern u8 D_00471310[];
+extern u8 D_00471300[];
+extern u8 D_004712F0[];
+extern s32 D_00481A34;
+extern s32 D_00481A28;
+extern s32 D_00481A44;
+extern s32 D_00481A38;
+extern s32 D_00481A48;
+extern f32 D_00481A80;
+extern f32 D_00481A84;
+extern f32 D_0047E470;
+extern f32 D_0047D1E8;
+extern struct { void *v; s32 pad[3]; } D_004B868C;
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+typedef struct N46a890 {
+    u8 pad00[0xC];
+    void *m0C;
+    u8 pad10[0x10];
+} N46a890;
+
+void StaticInitCharaGlobals_46a890(void)
+{
+    u8 *p;
+    N46a890 *m;
+    N46a890 *n;
+
+    IosBaseInitCtor_102bd0(&D_00481A34);
+    RegisterGlobalObject_100dc0(&D_00481A34, (void *)IosBaseInitDtor_102ee0, &D_00481A28);
+    WIosBaseInitCtor_103110(&D_00481A44);
+    RegisterGlobalObject_100dc0(&D_00481A44, (void *)WIosBaseInitDtor_103420, &D_00481A38);
+    MemStackCtor_14e030(D_004B6860);
+    MemStackCtor_14e030(D_004B68C0);
+    MemStackCtor_14e030(D_004B6920);
+    p = D_004B69C0;
+    do {
+        ListNodeInit_1efa20(p);
+        MemStackCtor_14e030(p + 8);
+        CharaDataRecInit_1ee610(p);
+        p += 0x74;
+    } while (p < D_004B7840);
+    p = D_004B7840;
+    do {
+        MemStackCtor_14e030(p);
+        p += 0x58;
+    } while (p < D_004B7948);
+    CharaDataMgrInit_1edf40(D_004B69C0);
+    p = D_004B7960;
+    do {
+        MemStackCtor_14e030(p + 0xC);
+        CharaResRecInit_1f4ad0(p);
+        p += 0x68;
+    } while (p < D_004B8660);
+    IdBitmapReset_1f52b0(D_004B8664);
+    CharaResMgrInit_1f2ed0(D_004B7960);
+    m = (N46a890 *)D_004B8680;
+    DListInit_42eae0(m);
+    D_004B868C.v = D_00471370;
+    DListInit_42eae0(m);
+    D_004B868C.v = D_00471360;
+    DListInit_42eae0(m);
+    D_004B868C.v = D_00471350;
+    DListInit_42eae0(m);
+    n = (N46a890 *)D_004B8690;
+    DListInit_42eae0(n);
+    n->m0C = D_00471340;
+    DListInit_42eae0(n);
+    n->m0C = D_00471330;
+    DListInit_42eae0(n);
+    n->m0C = D_00471320;
+    DListInit_42eae0(n);
+    n = m + 1;
+    DListInit_42eae0(n);
+    n->m0C = D_00471310;
+    DListInit_42eae0(n);
+    n->m0C = D_00471300;
+    DListInit_42eae0(n);
+    n->m0C = D_004712F0;
+    DListInit_42eae0(n);
+    ActionMgrInit_2348b0(m);
+    RegisterGlobalObject_100dc0(m, (void *)ActionMgrDtor_1fdd80, &D_00481A48);
+    D_00481A84 = D_0047D1E8 * D_0047E470;
+    SurfaceParamInit_23a330(D_004B8820, 0x0, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8830, 0x1, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8840, 0x2, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8850, 0x3, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8860, 0x4, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8870, 0x5, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8880, 0x6, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8890, 0x7, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B88A0, 0x8, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B88B0, 0x9, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B88C0, 0xA, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B88D0, 0xB, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B88E0, 0xC, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B88F0, 0xD, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8900, 0xE, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8910, 0xF, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8920, 0x10, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8930, 0x11, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8940, 0x12, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8950, 0x13, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8960, 0x14, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8970, 0x15, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8980, 0x16, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8990, 0x17, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B89A0, 0x18, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B89B0, 0x19, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B89C0, 0x1A, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B89D0, 0x1B, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B89E0, 0x1C, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B89F0, 0x1D, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamInit_23a330(D_004B8A00, 0x1E, D_00481A80, D_0047E470, D_00481A84);
+    SurfaceParamCtor_23a3c0(D_004B8A10);
+}

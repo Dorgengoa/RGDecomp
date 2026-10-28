@@ -1,0 +1,283 @@
+# census: ee_syscalls
+# source: ../RGDecomp
+# commit: 2efa6b43548fed253fafdee4d22c8d61d506acde
+# binaries: ../work/SCUS_974.90 + BIN/*.BIN (retail)
+# generator: tools/census/platform/ee_syscalls.py
+# rows: 273
+# kinds: alarm=1, intc=9, prio=4, sema=63, start=14, syscall=168, thread=14
+# missing_symbols: none
+# note: values recovered by straight-line const-prop of retail code; '?' = not a constant on the straight-line path
+kind	num	symbol	addr	family_sub	site_image	caller	caller_is_game	site	game_direct	reached	via	a0	a1	a2	p_entry	p_stack	p_stack_size	p_gp	p_priority	note	src
+syscall	0x3C	entry	0x100008	crt0/crt0	main			0x1001C8	0	no											
+syscall	0x3D	entry	0x100008	crt0/crt0	main			0x1001E4	0	no											
+syscall	0x23	CrtRootExitThread_100220	0x100220	crt0/crt0	main			0x100224	0	no											
+syscall	0x80	GetGsDxDyOffset_1083b8	0x1083B8	libgraph/gs	main			0x1083BC	0	yes	sceGsSetDefDispEnv_1083c8 sceGsSetDefDBuff										
+syscall	0x00	RFU000FullReset_116180	0x116180	libkernl/syscall-stubs	main			0x116184	0	no											
+syscall	0x01	ResetEE_116190	0x116190	libkernl/syscall-stubs	main			0x116194	0	no											
+syscall	0x02	SetGsCrt	0x1161A0	libkernl/syscall-stubs	main			0x1161A4	0	yes	sceGsResetGraph_108110										
+syscall	0x03	RFU003_1161b0	0x1161B0	libkernl/syscall-stubs	main			0x1161B4	0	no											
+syscall	0x04	_Exit	0x1161C0	libkernl/syscall-stubs	main			0x1161C4	0	yes	Abort_12de80 Exit_12f4e0 __assert										
+syscall	0x05	RFU005_1161d0	0x1161D0	libkernl/syscall-stubs	main			0x1161D4	0	no											
+syscall	0x06	_LoadExecPS2	0x1161E0	libkernl/syscall-stubs	main			0x1161E4	0	no											
+syscall	0x07	ExecPS2_1161f0	0x1161F0	libkernl/syscall-stubs	main			0x1161F4	0	no											
+syscall	0x08	RFU008_116200	0x116200	libkernl/syscall-stubs	main			0x116204	0	no											
+syscall	0x09	RFU009_116210	0x116210	libkernl/syscall-stubs	main			0x116214	0	no											
+syscall	0x0A	AddSbusIntcHandler_116220	0x116220	libkernl/syscall-stubs	main			0x116224	0	no											
+syscall	0x0B	RemoveSbusIntcHandler_116230	0x116230	libkernl/syscall-stubs	main			0x116234	0	no											
+syscall	0x0C	Interrupt2Iop_116240	0x116240	libkernl/syscall-stubs	main			0x116244	0	no											
+syscall	0x0D	SetVTLBRefillHandler	0x116250	libkernl/syscall-stubs	main			0x116254	0	no											
+syscall	0x0E	SetVCommonHandler_116260	0x116260	libkernl/syscall-stubs	main			0x116264	0	no											
+syscall	0x0F	SetVInterruptHandler_116270	0x116270	libkernl/syscall-stubs	main			0x116274	0	no											
+syscall	0x10	AddIntcHandler	0x116280	libkernl/syscall-stubs	main			0x116284	3	yes	AddIntcHandler sceGsSyncVCallback_109b18										
+syscall	0x10	AddIntcHandler_2	0x116290	libkernl/syscall-stubs	main			0x116294	0	no											
+syscall	0x11	RemoveIntcHandler	0x1162A0	libkernl/syscall-stubs	main			0x1162A4	3	yes	RemoveIntcHandler sceGsResetGraph_108110 sceGsSyncVCallback_109b18										
+syscall	0x12	AddDmacHandler	0x1162B0	libkernl/syscall-stubs	main			0x1162B4	1	yes	AddDmacHandler sceSifInitRpc_119b60 CdDiskReadyNewMaybe_12a508 (+18)										
+syscall	0x12	AddDmacHandler_2	0x1162C0	libkernl/syscall-stubs	main			0x1162C4	0	yes	MpegGetPicture_111148										
+syscall	0x13	RemoveDmacHandler	0x1162D0	libkernl/syscall-stubs	main			0x1162D4	1	yes	RemoveDmacHandler sceSifRebootIop_11fcd0 MpegGetPicture_111148										
+syscall	0x14	_EnableIntc	0x1162E0	libkernl/syscall-stubs	main			0x1162E4	0	yes	EnableIntc_1170e8 sceGsSyncVCallback_109b18										
+syscall	0x15	_DisableIntc	0x1162F0	libkernl/syscall-stubs	main			0x1162F4	0	yes	DisableIntc_117080 sceGsResetGraph_108110 sceGsSyncVCallback_109b18										
+syscall	0x16	_EnableDmac	0x116300	libkernl/syscall-stubs	main			0x116304	0	yes	EnableDmac_1171b8 sceSifInitRpc_119b60 CdDiskReadyNewMaybe_12a508 (+19)										
+syscall	0x17	_DisableDmac	0x116310	libkernl/syscall-stubs	main			0x116314	0	yes	DisableDmac_117150 sceSifRebootIop_11fcd0 MpegGetPicture_111148										
+syscall	0xFC	SetAlarm_116320	0x116320	libkernl/syscall-stubs	main			0x116324	0	no											
+syscall	0xFD	ReleaseAlarm_116330	0x116330	libkernl/syscall-stubs	main			0x116334	0	no											
+syscall	-0x1A	_iEnableIntc	0x116340	libkernl/syscall-stubs	main			0x116344	0	no											
+syscall	-0x1B	_iDisableIntc	0x116350	libkernl/syscall-stubs	main			0x116354	0	no											
+syscall	-0x1C	_iEnableDmac	0x116360	libkernl/syscall-stubs	main			0x116364	0	no											
+syscall	-0x1D	_iDisableDmac	0x116370	libkernl/syscall-stubs	main			0x116374	0	no											
+syscall	-0xFE	iSetAlarm_116380	0x116380	libkernl/syscall-stubs	main			0x116384	0	no											
+syscall	-0xFF	iReleaseAlarm_116390	0x116390	libkernl/syscall-stubs	main			0x116394	0	no											
+syscall	0x20	CreateThread	0x1163A0	libkernl/syscall-stubs	main			0x1163A4	9	yes	CreateThread SdRemoteInitMasterVolume_165608										
+syscall	0x21	DeleteThread	0x1163B0	libkernl/syscall-stubs	main			0x1163B4	4	yes	DeleteThread										
+syscall	0x22	_StartThread	0x1163C0	libkernl/syscall-stubs	main			0x1163C4	0	yes	StartThread_1176e0 SdRemoteInitMasterVolume_165608										
+syscall	0x23	ExitThread_1163d0	0x1163D0	libkernl/syscall-stubs	main			0x1163D4	0	no											
+syscall	0x24	ExitDeleteThread	0x1163E0	libkernl/syscall-stubs	main			0x1163E4	2	yes	ExitDeleteThread										
+syscall	0x25	TerminateThread	0x1163F0	libkernl/syscall-stubs	main			0x1163F4	4	yes	TerminateThread										
+syscall	-0x26	iTerminateThread_116400	0x116400	libkernl/syscall-stubs	main			0x116404	0	no											
+syscall	0x27	DisableDispatchThread_116410	0x116410	libkernl/syscall-stubs	main			0x116414	0	no											
+syscall	0x28	EnableDispatchThread_116420	0x116420	libkernl/syscall-stubs	main			0x116424	0	no											
+syscall	0x29	ChangeThreadPriority	0x116430	libkernl/syscall-stubs	main			0x116434	1	yes	ChangeThreadPriority										
+syscall	-0x2A	iChangeThreadPriority_116440	0x116440	libkernl/syscall-stubs	main			0x116444	0	no											
+syscall	0x2B	RotateThreadReadyQueue	0x116450	libkernl/syscall-stubs	main			0x116454	1	yes	RotateThreadReadyQueue										
+syscall	-0x2C	iRotateThreadReadyQueue_116460	0x116460	libkernl/syscall-stubs	main			0x116464	0	no											
+syscall	0x2D	ReleaseWaitThread_116470	0x116470	libkernl/syscall-stubs	main			0x116474	0	no											
+syscall	-0x2E	iReleaseWaitThread_116480	0x116480	libkernl/syscall-stubs	main			0x116484	0	no											
+syscall	0x2F	GetThreadId	0x116490	libkernl/syscall-stubs	main			0x116494	1	yes	GetThreadId Free_130e30 Malloc_130dd8 (+30)										
+syscall	0x30	ReferThreadStatus	0x1164A0	libkernl/syscall-stubs	main			0x1164A4	0	yes	StartThread_1176e0 SdRemoteInitMasterVolume_165608										
+syscall	-0x31	iReferThreadStatus_1164b0	0x1164B0	libkernl/syscall-stubs	main			0x1164B4	0	no											
+syscall	0x32	SleepThread	0x1164C0	libkernl/syscall-stubs	main			0x1164C4	0	yes	SdRemoteInitMasterVolume_165608										
+syscall	0x33	WakeupThread	0x1164D0	libkernl/syscall-stubs	main			0x1164D4	0	no											
+syscall	-0x34	_iWakeupThread	0x1164E0	libkernl/syscall-stubs	main			0x1164E4	0	yes	sceSifInitRpc_119b60 CdDiskReadyNewMaybe_12a508 sceCdInit_12a008 (+17)										
+syscall	0x35	CancelWakeupThread_1164f0	0x1164F0	libkernl/syscall-stubs	main			0x1164F4	0	no											
+syscall	-0x36	iCancelWakeupThread_116500	0x116500	libkernl/syscall-stubs	main			0x116504	0	no											
+syscall	0x37	SuspendThread	0x116510	libkernl/syscall-stubs	main			0x116514	0	no											
+syscall	-0x38	_iSuspendThread	0x116520	libkernl/syscall-stubs	main			0x116524	0	no											
+syscall	0x39	ResumeThread_116530	0x116530	libkernl/syscall-stubs	main			0x116534	0	no											
+syscall	-0x3A	iResumeThread_116540	0x116540	libkernl/syscall-stubs	main			0x116544	0	no											
+syscall	0x3B	JoinThread_116550	0x116550	libkernl/syscall-stubs	main			0x116554	0	no											
+syscall	0x3C	SetupThread_116560	0x116560	libkernl/syscall-stubs	main			0x116564	0	no											
+syscall	0x3D	SetupHeap_116570	0x116570	libkernl/syscall-stubs	main			0x116574	0	no											
+syscall	0x3E	EndOfHeap	0x116580	libkernl/syscall-stubs	main			0x116584	0	yes	Free_130e30 Malloc_130dd8 Memalign_130ba8 (+28)										
+syscall	0x3F	RFU063_116590	0x116590	libkernl/syscall-stubs	main			0x116594	0	no											
+syscall	0x40	CreateSema	0x1165A0	libkernl/syscall-stubs	main			0x1165A4	17	yes	CreateSema DelayThread_117618 sceClose_11bbb8 (+58)										
+syscall	0x41	DeleteSema	0x1165B0	libkernl/syscall-stubs	main			0x1165B4	14	yes	DeleteSema DelayThread_117618 sceClose_11bbb8 (+59)										
+syscall	0x42	SignalSema	0x1165C0	libkernl/syscall-stubs	main			0x1165C4	73	yes	SignalSema CdDiskReadyNewMaybe_12a508 sceCdChangeThreadPriority_12ab30 (+63)										
+syscall	-0x43	iSignalSema	0x1165D0	libkernl/syscall-stubs	main			0x1165D4	5	yes	iSignalSema DelayThread_117618 sceCdSeek_12a908 (+26)										
+syscall	0x44	WaitSema	0x1165E0	libkernl/syscall-stubs	main			0x1165E4	72	yes	WaitSema DelayThread_117618 sceClose_11bbb8 (+91)										
+syscall	0x45	PollSema	0x1165F0	libkernl/syscall-stubs	main			0x1165F4	17	yes	PollSema CdDiskReadyNewMaybe_12a508 sceCdLayerSearchFile_1297e0 (+23)										
+syscall	-0x46	iPollSema	0x116600	libkernl/syscall-stubs	main			0x116604	2	yes	iPollSema										
+syscall	0x47	ReferSemaStatus_116610	0x116610	libkernl/syscall-stubs	main			0x116614	0	no											
+syscall	-0x48	iReferSemaStatus_116620	0x116620	libkernl/syscall-stubs	main			0x116624	0	no											
+syscall	0x49	RFU073_116630	0x116630	libkernl/syscall-stubs	main			0x116634	0	no											
+syscall	0x4A	SetOsdConfigParam	0x116640	libkernl/syscall-stubs	main			0x116644	0	no											
+syscall	0x4B	GetOsdConfigParam	0x116650	libkernl/syscall-stubs	main			0x116654	0	no											
+syscall	0x4C	GetGsHParam_116660	0x116660	libkernl/syscall-stubs	main			0x116664	0	no											
+syscall	0x4D	GetGsVParam_116670	0x116670	libkernl/syscall-stubs	main			0x116674	0	no											
+syscall	0x4E	SetGsHParam_116680	0x116680	libkernl/syscall-stubs	main			0x116684	0	no											
+syscall	0x4F	SetGsVParam_116690	0x116690	libkernl/syscall-stubs	main			0x116694	0	no											
+syscall	0x50	RFU080CreateEventFlag_1166a0	0x1166A0	libkernl/syscall-stubs	main			0x1166A4	0	no											
+syscall	0x51	RFU081DeleteEventFlag_1166b0	0x1166B0	libkernl/syscall-stubs	main			0x1166B4	0	no											
+syscall	0x52	RFU082SetEventFlag_1166c0	0x1166C0	libkernl/syscall-stubs	main			0x1166C4	0	no											
+syscall	-0x53	RFU083iSetEventFlag_1166d0	0x1166D0	libkernl/syscall-stubs	main			0x1166D4	0	no											
+syscall	0x54	RFU084ClearEventFlag_1166e0	0x1166E0	libkernl/syscall-stubs	main			0x1166E4	0	no											
+syscall	-0x55	RFU085iClearEventFlag_1166f0	0x1166F0	libkernl/syscall-stubs	main			0x1166F4	0	no											
+syscall	0x56	RFU086WaitEventFlag_116700	0x116700	libkernl/syscall-stubs	main			0x116704	0	no											
+syscall	0x57	RFU087PollEventFlag_116710	0x116710	libkernl/syscall-stubs	main			0x116714	0	no											
+syscall	-0x58	RFU088iPollEventFlag_116720	0x116720	libkernl/syscall-stubs	main			0x116724	0	no											
+syscall	0x59	RFU089ReferEventFlagStatus_116730	0x116730	libkernl/syscall-stubs	main			0x116734	0	no											
+syscall	-0x5A	RFU090iReferEventFlagStatus_116740	0x116740	libkernl/syscall-stubs	main			0x116744	0	no											
+syscall	0x5B	RFU091_116750	0x116750	libkernl/syscall-stubs	main			0x116754	0	no											
+syscall	0x5C	EnableIntcHandler_116760	0x116760	libkernl/syscall-stubs	main			0x116764	0	no											
+syscall	-0x5C	iEnableIntcHandler_116770	0x116770	libkernl/syscall-stubs	main			0x116774	0	no											
+syscall	0x5D	DisableIntcHandler_116780	0x116780	libkernl/syscall-stubs	main			0x116784	0	no											
+syscall	-0x5D	iDisableIntcHandler_116790	0x116790	libkernl/syscall-stubs	main			0x116794	0	no											
+syscall	0x5E	EnableDmacHandler_1167a0	0x1167A0	libkernl/syscall-stubs	main			0x1167A4	0	no											
+syscall	-0x5E	iEnableDmacHandler_1167b0	0x1167B0	libkernl/syscall-stubs	main			0x1167B4	0	no											
+syscall	0x5F	DisableDmacHandler_1167c0	0x1167C0	libkernl/syscall-stubs	main			0x1167C4	0	no											
+syscall	-0x5F	iDisableDmacHandler_1167d0	0x1167D0	libkernl/syscall-stubs	main			0x1167D4	0	no											
+syscall	0x60	KSeg0_1167e0	0x1167E0	libkernl/syscall-stubs	main			0x1167E4	0	no											
+syscall	0x61	EnableCache_1167f0	0x1167F0	libkernl/syscall-stubs	main			0x1167F4	0	no											
+syscall	0x62	DisableCache_116800	0x116800	libkernl/syscall-stubs	main			0x116804	0	no											
+syscall	0x63	GetCop0_116810	0x116810	libkernl/syscall-stubs	main			0x116814	0	no											
+syscall	0x64	FlushCache	0x116820	libkernl/syscall-stubs	main			0x116824	10	yes	FlushCache OverlayLoadFile_100410 sceMcRename_12db48 (+27)										
+syscall	0x66	CpuConfig_116830	0x116830	libkernl/syscall-stubs	main			0x116834	0	no											
+syscall	-0x67	iGetCop0_116840	0x116840	libkernl/syscall-stubs	main			0x116844	0	no											
+syscall	-0x68	iFlushCache_116850	0x116850	libkernl/syscall-stubs	main			0x116854	0	no											
+syscall	-0x6A	iCpuConfig_116860	0x116860	libkernl/syscall-stubs	main			0x116864	0	no											
+syscall	0x6B	sceSifStopDma	0x116870	libkernl/syscall-stubs	main			0x116874	0	yes	sceSifRebootIop_11fcd0										
+syscall	0x6C	SetCPUTimerHandler_116880	0x116880	libkernl/syscall-stubs	main			0x116884	0	no											
+syscall	0x6D	SetCPUTimer_116890	0x116890	libkernl/syscall-stubs	main			0x116894	0	no											
+syscall	0x6E	SetOsdConfigParam2_1168a0	0x1168A0	libkernl/syscall-stubs	main			0x1168A4	0	no											
+syscall	0x6F	GetOsdConfigParam2_1168b0	0x1168B0	libkernl/syscall-stubs	main			0x1168B4	0	no											
+syscall	0x70	GsGetIMR	0x1168C0	libkernl/syscall-stubs	main			0x1168C4	0	yes	sceGsExecStoreImage										
+syscall	-0x70	iGsGetIMR_1168d0	0x1168D0	libkernl/syscall-stubs	main			0x1168D4	0	no											
+syscall	0x71	GsPutIMR	0x1168E0	libkernl/syscall-stubs	main			0x1168E4	0	yes	sceGsExecStoreImage sceGsResetGraph_108110										
+syscall	-0x71	iGsPutIMR_1168f0	0x1168F0	libkernl/syscall-stubs	main			0x1168F4	0	no											
+syscall	0x72	SetPgifHandler_116900	0x116900	libkernl/syscall-stubs	main			0x116904	0	no											
+syscall	0x73	SetVSyncFlag	0x116910	libkernl/syscall-stubs	main			0x116914	0	yes	sceGsSyncV										
+syscall	0x74	SetSyscall_116920	0x116920	libkernl/syscall-stubs	main			0x116924	0	no											
+syscall	0x75	print_116930	0x116930	libkernl/syscall-stubs	main			0x116934	0	no											
+syscall	0x76	sceSifDmaStat	0x116940	libkernl/syscall-stubs	main			0x116944	2	yes	sceSifDmaStat scePadSetActDirect										
+syscall	-0x76	isceSifDmaStat_116950	0x116950	libkernl/syscall-stubs	main			0x116954	0	no											
+syscall	0x77	sceSifSetDma	0x116960	libkernl/syscall-stubs	main			0x116964	2	yes	sceSifSetDma scePadSetActDirect sceSifRebootIop_11fcd0 (+59)										
+syscall	-0x77	isceSifSetDma	0x116970	libkernl/syscall-stubs	main			0x116974	0	yes	sceSifBindRpc sceSifCallRpc sceSifInitRpc_119b60 (+57)										
+syscall	0x78	sceSifSetDChain	0x116980	libkernl/syscall-stubs	main			0x116984	0	yes	sceSifInitRpc_119b60 CdDiskReadyNewMaybe_12a508 sceCdInit_12a008 (+17)										
+syscall	-0x78	isceSifSetDChain	0x116990	libkernl/syscall-stubs	main			0x116994	0	yes	sceSifInitRpc_119b60 CdDiskReadyNewMaybe_12a508 sceCdInit_12a008 (+17)										
+syscall	0x79	sceSifSetReg	0x1169A0	libkernl/syscall-stubs	main			0x1169A4	0	yes	sceSifInitRpc_119b60 CdDiskReadyNewMaybe_12a508 sceCdInit_12a008 (+17)										
+syscall	0x7A	sceSifGetReg	0x1169B0	libkernl/syscall-stubs	main			0x1169B4	0	yes	sceSifInitRpc_119b60 sceSifSyncIop_11fc80 CdDiskReadyNewMaybe_12a508 (+18)										
+syscall	0x7B	_ExecOSD	0x1169C0	libkernl/syscall-stubs	main			0x1169C4	0	no											
+syscall	0x7C	Deci2Call	0x1169D0	libkernl/syscall-stubs	main			0x1169D4	0	yes	CdDiskReadyNewMaybe_12a508 sceCdInit_12a008 sceCdLayerSearchFile_1297e0 (+33)										
+syscall	0x7D	PSMode_1169e0	0x1169E0	libkernl/syscall-stubs	main			0x1169E4	0	no											
+syscall	0x7E	MachineType_1169f0	0x1169F0	libkernl/syscall-stubs	main			0x1169F4	0	no											
+syscall	0x7F	GetMemorySize	0x116A00	libkernl/syscall-stubs	main			0x116A04	0	yes	Abort_12de80 Exit_12f4e0 __assert										
+syscall	0x82	_InitTLB	0x116A10	libkernl/syscall-stubs	main			0x116A14	0	yes	Abort_12de80 Exit_12f4e0 __assert										
+syscall	-0x2F	iWakeupThread_117468	0x117468	libkernl/intc/dmac/thread	main			0x117478	0	yes	sceSifInitRpc_119b60 CdDiskReadyNewMaybe_12a508 sceCdInit_12a008 (+17)										
+syscall	-0x2F	iSuspendThread_117580	0x117580	libkernl/intc/dmac/thread	main			0x117590	0	no											
+syscall	0x5A	KCopy_11fec8	0x11FEC8	libkernl/tlb/init/patch	main			0x11FECC	0	no											
+syscall	0x5B	RFU091	0x11FF10	libkernl/tlb/init/patch	main			0x11FF14	0	no											
+syscall	0x74	RFU116_SetSyscall	0x11FF20	libkernl/tlb/init/patch	main			0x11FF24	0	no											
+syscall	0x55	PutTLBEntry_11fff8	0x11FFF8	libkernl/tlb/init/patch	main			0x11FFFC	0	no											
+syscall	-0x55	iPutTLBEntry_120008	0x120008	libkernl/tlb/init/patch	main			0x12000C	0	no											
+syscall	0x56	RFU086_WaitEvnetFlag	0x120018	libkernl/tlb/init/patch	main			0x12001C	0	yes	Abort_12de80 Exit_12f4e0 __assert										
+syscall	-0x56	iSetTLBEntry_120058	0x120058	libkernl/tlb/init/patch	main			0x12005C	0	no											
+syscall	0x57	GetTLBEntry_120068	0x120068	libkernl/tlb/init/patch	main			0x12006C	0	no											
+syscall	-0x57	iGetTLBEntry_120078	0x120078	libkernl/tlb/init/patch	main			0x12007C	0	no											
+syscall	0x58	ProbeTLBEntry_120088	0x120088	libkernl/tlb/init/patch	main			0x12008C	0	no											
+syscall	-0x58	iProbeTLBEntry_120098	0x120098	libkernl/tlb/init/patch	main			0x12009C	0	no											
+syscall	0x59	ExpandScratchPad_1200a8	0x1200A8	libkernl/tlb/init/patch	main			0x1200AC	0	no											
+syscall	-0x54	kTLBException_120300	0x120300	libkernl/tlb/init/patch	main			0x120418	0	no											
+syscall	0x5A	KCopy_120738	0x120738	libkernl/tlb/init/patch	main			0x12073C	0	no											
+syscall	0x83	FindAddress_1207c0	0x1207C0	libkernl/tlb/init/patch	main			0x1207C4	0	no											
+syscall	0x74	RFU116_SetSyscall_2	0x120908	libkernl/tlb/init/patch	main			0x12090C	0	no											
+syscall	0x74	RFU116_SetSyscall_3	0x120970	libkernl/tlb/init/patch	main			0x120974	0	no											
+syscall	0x5A	KCopy_120980	0x120980	libkernl/tlb/init/patch	main			0x120984	0	no											
+syscall	0x5B	RFU091_2	0x1209C8	libkernl/tlb/init/patch	main			0x1209CC	0	no											
+syscall	0x5A	KCopy_120af0	0x120AF0	libkernl/tlb/init/patch	main			0x120AF4	0	no											
+syscall	0x74	RFU116_SetSyscall_4	0x120B30	libkernl/tlb/init/patch	main			0x120B34	0	no											
+syscall	0x74	RFU116_SetSyscall_5	0x120D90	libkernl/tlb/init/patch	main			0x120D94	0	no											
+syscall	0x5A	KCopy_120da0	0x120DA0	libkernl/tlb/init/patch	main			0x120DA4	0	no											
+syscall	0x5B	RFU091_3	0x120DE8	libkernl/tlb/init/patch	main			0x120DEC	0	no											
+intc		AddIntcHandler	0x116280	libgraph/gs	main	sceGsSyncVCallback_109b18	no	0x109B88				2	arg0	0xFFFFFFFF						VBLANK_START(2)	
+intc		AddDmacHandler_2	0x1162C0	libmpeg/mpeg+ipu	main	MpegIpuCsc_112268	no	0x112300				3	MpegCscDmaHandler_112900	0						fromIPU(3)	
+intc		AddDmacHandler_2	0x1162C0	libmpeg/mpeg+ipu	main	MpegIpuDmaTransferMaybe_112428	no	0x112540				4	MpegToIpuDmaHandler_112a48	0						toIPU(4)	
+prio		RotateThreadReadyQueue	0x116450	libkernl/intc/dmac/thread	main	KernelTopThread_1172a0	no	0x117348				?	?	?							
+sema		CreateSema	0x1165A0	libkernl/intc/dmac/thread	main	InitThread_117378	no	0x1173B4				sp-0x60	arg1	arg2						max_count=0xFF init_count=0	
+thread		CreateThread	0x1163A0	libkernl/intc/dmac/thread	main	InitThread_117378	no	0x1173F8				sp-0x90	0x485170	0x400	KernelTopThread_1172a0	0x485BC0	0x400	0x485170	0	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	
+start		StartThread_1176e0	0x1176E0	libkernl/intc/dmac/thread	main	InitThread_117378	no	0x11742C				?	0x485FC8	?							
+prio		ChangeThreadPriority	0x116430	libkernl/intc/dmac/thread	main	InitThread_117378	no	0x117440				?	1	?							
+sema		CreateSema	0x1165A0	libkernl/intc/dmac/thread	main	DelayThread_117618	no	0x117660				sp-0x50	arg1	arg2						max_count=1 init_count=0	
+alarm		SetTimerAlarm_1222f0	0x1222F0	libkernl/intc/dmac/thread	main	DelayThread_117618	no	0x117694				?	DelayThreadAlarmHandler_117858	?							
+intc		AddDmacHandler	0x1162B0	libkernl/sifcmd	main	sceSifInitCmd	no	0x119588				5	SifCmdIntrHandler_119968	0						SIF0(5)	
+sema		CreateSema	0x1165A0	libkernl/sifrpc	main	sceSifGetOtherData	no	0x11A0CC				sp-0x90	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/sifrpc	main	sceSifBindRpc	no	0x11A384				sp-0x70	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/sifrpc	main	sceSifCallRpc	no	0x11A640				sp-0xC0	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	StdioInitSemas_11ac18	no	0x11AC50				sp-0x40	arg1	arg2						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	StdioInitSemas_11ac18	no	0x11AC68				sp-0x40	?	?						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	FioSemaCreate_11b2a8	no	0x11B2E0				sp-0x40	arg1	arg2						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceOpen_11b928	no	0x11BA98				sp-0x140	0x4569E0	2						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceClose_11bbb8	no	0x11BC50				sp-0x90	1	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceLseek_11bd30	no	0x11BDE4				sp-0xB0	1	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceRead_11bf70	no	0x11C02C				sp-0xD0	1	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceWrite_11c1e0	no	0x11C29C				sp-0xD0	1	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceIoctl_11c4a0	no	0x11C754				sp-0xB0	?	sp-0x50						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceIoctl2_11c828	no	0x11C920				sp-0xC0	1	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	FileIoPathCmdRpc_11ca10	no	0x11CAF4				sp-0xC0	0x450000	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceMkdir_11cbe0	no	0x11CCCC				sp-0xC0	0x450000	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceFormat_11cdb8	no	0x11CF60				sp-0xC0	1	0x488BCC						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceAddDrv_11d038	no	0x11D098				sp-0x80	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceDclose_11d250	no	0x11D2D4				sp-0x90	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceDread_11d3b8	no	0x11D440				sp-0x80	1	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceGetstat_11d510	no	0x11D5F8				sp-0xC0	0x450000	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceChstat_11d6c8	no	0x11D838				sp-0xD0	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceRename_11d918	no	0x11DA4C				sp-0xB0	2	0x4887CC						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceSync_11db40	no	0x11DC24				sp-0xB0	2	0x450000						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceMount_11dcf0	no	0x11DE94				sp-0xD0	1	0x488BCC						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceLseek64_11df90	no	0x11E044				sp-0xB0	1	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceDevctl_11e1d0	no	0x11E354				sp-0xD0	1	0x4887CC						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceSymlink_11e478	no	0x11E5A8				sp-0xB0	2	0x4887CC						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/fileio	main	sceReadlink_11e670	no	0x11E780				sp-0xD0	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libkernl/tlb/init/patch	main	SupplementCrt0_1206c8	no	0x1206FC				sp-0x50	0x456CC0	arg2						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	libkernl/tlb/init/patch	main	SupplementCrt0_1206c8	no	0x12070C				sp-0x30	?	?						max_count=1 init_count=1	
+intc		AddIntcHandler_2	0x116290	libkernl/timer/alarm	main	InitTimer_120f70	no	0x121018				0xB	TimerAlarmIntcHandler_121510	0						TIMER2(11)	
+thread		CreateThread	0x1163A0	libsdr/sdremote	main	sceSdRemoteCallbackInit_122d70	no	0x122E20				sp-0x60	0x456D00	0x485170	SdrCallbackThread_122fa8	0x48D980	0x1000	0x485170	arg0	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	
+start		StartThread_1176e0	0x1176E0	libsdr/sdremote	main	sceSdRemoteCallbackInit_122d70	no	0x122E38				?	0	?							
+thread		CreateThread	0x1163A0	libcdvd/cdvd	main	sceCdInitEeCB_1293b0	no	0x129408				0x48EA58	0x457A00	arg2	CdCallbackThread_1292e0	arg1	arg2	0	arg0	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	
+start		StartThread_1176e0	0x1176E0	libcdvd/cdvd	main	sceCdInitEeCB_1293b0	no	0x129418				?	0	?							
+prio		ChangeThreadPriority	0x116430	libcdvd/cdvd	main	sceCdInitEeCB_1293b0	no	0x12942C				?	?	?							
+sema		CreateSema	0x1165A0	libcdvd/cdvd	main	CdInitSemas_129508	no	0x129570				sp-0x60	arg1	arg2						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	libcdvd/cdvd	main	CdInitSemas_129508	no	0x129588				sp-0x60	?	?						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	libcdvd/cdvd	main	CdInitSemas_129508	no	0x1295A0				sp-0x60	?	?						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	libcdvd/cdvd	main	CdInitSemas_129508	no	0x1295BC				sp-0x60	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	libmc/mc	main	sceMcInit_12c648	no	0x12C694				sp-0x90	arg1	arg2						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	libmc/mc	main	sceMcInit_12c648	no	0x12C6C0				sp-0x90	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	GAME	main	GfxSysInit_15dd20	yes	0x15DDD0				sp-0x40	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	GAME	main	GfxSysInit_15dd20	yes	0x15DE10				sp-0x60	?	?						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	GAME	main	Vif1DmaStart_15e070	yes	0x15E120				sp-0x20	?	?						max_count=1 init_count=0	
+intc		AddIntcHandler	0x116280	GAME	main	Vif1DmaStart_15e070	yes	0x15E140				5	Vif1IntcHandler_15e170	0xFFFFFFFF						VIF1(5)	
+prio		ChangeThreadPriority	0x116430	GAME	main	Main_15e700	yes	0x15E714				?	[0x47DF30](init 0x14)	?							
+sema		CreateSema	0x1165A0	GAME	main	CdDiskWatchInit_17ff70	yes	0x17FFA0				sp-0x20	arg1	arg2						max_count=1 init_count=0	
+thread		CreateThread	0x1163A0	GAME	main	CdDiskWatchInit_17ff70	yes	0x17FFE4				sp-0x50	?	?	CdDiskWatchThread_17fdc0	0x49C100	0x800	0x485170	arg0	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	tp.stackSize = 0x800; ; tp.entry = (void *)CdDiskWatchThread_17fdc0; ; tp.stack = D_0049C100;
+start		StartThread_1176e0	0x1176E0	GAME	main	CdDiskWatchInit_17ff70	yes	0x18001C				0	0	?							
+sema		CreateSema	0x1165A0	GAME	main	FileSysInit_1818e0	yes	0x181908				sp-0x20	arg1	arg2						max_count=0 init_count=0	
+sema		CreateSema	0x1165A0	GAME	main	FileSysInit_1818e0	yes	0x181914				sp-0x20	?	?						max_count=0 init_count=0	
+sema		CreateSema	0x1165A0	GAME	main	FileReqThreadInit_182af0	yes	0x182B64				sp-0x20	1	arg2						max_count=1 init_count=0	sp.max_count = 1; ; sp.init_count = 0;
+sema		CreateSema	0x1165A0	GAME	main	FileReqThreadInit_182af0	yes	0x182B7C				sp-0x20	?	?						max_count=1 init_count=0	sp.max_count = 1; ; sp.init_count = 0;
+thread		CreateThread	0x1163A0	GAME	main	FileReqThreadInit_182af0	yes	0x182BCC				sp-0x50	?	?	FileReqThread_182c30	0x498500	0x2000	0x485170	arg0	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	tp.stack_size = 0x2000; ; tp.initial_priority = arg0; ; tp.func = FileReqThread_182c30; ; tp.stack = D_00498500;
+start		StartThread_1176e0	0x1176E0	GAME	main	FileReqThreadInit_182af0	yes	0x182C08				0	0x47E020	?							
+sema		CreateSema	0x1165A0	GAME	main	PadSysInit_185080	yes	0x185098				sp-0x20	arg1	arg2						max_count=1 init_count=1	sema.init_count = 1; ; sema.max_count = 1;
+sema		CreateSema	0x1165A0	GAME	main	SoundThreadStart_1b6160	yes	0x1B61A8				sp-0x20	1	arg2						max_count=1 init_count=0	s.max_count = 1; ; s.init_count = 0; ; s.init_count = 1;
+sema		CreateSema	0x1165A0	GAME	main	SoundThreadStart_1b6160	yes	0x1B61BC				sp-0x20	?	?						max_count=1 init_count=1	s.max_count = 1; ; s.init_count = 0; ; s.init_count = 1;
+thread		CreateThread	0x1163A0	GAME	main	SoundThreadStart_1b6160	yes	0x1B61F4				sp-0x50	?	?	SoundThreadMain_1b6260	0x49D570	0x800	0x485170	arg0	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	t.stack_size = 0x800; ; t.initial_priority = arg0; ; t.func = SoundThreadMain_1b6260; ; t.stack = D_0049D570;
+start		StartThread_1176e0	0x1176E0	GAME	main	SoundThreadStart_1b6160	yes	0x1B6204				?	0	?							
+sema		CreateSema	0x1165A0	GAME	main	SoundSysInit_1b6f70	yes	0x1B7058				sp-0x20	arg1	arg2						max_count=1 init_count=0	s.max_count = 1; ; s.init_count = 0; ; s.init_count = 1;
+sema		CreateSema	0x1165A0	GAME	main	SoundSysInit_1b6f70	yes	0x1B7064				sp-0x20	?	?						max_count=1 init_count=0	s.max_count = 1; ; s.init_count = 0; ; s.init_count = 1;
+sema		CreateSema	0x1165A0	GAME	main	SoundSysInit_1b6f70	yes	0x1B7078				sp-0x20	?	?						max_count=1 init_count=1	s.max_count = 1; ; s.init_count = 0; ; s.init_count = 1;
+thread		CreateThread	0x1163A0	GAME	main	SoundSysInit_1b6f70	yes	0x1B7110				sp-0x50	?	?	SoundCmdWorkerThread_1b6c10	?	?	0x485170	?	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	t.stack_size = arg->stack_size; ; t.func = SoundCmdWorkerThread_1b6c10; ; t.stack = arg->stack; ; t.initial_priority = arg->priority;
+start		StartThread_1176e0	0x1176E0	GAME	main	SoundSysInit_1b6f70	yes	0x1B712C				0	0x48142C	?							
+sema		CreateSema	0x1165A0	GAME	main	SoundSpuInit_1bb710	yes	0x1BB790				sp-0x20	?	?						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	GAME	main	SoundRpcInit_1bc840	yes	0x1BC89C				sp-0x20	?	?						max_count=1 init_count=0	
+sema		CreateSema	0x1165A0	GAME	main	SoundRpcInit_1bc840	yes	0x1BC8B0				sp-0x20	?	?						max_count=1 init_count=1	
+thread		CreateThread	0x1163A0	GAME	main	SoundRpcInit_1bc840	yes	0x1BC908				sp-0x50	?	?	SoundStreamSlotThreadMain_1bc520	0x4A2AC0	0	0x485170	?	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	tp.size = 0x1000; ; tp.func = SoundStreamSlotThreadMain_1bc520; ; tp.stack = D_004A2AC0; ; tp.prio = arg0 - 5;
+start		StartThread_1176e0	0x1176E0	GAME	main	SoundRpcInit_1bc840	yes	0x1BC92C				0	0	?							
+intc		AddIntcHandler	0x116280	GAME	main	SoundRpcInit_1bc840	yes	0x1BC964				3	SoundVblankIntrHandler_1bd6f0	0xFFFFFFFF						VBLANK_END(3)	
+thread		CreateThread	0x1163A0	GAME	main	SoundStreamInit_1c0ea0	yes	0x1C0F14				sp-0x30	arg1	arg2	SoundStreamThreadMain_1c1050	?	0x1000	0x485170	[0x47E220](init 1)	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	sp90.stack_size = 0x1000; ; sp90.stack = temp_16; ; sp90.func = SoundStreamThreadMain_1c1050; ; sp90.prio = D_0047E220;
+sema		CreateSema	0x1165A0	GAME	main	SoundStreamInit_1c0ea0	yes	0x1C0F68				sp-0x50	?	?						max_count=1 init_count=1	sp70.init_count = 1; ; sp70.max_count = 1; ; sp50.max_count = 1; ; sp50.init_count = 0;
+sema		CreateSema	0x1165A0	GAME	main	SoundStreamInit_1c0ea0	yes	0x1C0F90				sp-0x70	?	?						max_count=1 init_count=0	sp70.init_count = 1; ; sp70.max_count = 1; ; sp50.max_count = 1; ; sp50.init_count = 0;
+start		StartThread_1176e0	0x1176E0	GAME	main	SoundStreamInit_1c0ea0	yes	0x1C0FA0				?	arg0	?							
+sema		CreateSema	0x1165A0	GAME	main	RingBufInit_1c1710	yes	0x1C175C				sp-0x20	arg1	arg2						max_count=1 init_count=1	sp.init_count = 1; ; sp.max_count = 1;
+sema		CreateSema	0x1165A0	GAME	main	SemaHandleCreate_1c2190	yes	0x1C21B8				sp-0x20	arg1	arg2						max_count=1 init_count=1	
+sema		CreateSema	0x1165A0	GAME	main	IopHeapInitOnce_1c2310	yes	0x1C2338				sp-0x20	arg1	arg2						max_count=0 init_count=0	
+sema		CreateSema	0x1165A0	GAME	main	SysTickThreadStart_1c3470	yes	0x1C3488				sp-0x20	arg1	arg2						max_count=1 init_count=0	
+thread		CreateThread	0x1163A0	GAME	main	SysTickThreadStart_1c3470	yes	0x1C34CC				sp-0x50	?	?	SysTickThreadMain_1c33f0	0x4A3F80	0x1000	0x485170	?	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	tp.entry = (void *) SysTickThreadMain_1c33f0; ; tp.stack = D_004A3F80; ; tp.stackSize = 0x1000;
+start		StartThread_1176e0	0x1176E0	GAME	main	SysTickThreadStart_1c3470	yes	0x1C34DC				?	0	?							
+sema		CreateSema	0x1165A0	GAME	main	ViBufCreate_1d46f0	yes	0x1D4738				sp-0x20	?	arg2						max_count=1 init_count=1	
+thread		CreateThread	0x1163A0	GAME	main	MoviePlayerStart_1d5b50	yes	0x1D5BBC				sp-0x30	?	?	DefMain_1d52b0	?	0x800	0x485170	[0x47DF30](init 0x14)	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	tp.entry = (void *)DefMain_1d52b0; ; tp.stack = arg0 + 0x100; ; tp.stackSize = 0x800; ; tp.entry = (void *)VideoDecMain_1d5240; ; tp.stack = arg0 + 0x900; ; tp.stackSize = 0x4000; ; tp.entry = (void *)MovieReadThread_1d4f50; ; tp.stack = arg0 + 0x4900; ; tp.stackSize = 0x4000;
+start		StartThread_1176e0	0x1176E0	GAME	main	MoviePlayerStart_1d5b50	yes	0x1D5BD4				?	0	?							
+thread		CreateThread	0x1163A0	GAME	main	MoviePlayerStart_1d5b50	yes	0x1D5C0C				sp-0x30	?	?	VideoDecMain_1d5240	?	0x4000	0x485170	[0x47DF30](init 0x14)	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	tp.entry = (void *)DefMain_1d52b0; ; tp.stack = arg0 + 0x100; ; tp.stackSize = 0x800; ; tp.entry = (void *)VideoDecMain_1d5240; ; tp.stack = arg0 + 0x900; ; tp.stackSize = 0x4000; ; tp.entry = (void *)MovieReadThread_1d4f50; ; tp.stack = arg0 + 0x4900; ; tp.stackSize = 0x4000;
+start		StartThread_1176e0	0x1176E0	GAME	main	MoviePlayerStart_1d5b50	yes	0x1D5C28				?	0x4B3210	?							
+thread		CreateThread	0x1163A0	GAME	main	MoviePlayerStart_1d5b50	yes	0x1D5C64				sp-0x30	?	?	MovieReadThread_1d4f50	?	0x4000	0x485170	[0x47DF30](init 0x14)	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	tp.entry = (void *)DefMain_1d52b0; ; tp.stack = arg0 + 0x100; ; tp.stackSize = 0x800; ; tp.entry = (void *)VideoDecMain_1d5240; ; tp.stack = arg0 + 0x900; ; tp.stackSize = 0x4000; ; tp.entry = (void *)MovieReadThread_1d4f50; ; tp.stack = arg0 + 0x4900; ; tp.stackSize = 0x4000;
+start		StartThread_1176e0	0x1176E0	GAME	main	MoviePlayerStart_1d5b50	yes	0x1D5C7C				?	0	?							
+intc		AddIntcHandler	0x116280	GAME	main	MoviePlayerStart_1d5b50	yes	0x1D5C90				2	MovieVblankHandler_1d4c90	0						VBLANK_START(2)	
+intc		AddDmacHandler	0x1162B0	GAME	main	MoviePlayerStart_1d5b50	yes	0x1D5CB4				2	MovieDmacHandler_1d4b10	0						GIF(2)	
+thread		CreateThread	0x1163A0	GAME	main	LoadingScreenStart_343240	yes	0x34341C				sp-0x30	?	?	LoadingScreenThread_343510	?	?	0x485170	?	ThreadParam{func@4,stack@8,size@C,gp@10,initPriority@14}	tp.stackSize = cfg->m08; ; tp.entry = (void *)LoadingScreenThread_343510; ; tp.stack = (void *)cfg->m04; ; tp.prio = cfg->m00;
+start		StartThread_1176e0	0x1176E0	GAME	main	LoadingScreenStart_343240	yes	0x343444				0	0	?							
+sema		CreateSema	0x1165A0	GAME	title	title_TitleObjectsCreate_4ecbc0	yes	0x4ECD00				sp-0x20	?	?						max_count=1 init_count=0xB	

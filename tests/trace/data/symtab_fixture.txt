@@ -1,0 +1,6 @@
+# addr name [size] -- fixture for gen_port_symtab.py --symbols (trace.symtab_gen)
+0x00481000 D_00481000 16
+0x00481010 D_00481010
+0x00481020 D_00481020 4
+0x004E9E00 D_004E9E00
+0x004E9F00 D_004E9F00        # inside the overlay arena: a boundary only, never emitted

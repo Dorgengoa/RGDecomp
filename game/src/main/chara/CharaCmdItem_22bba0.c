@@ -1,0 +1,39 @@
+/* rgp:protos */
+#define RGP_SELF_CharaCmdItem_22bba0 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/* 0x4F2A90 / 0x4F2D40 are OVERLAY addresses; main.s has no relocations so the
+   disassembler prints them raw.  `lui/addiu` is the %hi/%lo shape, so they are
+   symbol references, not integer literals. */
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+struct Obj0 {
+    s32 m00;
+};
+
+s32 CharaCmdItem_22bba0(struct Obj0 *p0)
+{
+    s32 r0;
+    s32 o;
+    s32 h;
+
+    r0 = ((s32)GetActionMgr_1fdb50());
+    o = ((s32)ActionMgrFindById_233b50(r0, p0->m00));
+    if (o == 0) {
+        return 1;
+    }
+    h = ((s32)CharaGetExecInfo_2149f0(o));
+    func_4F2D40();
+    ItemUseMaybe_2eef60(*(s32 *)(h + 0x6C), h, func_4F2A90, 1, 0);
+    CharaExecInfoInit_219100(h);
+    return 1;
+}

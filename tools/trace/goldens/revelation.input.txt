@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: CC0-1.0
+# BRINGUP item 6 repro: power-on with the library card out/fixtures/cards/late_game
+# (Zerard spaceport, Ch13), CONTINUE, main menu -> Revelation (row 4) -> Jaster's Revelation
+# Flow -> place Thunder Stone in the flashing slot -> Flash Sword learned -> back out x3.
+# Broken build (before overrides/src/main/menu/RevelationBoardDrawSprite_34c170.c): access
+# violation reading 0x77C in RevelationBoardPktSetColorLerp_34ce10 as the board opens (~4200).
+# Fixed: board up by 4250, stone/item list 4450-4630, slot filled 4700, ability list at 5050
+# shows Flash Sword.  Run like item_use.input.txt (--fields 5100).
+1900 1905 CROSS  # title menu: CONTINUE
+2150 2155 CROSS
+2350 2355 CROSS
+2450 2455 CROSS
+2650 2655 CROSS
+3700 3703 CROSS
+3790 3793 TRIANGLE  # main menu
+3960 3963 DOWN
+3975 3978 DOWN
+3990 3993 DOWN
+4010 4015 CROSS  # Revelation
+4100 4105 CROSS
+4200 4205 CROSS
+4400 4405 CROSS  # flashing slot: Place menu
+4520 4525 CROSS
+4640 4645 CROSS  # Thunder Stone
+4760 4765 CIRCLE
+4860 4865 CIRCLE
+4960 4965 CIRCLE

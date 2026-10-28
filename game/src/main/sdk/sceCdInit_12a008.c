@@ -1,0 +1,216 @@
+#include "types.h"
+
+extern void sceCdSyncS_129d90(void);
+extern void sceSifInitRpc_119b60(void);
+extern void sceSifBindRpc(void);
+extern void scePrintf_119288(void);
+extern void sceSifWriteBackDCache(void);
+extern void sceSifCallRpc(void);
+extern void CdvdExit_1295f0(void);
+extern void CdInitSemas_129508(void);
+extern void PowerOffCB_129768(void);
+
+asm void sceCdInit_12a008(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0xB0;
+    sd         $19, 0x40($29);
+    daddu      $19, $4, $0;
+    sd         $31, 0xA0($29);
+    sd         $30, 0x90($29);
+    addiu      $4, $0, 0x1;
+    sd         $23, 0x80($29);
+    sd         $22, 0x70($29);
+    sd         $21, 0x60($29);
+    sd         $20, 0x50($29);
+    sd         $18, 0x30($29);
+    sd         $17, 0x20($29);
+    jal        sceCdSyncS_129d90;
+    sd        $16, 0x10($29);
+    bnez       $2, L0012A2C0;
+    daddu     $2, $0, $0;
+    daddu      $4, $0, $0;
+    jal        sceSifInitRpc_119b60;
+    lui       $21, 0x44;
+    lui        $20, 0x44;
+    addiu      $2, $0, 0x1;
+    lui        $3, 0x44;
+    sw         $2, 0x7964($3);
+    lui        $5, 0x44;
+    lw         $4, 0x799C($21);
+    addiu      $3, $0, -0x1;
+    lui        $2, 0x44;
+    lui        $6, 0x44;
+    addiu      $4, $4, 0x1;
+    lui        $7, 0x44;
+    lui        $9, 0x44;
+    lui        $8, 0x44;
+    sw         $3, 0x7988($2);
+    lui        $16, 0x49;
+    lui        $2, 0x49;
+    sw         $3, 0x798C($5);
+    sw         $3, 0x797C($6);
+    addiu      $17, $2, -0x1398;
+    sw         $3, 0x7994($7);
+    addiu      $18, $16, -0x1340;
+    sw         $3, 0x7990($9);
+    lui        $30, 0x45;
+    sw         $0, 0x7978($8);
+    lui        $23, 0x44;
+    sw         $4, 0x799C($21);
+    lui        $22, 0x45;
+    sw         $3, 0x7998($20);
+    nop;
+  L0012A0C8:
+    lui        $5, (0x80000592 >> 16);
+    daddu      $4, $17, $0;
+    ori        $5, $5, (0x80000592 & 0xFFFF);
+    jal        sceSifBindRpc;
+    daddu     $6, $0, $0;
+    daddu      $5, $2, $0;
+    bgezl      $5, L0012A12C;
+    lw        $2, 0x24($17);
+    lw         $2, 0x7950($23);
+    blez       $2, L0012A0FC;
+    lw        $6, 0x799C($21);
+    jal        scePrintf_119288;
+    addiu     $4, $22, 0x7B70;
+  L0012A0FC:
+    lui        $2, 0x10;
+    addiu      $3, $0, -0x1;
+    nop;
+  L0012A108:
+    addiu      $2, $2, -0x1;
+    nop;
+    nop;
+    nop;
+    nop;
+    bne        $2, $3, L0012A108;
+    nop;
+    b          L0012A0C8;
+    nop;
+  L0012A12C:
+    beqz       $2, L0012A184;
+    daddu     $4, $18, $0;
+    sw         $19, -0x1340($16);
+    sw         $0, 0x7998($20);
+    jal        sceSifWriteBackDCache;
+    addiu     $5, $0, 0x4;
+    addiu      $16, $30, -0x74C0;
+    daddu      $4, $17, $0;
+    daddu      $7, $18, $0;
+    sw         $0, 0x0($29);
+    daddu      $5, $0, $0;
+    daddu      $6, $0, $0;
+    addiu      $8, $0, 0x4;
+    daddu      $9, $16, $0;
+    addiu      $10, $0, 0x10;
+    jal        sceSifCallRpc;
+    daddu     $11, $0, $0;
+    bgez       $2, L0012A1B4;
+    lui       $2, 0x44;
+    sw         $0, 0x7964($2);
+    b          L0012A2C0;
+    daddu     $2, $0, $0;
+  L0012A184:
+    lui        $2, 0x10;
+    addiu      $3, $0, -0x1;
+    nop;
+  L0012A190:
+    addiu      $2, $2, -0x1;
+    nop;
+    nop;
+    nop;
+    nop;
+    bne        $2, $3, L0012A190;
+    nop;
+    b          L0012A0C8;
+    nop;
+  L0012A1B4:
+    lui        $5, (0x20000000 >> 16);
+    addiu      $2, $16, 0xC;
+    or         $2, $2, $5;
+    addiu      $3, $16, 0x4;
+    addiu      $4, $16, 0x8;
+    lw         $6, (0x20000000 & 0xFFFF)($2);
+    or         $4, $4, $5;
+    or         $3, $3, $5;
+    lw         $5, (0x20000000 & 0xFFFF)($3);
+    addiu      $16, $0, 0x1;
+    addiu      $2, $0, 0xFF;
+    beq        $6, $2, L0012A23C;
+    lw        $4, (0x20000000 & 0xFFFF)($4);
+    addiu      $2, $0, 0xFE;
+    bne        $6, $2, L0012A200;
+    addiu     $6, $0, -0x1;
+    lui        $2, 0x44;
+    b          L0012A23C;
+    sw        $16, 0x7950($2);
+  L0012A200:
+    addiu      $2, $5, 0xFF;
+    slt        $3, $6, $5;
+    movn       $2, $5, $3;
+    sra        $2, $2, 8;
+    slti       $2, $2, 0x2;
+    bnel       $2, $0, L0012A23C;
+    addiu     $16, $0, 0x2;
+    slt        $3, $6, $4;
+    addiu      $2, $4, 0xFF;
+    movn       $2, $4, $3;
+    sra        $2, $2, 8;
+    slti       $2, $2, 0x2;
+    beqz       $2, L0012A240;
+    lui       $3, 0x44;
+    addiu      $16, $0, 0x2;
+  L0012A23C:
+    lui        $3, 0x44;
+  L0012A240:
+    sw         $0, 0x7964($3);
+    bltz       $19, L0012A2A0;
+    slti      $2, $19, 0x2;
+    bnez       $2, L0012A2A0;
+    addiu     $2, $0, 0x5;
+    bne        $19, $2, L0012A2A0;
+    lui       $2, 0x44;
+    lw         $3, 0x7950($2);
+    blez       $3, L0012A270;
+    lui       $4, 0x45;
+    jal        scePrintf_119288;
+    addiu     $4, $4, 0x7B90;
+  L0012A270:
+    jal        CdvdExit_1295f0;
+    nop;
+    addiu      $4, $0, -0x1;
+    lui        $2, 0x44;
+    sw         $4, 0x7968($2);
+    lui        $3, 0x44;
+    sw         $4, 0x796C($3);
+    lui        $2, 0x44;
+    lui        $3, 0x44;
+    sw         $4, 0x7960($2);
+    b          L0012A2BC;
+    sw        $0, 0x7984($3);
+  L0012A2A0:
+    jal        CdInitSemas_129508;
+    nop;
+    jal        PowerOffCB_129768;
+    nop;
+    lui        $3, 0x44;
+    addiu      $2, $0, 0x1;
+    sw         $2, 0x7984($3);
+  L0012A2BC:
+    daddu      $2, $16, $0;
+  L0012A2C0:
+    ld         $31, 0xA0($29);
+    ld         $30, 0x90($29);
+    ld         $23, 0x80($29);
+    ld         $22, 0x70($29);
+    ld         $21, 0x60($29);
+    ld         $20, 0x50($29);
+    ld         $19, 0x40($29);
+    ld         $18, 0x30($29);
+    ld         $17, 0x20($29);
+    ld         $16, 0x10($29);
+    jr         $31;
+    addiu     $29, $29, 0xB0;
+}

@@ -1,0 +1,256 @@
+# audio_census.py static (docs/NATIVE-AUDIO.md section 1)
+# kind	id	name	function	file	detail
+cmd	0x01	AllNotesOff(track)	SoundThreadCmd01Related_1b6c00	src/main/sound/SoundThreadCmd01Related_1b6c00.c	sends G1/S2 cmd 0x1E | senders 4: SoundBankFree_1b9c00x2 SoundBankLoad_1b9f00x2 applyx2 func_001B8BD0x2
+cmd	0x02	AllSoundOff(track)	SoundThreadCmd02Related_1b6bf0	src/main/sound/SoundThreadCmd02Related_1b6bf0.c	sends G1/S2 cmd 0x1F | senders 4: SoundBankFree_1b9c00x2 SoundBankLoad_1b9f00x2 applyx2 func_001B8BD0x2
+cmd	0x03	SeqDataUpload	SoundThreadCmdSeqDataUpload_1b6bd0	src/main/sound/SoundThreadCmdSeqDataUpload_1b6bd0.c	sends G2/S0 form 0 | senders 1: SoundBankLoad_1b9f00
+cmd	0x04	MsinCreate	SoundThreadCmdNoteStreamCreateMaybe_1b6bc0	src/main/sound/SoundThreadCmdNoteStreamCreateMaybe_1b6bc0.c	sends G3/S0 form 0 | senders 1: SoundBankLoad_1b9f00
+cmd	0x05	BankRegister	SoundThreadCmdBankUpload_1b6ba0	src/main/sound/SoundThreadCmdBankUpload_1b6ba0.c	sends G1/S0 form 3 | senders 1: SoundBankUploadPart_1ba770
+cmd	0x06	SeqAttach	SoundThreadCmdSeqAttach_1b6b80	src/main/sound/SoundThreadCmdSeqAttach_1b6b80.c	sends G2/S0 form 0x5 | senders 1: SoundPlayEntry_1b8f90
+cmd	0x07	MsinAttach	SoundThreadCmdNoteStreamAttachMaybe_1b6b60	src/main/sound/SoundThreadCmdNoteStreamAttachMaybe_1b6b60.c	sends G3/S0 form 0x5 | senders 1: SoundBankLoad_1b9f00
+cmd	0x08	BankAttach	SoundThreadCmdBankAttach_1b6b40	src/main/sound/SoundThreadCmdBankAttach_1b6b40.c	sends G1/S0 form 5 | senders 1: SoundBankUploadPart_1ba770x2
+cmd	0x09	SpuTransfer(BD chunk)	SoundThreadCmdSpuTransferMaybe_1b6b20	src/main/sound/SoundThreadCmdSpuTransferMaybe_1b6b20.c	sends G0/SA | senders 1: SoundSpuTransferChunks_1b6450
+cmd	0x0A	SetOutputMode	SoundThreadCmdSetOutputMode_1b6b10	src/main/sound/SoundThreadCmdSetOutputMode_1b6b10.c	sends G1/S2 cmd 0x71 | senders 1: SoundSetOutputMode_1bb3e0x2
+cmd	0x0B	HsynthQuery71	SoundThreadCmd0BRelated_1b6b00	src/main/sound/SoundThreadCmd0BRelated_1b6b00.c	sends G1/S3 | senders 0: -
+cmd	0x0C	SetMasterVolume	SoundThreadCmdSetMasterVolume_1b6ae0	src/main/sound/SoundThreadCmdSetMasterVolume_1b6ae0.c	sends G0/S2 cmd 0x80 | senders 4: AudioDecSetMasterVolume_1d2c00 SoundMasterVolumeFadeUpdate_1bb4d0 SoundSetMasterVolume_1bb420 SoundSpuInit_1bb710x2
+cmd	0x0D	SeqPause	SoundThreadCmdPause_1b6ad0	src/main/sound/SoundThreadCmdPause_1b6ad0.c	sends G2/S2 cmd 0x3 | senders 1: SoundPauseEntry_1b9360
+cmd	0x0E	SeqPlay	SoundThreadCmdSeqPlay_1b6ab0	src/main/sound/SoundThreadCmdSeqPlay_1b6ab0.c	sends G2/S2 cmd 0 | senders 1: SoundPlayEntry_1b8f90x2
+cmd	0x0F	SeqStop	SoundThreadCmdSeqStop_1b6aa0	src/main/sound/SoundThreadCmdSeqStop_1b6aa0.c	sends G2/S2 cmd 0x2 | senders 4: SoundBankFree_1b9c00 SoundBankLoad_1b9f00 apply func_001B8BD0x2
+cmd	0x10	SeqTempoAbs	SoundThreadCmd10Related_1b6a80	src/main/sound/SoundThreadCmd10Related_1b6a80.c	sends G2/S2 cmd 0x31 | senders 0: -
+cmd	0x11	SeqTempoRel	SoundThreadCmd11Related_1b6a60	src/main/sound/SoundThreadCmd11Related_1b6a60.c	sends G2/S2 cmd 0x32 | senders 0: -
+cmd	0x12	SeqSetVolume	SoundThreadCmdSeqSetVolume_1b6a40	src/main/sound/SoundThreadCmdSeqSetVolume_1b6a40.c	sends G2/S2 cmd 0x30 | senders 4: SoundPlayEntry_1b8f90x2 SoundSetCategoryVolume_1bb230 SoundSetEntryVolume_1b87c0 func_001B8BD0
+cmd	0x13	SeqQuery	SoundThreadCmd13Related_1b6a30	src/main/sound/SoundThreadCmd13Related_1b6a30.c	sends G2/S3 | senders 0: -
+cmd	0x14	MsinQuery	SoundThreadCmd14Related_1b6a10	src/main/sound/SoundThreadCmd14Related_1b6a10.c	sends G3/S3 | senders 0: -
+cmd	0x15	SeqDataRelease	SoundThreadCmdSeqDataRelease_1b6a00	src/main/sound/SoundThreadCmdSeqDataRelease_1b6a00.c	sends G2/S1 form 0 | senders 1: SoundBankPartRelease_1ba620
+cmd	0x16	MsinRelease	SoundThreadCmdNoteStreamReleaseMaybe_1b69f0	src/main/sound/SoundThreadCmdNoteStreamReleaseMaybe_1b69f0.c	sends G3/S1 form 0 | senders 1: SoundBankFree_1b9c00
+cmd	0x17	BankRelease	SoundThreadCmdBankRelease_1b69e0	src/main/sound/SoundThreadCmdBankRelease_1b69e0.c	sends G1/S1 form 3 | senders 1: SoundBankPartRelease_1ba620
+cmd	0x18	SeqDetach	SoundThreadCmdSeqDetach_1b69d0	src/main/sound/SoundThreadCmdSeqDetach_1b69d0.c	sends G2/S1 form 5 | senders 2: SoundBankFree_1b9c00 SoundPlayEntry_1b8f90
+cmd	0x19	MsinDetach	SoundThreadCmdNoteStreamDetachMaybe_1b69c0	src/main/sound/SoundThreadCmdNoteStreamDetachMaybe_1b69c0.c	sends G3/S1 form 5 | senders 1: SoundBankFree_1b9c00
+cmd	0x1A	BankDetach	SoundThreadCmdBankDetach_1b69b0	src/main/sound/SoundThreadCmdBankDetach_1b69b0.c	sends G1/S1 form 5 | senders 1: SoundBankFree_1b9c00x2
+cmd	0x1B	KeyOff	SoundThreadCmdKeyOff_1b6970	src/main/sound/SoundThreadCmdKeyOff_1b6970.c	sends G3/S2 cmd 0x13 | senders 2: SoundSendKeyOff_1b8090 func_001B8BD0
+cmd	0x1C	KeyOnMuted	SoundThreadCmdKeyOnMutedMaybe_1b6900	src/main/sound/SoundThreadCmdKeyOnMutedMaybe_1b6900.c	sends G3/S2 cmd 0x11; G3/S2 cmd 0x42 | senders 0: -
+cmd	0x1D	SetVolume	SoundThreadCmdSetVolume_1b68e0	src/main/sound/SoundThreadCmdSetVolume_1b68e0.c	sends G3/S2 cmd 0x42 | senders 2: SoundSendVolume_1b8020 SoundSetEntryVolume_1b87c0
+cmd	0x1E	SetPan	SoundThreadCmdSetPan_1b68c0	src/main/sound/SoundThreadCmdSetPan_1b68c0.c	sends G3/S2 cmd 0x40 | senders 2: SoundSendPan_1b7ff0 SoundSetPan_1b8590
+cmd	0x1F	SetPitchBend	SoundThreadCmdSetPitchBend_1b68a0	src/main/sound/SoundThreadCmdSetPitchBend_1b68a0.c	sends G3/S2 cmd 0x41 | senders 2: SoundSendPitchBend_1b7fc0 SoundSetPitchBend_1b8360
+cmd	0x20	KeyOn	SoundThreadCmdKeyOn_1b6800	src/main/sound/SoundThreadCmdKeyOn_1b6800.c	sends G3/S2 cmd 0x11; G3/S2 cmd 0x42; G3/S2 cmd 0x41 | senders 2: SoundPlayEntryKeyOn_1b81e0 SoundSendKeyOn_1b80c0
+cmd	0x21	EffectEnable	SoundThreadCmdEffectEnable_1b6700	src/main/sound/SoundThreadCmdEffectEnable_1b6700.c	sends sdremote 0x8010; sdremote 0x8010; sdremote 0x8010; sdremote 0x8010; sdremote 0x8070; sdremote 0x8070; sdremote 0x8010; sdremote 0x8010; sdremote 0x8070; sdremote 0x8070 | senders 2: SoundSetEffectEnable_1bb6c0 SoundSpuInit_1bb710x2
+cmd	0x22	SetReverbMode	SoundThreadCmdSetReverbMode_1b66b0	src/main/sound/SoundThreadCmdSetReverbMode_1b66b0.c	sends sdremote 0x8130 | senders 3: SoundBankVolParse_1b7200x3 SoundSetReverb_1bb610 SoundSpuInit_1bb710x2
+cmd	0x23	SetReverbDepth	SoundThreadCmdSetReverbDepth_1b6630	src/main/sound/SoundThreadCmdSetReverbDepth_1b6630.c	sends sdremote 0x8070; sdremote 0x8010; sdremote 0x8010 | senders 3: SoundBankVolParse_1b7200x3 SoundSetReverb_1bb610 SoundSpuInit_1bb710x2
+cmd	0x24	SetReverbEndAddr	SoundThreadCmdSetReverbEndAddr_1b65d0	src/main/sound/SoundThreadCmdSetReverbEndAddr_1b65d0.c	sends sdremote 0x8070; sdremote 0x8050 | senders 1: SoundSpuInit_1bb710x2
+cmd	0x25	SetInputVolume	SoundThreadCmdSetInputVolume_1b6570	src/main/sound/SoundThreadCmdSetInputVolume_1b6570.c	sends sdremote (raw words) | senders 1: AudioDecSetInputVolume_1d2b90
+cmd	0x26	SdRemote(raw)	SoundThreadCmdSdRemote_1b6540	src/main/sound/SoundThreadCmdSdRemote_1b6540.c	sends sdremote (raw words) | senders 3: AudioDecPause_1d3140x2 AudioDecSendToIop_1d2e90 AudioDecStart_1d30d0
+pcm	0x0010	-	SoundRpcShutdown_1bc760	-	SoundRpcCall
+pcm	0x0200	-	SoundStreamSetMasterVolumeMaybe_1bc6f0	-	SoundRpcCall
+pcm	0x8000	-	SoundRpcInit_1bc840	-	SoundRpcCall
+pcm	0x8100	-	SoundRpcFrameTickMaybe_1bd690	-	SoundRpcCall
+pcm	0x8400	-	SoundRpcShutdown_1bc760 SoundRpcStopAllMaybe_1bd680	-	SoundRpcCall
+sdr	0x8010	-	SdRemoteInitMasterVolume_165608 SoundThreadCmdEffectEnable_1b6700 SoundThreadCmdSetReverbDepth_1b6630	-	sceSdRemote direct
+sdr	0x8050	-	SoundThreadCmdSetReverbEndAddr_1b65d0	-	sceSdRemote direct
+sdr	0x8070	-	SoundThreadCmdEffectEnable_1b6700 SoundThreadCmdSetReverbDepth_1b6630 SoundThreadCmdSetReverbEndAddr_1b65d0	-	sceSdRemote direct
+sdr	0x8130	-	SoundThreadCmdSetReverbMode_1b66b0	-	sceSdRemote direct
+sdr	0x90F0	-	SoundIopSendCmdG0S2_1656b8 SoundIopSendCmdG0SA_165778 SoundIopSendCmdG1S0_165828 SoundIopSendCmdG1S1_165900 SoundIopSendCmdG1S2_1659a8 SoundIopSendCmdG1S3_165a68 SoundIopSendCmdG2S0_165b20 SoundIopSendCmdG2S1_165bd0 SoundIopSendCmdG2S2_165c70 SoundIopSendCmdG2S3_165d28 SoundIopSendCmdG3S0_165dc8 SoundIopSendCmdG3S1_165e78 SoundIopSendCmdG3S2_165f20 SoundIopSendCmdG3S3_166020	-	sceSdRemote direct
+edge	1	SifDmaSendSync_1d2c20	AudioDecCreate_1d3210	src/main/movie/AudioDecCreate_1d3210.c	sites 1
+edge	1	sceSifAllocIopHeap	AudioDecCreate_1d3210	src/main/movie/AudioDecCreate_1d3210.c	sites 2
+edge	1	SifDmaSendSync_1d2c20	AudioDecSendToIop2Area_1d2ca0	src/main/movie/AudioDecSendToIop2Area_1d2ca0.c	sites 8
+edge	1	sceSifAllocIopHeap	IopHeapAllocLocked_1c22d0	src/main/sys/IopHeapAllocLocked_1c22d0.c	sites 1
+edge	1	sceSdRemoteCallbackInit_122d70	SdRemoteInitMasterVolume_165608	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemoteInit_122890	SdRemoteInitMasterVolume_165608	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SdRemoteInitMasterVolume_165608	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 4
+edge	1	IopHeapAllocLocked_1c22d0	SoundBankLoad_1b9f00	src/main/sound/SoundBankLoad_1b9f00.c	sites 1
+edge	1	SifDmaSendSync_1c21e0	SoundBankLoad_1b9f00	src/main/sound/SoundBankLoad_1b9f00.c	sites 1
+edge	1	IopHeapFreeLocked_1c2290	SoundBankPartRelease_1ba620	src/main/sound/SoundBankPartRelease_1ba620.c	sites 2
+edge	1	IopHeapAllocLocked_1c22d0	SoundBankUploadPart_1ba770	src/main/sound/SoundBankUploadPart_1ba770.c	sites 2
+edge	1	IopHeapFreeLocked_1c2290	SoundBankUploadPart_1ba770	src/main/sound/SoundBankUploadPart_1ba770.c	sites 1
+edge	1	SifDmaSendSync_1c21e0	SoundBankUploadPart_1ba770	src/main/sound/SoundBankUploadPart_1ba770.c	sites 1
+edge	1	SdRemoteInitMasterVolume_165608	SoundIopInit_1b7160	src/main/sound/SoundIopInit_1b7160.c	sites 1
+edge	1	SoundIopSendCmdG0S2_1656b8	SoundIopInit_1b7160	src/main/sound/SoundIopInit_1b7160.c	sites 4
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG0S2_1656b8	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG0SA_165778	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG1S0_165828	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG1S1_165900	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG1S2_1659a8	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG1S3_165a68	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG2S0_165b20	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG2S1_165bd0	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG2S2_165c70	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG2S3_165d28	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG3S0_165dc8	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG3S1_165e78	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG3S2_165f20	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	sceSdRemote_1229e8	SoundIopSendCmdG3S3_166020	src/main/sound/SdRemoteInitMasterVolume_165608.c	sites 1
+edge	1	SoundRpcCall_1bc5e0	SoundRpcFrameTickMaybe_1bd690	src/main/sound/SoundRpcFrameTickMaybe_1bd690.c	sites 1
+edge	1	IopHeapAllocLocked_1c22d0	SoundRpcInit_1bc840	src/main/sound/SoundRpcInit_1bc840.c	sites 1
+edge	1	SoundRpcCall_1bc5e0	SoundRpcInit_1bc840	src/main/sound/SoundRpcInit_1bc840.c	sites 1
+edge	1	IopHeapFreeLocked_1c2290	SoundRpcShutdown_1bc760	src/main/sound/SoundRpcShutdown_1bc760.c	sites 1
+edge	1	SoundRpcCall_1bc5e0	SoundRpcShutdown_1bc760	src/main/sound/SoundRpcShutdown_1bc760.c	sites 2
+edge	1	SoundRpcCall_1bc5e0	SoundRpcStopAllMaybe_1bd680	src/main/sound/SoundRpcStopAllMaybe_1bd680.c	sites 1
+edge	1	SoundQueueCmd_1b6d60	SoundSendCmd_1b6cc0	src/main/sound/SoundSendCmd_1b6cc0.c	sites 1
+edge	1	SifDmaSendSync_1c21e0	SoundSpuTransferChunks_1b6450	src/main/sound/SoundSpuTransferChunks_1b6450.c	sites 1
+edge	1	SoundRpcCall_1bc5e0	SoundStreamSetMasterVolumeMaybe_1bc6f0	src/main/sound/SoundStreamSetMasterVolumeMaybe_1bc6f0.c	sites 1
+api	2	-	AudioDecReset_1d3070	src/main/movie/AudioDecReset_1d3070.c	calls AudioDecPause_1d3140
+api	2	-	AudioDecSetInputVolumeF_1d52e0	src/main/sound/AudioDecSetInputVolumeF_1d52e0.c	calls AudioDecSetInputVolume_1d2b90
+api	2	-	AudioDecStartThunk_1d30d0	src/main/movie/AudioDecStartThunk_1d30d0.c	calls AudioDecStart_1d30d0
+api	2	-	EvCmdSoundBankFree_261bc0	src/main/sound/EvCmdSoundBankFree_261bc0.c	calls SoundBankFree_1b9c00
+api	2	-	EvCmdSoundPauseEntry_262370	src/main/sound/EvCmdSoundPauseEntry_262370.c	calls SoundPauseEntry_1b9360
+api	2	-	EvCmdSoundSetEntryVolume_262140	src/main/sound/EvCmdSoundSetEntryVolume_262140.c	calls SoundSetEntryVolume_1b87c0
+api	2	-	EvCmdSoundSetPan_2620d0	src/main/sound/EvCmdSoundSetPan_2620d0.c	calls SoundSetPan_1b8590
+api	2	-	EvCmdSoundSetPitchBend_262060	src/main/sound/EvCmdSoundSetPitchBend_262060.c	calls SoundSetPitchBend_1b8360
+api	2	-	EvCmdSoundSetReverb_261b20	src/main/sound/EvCmdSoundSetReverb_261b20.c	calls SoundSetReverb_1bb610
+api	2	-	GameSceneSoundUpdate_1d0860	src/main/sound/GameSceneSoundUpdate_1d0860.c	calls SoundSetCategoryVolume_1bb230
+api	2	-	InsectBattleMatchUpdateMaybe_319800	src/main/sys/InsectBattleMatchUpdateMaybe_319800.c	calls SoundBankFree_1b9c00
+api	2	-	InsectBattleShutdown_31a230	src/main/battle/InsectBattleShutdown_31a230.c	calls SoundBankFree_1b9c00
+api	2	-	MovieOpen_1d5cf0	src/main/movie/MovieOpen_1d5cf0.c	calls AudioDecCreate_1d3210
+api	2	-	MoviePlayerStart_1d5b50	src/main/movie/MoviePlayerStart_1d5b50.c	calls AudioDecSetInputVolume_1d2b90
+api	2	-	MoviePlayerWaitTick_1d5810	src/main/movie/MoviePlayerWaitTick_1d5810.c	calls AudioDecPause_1d3140 AudioDecStart_1d30d0
+api	2	-	MovieReadThread_1d4f50	src/main/movie/MovieReadThread_1d4f50.c	calls AudioDecPause_1d3140 AudioDecSendToIop_1d2e90 AudioDecSetInputVolume_1d2b90 AudioDecStart_1d30d0
+api	2	-	OptionsApply_1fe350	src/main/sound/OptionsApply_1fe350.c	calls SoundSetOutputMode_1bb3e0
+api	2	-	PauseStepUpdate_2f5fb0	src/main/sys/PauseStepUpdate_2f5fb0.cpp	calls SoundSetMasterVolume_1bb420
+api	2	-	SoundBankPartFree_1b9b00	src/main/sound/SoundBankPartFree_1b9b00.c	calls SoundBankPartRelease_1ba620
+api	2	-	SoundBankRelease_1bb6e0	src/main/sound/SoundBankRelease_1bb6e0.c	calls SoundBankFree_1b9c00
+api	2	-	SoundBankStopAll_1bad70	src/main/sound/SoundBankStopAll_1bad70.c	calls apply
+api	2	-	SoundCategoryFadeUpdate_1b5f20	src/main/sound/SoundCategoryFadeUpdate_1b5f20.c	calls SoundSetCategoryVolume_1bb230
+api	2	-	SoundEnvPresetTableInitMaybe_207be0	src/main/sound/SoundEnvPresetTableInitMaybe_207be0.c	calls SoundSetEffectEnable_1bb6c0
+api	2	-	SoundPlayDefault_1b9ae0	src/main/sound/SoundPlayDefault_1b9ae0.c	calls SoundPlayEntry_1b8f90
+api	2	-	SoundPlayScaledVolPan_1b9680	src/main/sound/SoundPlayScaledVolPan_1b9680.c	calls SoundPlayEntry_1b8f90
+api	2	-	SoundPlayScaledVolume_1b9520	src/main/sound/SoundPlayScaledVolume_1b9520.c	calls SoundPlayEntry_1b8f90
+api	2	-	SoundPlayVolPan_1b9aa0	src/main/sound/SoundPlayVolPan_1b9aa0.c	calls SoundPlayEntry_1b8f90
+api	2	-	SoundPlayVol_1b9ac0	src/main/sound/SoundPlayVol_1b9ac0.c	calls SoundPlayEntry_1b8f90
+api	2	-	SoundRpcFrameTickThunkMaybe_1bd690	src/main/sound/SoundRpcFrameTickThunkMaybe_1bd690.c	calls SoundRpcFrameTickMaybe_1bd690
+api	2	-	SoundRpcStopAllThunkMaybe_1bd680	src/main/sound/SoundRpcStopAllThunkMaybe_1bd680.c	calls SoundRpcStopAllMaybe_1bd680
+api	2	-	SoundSeqControlChange_1b4fb0	src/main/sound/SoundSeqControlChange_1b4fb0.c	calls SoundSendPan_1b7ff0 SoundSendVolume_1b8020
+api	2	-	SoundSeqNoteOnOff_1b5160	src/main/sound/SoundSeqNoteOnOff_1b5160.c	calls SoundSendKeyOff_1b8090 SoundSendKeyOn_1b80c0
+api	2	-	SoundSeqPlayerResendVolumePan_1b5400	src/main/sound/SoundSeqPlayerResendVolumePan_1b5400.c	calls SoundSendPan_1b7ff0 SoundSendVolume_1b8020
+api	2	-	SoundSeqPlayersUpdateAll_1bb110	src/main/sound/SoundSeqPlayersUpdateAll_1bb110.c	calls SoundMasterVolumeFadeUpdate_1bb4d0
+api	2	-	SoundSeqStop_1b5980	src/main/sound/SoundSeqStop_1b5980.c	calls SoundSendKeyOff_1b8090
+api	2	-	SoundSeqUpdate_1b5540	src/main/sound/SoundSeqUpdate_1b5540.c	calls SoundSendKeyOff_1b8090 SoundSendPitchBend_1b7fc0
+api	2	-	SoundSetEntryVolumeScaled_1b9820	src/main/sound/SoundSetEntryVolumeScaled_1b9820.c	calls SoundSetEntryVolume_1b87c0
+api	2	-	SoundSetPanFloat_1b9a50	src/main/sound/SoundSetPanFloat_1b9a50.c	calls SoundSetPan_1b8590
+api	2	-	SoundSlotLoadBank_1d1f20	src/main/sound/SoundSlotLoadBank_1d1f20.c	calls SoundBankLoad_1b9f00
+api	2	-	SoundSlotUpdateVolumeFade_1d1af0	src/main/sound/SoundSlotUpdateVolumeFade_1d1af0.c	calls SoundSetCategoryVolume_1bb230
+api	2	-	SoundStopEntry_1b8bc0	src/main/sound/SoundStopEntry_1b8bc0.c	calls func_001B8BD0
+api	2	-	SoundStreamSetMasterVolumeThunkMaybe_1bc6f0	src/main/sound/SoundStreamSetMasterVolumeThunkMaybe_1bc6f0.c	calls SoundStreamSetMasterVolumeMaybe_1bc6f0
+api	2	-	audio_feed	src/main/movie/MoviePlayerWaitTick_1d5810.c	calls AudioDecSendToIop_1d2e90
+api	2	-	insect_InsectBattleLoadSoundBank_4f8260	src/overlays/insect/insect/insect_InsectBattleLoadSoundBank_4f8260.c	calls SoundBankLoad_1b9f00
+api	3	-	AiCmdObjPlaySound_2c25a0	src/main/ai/AiCmdObjPlaySound_2c25a0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	AttackChainModeUpdate_27f840	src/main/sys/AttackChainModeUpdate_27f840.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	CharaCmdBsPlay_22ab70	src/main/sound/CharaCmdBsPlay_22ab70.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	CharaCmdFgPlay_22aaa0	src/main/sound/CharaCmdFgPlay_22aaa0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	CharaCmdSePlay_22a9b0	src/main/sound/CharaCmdSePlay_22a9b0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	CharaCmdSysPlay_22ac40	src/main/sound/CharaCmdSysPlay_22ac40.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	CharaResReleaseSounds_1effa0	src/main/chara/CharaResReleaseSounds_1effa0.c	calls SoundBankRelease_1bb6e0
+api	3	-	DeathEffectSpawn_2d8270	src/main/effect/DeathEffectSpawn_2d8270.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	EvCmdObjPlaySe_259e30	src/main/sound/EvCmdObjPlaySe_259e30.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	EvCmdPlaySe_245420	src/main/sound/EvCmdPlaySe_245420.c	calls SoundPlayDefault_1b9ae0
+api	3	-	EvCmdSoundBankRelease_262610	src/main/sound/EvCmdSoundBankRelease_262610.c	calls SoundBankRelease_1bb6e0
+api	3	-	EvCmdSoundBankResetChannels_262030	src/main/sound/EvCmdSoundBankResetChannels_262030.c	calls SoundBankStopAll_1bad70
+api	3	-	EvCmdSoundPlayMaybe_245190	src/main/event/EvCmdSoundPlayMaybe_245190.c	calls SoundPlayDefault_1b9ae0
+api	3	-	EvCmdSoundPlay_262250	src/main/sound/EvCmdSoundPlay_262250.c	calls SoundPlayDefault_1b9ae0 SoundPlayVolPan_1b9aa0 SoundPlayVol_1b9ac0
+api	3	-	EvCmdSoundStopNote_262200	src/main/sound/EvCmdSoundStopNote_262200.c	calls SoundStopEntry_1b8bc0
+api	3	-	EvCmdSoundStop_2452d0	src/main/event/EvCmdSoundStop_2452d0.c	calls SoundStopEntry_1b8bc0
+api	3	-	EvCmdSysSePlay_242010	src/main/event/EvCmdSysSePlay_242010.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	EvCmdSysSePlay_265b60	src/main/sound/EvCmdSysSePlay_265b60.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	EvM05ChangeSuspend_350a10	src/main/event/EvM05ChangeSuspend_350a10.c	calls SoundStopEntry_1b8bc0
+api	3	-	EvScriptSoundSlotPlay_302600	src/main/script/EvScriptSoundSlotPlay_302600.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	EvSubNodePlaySound_252160	src/main/event/EvSubNodePlaySound_252160.c	calls SoundPlayDefault_1b9ae0
+api	3	-	EvSubNodeStopSound_252130	src/main/event/EvSubNodeStopSound_252130.c	calls SoundStopEntry_1b8bc0
+api	3	-	EventCueStep_2491b0	src/main/event/EventCueStep_2491b0.c	calls GameSceneSoundUpdate_1d0860
+api	3	-	EventIconUpdate_2789b0	src/main/effect/EventIconUpdate_2789b0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	EventSoundTableStopAll_249eb0	src/main/sound/EventSoundTableStopAll_249eb0.c	calls SoundSetEntryVolumeScaled_1b9820 SoundStopEntry_1b8bc0
+api	3	-	EventSoundTableUpdateFades_249f40	src/main/event/EventSoundTableUpdateFades_249f40.c	calls SoundSetEntryVolumeScaled_1b9820
+api	3	-	FieldModeResReleaseMaybe_2f35b0	src/main/sys/FieldModeResReleaseMaybe_2f35b0.c	calls SoundBankRelease_1bb6e0
+api	3	-	GameFrameUpdate_27c4c0	src/main/sys/GameFrameUpdate_27c4c0.c	calls PauseStepUpdate_2f5fb0
+api	3	-	GameSceneEmitterSoundsUpdate_1cfde0	src/main/sound/GameSceneEmitterSoundsUpdate_1cfde0.c	calls SoundBankStopAll_1bad70 SoundPlayScaledVolPan_1b9680 SoundSetEntryVolumeScaled_1b9820 SoundSetPanFloat_1b9a50 SoundStopEntry_1b8bc0
+api	3	-	GameSceneSoundInit_1d1260	src/main/sound/GameSceneSoundInit_1d1260.c	calls SoundBankStopAll_1bad70
+api	3	-	GameSessionShutdown_1f5bf0	src/main/sys/GameSessionShutdown_1f5bf0.c	calls SoundBankStopAll_1bad70
+api	3	-	GameStartModeUpdate_2858f0	src/main/sys/GameStartModeUpdate_2858f0.c	calls OptionsApply_1fe350
+api	3	-	InsectBattleInit_31a290	src/main/sys/InsectBattleInit_31a290.c	calls InsectBattleShutdown_31a230
+api	3	-	InsectBattleModeUpdate_27e0d0	src/main/sys/InsectBattleModeUpdate_27e0d0.c	calls InsectBattleMatchUpdateMaybe_319800 InsectBattleShutdown_31a230
+api	3	-	InsectBattleReinit_31a5b0	src/main/camera/InsectBattleReinit_31a5b0.c	calls InsectBattleShutdown_31a230
+api	3	-	InsectBattleReset_31a700	src/main/battle/InsectBattleReset_31a700.c	calls InsectBattleShutdown_31a230
+api	3	-	InsectCageMenuFeedState_38ea30	src/main/menu/InsectCageMenuFeedState_38ea30.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	InsectCageSePlay_3844b0	src/main/sound/InsectCageSePlay_3844b0.c	calls SoundPlayDefault_1b9ae0
+api	3	-	InsectCageSeStopLoops_384540	src/main/sound/InsectCageSeStopLoops_384540.c	calls SoundStopEntry_1b8bc0
+api	3	-	LoadingModeUpdate_285450	src/main/sys/LoadingModeUpdate_285450.c	calls SoundBankRelease_1bb6e0 SoundBankStopAll_1bad70
+api	3	-	LoadingScreenFrame_3435d0	src/main/sys/LoadingScreenFrame_3435d0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	MainLoop_1c2c10	src/main/sys/MainLoop_1c2c10.c	calls SoundSeqPlayersUpdateAll_1bb110
+api	3	-	MenuCharaAbilityPageSelectState_341980	src/main/menu/MenuCharaAbilityPageSelectState_341980.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuEquipSelectFlashState_2b53f0	src/main/menu/MenuEquipSelectFlashState_2b53f0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuGridCursorInput_28e170	src/main/menu/MenuGridCursorInput_28e170.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuGridCursorSeUpdate_28e960	src/main/menu/MenuGridCursorSeUpdate_28e960.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuInfoBoxInputState_3414b0	src/main/menu/MenuInfoBoxInputState_3414b0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuInfoBoxInputState_353a10	src/main/menu/MenuInfoBoxInputState_353a10.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuItemCommandDispatchState_2ad260	src/main/menu/MenuItemCommandDispatchState_2ad260.c	calls SoundPlayDefault_1b9ae0
+api	3	-	MenuItemTabCycleCb_346590	src/main/menu/MenuItemTabCycleCb_346590.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuItemUseTargetState_2ae490	src/main/menu/MenuItemUseTargetState_2ae490.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuOptionsSetItem_34f5c0	src/main/menu/MenuOptionsSetItem_34f5c0.c	calls OptionsApply_1fe350
+api	3	-	MenuPartyCursorInputCbMaybe_2ba060	src/main/menu/MenuPartyCursorInputCbMaybe_2ba060.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuRevelationBoardState_347dd0	src/main/menu/MenuRevelationBoardState_347dd0.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuTacticsAbilityToggleState_353e30	src/main/menu/MenuTacticsAbilityToggleState_353e30.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	MenuWeaponCombineConfirmDialogStateMaybe_2aa050	src/main/menu/MenuWeaponCombineConfirmDialogStateMaybe_2aa050.c	calls SoundStopEntry_1b8bc0
+api	3	-	MenuWeaponCombineResultState_2ab4e0	src/main/menu/MenuWeaponCombineResultState_2ab4e0.cpp	calls SoundPlayDefault_1b9ae0
+api	3	-	MotionEventFootSeFire_1b1190	src/main/sound/MotionEventFootSeFire_1b1190.c	calls SoundPlayScaledVolPan_1b9680
+api	3	-	MotionEventSePlay_1b1250	src/main/sound/MotionEventSePlay_1b1250.c	calls SoundPlayScaledVolPan_1b9680
+api	3	-	MoviePlayerOpen_1d61a0	src/main/movie/MoviePlayerOpen_1d61a0.c	calls MovieOpen_1d5cf0
+api	3	-	MoviePlayerShutdown_1d56c0	src/main/movie/MoviePlayerShutdown_1d56c0.c	calls AudioDecReset_1d3070
+api	3	-	ObjTypeMonographOnTouch_372100	src/main/event/ObjTypeMonographOnTouch_372100.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	PlayMenuSe_289ef0	src/main/sound/PlayMenuSe_289ef0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	ProjectileOnMapHit_317bf0	src/main/obj/ProjectileOnMapHit_317bf0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	RevelationBoardUpdate_34c290	src/main/menu/RevelationBoardUpdate_34c290.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	SceneObjsStep_1f97a0	src/main/obj/SceneObjsStep_1f97a0.cpp	calls SoundPlayScaledVolPan_1b9680
+api	3	-	ScenePlaySe_277690	src/main/sound/ScenePlaySe_277690.c	calls SoundPlayDefault_1b9ae0
+api	3	-	SceneSoundUpdate_207a50	src/main/sound/SceneSoundUpdate_207a50.c	calls GameSceneSoundUpdate_1d0860
+api	3	-	ScriptCmdObjPlaySound_32d090	src/main/sound/ScriptCmdObjPlaySound_32d090.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	ScriptCmdObjPlaySound_32eb00	src/main/sound/ScriptCmdObjPlaySound_32eb00.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	SoundNoteListSetVolumeScale_1b4ab0	src/main/sound/SoundNoteListSetVolumeScale_1b4ab0.c	calls SoundSetEntryVolumeScaled_1b9820
+api	3	-	SoundNoteListUpdate_1b4b60	src/main/sound/SoundNoteListUpdate_1b4b60.c	calls SoundPlayScaledVolPan_1b9680 SoundSetEntryVolumeScaled_1b9820 SoundSetPanFloat_1b9a50 SoundStopEntry_1b8bc0
+api	3	-	SoundSlotFree_1d21e0	src/main/sound/SoundSlotFree_1d21e0.c	calls SoundBankRelease_1bb6e0
+api	3	-	SoundSlotLoadBankThunk_1d1f20	src/main/sound/SoundSlotLoadBankThunk_1d1f20.c	calls SoundSlotLoadBank_1d1f20
+api	3	-	SoundSlotPlaySe_1d1a50	src/main/sound/SoundSlotPlaySe_1d1a50.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	SoundSlotPoll_1d1c70	src/main/sound/SoundSlotPoll_1d1c70.c	calls SoundBankRelease_1bb6e0
+api	3	-	SoundSlotStartLoaded_1d1ea0	src/main/sound/SoundSlotStartLoaded_1d1ea0.c	calls SoundBankRelease_1bb6e0 SoundSlotLoadBank_1d1f20
+api	3	-	SoundSlotStopSe_1d1a10	src/main/sound/SoundSlotStopSe_1d1a10.c	calls SoundStopEntry_1b8bc0
+api	3	-	StatusEffectSlotSetup_33d080	src/main/effect/StatusEffectSlotSetup_33d080.c	calls SoundStopEntry_1b8bc0
+api	3	-	StatusEffectSlotStop_33c2b0	src/main/effect/StatusEffectSlotStop_33c2b0.c	calls SoundStopEntry_1b8bc0
+api	3	-	StreamMgrCloseAll_1d6740	src/main/sound/StreamMgrCloseAll_1d6740.c	calls SoundStreamSetMasterVolumeThunkMaybe_1bc6f0
+api	3	-	SysTickThreadMain_1c33f0	src/main/sys/SysTickThreadMain_1c33f0.c	calls SoundCategoryFadeUpdate_1b5f20 SoundSeqPlayersUpdateAll_1bb110
+api	3	-	TargetMngCancel_313a70	src/main/event/TargetMngCancel_313a70.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	TargetMngSetTarget_313ad0	src/main/battle/TargetMngSetTarget_313ad0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	TaskStepEvent_27abc0	src/main/event/TaskStepEvent_27abc0.c	calls SoundBankRelease_1bb6e0
+api	3	-	clear	src/main/gfx/TexAnimeCfgTexAnimeDataEndCmd_161e80.c	calls SoundSeqStop_1b5980
+api	3	-	factory_FactoryBlueprintAskClear_4fae70	src/overlays/factory/menu/factory_FactoryBlueprintAskClear_4fae70.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryBlueprintConfirm_4fb840	src/overlays/factory/menu/factory_FactoryBlueprintConfirm_4fb840.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryMaterialClearConfirmOpen_4f2a70	src/overlays/factory/menu/factory_FactoryMaterialClearConfirmOpen_4f2a70.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryMaterialStateTick_4ee070	src/overlays/factory/menu/factory_FactoryMaterialStateTick_4ee070.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryMaterialTabKeyCb_4edef0	src/overlays/factory/menu/factory_FactoryMaterialTabKeyCb_4edef0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryMaterialWaitRequest_4f31c0	src/overlays/factory/menu/factory_FactoryMaterialWaitRequest_4f31c0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryMenuStateMain_4eb4d0	src/overlays/factory/menu/factory_FactoryMenuStateMain_4eb4d0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryMoveStateTick_4ee660	src/overlays/factory/menu/factory_FactoryMoveStateTick_4ee660.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryMoveWaitRequest_4f43e0	src/overlays/factory/menu/factory_FactoryMoveWaitRequest_4f43e0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryPartsPlaceWait_4f01a0	src/overlays/factory/menu/factory_FactoryPartsPlaceWait_4f01a0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryPartsStateTick_4ec970	src/overlays/factory/menu/factory_FactoryPartsStateTick_4ec970.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryRemoveKeyCb_4ef530	src/overlays/factory/menu/factory_FactoryRemoveKeyCb_4ef530.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryRemoveStateTick_4ef5e0	src/overlays/factory/menu/factory_FactoryRemoveStateTick_4ef5e0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	factory_FactoryRemoveWaitRequest_4fcc50	src/overlays/factory/menu/factory_FactoryRemoveWaitRequest_4fcc50.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	insect_InsectBattleLoadStep_50a810	src/overlays/insect/insect/insect_InsectBattleLoadStep_50a810.c	calls insect_InsectBattleLoadSoundBank_4f8260
+api	3	-	insect_InsectBattlePlayBankSe_5107d0	src/overlays/insect/insect/insect_InsectBattlePlayBankSe_5107d0.c	calls SoundPlayDefault_1b9ae0
+api	3	-	normal_BtlChgMenuAbilityListCursorMoveCb_5020c0	src/overlays/normal/menu/normal_BtlChgMenuAbilityListCursorMoveCb_5020c0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_BtlChgMenuAbilityListState_5025b0	src/overlays/normal/menu/normal_BtlChgMenuAbilityListState_5025b0.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_BtlChgMenuItemTargetCursorMoveCb_4fd6d0	src/overlays/normal/menu/normal_BtlChgMenuItemTargetCursorMoveCb_4fd6d0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_FieldHudAllySuggestOpen_4efc50	src/overlays/normal/ui/normal_FieldHudAllySuggestOpen_4efc50.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_FieldHudAllySuggestStep_4ef070	src/overlays/normal/ui/normal_FieldHudAllySuggestStep_4ef070.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_FieldHudAllySuggestTimerUpdate_4eea90	src/overlays/normal/ui/normal_FieldHudAllySuggestTimerUpdate_4eea90.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_FieldHudBtlEscStep_4f0cf0	src/overlays/normal/ui/normal_FieldHudBtlEscStep_4f0cf0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_MenuBattleEndItemRowsCascade_4ea700	src/overlays/normal/menu/normal_MenuBattleEndItemRowsCascade_4ea700.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_MenuBattleEndItemRowsShow_4ea890	src/overlays/normal/menu/normal_MenuBattleEndItemRowsShow_4ea890.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_MenuBattleEndSkipInput_4ec220	src/overlays/normal/menu/normal_MenuBattleEndSkipInput_4ec220.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_MenuBattleEndStep_4eb6c0	src/overlays/normal/menu/normal_MenuBattleEndStep_4eb6c0.cpp	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_ShopMenuSellTabsSwitchCb_5103f0	src/overlays/normal/menu/normal_ShopMenuSellTabsSwitchCb_5103f0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_SpaceMenuCancel_5117e0	src/overlays/normal/menu/normal_SpaceMenuCancel_5117e0.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	normal_SpaceMenuConfirmStep_511940	src/overlays/normal/menu/normal_SpaceMenuConfirmStep_511940.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	title_TitleMenuCursorMoveCb_4eaa90	src/overlays/title/title/title_TitleMenuCursorMoveCb_4eaa90.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	title_TitleMenuTick_4eaf70	src/overlays/title/title/title_TitleMenuTick_4eaf70.c	calls SoundPlayScaledVolume_1b9520
+api	3	-	title_TitleMoviePlay_4f0600	src/overlays/title/movie/title_TitleMoviePlay_4f0600.c	calls AudioDecSetInputVolumeF_1d52e0 MoviePlayerStart_1d5b50 MoviePlayerWaitTick_1d5810
+api	3	-	title_TitleMovieSetVolume_4f05d0	src/overlays/title/movie/title_TitleMovieSetVolume_4f05d0.c	calls AudioDecSetInputVolumeF_1d52e0
+api	3	-	title_TitleMovieUpdate_4f04c0	src/overlays/title/movie/title_TitleMovieUpdate_4f04c0.c	calls AudioDecSetInputVolumeF_1d52e0 MoviePlayerWaitTick_1d5810
+api	3	-	title_TitleOptionsToggle_4ef3f0	src/overlays/title/menu/title_TitleOptionsToggle_4ef3f0.c	calls OptionsApply_1fe350
+api	3	-	title_TitleSessionInit_4f0cb0	src/overlays/title/title/title_TitleSessionInit_4f0cb0.c	calls SoundEnvPresetTableInitMaybe_207be0
+api	3	-	title_TitleSessionShutdown_4f0820	src/overlays/title/title/title_TitleSessionShutdown_4f0820.c	calls SoundBankStopAll_1bad70

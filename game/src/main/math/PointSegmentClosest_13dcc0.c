@@ -1,0 +1,121 @@
+#include "types.h"
+
+extern void VecDistance_13d3d0(void);
+
+asm void PointSegmentClosest_13dcc0(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0xA0;
+    sd         $31, 0x50($29);
+    sq         $19, 0x40($29);
+    sq         $18, 0x30($29);
+    daddu      $19, $4, $0;
+    sq         $17, 0x20($29);
+    daddu      $18, $5, $0;
+    sq         $16, 0x10($29);
+    daddu      $17, $6, $0;
+    swc1       $f20, 0x0($29);
+    daddu      $16, $7, $0;
+    addiu      $4, $29, 0x90;
+    lqc2       $vf4, 0x0($18);
+    lqc2       $vf5, 0x0($19);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($4);
+    addiu      $2, $29, 0x80;
+    lqc2       $vf4, 0x0($17);
+    lqc2       $vf5, 0x0($19);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($2);
+    addiu      $3, $29, 0x60;
+    lqc2       $vf4, 0x0($2);
+    lqc2       $vf5, 0x0($4);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($3);
+    lqc2       $vf4, 0x0($3);
+    vmul.xyz   $vf4, $vf4, $vf4;
+    vmr32.xy   $vf5, $vf4;
+    vmr32.x    $vf6, $vf5;
+    vadd.x     $vf7, $vf4, $vf5;
+    vadd.x     $vf5, $vf6, $vf7;
+    .word      0x4A0503BD;
+    vwaitq;
+    cfc2.ni    $2, $vi22;
+    mtc1       $2, $f0;
+    nop;
+    mul.s      $f1, $f0, $f0;
+    lqc2       $vf4, 0x0($4);
+    lqc2       $vf5, 0x0($3);
+    vmul.xyz   $vf5, $vf4, $vf5;
+    vaddy.x    $vf5, $vf5, $vf5y;
+    vaddz.x    $vf5, $vf5, $vf5z;
+    qmfc2.ni   $2, $vf5;
+    mtc1       $2, $f0;
+    nop;
+    neg.s      $f0, $f0;
+    div.s      $f1, $f0, $f1;
+    nop;
+    mtc1       $0, $f0;
+    nop;
+    c.lt.s     $f1, $f0;
+    bc1tl      L0013DDB4;
+    daddu     $4, $19, $0;
+    lui        $2, (0x3F800000 >> 16);
+    mtc1       $2, $f0;
+    nop;
+    c.le.s     $f1, $f0;
+    bc1tl      L0013DDF0;
+    addiu     $2, $29, 0x70;
+    daddu      $4, $19, $0;
+  L0013DDB4:
+    jal        VecDistance_13d3d0;
+    daddu     $5, $18, $0;
+    daddu      $4, $19, $0;
+    daddu      $5, $17, $0;
+    jal        VecDistance_13d3d0;
+    mov.s     $f20, $f0;
+    c.lt.s     $f20, $f0;
+    bc1fl      L0013DDE8;
+    lq        $2, 0x0($17);
+    lq         $2, 0x0($18);
+    mov.s      $f0, $f20;
+    b          L0013DE50;
+    sq        $2, 0x0($16);
+  L0013DDE8:
+    b          L0013DE50;
+    sq        $2, 0x0($16);
+  L0013DDF0:
+    lqc2       $vf4, 0x0($3);
+    mfc1       $8, $f1;
+    nop;
+    qmtc2.ni   $8, $vf5;
+    vmulx.xyzw $vf6, $vf4, $vf5x;
+    sqc2       $vf6, 0x0($2);
+    lqc2       $vf4, 0x0($4);
+    lqc2       $vf5, 0x0($2);
+    vadd.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($2);
+    lqc2       $vf4, 0x0($2);
+    lqc2       $vf5, 0x0($19);
+    vadd.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($16);
+    lqc2       $vf4, 0x0($2);
+    vmul.xyz   $vf4, $vf4, $vf4;
+    vmr32.xy   $vf5, $vf4;
+    vmr32.x    $vf6, $vf5;
+    vadd.x     $vf7, $vf4, $vf5;
+    vadd.x     $vf5, $vf6, $vf7;
+    .word      0x4A0503BD;
+    vwaitq;
+    cfc2.ni    $2, $vi22;
+    mtc1       $2, $f0;
+  L0013DE50:
+    ld         $31, 0x50($29);
+    lwc1       $f20, 0x0($29);
+    lq         $19, 0x40($29);
+    lq         $18, 0x30($29);
+    lq         $17, 0x20($29);
+    lq         $16, 0x10($29);
+    jr         $31;
+    addiu     $29, $29, 0xA0;
+}
+

@@ -1,0 +1,83 @@
+#include "types.h"
+
+extern void sceVu0UnitMatrix(void);
+extern void VecNormalize_13bd90(void);
+extern void MatScaleRows_13cf00(void);
+
+asm void MtxYawFaceTarget_13cb30(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0x80;
+    sd         $31, 0x20($29);
+    sq         $17, 0x10($29);
+    sq         $16, 0x0($29);
+    daddu      $17, $4, $0;
+    daddu      $16, $5, $0;
+    lqc2       $vf4, 0x0($17);
+    vmul.xyz   $vf4, $vf4, $vf4;
+    vmr32.xy   $vf5, $vf4;
+    vmr32.x    $vf6, $vf5;
+    vadd.x     $vf7, $vf4, $vf5;
+    vadd.x     $vf5, $vf6, $vf7;
+    .word      0x4A0503BD;
+    vwaitq;
+    cfc2.ni    $2, $vi22;
+    mtc1       $2, $f0;
+    sw         $2, 0x70($29);
+    lqc2       $vf4, 0x10($17);
+    vmul.xyz   $vf4, $vf4, $vf4;
+    vmr32.xy   $vf5, $vf4;
+    vmr32.x    $vf6, $vf5;
+    vadd.x     $vf7, $vf4, $vf5;
+    vadd.x     $vf5, $vf6, $vf7;
+    .word      0x4A0503BD;
+    vwaitq;
+    cfc2.ni    $2, $vi22;
+    mtc1       $2, $f0;
+    sw         $2, 0x74($29);
+    lqc2       $vf4, 0x20($17);
+    vmul.xyz   $vf4, $vf4, $vf4;
+    vmr32.xy   $vf5, $vf4;
+    vmr32.x    $vf6, $vf5;
+    vadd.x     $vf7, $vf4, $vf5;
+    vadd.x     $vf5, $vf6, $vf7;
+    .word      0x4A0503BD;
+    vwaitq;
+    cfc2.ni    $2, $vi22;
+    mtc1       $2, $f0;
+    sw         $2, 0x78($29);
+    jal        sceVu0UnitMatrix;
+    addiu     $4, $29, 0x30;
+    addiu      $4, $29, 0x50;
+    lqc2       $vf4, 0x0($16);
+    lqc2       $vf5, 0x30($17);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($4);
+    daddu      $5, $4, $0;
+    sw         $0, 0x54($29);
+    jal        VecNormalize_13bd90;
+    sw        $0, 0x5C($29);
+    lwc1       $f0, 0x58($29);
+    addiu      $4, $29, 0x30;
+    lwc1       $f1, 0x50($29);
+    daddu      $5, $4, $0;
+    addiu      $6, $29, 0x70;
+    swc1       $f0, 0x30($29);
+    swc1       $f0, 0x58($29);
+    neg.s      $f0, $f1;
+    swc1       $f0, 0x38($29);
+    jal        MatScaleRows_13cf00;
+    swc1      $f1, 0x50($29);
+    lq         $3, 0x30($29);
+    sq         $3, 0x0($17);
+    lq         $3, 0x40($29);
+    sq         $3, 0x10($17);
+    lq         $3, 0x50($29);
+    sq         $3, 0x20($17);
+    ld         $31, 0x20($29);
+    lq         $17, 0x10($29);
+    lq         $16, 0x0($29);
+    jr         $31;
+    addiu     $29, $29, 0x80;
+}
+

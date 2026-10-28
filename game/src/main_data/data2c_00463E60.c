@@ -1,0 +1,12 @@
+/* rgp:protos */
+#include "port/game_protos.h"
+#line 1
+/* rg:datareloc */
+extern unsigned char data2c_main_bss[];
+/* Generated: do not edit. */
+#include "types.h"
+
+u32 D_00463E60[22] __attribute__((section(".data$rg00463E60"), aligned(16))) = {
+    @X@00463E60@, @X@00463E64@, @X@00463E68@, @X@00463E6C@, @X@00463E70@, @X@00463E74@, @X@00463E78@, @X@00463E7C@, @X@00463E80@, @X@00463E84@, @X@00463E88@, @X@00463E8C@, @X@00463E90@, @X@00463E94@, @X@00463E98@, @X@00463E9C@, (u32)(data2c_main_bss + 0x541D0), @X@00463EA4@, @X@00463EA8@, @X@00463EAC@, @X@00463EB0@, @X@00463EB4@
+};
+typedef char data2c_sizecheck_00463E60[(sizeof(D_00463E60) == 88) ? 1 : -1];

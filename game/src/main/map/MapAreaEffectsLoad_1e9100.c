@@ -1,0 +1,47 @@
+/* rgp:protos */
+#define RGP_SELF_MapAreaEffectsLoad_1e9100 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+typedef struct V1e9100 {
+    s32 v[4];
+} V1e9100;
+
+typedef struct A1e9100 {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+    s32 unkC;
+    s32 unk10;
+} A1e9100;
+
+/*rgp*/
+/*rgp*/
+
+s32 MapAreaEffectsLoad_1e9100(A1e9100 *arg0, s32 arg1, s32 arg2, s32 arg3)
+{
+    V1e9100 sp80 __attribute__((aligned(16)));
+    V1e9100 sp70 __attribute__((aligned(16)));
+    V1e9100 sp60 __attribute__((aligned(16)));
+    V1e9100 sp50 __attribute__((aligned(16)));
+    s32 h;
+
+    if (arg3 == 0 || arg2 == 0) {
+        return 0;
+    }
+    h = ((s32)GetEffectMgr_2d9040());
+    if (arg0->unk4 != 0) {
+        EffectArchiveLoadByName_2e28a0(&sp80, h, arg2, arg0->unk4, arg3, arg0->unk0);
+    }
+    if (arg0->unk8 != 0) {
+        EffectArchiveLoadByName_2e28a0(&sp70, h, arg2, arg0->unk8, arg3, arg0->unk0);
+    }
+    if (arg0->unkC != 0) {
+        EffectArchiveLoadByName_2e28a0(&sp60, h, arg2, arg0->unkC, arg3, arg0->unk0);
+    }
+    if (arg0->unk10 != 0) {
+        EffectArchiveLoadByName_2e28a0(&sp50, h, arg2, arg0->unk10, arg3, arg0->unk0);
+    }
+    return 0;
+}

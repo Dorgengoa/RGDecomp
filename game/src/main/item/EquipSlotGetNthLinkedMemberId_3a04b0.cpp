@@ -1,0 +1,29 @@
+/* rgp:protos */
+#line 1
+#include "types.h"
+
+struct R { u8 pad[0xC]; s32 f0C; };
+
+struct O {
+    VC_VPTR_MEMBER;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    R * vf(int rgp_fwd1 = 0, int rgp_fwd2 = 0, int rgp_fwd3 = 0) { return VCM(R *, (void *, int, int, int), 0x3C, rgp_fwd1, rgp_fwd2, rgp_fwd3); }
+};
+
+extern "C" s32 EquipSlotGetNthLinkedMemberId_3a04b0(O *o, int rgp_a1, int rgp_a2, int rgp_a3)
+{
+    R *r = o->vf((int)(long)(rgp_a1), (int)(long)(rgp_a2), (int)(long)(rgp_a3));
+    if (r != 0) return r->f0C;
+    return -1;
+}

@@ -1,0 +1,8 @@
+# census: run_all
+# source: ../RGDecomp
+# commit: 2efa6b43548fed253fafdee4d22c8d61d506acde
+# generator: tools/census/run_all.py
+# registered_units: {'main': 17516, 'title': 97, 'insmenu': 365, 'normal': 659, 'factory': 409, 'insect': 744}
+# files: 19760
+# headers: ['include/camera.h', 'include/camera_cpp.h', 'include/event_vm.h', 'include/objrec.h', 'include/script_vm.h', 'include/types.h', 'include/vec.h', 'include/vm_slot.h', 'include/vu0inline.h']
+image	unit	why

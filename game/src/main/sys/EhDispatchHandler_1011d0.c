@@ -1,0 +1,218 @@
+#include "types.h"
+
+extern void DecodeVarUInt_100ed0(void);
+extern void DecodeVarInt_100f70(void);
+extern void EhCatchTypeCompare_100a60(void);
+extern void EhUnwindActions_101860(void);
+extern void EhRestoreContextAndJump_102550(void);
+extern void Terminate_100ce0(void);
+extern void EhSkipActions_102070(void);
+
+asm void EhDispatchHandler_1011d0(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0x380;
+    sd         $31, 0x60($29);
+    addiu      $7, $29, 0xC0;
+    sq         $21, 0x50($29);
+    sq         $20, 0x40($29);
+    daddu      $21, $6, $0;
+    sq         $19, 0x30($29);
+    daddu      $20, $4, $0;
+    sq         $18, 0x20($29);
+    daddu      $19, $5, $0;
+    sq         $17, 0x10($29);
+    addiu      $8, $20, 0x20;
+    sq         $16, 0x0($29);
+    addiu      $6, $0, 0x15;
+    lw         $2, 0x0($5);
+    sw         $2, 0x80($29);
+    lw         $2, 0x4($5);
+    sw         $2, 0x84($29);
+    lw         $2, 0x8($5);
+    sw         $2, 0x88($29);
+    lw         $2, 0xC($5);
+    sw         $2, 0x8C($29);
+    lw         $2, 0x10($5);
+    sw         $2, 0x90($29);
+    lwc1       $f0, 0x14($5);
+    swc1       $f0, 0x94($29);
+    lw         $2, 0x0($4);
+    sw         $2, 0xA0($29);
+    lw         $2, 0x4($4);
+    sw         $2, 0xA4($29);
+    lw         $2, 0x8($4);
+    sw         $2, 0xA8($29);
+    lw         $2, 0xC($4);
+    sw         $2, 0xAC($29);
+    lw         $2, 0x10($4);
+    sw         $2, 0xB0($29);
+    lw         $2, 0x14($4);
+    sw         $2, 0xB4($29);
+    lw         $2, 0x18($4);
+    sw         $2, 0xB8($29);
+    lw         $2, 0x1C($4);
+    sw         $2, 0xBC($29);
+  L00101278:
+    lq         $3, 0x0($8);
+    addiu      $6, $6, -0x1;
+    lq         $2, 0x10($8);
+    sq         $3, 0x0($7);
+    addiu      $8, $8, 0x20;
+    sq         $2, 0x10($7);
+    bgtz       $6, L00101278;
+    addiu     $7, $7, 0x20;
+    lw         $2, 0x88($29);
+    beql       $2, $0, L001012AC;
+    daddu     $2, $0, $0;
+    lbu        $2, 0x0($2);
+    andi       $2, $2, 0x1F;
+  L001012AC:
+    andi       $2, $2, 0xFF;
+  L001012B0:
+    andi       $2, $2, 0xFF;
+    sltiu      $1, $2, 0x10;
+    beqz       $1, L00101478;
+    nop;
+    lui        $3, 0x45;
+    sll        $2, $2, 2;
+    addiu      $3, $3, 0x5510;
+    addu       $2, $2, $3;
+    lw         $2, 0x0($2);
+    jr         $2;
+    nop;
+    nop;
+    lw         $7, 0x88($29);
+    lbu        $2, 0x2($7);
+    addiu      $4, $7, 0x5;
+    lbu        $3, 0x3($7);
+    lbu        $5, 0x1($7);
+    sll        $6, $2, 8;
+    lbu        $2, 0x4($7);
+    sll        $3, $3, 16;
+    or         $5, $5, $6;
+    or         $3, $3, $5;
+    sll        $2, $2, 24;
+    or         $2, $2, $3;
+    beqz       $2, L00101320;
+    sw        $2, 0x370($29);
+    b          L00101328;
+    sw        $2, 0x370($29);
+  L00101320:
+    daddu      $2, $0, $0;
+    sw         $2, 0x370($29);
+  L00101328:
+    jal        DecodeVarUInt_100ed0;
+    addiu     $5, $29, 0x374;
+    daddu      $4, $2, $0;
+    jal        DecodeVarInt_100f70;
+    addiu     $5, $29, 0x378;
+    lw         $4, 0x0($20);
+    lw         $5, 0x370($29);
+    jal        EhCatchTypeCompare_100a60;
+    daddu     $6, $21, $0;
+    bnez       $2, L001014A0;
+    nop;
+    b          L0010148C;
+    addiu     $4, $29, 0x80;
+    nop;
+    lw         $2, 0x88($29);
+    addiu      $5, $29, 0x70;
+    jal        DecodeVarUInt_100ed0;
+    addiu     $4, $2, 0x1;
+    daddu      $4, $2, $0;
+    jal        DecodeVarUInt_100ed0;
+    addiu     $5, $29, 0x74;
+    daddu      $4, $2, $0;
+    jal        DecodeVarInt_100f70;
+    addiu     $5, $29, 0x78;
+    sw         $2, 0x7C($29);
+    daddu      $17, $2, $0;
+    lw         $2, 0x70($29);
+    lw         $18, 0x0($20);
+    beqz       $2, L00101408;
+    daddu     $16, $0, $0;
+  L001013A0:
+    lbu        $2, 0x1($17);
+    lbu        $3, 0x2($17);
+    daddu      $4, $18, $0;
+    lbu        $5, 0x0($17);
+    addiu      $6, $29, 0x368;
+    sll        $7, $2, 8;
+    lbu        $2, 0x3($17);
+    sll        $3, $3, 16;
+    or         $5, $5, $7;
+    or         $3, $3, $5;
+    sll        $2, $2, 24;
+    jal        EhCatchTypeCompare_100a60;
+    or        $5, $2, $3;
+    sltu       $2, $0, $2;
+    xori       $2, $2, 0x1;
+    bnez       $2, L001013F0;
+    nop;
+    b          L00101410;
+    addiu     $2, $0, 0x1;
+    nop;
+  L001013F0:
+    lw         $2, 0x70($29);
+    addiu      $16, $16, 0x1;
+    sltu       $2, $16, $2;
+    bnez       $2, L001013A0;
+    addiu     $17, $17, 0x4;
+    nop;
+  L00101408:
+    daddu      $2, $0, $0;
+    nop;
+  L00101410:
+    bnez       $2, L00101488;
+    nop;
+    lw         $16, 0x88($29);
+    daddu      $4, $20, $0;
+    daddu      $5, $19, $0;
+    jal        EhUnwindActions_101860;
+    daddu     $6, $16, $0;
+    lw         $6, 0x18($20);
+    daddu      $4, $20, $0;
+    lw         $3, 0x78($29);
+    daddu      $5, $19, $0;
+    lw         $2, 0x4($20);
+    addu       $3, $6, $3;
+    sw         $2, 0x0($3);
+    lw         $2, 0x0($20);
+    sw         $2, 0x4($3);
+    lw         $2, 0x8($20);
+    sw         $2, 0x8($3);
+    sw         $16, 0x14($3);
+    lw         $3, 0x0($19);
+    lw         $2, 0x74($29);
+    jal        EhRestoreContextAndJump_102550;
+    addu      $6, $3, $2;
+    b          L00101488;
+    nop;
+    nop;
+  L00101478:
+    jal        Terminate_100ce0;
+    nop;
+    b          L001014A0;
+    nop;
+  L00101488:
+    addiu      $4, $29, 0x80;
+  L0010148C:
+    jal        EhSkipActions_102070;
+    nop;
+    b          L001012B0;
+    andi      $2, $2, 0xFF;
+    nop;
+  L001014A0:
+    lw         $2, 0x88($29);
+    ld         $31, 0x60($29);
+    lq         $21, 0x50($29);
+    lq         $20, 0x40($29);
+    lq         $19, 0x30($29);
+    lq         $18, 0x20($29);
+    lq         $17, 0x10($29);
+    lq         $16, 0x0($29);
+    jr         $31;
+    addiu     $29, $29, 0x380;
+}
+

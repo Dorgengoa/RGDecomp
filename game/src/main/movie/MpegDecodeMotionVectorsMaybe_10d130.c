@@ -1,0 +1,116 @@
+#include "types.h"
+
+extern void IpuGetBits_10dc88(void);
+extern void IpuDecodeMotionVectorMaybe_10cd08(void);
+
+asm void MpegDecodeMotionVectorsMaybe_10d130(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0xB0;
+    addiu      $2, $0, 0x1;
+    sd         $30, 0x90($29);
+    sd         $23, 0x80($29);
+    sd         $22, 0x70($29);
+    daddu      $23, $6, $0;
+    sd         $21, 0x60($29);
+    sd         $20, 0x50($29);
+    daddu      $21, $11, $0;
+    sd         $19, 0x40($29);
+    daddu      $20, $5, $0;
+    sd         $18, 0x30($29);
+    sd         $16, 0x10($29);
+    daddu      $18, $4, $0;
+    sd         $31, 0xA0($29);
+    daddu      $16, $8, $0;
+    sd         $17, 0x20($29);
+    sw         $7, 0x0($29);
+    lw         $22, 0xB0($29);
+    lw         $19, 0xB8($29);
+    bne        $9, $2, L0010D1B8;
+    lw        $30, 0xC0($29);
+    bnel       $10, $0, L0010D264;
+    sll       $16, $16, 3;
+    bnel       $19, $0, L0010D264;
+    sll       $16, $16, 3;
+    jal        IpuGetBits_10dc88;
+    addiu     $5, $0, 0x1;
+    lw         $4, 0x0($29);
+    sll        $3, $16, 2;
+    addu       $3, $3, $4;
+    sw         $2, 0x8($3);
+    b          L0010D260;
+    sw        $2, 0x0($3);
+  L0010D1B8:
+    daddu      $4, $18, $0;
+    jal        IpuGetBits_10dc88;
+    addiu     $5, $0, 0x1;
+    sll        $17, $16, 3;
+    lw         $3, 0x0($29);
+    sll        $16, $16, 2;
+    addu       $5, $20, $17;
+    daddu      $4, $18, $0;
+    addu       $16, $16, $3;
+    daddu      $6, $23, $0;
+    sw         $2, 0x0($16);
+    daddu      $7, $21, $0;
+    daddu      $8, $22, $0;
+    daddu      $9, $19, $0;
+    daddu      $10, $30, $0;
+    jal        IpuDecodeMotionVectorMaybe_10cd08;
+    daddu     $11, $0, $0;
+    daddu      $4, $18, $0;
+    jal        IpuGetBits_10dc88;
+    addiu     $5, $0, 0x1;
+    addiu      $17, $17, 0x10;
+    sw         $2, 0x8($16);
+    addu       $5, $20, $17;
+    daddu      $4, $18, $0;
+    daddu      $6, $23, $0;
+    daddu      $7, $21, $0;
+    daddu      $8, $22, $0;
+    daddu      $9, $19, $0;
+    daddu      $10, $30, $0;
+    ld         $31, 0xA0($29);
+    ld         $30, 0x90($29);
+    daddu      $11, $0, $0;
+    ld         $23, 0x80($29);
+    ld         $22, 0x70($29);
+    ld         $21, 0x60($29);
+    ld         $20, 0x50($29);
+    ld         $19, 0x40($29);
+    ld         $18, 0x30($29);
+    ld         $17, 0x20($29);
+    ld         $16, 0x10($29);
+    j          IpuDecodeMotionVectorMaybe_10cd08;
+    addiu     $29, $29, 0xB0;
+  L0010D260:
+    sll        $16, $16, 3;
+  L0010D264:
+    daddu      $4, $18, $0;
+    addu       $16, $20, $16;
+    daddu      $6, $23, $0;
+    daddu      $7, $21, $0;
+    daddu      $8, $22, $0;
+    daddu      $9, $19, $0;
+    daddu      $10, $30, $0;
+    daddu      $5, $16, $0;
+    jal        IpuDecodeMotionVectorMaybe_10cd08;
+    daddu     $11, $0, $0;
+    lw         $2, 0x0($16);
+    lw         $3, 0x4($16);
+    sw         $2, 0x10($16);
+    sw         $3, 0x14($16);
+    ld         $31, 0xA0($29);
+    ld         $30, 0x90($29);
+    ld         $23, 0x80($29);
+    ld         $22, 0x70($29);
+    ld         $21, 0x60($29);
+    ld         $20, 0x50($29);
+    ld         $19, 0x40($29);
+    ld         $18, 0x30($29);
+    ld         $17, 0x20($29);
+    ld         $16, 0x10($29);
+    jr         $31;
+    addiu     $29, $29, 0xB0;
+}
+

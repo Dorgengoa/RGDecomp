@@ -1,0 +1,35 @@
+/* rgp:protos */
+#define RGP_SELF_StreamPlayMwv_207340 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+extern void Sprintf_1343b8(void *, void *, s32);
+/*rgp*/
+/*rgp*/
+typedef rg_u128 u128;
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+extern u8 D_0045C5A0[];
+
+void StreamPlayMwv_207340(s32 p0, s32 p1, f32 fa0)
+{
+    u128 v50[8];
+    s32 r0;
+
+    r0 = ((s32)GetStreamMgr_207ea0());
+    StreamMgrPauseChan_1d6630(r0, 1);
+    StreamMgrStopChan_1d66b0(r0, 1);
+    if (p0 > 0) {
+        Sprintf_1343b8(v50, D_0045C5A0, p0);
+        StreamMgrStartChan_1d66f0(r0, 1, v50, (p1 & 0xFF));
+        StreamMgrPlayChan_1d6670(r0, 1, fa0);
+    }
+}

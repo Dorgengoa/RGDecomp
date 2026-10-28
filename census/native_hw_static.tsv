@@ -1,0 +1,89 @@
+src	kind	path	line	function	addr	register	owner	lane	text
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x10008000	D0 VIF0 DMA	dmac	renderer	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x10009000	D1 VIF1 DMA	dmac	renderer	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x1000A000	D2 GIF DMA	dmac	renderer	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x1000B000	D3 fromIPU DMA	dmac	movie (native player)	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x1000B400	D4 toIPU DMA	dmac	movie (native player)	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x1000C000	D5/D6 SIF DMA	dmac	iop (native IOP)	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x1000C400	D5/D6 SIF DMA	dmac	iop (native IOP)	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x1000C800	D7 SIF2 DMA	dmac	iop (native IOP)	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x1000D000	D8/D9 SPR DMA	dmac	renderer	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00445F20.c	9	data2c_00445F20	0x1000D400	D8/D9 SPR DMA	dmac	renderer	0x10008000u, 0x10009000u, 0x1000A000u, 0x1000B000u, 0x1000B400u, 0x1000C000u, 0x1000C400u, 0x1000C800u, 0x1000D000u, 0x1000D400u, 0x00000000
+game	data-hw	game/src/main_data/data2c_00446648.c	12	data2c_00446648	0x10002000	IPU regs	ipu	movie (native player)	0x0000005Au, (u32)&func_0011FED8, 0x0000005Bu, 0x80075000u, 0x00000054u, 0x00120440u, 0x00000055u, 0x00000000u, 0x00000056u, 0x00000000u, 0x
+game	data-hw	game/src/main_data/data2c_00446648.c	12	data2c_00446648	0x10004000	VIF0 FIFO	vif	renderer	0x0000005Au, (u32)&func_0011FED8, 0x0000005Bu, 0x80075000u, 0x00000054u, 0x00120440u, 0x00000055u, 0x00000000u, 0x00000056u, 0x00000000u, 0x
+game	data-hw	game/src/main_data/data2c_00446648.c	12	data2c_00446648	0x10006000	GIF FIFO	gs	renderer	0x0000005Au, (u32)&func_0011FED8, 0x0000005Bu, 0x80075000u, 0x00000054u, 0x00120440u, 0x00000055u, 0x00000000u, 0x00000056u, 0x00000000u, 0x
+game	data-hw	game/src/main_data/data2c_00446648.c	12	data2c_00446648	0x10008000	D0 VIF0 DMA	dmac	renderer	0x0000005Au, (u32)&func_0011FED8, 0x0000005Bu, 0x80075000u, 0x00000054u, 0x00120440u, 0x00000055u, 0x00000000u, 0x00000056u, 0x00000000u, 0x
+game	data-hw	game/src/main_data/data2c_00446648.c	12	data2c_00446648	0x1000A000	D2 GIF DMA	dmac	renderer	0x0000005Au, (u32)&func_0011FED8, 0x0000005Bu, 0x80075000u, 0x00000054u, 0x00120440u, 0x00000055u, 0x00000000u, 0x00000056u, 0x00000000u, 0x
+game	data-hw	game/src/main_data/data2c_00446648.c	12	data2c_00446648	0x1000C000	D5/D6 SIF DMA	dmac	iop (native IOP)	0x0000005Au, (u32)&func_0011FED8, 0x0000005Bu, 0x80075000u, 0x00000054u, 0x00120440u, 0x00000055u, 0x00000000u, 0x00000056u, 0x00000000u, 0x
+game	data-hw	game/src/main_data/data2c_00446648.c	12	data2c_00446648	0x1000E000	DMAC ctrl (D_CTRL..D_STADR)	dmac	renderer	0x0000005Au, (u32)&func_0011FED8, 0x0000005Bu, 0x80075000u, 0x00000054u, 0x00120440u, 0x00000055u, 0x00000000u, 0x00000056u, 0x00000000u, 0x
+game	data-hw	game/src/main_data/data2c_00446648.c	12	data2c_00446648	0x12000000	GS privileged	gs	renderer	0x0000005Au, (u32)&func_0011FED8, 0x0000005Bu, 0x80075000u, 0x00000054u, 0x00120440u, 0x00000055u, 0x00000000u, 0x00000056u, 0x00000000u, 0x
+game	hw	game/src/main/gfx/Vif1IntcHandler_15e170.c	21	Vif1IntcHandler_15e170	0x10003C10	VIF1 regs	vif	renderer	HW_W32(0x10003C10u, 8);
+game	hw	game/src/main/gs/GsDbufPutEnv_144150.c	67	GsDbufPutEnv_144150	0x12000000	GS privileged	gs	renderer	#define GS_PMODE (((u64)HW_R64(0x12000000u)))
+game	hw	game/src/main/gs/GsDbufPutEnv_144150.c	68	GsDbufPutEnv_144150	0x12000070	GS privileged	gs	renderer	#define GS_DISPFB1 (((u64)HW_R64(0x12000070u)))
+game	hw	game/src/main/gs/GsDbufPutEnv_144150.c	69	GsDbufPutEnv_144150	0x12000080	GS privileged	gs	renderer	#define GS_DISPLAY1 (((u64)HW_R64(0x12000080u)))
+game	hw	game/src/main/gs/GsDbufPutEnv_144150.c	89	GsDbufPutEnv_144150	0x12000000	GS privileged	gs	renderer	HW_W64(0x12000000u, 0x7F23);
+game	hw	game/src/main/gs/GsDbufPutEnv_144150.c	90	GsDbufPutEnv_144150	0x12000070	GS privileged	gs	renderer	HW_W64(0x12000070u, (u64)env.dispfb.FBP | ((u64)env.dispfb.FBW << 9) | ((u64)env.dispfb.PSM << 15) | ((u64)0x800 << 32));
+game	hw	game/src/main/gs/GsDbufPutEnv_144150.c	99	GsDbufPutEnv_144150	0x12000080	GS privileged	gs	renderer	HW_W64(0x12000080u, *(u64 *)&d);
+game	hw	game/src/main/gs/GsDbufPutEnv_144150.c	101	GsDbufPutEnv_144150	0x12000000	GS privileged	gs	renderer	HW_W64(0x12000000u, 0xFF22);
+game	hw	game/src/main/sys/SysInitHardware_15e670.c	33	SysInitHardware_15e670	0x12000000	GS privileged	gs	renderer	HW_W64(0x12000000u, ((u64)HW_R64(0x12000000u)) & ~3LL);
+game	hw	game/src/main/sys/SysInitHardware_15e670.c	33	SysInitHardware_15e670	0x12000000	GS privileged	gs	renderer	HW_W64(0x12000000u, ((u64)HW_R64(0x12000000u)) & ~3LL);
+override	hw	overrides/src/main/gfx/GfxVblankStartHandler_15df20.c	32	GfxVblankStartHandler_15df20	0x12001000	GS privileged	gs	renderer	D_004810C8 = ((HW_R64(0x12001000u) >> 13) & 1) == 0;
+game	lit-hw	game/src/main/sdk/KernelReleaseAlarm_4473a0.c	21	KernelReleaseAlarm_4473a0	0x1000F000	INTC	kernel	kernel/threads (native clock)	if (D_80076740[i].t == *(volatile int *)0xB0001820 && (*(volatile int *)0x1000F000 & 0x1000))
+game	lit-kseg	game/src/main/chara/CharaActionUpdateMaybe_215ca0.cpp	138	CharaActionUpdateMaybe_215ca0	|0x20000000			review (mask or tag bits)	return ActCfgTableEvalPendingPrmtFlags_221380(a->m428, a->mA0C, CharaGetCurMotionName_238560(a), CharaGetMotionFrame_238570(a)) | 0x20000000
+game	lit-kseg	game/src/main/chara/CharaActionUpdateMaybe_215ca0.cpp	172	CharaActionUpdateMaybe_215ca0	|0x20000000			review (mask or tag bits)	m5 = m5 | 0x20000000;
+game	lit-kseg	game/src/main/chara/CharaAssignWeapon_214620.c	54	CharaAssignWeapon_214620	|0x20000000			review (mask or tag bits)	*(s32 *)(temp_17 + 0xA54) = var_4 | 0x20000000;
+game	lit-kseg	game/src/main/effect/TrailRibbonSetTextured_32c780.c	26	TrailRibbonSetTextured_32c780	|0x20000000			review (mask or tag bits)	p0->m18 = (p0->m18 | 0x20000000);
+game	lit-kseg	game/src/main/event/EvObjPreUpdateBase_2f9930.c	22	EvObjPreUpdateBase_2f9930	|0x20000000			review (mask or tag bits)	v = f | 0x20000000;
+game	lit-kseg	game/src/main/event/EvObjPreUpdateBase_2f9930.c	30	EvObjPreUpdateBase_2f9930	|0x20000000			review (mask or tag bits)	v = f | 0x20000000;
+game	lit-kseg	game/src/main/gfx/TexEnvBuildDmaChainMaybe_14abb0.c	30	TexEnvBuildDmaChainMaybe_14abb0	|0x30000000			review (mask or tag bits)	((u32 *)dst)[0] = s->m04 | 0x30000000;
+game	lit-kseg	game/src/main/gs/GsBuildImageUploadPkt_1581b0.c	64	GsBuildImageUploadPkt_1581b0	|0x30000000			review (mask or tag bits)	p[8] = n | 0x30000000;
+game	lit-kseg	game/src/main/gs/GsBuildImageUploadRefPkt_158390.c	67	GsBuildImageUploadRefPkt_158390	|0x30000000			review (mask or tag bits)	p[8] = n | 0x30000000;
+game	lit-kseg	game/src/main/gs/GsBuildImageUploadRefPkt_158390.c	89	GsBuildImageUploadRefPkt_158390	|0x30000000			review (mask or tag bits)	p[8] = n | 0x30000000;
+game	lit-kseg	game/src/main/model/ModelMeshBuildUnpackPktMaybe_15b2a0.c	233	ModelMeshBuildUnpackPktMaybe_15b2a0	|0x30000000			review (mask or tag bits)	p[0] = t->x10 | 0x30000000;
+game	lit-spr	game/src/main/gfx/GfxEndFrame_141c20.c	189	GfxEndFrame_141c20	0x70000003	scratchpad?		review (usually a DMAtag END id word, not SPR)	self->pkt->w[0] = 0x70000003;
+game	lit-spr	game/src/main_data/data2c_00445810.c	9	data2c_00445810	0x70000000	scratchpad?		review (usually a DMAtag END id word, not SPR)	0x10000043u, 0x00000000u, 0x00000000u, 0x4A700000u, 0x8027033Cu, 0x00E00118u, 0x1001000Cu, 0x01600158u, 0x1003000Eu, 0x01A00198u, 0x10020002
+game	lit-spr	game/src/main_data/data2c_00446648.c	12	data2c_00446648	0x70000000	scratchpad?		review (usually a DMAtag END id word, not SPR)	0x0000005Au, (u32)&func_0011FED8, 0x0000005Bu, 0x80075000u, 0x00000054u, 0x00120440u, 0x00000055u, 0x00000000u, 0x00000056u, 0x00000000u, 0x
+override	lit-spr	overrides/src/main_data/data2c_00455310.c	13	data2c_00455310	0x70000000	scratchpad?		review (usually a DMAtag END id word, not SPR)	0x004E000Eu , 0x00A00026u, 0x00090096u, 0x009600B7u, 0x00D30011u, 0x000D0096u, 0x004E000Eu , 0x00000026u, 0x00000000u, 0x00000000u, 0x000000
+port	lit-spr	src/sce/graphics/libpkt.c	57	libpkt	0x70000000	scratchpad?		review (usually a DMAtag END id word, not SPR)	open_tag(pk, 0x70000000u, opt1, opt2, flag);
+game	logic-t0	game/src/main/gfx/GfxEndFrame_141c20.c	69	GfxEndFrame_141c20	0x10000000	T0-T3 timers	kernel	done: native logic time (rg_logic_t0_*)	#define T0_COUNT (((u32)HW_R32(0x10000000u)))
+game	logic-t0	game/src/main/gfx/GfxEndFrame_141c20.c	207	GfxEndFrame_141c20	0x10000000	T0-T3 timers	kernel	done: native logic time (rg_logic_t0_*)	HW_W32(0x10000000u, 0);
+game	logic-t0	game/src/main/gfx/GfxFlipBuffersMaybe_143650.cpp	277	GfxFlipBuffersMaybe_143650	0x10000000	T0-T3 timers	kernel	done: native logic time (rg_logic_t0_*)	((u32)HW_R32(0x10000000u));
+game	logic-t0	game/src/main/gfx/GfxFlipBuffersMaybe_143650.cpp	339	GfxFlipBuffersMaybe_143650	0x10000000	T0-T3 timers	kernel	done: native logic time (rg_logic_t0_*)	((u32)HW_R32(0x10000000u));
+game	logic-t0	game/src/main/gfx/GfxSysInit_15dd20.c	78	GfxSysInit_15dd20	0x10000010	T0-T3 timers	kernel	done: native logic time (rg_logic_t0_*)	HW_W32(0x10000010u, 0x83);
+game	logic-t0	game/src/main/gfx/Vif1IntcHandler_15e170.c	19	Vif1IntcHandler_15e170	0x10000000	T0-T3 timers	kernel	done: native logic time (rg_logic_t0_*)	D_004810B4 = ((s32)HW_R32(0x10000000u));
+game	mask	game/src/main/dbg/GfxDrawPerfMeter_1431c0.c	130	GfxDrawPerfMeter_1431c0	PS2_PHYS			cpu (identity marker)	((u32 *)a->cur)[1] = PS2_PHYS(r);
+game	mask	game/src/main/dbg/GfxDrawPerfMeter_1431c0.c	139	GfxDrawPerfMeter_1431c0	PS2_PHYS			cpu (identity marker)	((u32 *)a->cur)[1] = PS2_PHYS(k);
+game	mask	game/src/main/gfx/DrawListAddVramCopy_1414a0.c	117	DrawListAddVramCopy_1414a0	PS2_PHYS			cpu (identity marker)	((u32 *)o->cur)[1] = PS2_PHYS((u32)hdr);
+game	mask	game/src/main/gfx/DrawListClearScreen_1423c0.c	99	DrawListClearScreen_1423c0	PS2_PHYS			cpu (identity marker)	emit(a, PS2_PHYS((u32)r));
+game	mask	game/src/main/gfx/DrawListClearScreen_1423c0.c	107	DrawListClearScreen_1423c0	PS2_PHYS			cpu (identity marker)	emit(a, PS2_PHYS((u32)q));
+game	mask	game/src/main/gfx/DrawListEmitFrameEnvMaybe_142280.c	72	DrawListEmitFrameEnvMaybe_142280	PS2_PHYS			cpu (identity marker)	emit(a, PS2_PHYS((u32)r));
+game	mask	game/src/main/gfx/DrawListEmitFrameEnvMaybe_142280.c	80	DrawListEmitFrameEnvMaybe_142280	PS2_PHYS			cpu (identity marker)	emit(a, PS2_PHYS((u32)q));
+game	mask	game/src/main/gfx/DrawListInitDoubleBufMaybe_1427e0.c	47	DrawListInitDoubleBufMaybe_1427e0	PS2_UCAB			cpu (identity marker)	{ s32 t = arg1->body.w[13] - n1; MemStackInit_14d810(&arg0->a.body, PS2_UCAB(k1), t); }
+game	mask	game/src/main/gfx/DrawListInitDoubleBufMaybe_1427e0.c	48	DrawListInitDoubleBufMaybe_1427e0	PS2_UCAB			cpu (identity marker)	MemStackInit_14d810(&arg0->b.body, PS2_UCAB(k2), arg2->body.w[13] - arg2->body.w[11]);
+game	mask	game/src/main/gfx/GfxEndFrame_141c20.c	167	GfxEndFrame_141c20	PS2_PHYS			cpu (identity marker)	self->pkt->w[1] = PS2_PHYS((u32)r);
+game	mask	game/src/main/gfx/GfxEndFrame_141c20.c	176	GfxEndFrame_141c20	PS2_PHYS			cpu (identity marker)	self->pkt->w[1] = PS2_PHYS((u32)a);
+game	mask	game/src/main/gfx/MeshMaterialBuildPkt_14ac90.c	210	MeshMaterialBuildPkt_14ac90	PS2_PHYS			cpu (identity marker)	obj->m0 = PS2_PHYS((u32)pkt);
+game	mask	game/src/main/gfx/TexBuildClutUploadPkt_157d70.c	21	TexBuildClutUploadPkt_157d70	PS2_PHYS			cpu (identity marker)	arg1[1] = PS2_PHYS((u32)((u8 *)arg1 + 0x410));
+game	mask	game/src/main/gfx/TexBuildClutUploadPkt_157d70.c	24	TexBuildClutUploadPkt_157d70	PS2_PHYS			cpu (identity marker)	*arg2 = PS2_PHYS((u32)((u8 *)arg1 + 0x10));
+game	mask	game/src/main/gfx/TexBuildClutUploadPkt_157d70.c	29	TexBuildClutUploadPkt_157d70	PS2_PHYS			cpu (identity marker)	arg1[1] = PS2_PHYS((u32)((u8 *)arg1 + 0x50));
+game	mask	game/src/main/gfx/TexBuildClutUploadPkt_157d70.c	32	TexBuildClutUploadPkt_157d70	PS2_PHYS			cpu (identity marker)	*arg2 = PS2_PHYS((u32)((u8 *)arg1 + 0x10));
+game	mask	game/src/main/gs/DmaPktAddCallTagIfSet_141bb0.c	9	DmaPktAddCallTagIfSet_141bb0	PS2_PHYS			cpu (identity marker)	void *DmaPktAddCallTagIfSet_141bb0(Obj*s,s32 v){if(!v)return 0;*(u128*)s->p=D_0047DE40;*(u32*)(s->p+4)=PS2_PHYS(v);s->p+=16;return s->p;}
+game	mask	game/src/main/gs/DmaPktAddCallTag_141b80.c	19	DmaPktAddCallTag_141b80	PS2_PHYS			cpu (identity marker)	*(u32 *)(s->f4 + 4) = PS2_PHYS(v);
+game	mask	game/src/main/gs/DrawListAddEnv_1421d0.c	46	DrawListAddEnv_1421d0	PS2_PHYS			cpu (identity marker)	*(u32 *)(arg0->dst + 4) = PS2_PHYS((u32)k);
+game	mask	game/src/main/gs/DrawListAddTexLoad_1418c0.c	54	DrawListAddTexLoad_1418c0	PS2_PHYS			cpu (identity marker)	*(s32 *)((u8 *)PTR(arg0, 4) + 4) = PS2_PHYS(temp_16);
+game	mask	game/src/main/gs/GsUploadImage16Blocks_1d27a0.c	59	GsUploadImage16Blocks_1d27a0	PS2_UNCACHED			cpu (identity marker)	sceGifPkInit_10a400(&pk, (int)(PS2_UNCACHED((u64)(u32)dst)));
+game	mask	game/src/main/gs/GsUploadImage16Blocks_1d27a0.c	80	GsUploadImage16Blocks_1d27a0	PS2_PHYS			cpu (identity marker)	sceGifPkRef(&pk, PS2_PHYS((u64)(u32)src), 0x40, 0, 0, 0);
+game	mask	game/src/main/model/ModelMeshBuildUnpackPktMaybe_15b2a0.c	228	ModelMeshBuildUnpackPktMaybe_15b2a0	PS2_PHYS			cpu (identity marker)	e->xC = PS2_PHYS((u32)start);
+game	mask	game/src/main/movie/ViBufCreate_1d46f0.c	20	ViBufCreate_1d46f0	PS2_UNCACHED			cpu (identity marker)	*(s32 *)(obj + 0x4) = PS2_UNCACHED(param_3);
+game	mask	game/src/main/movie/ViBufGetFifoIndex_1d4860.c	17	ViBufGetFifoIndex_1d4860	PS2_PHYS			cpu (identity marker)	combined = PS2_PHYS(combined);
+game	mask	game/src/main/movie/VideoDecFlush_1d5310.c	38	VideoDecFlush_1d5310	PS2_UNCACHED			cpu (identity marker)	a = PS2_UNCACHED(a);
+game	mask	game/src/main/movie/VideoDecFlush_1d5310.c	39	VideoDecFlush_1d5310	PS2_UNCACHED			cpu (identity marker)	c = PS2_UNCACHED(c);
+game	mask	game/src/main/movie/VideoDecStrCallback_1d4d50.c	36	VideoDecStrCallback_1d4d50	PS2_UNCACHED			cpu (identity marker)	r = Copy2Area_1d2610((int)(PS2_UNCACHED((u64)(u32)sp6C)), sp64, (int)(PS2_UNCACHED((u64)(u32)sp68)), sp60, a, m, arg2, k
+game	mask	game/src/main/movie/VideoDecStrCallback_1d4d50.c	36	VideoDecStrCallback_1d4d50	PS2_UNCACHED			cpu (identity marker)	r = Copy2Area_1d2610((int)(PS2_UNCACHED((u64)(u32)sp6C)), sp64, (int)(PS2_UNCACHED((u64)(u32)sp68)), sp60, a, m, arg2, k
+override	mask	overrides/src/main/gfx/DrawListFrameBegin_1425d0.c	108	DrawListFrameBegin_1425d0	PS2_PHYS			cpu (identity marker)	emit(a, PS2_PHYS((u32)func_00436980));
+override	mask	overrides/src/main/gfx/DrawListFrameBegin_1425d0.c	126	DrawListFrameBegin_1425d0	PS2_PHYS			cpu (identity marker)	emit(a, PS2_PHYS((u32)q));
+override	mask	overrides/src/main/gs/DrawListEndPrim_141a20.c	46	DrawListEndPrim_141a20	PS2_PHYS			cpu (identity marker)	*(u32 *)(arg0->dst + 4) = PS2_PHYS((u32)t);
+override	mask	overrides/src/main/gs/DrawListEndPrim_141a20.c	62	DrawListEndPrim_141a20	PS2_PHYS			cpu (identity marker)	*(u32 *)(arg0->dst + 4) = PS2_PHYS((u32)k);
+game	ovl	game/src/main/chara/CharaGetControlStateMaybe_2f5320.c	22	CharaGetControlStateMaybe_2f5320	RG_OVL_DATA			overlay manager	if ((((unsigned char)IsInBattle_288420()) != 0) && (RG_OVL_DATA(s16, normal, D_00527020, 0x00527020u, 0x3A2) == 4)) {
+game	ovl	game/src/main/sys/FieldHudGetSuggestMember_203c20.c	19	FieldHudGetSuggestMember_203c20	RG_OVL_DATA			overlay manager	if (RG_OVL_DATA(s16, normal, D_00527020, 0x00527020u, 0x3A2) != 0 && (p = D_005273B8) != 0) r = *p; else r = -1;
+game	ovl	game/src/main/ui/FieldHudInitOnce_204120.c	38	FieldHudInitOnce_204120	RG_OVL_DATA			overlay manager	RG_OVL_DATA(s8, normal, D_00527020, 0x00527020u, 0x3AE) = 1;

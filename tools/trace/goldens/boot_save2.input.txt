@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: CC0-1.0
+# Boot from the game-save fixture "save2" (docs/TEST-FIXTURES.md "Game-save fixtures"):
+# power-on with out/fixtures/cards/save2/ as the memory card (FILE 01 written by the
+# route tools/trace/goldens/newgame_save2.input.txt at its first transporter, Salgin),
+# then the game's own CONTINUE loads it.  Keys = fields of a plain rg-game run (port).
+# boot-end: 3750   (field control on the Salgin transporter from ~3725, game mode 6)
+1900 1905 CROSS  # title menu: CONTINUE (the default cursor when the card holds a save)
+2150 2155 CROSS  # "Select a MEMORY CARD slot": slot 1
+2350 2355 CROSS  # FILE 01
+2450 2455 CROSS  # "Load the data in file 1?" -> Yes (default)
+2650 2655 CROSS  # "File 1 loaded."
+3700 3705 CROSS  # story recap ("Press X") -> field

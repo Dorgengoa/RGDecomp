@@ -1,0 +1,17 @@
+/* rgp:protos */
+#define RGP_SELF_XformPointInBoxSym_2e7950 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/*rgp*/
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+int XformPointInBoxSym_2e7950(s32 p0, s32 p1, f32 fa0, f32 fa1, f32 fa2)
+{
+    return XformPointInBoxSide_2e77e0(p0, p1, fa0, fa1, -fa2, fa2);
+}

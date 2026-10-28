@@ -1,0 +1,1125 @@
+# census: sdk_surface
+# source: ../RGDecomp
+# commit: 2efa6b43548fed253fafdee4d22c8d61d506acde
+# binaries: ../work/SCUS_974.90 + BIN/*.BIN (retail)
+# generator: tools/census/platform/sdk_surface.py
+# rows: 1116
+# roles: boundary=267, boundary-ptr=2, data-ref=96, internal=390, unreached=361
+# note: edges decoded from retail jal/j/lui+addiu and data words; family = link-order band (common.LIB_RANGES); body from source at the pinned commit (asm-only-unit = no C file defines it)
+addr	symbol	family	sub	role	body	game_callers	game_sites	game_images	game_addr_refs	data_refs	lib_callers	lib_sites	reach_depth	size	file	example_game_callers
+0x100230	DoubleGreaterEqual_100230	mwcc-rt	softfloat-cmp	boundary	C	6	6	main,normal	0	0	0	0	0	0x24	src/main/libc/DoubleGreaterEqual_100230.c	CharaSelectStateFromFlagsMaybe_20e9f0 CharaSysUpdate_3a0c10 LoadingScreenFrame_3435d0 ShopListBuild_3e7e30
+0x100260	DoubleGreater_100260	mwcc-rt	softfloat-cmp	boundary	C	7	7	main,normal	0	0	0	0	0	0x20	src/main/math/DoubleGreater_100260.c	AiCmdStepTowardMaybe_2c9210 CharaIsNearLeaderMaybe_1fb230 CharaSysEncounterDistRoll_3a59d0 ContainerViewItemFilterMatch_40c280
+0x100280	DoubleLessEqual_100280	mwcc-rt	softfloat-cmp	boundary	C	4	4	main	0	0	0	0	0	0x24	src/main/math/DoubleLessEqual_100280.c	CharaSysEncounterDistTick_3a5890 CharaSysUpdate_3a0c10 GuardEffectStepMaybe_2d5260 VariantLessEqual_36d500
+0x1002B0	DoubleLess_1002b0	mwcc-rt	softfloat-cmp	boundary	C	8	8	main	0	0	0	0	0	0x20	src/main/math/DoubleLess_1002b0.c	CameraSweepEyeCollisionMaybe_160c90 CharaSysEncounterDistTick_3a5890 MenuItemGridInfoState_2a96c0 MesWinDrawChoiceArrow_271730
+0x1002D0	DoubleNotEqual_1002d0	mwcc-rt	softfloat-cmp	boundary	C	4	6	main	0	0	0	0	0	0x20	src/main/math/DoubleNotEqual_1002d0.c	VariantLogicalAnd_36d230 VariantLogicalNot_36b2b0 VariantLogicalOr_36cf60 VariantNotEqual_36df40
+0x1002F0	DoubleEqual_1002f0	mwcc-rt	softfloat-cmp	boundary	C	5	5	main	0	0	0	0	0	0x24	src/main/libc/DoubleEqual_1002f0.c	CharaSysEncounterDistTick_3a5890 NumPutDoubleFixedMaybe_1b2c20 NumPutDoubleScientificMaybe_1b3090 VariantEqual_36e1e0
+0x100320	UIntToDouble_100320	mwcc-rt	softfloat-cmp	boundary	asm	5	7	main	0	0	0	0	0	0x4C	src/main/libc/UIntToDouble_100320.c	MapDataGetColorA_1e7510 MapDataGetColorB_1e7550 MapDataGetColorG_1e7590 MapDataGetColorR_1e75d0
+0x100370	U64ToDouble_100370	mwcc-rt	softfloat-cmp	boundary	asm	11	12	main	0	0	0	0	0	0x44	src/main/math/U64ToDouble_100370.c	BattleHistoryCalcAverages_3a7bd0 GameDataDeserialize_3e5fe0 ItemGroupUnlock_3cbac0 OptionsSetPlayTime_3d61f0
+0x1003C0	U64ToFloat_1003c0	mwcc-rt	softfloat-cmp	boundary	C	1	1	main	0	0	0	0	0	0x3C	src/main/libc/U64ToFloat_1003c0.c	VariantGetFloat_36f7a0
+0x100410	OverlayLoadFile_100410	mwcc-rt	mwo3-overlay	boundary	asm	1	1	main	0	0	0	0	0	0x94	src/main/sys/OverlayLoadFile_100410.c	OverlayLoad_1c3210
+0x100570	DestroyGlobalChainThunk_100d60	mwcc-rt	mwo3-overlay	boundary	C	1	1	main	0	0	0	0	0	0x8	src/main/libc/DestroyGlobalChainThunk_100d60.c	Main_15e700
+0x100580	MainStaticInit_100580	msl-c++	runtime/eh/iostream/string	boundary	C	1	1	main	0	0	0	0	0	0x24	src/main/sys/MainStaticInit_100580.c	Main_15e700
+0x1005B0	DestroyArray_1005b0	msl-c++	runtime/eh/iostream/string	boundary	asm	7	7	main	0	0	0	0	0	0x6C	src/main/sys/DestroyArray_1005b0.c	CdDirTablesDtor_183700 EffectMgrDtor_2e32a0 EventObjMgrDtor_2d1d80 MinimapMgrDtor_3223f0
+0x100620	ConstructArray_100620	msl-c++	runtime/eh/iostream/string	boundary	asm	11	18	main	0	0	0	0	0	0xE4	src/main/sys/ConstructArray_100620.c	EffectMgrCtor_2e33b0 MinimapMgrCtor_322450 ObjRefTableCtor_314a30 StaticInitEffectGlobals_46c370
+0x100710	ConstructNewArray_100710	msl-c++	runtime/eh/iostream/string	boundary	asm	191	249	main,normal,factory,insect	0	0	0	0	0	0x10C	src/main/sys/ConstructNewArray_100710.c	ActCfgTableClone_2244e0 ActDataClone_225d40 ActInfoAbltClone_22ec60 ActInfoEvntClone_22f1e0
+0x100820	OperatorDeleteArray_100820	msl-c++	runtime/eh/iostream/string	boundary	C	9	14	main	0	0	5	7	0	0x1C	src/main/mem/OperatorDeleteArray_100820.c	CdDatArchiveOpen_183110 CdDirTableDtor_183720 EffTableRelease_1a0fd0 HashTableClear_1a9f20
+0x100840	OperatorDelete_100840	msl-c++	runtime/eh/iostream/string	boundary	asm	98	133	main,insect	0	0	26	29	0	0x54	src/main/mem/OperatorDelete_100840.c	ActCfgTableDtor_234550 ActionMgrDtor_1fdd80 AllocatorDeallocate_1b2c00 AttackObjBaseDtor_27a180
+0x100900	OperatorNewArray_100900	msl-c++	runtime/eh/iostream/string	boundary	C	8	12	main	0	0	8	12	0	0x1C	src/main/mem/OperatorNewArray_100900.c	CdDatArchiveOpen_183110 EffTableInit_1a10f0 IdTableInitMaybe_1a9fd0 ModelApplyMotionBlend_171680
+0x100990	OperatorNew_100990	msl-c++	runtime/eh/iostream/string	boundary	asm	14	14	main	0	0	7	11	0	0xC8	src/main/mem/OperatorNew_100990.c	EffObjCollectDrawEntries_1a87a0 EffTableBuildIndexMaybe_1a04d0 HandleHeapCreate_3129b0 ObjRefTableCtor_314a30
+0x100DC0	RegisterGlobalObject_100dc0	msl-c++	runtime/eh/iostream/string	boundary	C	221	455	main	0	0	2	6	0	0x24	src/main/sys/RegisterGlobalObject_100dc0.c	StaticInitAbilityParam_46e5d0 StaticInitActCfgTables_46b6c0 StaticInitBattleAiMaybe_46c130 StaticInitBtlAttrParam_46e700
+0x100E70	PtmfScall_100e70	msl-c++	runtime/eh/iostream/string	boundary	asm	1	1	main	0	0	0	0	0	0x34	src/main/sys/PtmfScall_100e70.c	SaveModeDispatch_375df0
+0x100EB0	PtmfTest_100eb0	msl-c++	runtime/eh/iostream/string	boundary	C	1	1	main	0	0	0	0	0	0x1C	src/main/sys/PtmfTest_100eb0.c	EventIconDrawAll_278790
+0x102BD0	IosBaseInitCtor_102bd0	msl-c++	runtime/eh/iostream/string	boundary	asm	218	218	main	0	0	0	0	0	0x2A4	src/main/sys/IosBaseInitCtor_102bd0.c	StaticInitAbilityParam_46e5d0 StaticInitActCfgTables_46b6c0 StaticInitBattleAiMaybe_46c130 StaticInitBtlAttrParam_46e700
+0x103110	WIosBaseInitCtor_103110	msl-c++	runtime/eh/iostream/string	boundary	asm	218	218	main	0	0	0	0	0	0x2A4	src/main/sys/WIosBaseInitCtor_103110.c	StaticInitAbilityParam_46e5d0 StaticInitActCfgTables_46b6c0 StaticInitBattleAiMaybe_46c130 StaticInitBtlAttrParam_46e700
+0x1040B0	OstreamFlush_1040b0	msl-c++	runtime/eh/iostream/string	boundary	asm	4	4	main	0	0	2	4	0	0x1C0	src/main/libc/OstreamFlush_1040b0.c	OstreamWriteBool_1b2710 OstreamWriteCStr_1a1dd0 OstreamWriteFloat_1b25c0 OstreamWriteInt_1a1f60
+0x106230	OstreamSentryCtor_106230	msl-c++	runtime/eh/iostream/string	boundary	asm	4	4	main	0	0	1	1	0	0x2D4	src/main/libc/OstreamSentryCtor_106230.c	OstreamWriteBool_1b2710 OstreamWriteCStr_1a1dd0 OstreamWriteFloat_1b25c0 OstreamWriteInt_1a1f60
+0x106830	DecimalFromLongDoubleMaybe_106830	msl-c++	runtime/eh/iostream/string	boundary	asm	2	2	main	0	0	0	0	0	0x278	src/main/str/DecimalFromLongDoubleMaybe_106830.c	NumPutDoubleFixedMaybe_1b2c20 NumPutDoubleScientificMaybe_1b3090
+0x106AB0	DecimalRoundDirectionMaybe_106ab0	msl-c++	runtime/eh/iostream/string	boundary	asm	1	2	main	0	0	0	0	0	0x98	src/main/libc/DecimalRoundDirectionMaybe_106ab0.c	NumPutDoubleFixedMaybe_1b2c20
+0x106B50	DecimalRoundDigitsMaybe_106b50	msl-c++	runtime/eh/iostream/string	boundary	asm	2	2	main	0	0	0	0	0	0x2C8	src/main/libc/DecimalRoundDigitsMaybe_106b50.c	NumPutDoubleFixedMaybe_1b2c20 NumPutDoubleScientificMaybe_1b3090
+0x106E90	StringAppendFill_106e90	msl-c++	runtime/eh/iostream/string	boundary	C	2	6	main	0	0	0	0	0	0x44	src/main/str/StringAppendFill_106e90.c	NumPutDoubleFixedMaybe_1b2c20 NumPutDoubleScientificMaybe_1b3090
+0x106EE0	StringAssignCStr_106ee0	msl-c++	runtime/eh/iostream/string	boundary	C	4	4	main	0	0	1	1	0	0x40	src/main/str/StringAssignCStr_106ee0.c	EffHdlAddByName_1a3420 EffHdlAddByName_1a37a0 EffHdlAddByName_1a39c0 EffHdlAddByName_1a3d40
+0x106F20	StringReplaceCStr_106f20	msl-c++	runtime/eh/iostream/string	boundary	C	1	1	main	0	0	1	1	0	0x68	src/main/str/StringReplaceCStr_106f20.c	StringAppendCStr_1a20e0
+0x106F90	StringReplace_106f90	msl-c++	runtime/eh/iostream/string	boundary	asm	18	25	main	0	0	7	7	0	0x41C	src/main/str/StringReplace_106f90.c	EffHdlAddByName_1a3420 EffHdlAddByName_1a37a0 EffHdlAddByName_1a39c0 EffHdlAddByName_1a3d40
+0x1075D0	StringReplaceFill_1075d0	msl-c++	runtime/eh/iostream/string	boundary	asm	3	5	main	0	0	2	3	0	0x390	src/main/str/StringReplaceFill_1075d0.c	NumPutDoubleFixedMaybe_1b2c20 NumPutDoubleGeneralMaybe_1b34d0 NumPutFixedZeroStrMaybe_1b3c90
+0x107960	StringEraseRange_107960	msl-c++	runtime/eh/iostream/string	boundary	asm	1	2	main	0	0	1	1	0	0x74	src/main/str/StringEraseRange_107960.c	NumPutDoubleGeneralMaybe_1b34d0
+0x1079E0	StringEraseAt_1079e0	msl-c++	runtime/eh/iostream/string	boundary	asm	1	2	main	0	0	1	1	0	0x74	src/main/str/StringEraseAt_1079e0.c	NumPutDoubleGeneralMaybe_1b34d0
+0x107A60	StringInsertChar_107a60	msl-c++	runtime/eh/iostream/string	boundary	asm	1	1	main	0	0	1	1	0	0x98	src/main/str/StringInsertChar_107a60.c	NumPutDoubleScientificMaybe_1b3090
+0x107B00	StringDtor_107b00	msl-c++	runtime/eh/iostream/string	boundary	C	4	7	main	0	0	1	1	0	0x64	src/main/str/StringDtor_107b00.c	EffDefCmdObjectMds_19c030 NumPutBool_1b2860 NumPutNanInfStr_1b3990 StrMapGetValue_1b13e0
+0x107E80	StringReserve_107e80	msl-c++	runtime/eh/iostream/string	boundary	asm	13	18	main	0	0	2	2	0	0x290	src/main/str/StringReserve_107e80.c	EffHdlAddByName_1a3420 EffHdlAddByName_1a37a0 EffHdlAddByName_1a39c0 EffHdlAddByName_1a3d40
+0x108110	sceGsResetGraph_108110	libgraph	gs	boundary	asm	2	2	main	0	0	0	0	0	0x190	src/main/sdk/sceGsResetGraph_108110.c	GfxSetVideoMode_1451f0 SysInitHardware_15e670
+0x1082B0	sceGsResetPath	libgraph	gs	boundary	asm	2	2	main	0	0	0	0	0	0x68	src/main/sdk/sceGsResetPath.c	GfxSysInit_15dd20 SysInitHardware_15e670
+0x1083C8	sceGsSetDefDispEnv_1083c8	libgraph	gs	boundary	asm	1	1	main	0	0	1	2	0	0x374	src/main/gs/sceGsSetDefDispEnv_1083c8.c	GfxSetVideoMode_1451f0
+0x108740	sceGsPutDispEnv	libgraph	gs	boundary	asm	1	1	main	0	0	1	1	0	0xBC	src/main/sdk/sceGsPutDispEnv.c	GsDbufPutEnv_144150
+0x1088C8	sceGsSetDefDrawEnv	libgraph	gs	boundary	asm	1	1	main	0	0	1	2	0	0x1E4	src/main/sdk/sceGsSetDefDrawEnv.c	GfxSetVideoMode_1451f0
+0x108BB8	sceGsPutDrawEnv	libgraph	gs	boundary	asm	3	7	main	0	0	1	2	0	0xE8	src/main/sdk/sceGsPutDrawEnv.c	GfxFlipBuffersMaybe_143650 GsClearDoubleBuffers_15e600 GsDbufPutEnv_144150
+0x108CA0	sceGsSetDefDBuff	libgraph	gs	boundary	asm	2	2	main	0	0	0	0	0	0x298	src/main/sdk/sceGsSetDefDBuff.c	GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600
+0x108F38	sceGsSwapDBuff	libgraph	gs	boundary	asm	1	1	main	0	0	0	0	0	0x5C	src/main/sdk/sceGsSwapDBuff.c	GfxSetVideoMode_1451f0
+0x108F98	sceGsSyncV	libgraph	gs	boundary	asm	7	9	main,title	0	0	0	0	0	0x94	src/main/sdk/sceGsSyncV.c	GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600 GsDbufPutEnv_144150 PadPortOpen_184ed0
+0x109030	sceGsSyncPath_109030	libgraph	gs	boundary	asm	5	6	main	0	0	0	0	0	0x314	src/main/sdk/sceGsSyncPath_109030.c	FixedTexUploadImpl_15d680 GfxEndFrame_141c20 GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600
+0x109348	sceGsSetDefStoreImage	libgraph	gs	boundary	asm	2	2	main	0	0	0	0	0	0x140	src/main/sdk/sceGsSetDefStoreImage.c	GfxEndFrame_141c20 GsDownloadImage_140f20
+0x109488	sceGsExecStoreImage	libgraph	gs	boundary	asm	2	2	main	0	0	0	0	0	0x68C	src/main/sdk/sceGsExecStoreImage.c	GfxEndFrame_141c20 GsDownloadImage_140f20
+0x109B18	sceGsSyncVCallback_109b18	libgraph	gs	boundary	asm	1	1	main	0	0	0	0	0	0xA0	src/main/sys/sceGsSyncVCallback_109b18.c	GfxSysInit_15dd20
+0x109D10	sceDmaGetChan	libdma	dma	boundary	asm	9	9	main	0	0	0	0	0	0x28	src/main/sdk/sceDmaGetChan.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GfxSysInit_15dd20 GsDbufPutEnv_144150
+0x109D38	sceDmaReset	libdma	dma	boundary	asm	2	2	main	0	0	0	0	0	0xDC	src/main/sdk/sceDmaReset.c	GfxSysInit_15dd20 SysInitHardware_15e670
+0x109E18	sceDmaPutEnv	libdma	dma	boundary	asm	1	1	main	0	0	1	1	0	0x1D8	src/main/sdk/sceDmaPutEnv.c	GfxSysInit_15dd20
+0x109FF0	sceDmaGetEnv	libdma	dma	boundary	asm	1	1	main	0	0	0	0	0	0x38	src/main/sdk/sceDmaGetEnv.c	GfxSysInit_15dd20
+0x10A040	sceDmaSend_10a040	libdma	dma	boundary	asm	6	7	main	0	0	0	0	0	0x68	src/main/gs/sceDmaSend_10a040.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 MovieFrameQueueSendNext_1d4b20 MovieFrameResend_1d4be0
+0x10A2E0	sceDmaSync_10a2e0	libdma	dma	boundary	C	6	11	main	0	0	0	0	0	0x38	src/main/gs/sceDmaSync_10a2e0.c	GfxFlipBuffersMaybe_143650 GsDbufPutEnv_144150 MovieFrameQueueSendNext_1d4b20 MovieFrameResend_1d4be0
+0x10A400	sceGifPkInit_10a400	libpkt	gifpk	boundary	C	3	4	main	0	0	0	0	0	0x10	src/main/gs/sceGifPkInit_10a400.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0
+0x10A410	sceGifPkReset_10a410	libpkt	gifpk	boundary	C	3	4	main	0	0	0	0	0	0x10	src/main/gs/sceGifPkReset_10a410.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0
+0x10A420	sceGifPkTerminate_10a420	libpkt	gifpk	boundary	asm	3	4	main	0	0	3	3	0	0x58	src/main/gs/sceGifPkTerminate_10a420.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0
+0x10A478	sceGifPkCnt	libpkt	gifpk	boundary	asm	3	5	main	0	0	1	2	0	0x74	src/main/sdk/sceGifPkCnt.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0
+0x10A4F0	sceGifPkRef	libpkt	gifpk	boundary	asm	1	1	main	0	0	1	1	0	0x98	src/main/sdk/sceGifPkRef.c	GsUploadImage16Blocks_1d27a0
+0x10A588	sceGifPkEnd	libpkt	gifpk	boundary	asm	3	4	main	0	0	0	0	0	0x74	src/main/sdk/sceGifPkEnd.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0
+0x10A600	sceGifPkReserve	libpkt	gifpk	boundary	asm	1	1	main	0	0	1	1	0	0x14	src/main/sdk/sceGifPkReserve.c	GsUploadImage16Blocks_1d27a0
+0x10A618	sceGifPkOpenGifTag	libpkt	gifpk	boundary	asm	3	6	main	0	0	1	1	0	0x18	src/main/sdk/sceGifPkOpenGifTag.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0
+0x10A630	sceGifPkCloseGifTag	libpkt	gifpk	boundary	asm	3	6	main	0	0	1	1	0	0xA4	src/main/sdk/sceGifPkCloseGifTag.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0
+0x10A6D8	sceGifPkAddGsAD	libpkt	gifpk	boundary	asm	3	35	main	0	0	1	4	0	0x24	src/main/sdk/sceGifPkAddGsAD.c	FixedTexUploadImpl_15d680 GfxFlipBuffersMaybe_143650 GsUploadImage16Blocks_1d27a0
+0x10A700	sceGifPkRefLoadImage	libpkt	gifpk	boundary	asm	1	3	main	0	0	0	0	0	0x1C0	src/main/sdk/sceGifPkRefLoadImage.c	FixedTexUploadImpl_15d680
+0x10A8C0	MtxMulVec4_10a8c0	libvu0	vu0	boundary	asm	12	16	main	0	0	0	0	0	0x2C	src/main/matrix/MtxMulVec4_10a8c0.c	CameraFindClearYawMaybe_160730 CameraTrackUpdate_305960 CompassHudRender_370fb0 EventCameraUpdate_2544f0
+0x10A8F0	sceVu0MulMatrix	libvu0	vu0	boundary	asm	3	9	main	0	0	1	1	0	0x44	src/main/sdk/sceVu0MulMatrix.c	HeadLookUpdate_1c5460 SplineSampleCatmullRom_2d77c0 XformRecUpdateMaybe_1c5ee0
+0x10A938	sceVu0OuterProduct	libvu0	vu0	boundary	asm	21	38	main	0	0	1	2	0	0x1C	src/main/sdk/sceVu0OuterProduct.c	AiCmdCountObjsInRangeMaybe_2c51b0 AiCmdGetRelativeAngleMaybe_2c72e0 AiCmdObjGetYawOrTurnAngle_2c9ab0 AiCmdStepTowardMaybe_2c9210
+0x10A958	sceVu0InnerProduct	libvu0	vu0	boundary	asm	4	5	main	0	0	0	0	0	0x24	src/main/sdk/sceVu0InnerProduct.c	AxisAngleBetweenVecs_1d7da0 CameraModeLockTargetUpdateMaybe_3062e0 MtxTurnTowardsY_2cdbe0 TargetMngPickAttachPoint_31f860
+0x10A980	sceVu0Normalize	libvu0	vu0	boundary	asm	10	11	main	0	0	2	5	0	0x3C	src/main/sdk/sceVu0Normalize.c	CollMoveCharacterMaybe_16e530 GuardEffectInitStreak_2d54c0 GuardEffectStart_2d53e0 GuardEffectStepMaybe_2d5260
+0x10A9C0	sceVu0TransposeMatrix	libvu0	vu0	boundary	asm	3	8	main	0	0	1	1	0	0x44	src/main/sdk/sceVu0TransposeMatrix.c	LightStateWritePacket_1484a0 SweptSphereTriContactsMaybe_17f970 ViewSetPerspective_1564a0
+0x10AA08	sceVu0InversMatrix	libvu0	vu0	boundary	asm	3	3	main	0	0	1	1	0	0x6C	src/main/sdk/sceVu0InversMatrix.c	CameraBaseGetViewMatrix_15fa70 EvMapObjNodeApplyPartMatrixMaybe_367230 FuncAnimeUpdate_191650
+0x10AA78	sceVu0DivVector	libvu0	vu0	boundary	asm	13	19	main	0	0	0	0	0	0x20	src/main/sdk/sceVu0DivVector.c	EvCmdVecDiv_25dbe0 EvSubNodeMoveToEased_2533f0 EvSubNodeMoveTo_253610 EvSubNodeRotateTo_252920
+0x10AAB8	sceVu0InterVector	libvu0	vu0	boundary	asm	5	8	main,factory	0	0	0	0	0	0x28	src/main/sdk/sceVu0InterVector.c	Character2DrawTintedMaybe_1ae620 Character2DrawWithLightBlendMaybe_1ae540 Character2DrawWithOwnLightMaybe_1ae720 factory_FactoryCameraUpdate_5050c0
+0x10AAE0	sceVu0AddVector	libvu0	vu0	boundary	asm	10	12	main	0	0	0	0	0	0x14	src/main/sdk/sceVu0AddVector.c	BladeLineDraw_2d5c40 GuardEffectDraw_2d50b0 GuardEffectStepMaybe_2d5260 LightningBoltBuild_2d6960
+0x10AAF8	sceVu0SubVector	libvu0	vu0	boundary	asm	7	8	main	0	0	0	0	0	0x14	src/main/sdk/sceVu0SubVector.c	BladeLineDraw_2d5c40 HeadLookUpdate_1c5460 LightningBoltBuild_2d6960 MtxTurnTowardsY_2cdbe0
+0x10AB28	sceVu0ScaleVector	libvu0	vu0	boundary	asm	7	7	main	0	0	1	3	0	0x18	src/main/sdk/sceVu0ScaleVector.c	BladeLineDraw_2d5c40 CollMoveCharacterMaybe_16e530 GuardEffectDraw_2d50b0 GuardEffectStepMaybe_2d5260
+0x10AB70	sceVu0CopyVector	libvu0	vu0	boundary	asm	97	184	main	0	0	1	4	0	0xC	src/main/sdk/sceVu0CopyVector.c	BattleEffectBurstSpawn_2d4760 BladeLineDraw_2d5c40 Character2Draw_1ae920 Character2LightBlendSetTarget_1aebe0
+0x10AB80	sceVu0CopyMatrix	libvu0	vu0	boundary	asm	1	2	main	0	0	0	0	0	0x24	src/main/sdk/sceVu0CopyMatrix.c	MtxTurnTowardsY_2cdbe0
+0x10ABE8	sceVu0UnitMatrix	libvu0	vu0	boundary	asm	10	19	main	0	0	2	3	0	0x28	src/main/sdk/sceVu0UnitMatrix.c	CameraTrackUpdate_305960 EvMapObjPartCalcMatrix_363a70 EventSysUpdate_26ac10 FrameUpdateWorld_149680
+0x10AC88	sceVu0RotMatrixZ	libvu0	vu0	boundary	asm	7	11	main	0	0	1	1	0	0xA4	src/main/sdk/sceVu0RotMatrixZ.c	CameraBaseLookAt_15fae0 CameraBaseRotateLocalZ_15f9a0 EventSysUpdate_26ac10 HeadLookUpdate_1c5460
+0x10AD30	sceVu0RotMatrixX	libvu0	vu0	boundary	asm	4	8	main	0	0	1	1	0	0xA8	src/main/sdk/sceVu0RotMatrixX.c	CameraBaseRotateLocalX_15f8d0 EventSysUpdate_26ac10 HeadLookUpdate_1c5460 XformRecUpdateMaybe_1c5ee0
+0x10ADD8	sceVu0RotMatrixY	libvu0	vu0	boundary	asm	12	16	main	0	0	1	1	0	0xA8	src/main/sdk/sceVu0RotMatrixY.c	CameraBaseRotateLocalY_15f800 CameraFindClearYawMaybe_160730 CameraRotateEyeYaw_176ef0 CameraSetEyeYaw_176e10
+0x10AE80	sceVu0RotMatrix	libvu0	vu0	boundary	asm	1	1	main	0	0	0	0	0	0x50	src/main/sdk/sceVu0RotMatrix.c	CameraTrackUpdate_305960
+0x10B458	sceVu0ScaleVectorXYZ	libvu0	vu0	boundary	asm	1	1	main	0	0	0	0	0	0x18	src/main/sdk/sceVu0ScaleVectorXYZ.c	CompassHudRender_370fb0
+0x1104A8	MpegCreate_1104a8	libmpeg	mpeg+ipu	boundary	asm	1	1	main	0	0	0	0	0	0x238	src/main/movie/MpegCreate_1104a8.c	VideoDecCreate_1d5470
+0x111050	MpegStopDmaMaybe_111050	libmpeg	mpeg+ipu	boundary	asm	1	1	main	0	0	0	0	0	0xB0	src/main/movie/MpegStopDmaMaybe_111050.c	MovieOpen_1d5cf0
+0x111100	MpegDelete_111100	libmpeg	mpeg+ipu	boundary	C	1	1	main	0	0	0	0	0	0x8	src/main/movie/MpegDelete_111100.c	VideoDecDelete_1d53f0
+0x111148	MpegGetPicture_111148	libmpeg	mpeg+ipu	boundary	asm	1	1	main	0	0	0	0	0	0x48	src/main/movie/MpegGetPicture_111148.c	VideoDecDecodeBs_1d29e0
+0x1111E8	MpegReset_1111e8	libmpeg	mpeg+ipu	boundary	asm	1	1	main	0	0	1	1	0	0x7C	src/main/movie/MpegReset_1111e8.c	VideoDecDecodeBs_1d29e0
+0x111268	MpegIsEnd_111268	libmpeg	mpeg+ipu	boundary	asm	1	1	main	0	0	0	0	0	0xC	src/main/movie/MpegIsEnd_111268.c	VideoDecDecodeBs_1d29e0
+0x1112C0	MpegAddCallback_1112c0	libmpeg	mpeg+ipu	boundary	asm	1	5	main	0	0	0	0	0	0x34	src/main/movie/MpegAddCallback_1112c0.c	VideoDecCreate_1d5470
+0x115340	MpegDemuxPssRing_115340	libmpeg	mpeg+ipu	boundary	asm	1	1	main	0	0	1	1	0	0x3E0	src/main/movie/MpegDemuxPssRing_115340.c	MovieReadThread_1d4f50
+0x115740	MpegAddStrCallback_115740	libmpeg	mpeg+ipu	boundary	asm	1	1	main	0	0	0	0	0	0x130	src/main/movie/MpegAddStrCallback_115740.c	VideoDecSetStream_1d5430
+0x116280	AddIntcHandler	libkernl	syscall-stubs	boundary	asm	3	3	main	0	0	1	1	0	0x10	src/main/sdk/AddIntcHandler.c	MoviePlayerStart_1d5b50 SoundRpcInit_1bc840 Vif1DmaStart_15e070
+0x1162A0	RemoveIntcHandler	libkernl	syscall-stubs	boundary	asm	3	3	main	0	0	3	4	0	0x10	src/main/sdk/RemoveIntcHandler.c	MoviePlayerShutdown_1d56c0 SoundRpcShutdown_1bc760 Vif1DmaHandlerShutdown_15dfb0
+0x1162B0	AddDmacHandler	libkernl	syscall-stubs	boundary	asm	1	1	main	0	0	1	1	0	0x10	src/main/sdk/AddDmacHandler.c	MoviePlayerStart_1d5b50
+0x1162D0	RemoveDmacHandler	libkernl	syscall-stubs	boundary	asm	1	1	main	0	0	3	3	0	0x10	src/main/sdk/RemoveDmacHandler.c	MoviePlayerShutdown_1d56c0
+0x1163A0	CreateThread	libkernl	syscall-stubs	boundary	asm	9	11	main	0	0	3	3	0	0x10	src/main/sdk/CreateThread.c	CdDiskWatchInit_17ff70 FileReqThreadInit_182af0 LoadingScreenStart_343240 MoviePlayerStart_1d5b50
+0x1163B0	DeleteThread	libkernl	syscall-stubs	boundary	asm	4	6	main	0	0	1	1	0	0x10	src/main/sdk/DeleteThread.c	FileReqThreadShutdown_182a50 LoadingScreenStop_3431e0 MoviePlayerShutdown_1d56c0 SoundStreamShutdown_1c0b70
+0x1163E0	ExitDeleteThread	libkernl	syscall-stubs	boundary	asm	2	2	main	0	0	1	1	0	0x10	src/main/sdk/ExitDeleteThread.c	SoundStreamSlotThreadMain_1bc520 SoundThreadMain_1b6260
+0x1163F0	TerminateThread	libkernl	syscall-stubs	boundary	asm	4	6	main	0	0	1	1	0	0x10	src/main/sdk/TerminateThread.c	FileReqThreadShutdown_182a50 LoadingScreenStop_3431e0 MoviePlayerShutdown_1d56c0 SoundStreamShutdown_1c0b70
+0x116430	ChangeThreadPriority	libkernl	syscall-stubs	boundary	asm	1	1	main	0	0	2	2	0	0x10	src/main/sdk/ChangeThreadPriority.c	Main_15e700
+0x116450	RotateThreadReadyQueue	libkernl	syscall-stubs	boundary	asm	1	1	main	0	0	1	1	0	0x10	src/main/sdk/RotateThreadReadyQueue.c	ThreadYield_1d2b70
+0x116490	GetThreadId	libkernl	syscall-stubs	boundary	asm	1	1	main	0	0	3	3	0	0x10	src/main/sdk/GetThreadId.c	Main_15e700
+0x1165A0	CreateSema	libkernl	syscall-stubs	boundary	asm	17	25	main,title	0	0	32	38	0	0x10	src/main/sdk/CreateSema.c	CdDiskWatchInit_17ff70 FileReqThreadInit_182af0 FileSysInit_1818e0 GfxSysInit_15dd20
+0x1165B0	DeleteSema	libkernl	syscall-stubs	boundary	asm	14	26	main	0	0	30	85	0	0x10	src/main/sdk/DeleteSema.c	CdDiskWatchInit_17ff70 FileReqThreadInit_182af0 FileReqThreadShutdown_182a50 FileSysInit_1818e0
+0x1165C0	SignalSema	libkernl	syscall-stubs	boundary	asm	73	160	main	0	0	47	70	0	0x10	src/main/sdk/SignalSema.c	CdDiskWatchThread_17fdc0 FileCdSearchLocked_180360 FileReqAnyIncomplete_1825f0 FileReqCancelAll_182510
+0x1165D0	iSignalSema	libkernl	syscall-stubs	boundary	asm	5	5	main	0	0	9	10	0	0x10	src/main/sdk/iSignalSema.c	CdDiskWatchWakeIsr_17ff10 GfxVblankStartHandler_15df20 SoundVblankIntrHandler_1bd6f0 SysTickThreadSignalIsr_1c34f0
+0x1165E0	WaitSema	libkernl	syscall-stubs	boundary	asm	72	124	main	0	0	37	46	0	0x10	src/main/sdk/WaitSema.c	CdDiskWatchThread_17fdc0 FileCdSearchLocked_180360 FileReqCancelAll_182510 FileReqThreadShutdown_182a50
+0x1165F0	PollSema	libkernl	syscall-stubs	boundary	asm	17	21	main	0	0	22	22	0	0x10	src/main/sdk/PollSema.c	FileReqAnyIncomplete_1825f0 FileReqCancelAll_182510 FileReqThreadResume_182670 FileReqThreadShutdown_182a50
+0x116600	iPollSema	libkernl	syscall-stubs	boundary	asm	2	2	main	0	0	0	0	0	0x10	src/main/sdk/iPollSema.c	CdDiskWatchWakeIsr_17ff10 SoundVblankIntrHandler_1bd6f0
+0x116820	FlushCache	libkernl	syscall-stubs	boundary	asm	10	13	main	0	0	13	17	0	0x10	src/main/sdk/FlushCache.c	FixedTexUploadImpl_15d680 GfxEndFrame_141c20 GfxFlipBuffersMaybe_143650 GfxSetVideoMode_1451f0
+0x116940	sceSifDmaStat	libkernl	syscall-stubs	boundary	asm	2	2	main	0	0	2	2	0	0x10	src/main/sdk/sceSifDmaStat.c	SifDmaSendSync_1c21e0 SifDmaSendSync_1d2c20
+0x116960	sceSifSetDma	libkernl	syscall-stubs	boundary	asm	2	2	main	0	0	5	5	0	0x10	src/main/sdk/sceSifSetDma.c	SifDmaSendSync_1c21e0 SifDmaSendSync_1d2c20
+0x116E98	SyncDCache	libkernl	cache	boundary	asm	1	2	main	0	0	2	2	0	0x7C	src/main/sdk/SyncDCache.c	GfxFlipBuffersMaybe_143650
+0x117080	DisableIntc_117080	libkernl	intc/dmac/thread	boundary	asm	3	3	main	0	0	3	4	0	0x68	src/main/sys/DisableIntc_117080.c	SoundRpcInit_1bc840 SoundRpcShutdown_1bc760 Vif1DmaHandlerShutdown_15dfb0
+0x1170E8	EnableIntc_1170e8	libkernl	intc/dmac/thread	boundary	asm	3	3	main	0	0	2	2	0	0x68	src/main/sdk/EnableIntc_1170e8.c	MoviePlayerStart_1d5b50 SoundRpcInit_1bc840 Vif1DmaStart_15e070
+0x117150	DisableDmac_117150	libkernl	intc/dmac/thread	boundary	asm	1	1	main	0	0	3	3	0	0x68	src/main/sys/DisableDmac_117150.c	MoviePlayerShutdown_1d56c0
+0x1171B8	EnableDmac_1171b8	libkernl	intc/dmac/thread	boundary	asm	1	1	main	0	0	3	3	0	0x68	src/main/sdk/EnableDmac_1171b8.c	MoviePlayerStart_1d5b50
+0x117618	DelayThread_117618	libkernl	intc/dmac/thread	boundary	asm	18	30	main	0	0	3	3	0	0xC8	src/main/thread/DelayThread_117618.c	CdDatArchiveOpen_183110 CdWaitFileFound_180290 CfgVmRun_42fa20 DataTableBubbleSort_368220
+0x1176E0	StartThread_1176e0	libkernl	intc/dmac/thread	boundary	asm	9	11	main	0	0	3	3	0	0x178	src/main/thread/StartThread_1176e0.c	CdDiskWatchInit_17ff70 FileReqThreadInit_182af0 LoadingScreenStart_343240 MoviePlayerStart_1d5b50
+0x119B60	sceSifInitRpc_119b60	libkernl	sifrpc	boundary	asm	3	3	main	0	0	11	11	0	0x19C	src/main/sys/sceSifInitRpc_119b60.c	IopRebootWithImage_15e560 SoundRpcInit_1bc840 SysInitHardware_15e670
+0x11A308	sceSifBindRpc	libkernl	sifrpc	boundary	asm	1	1	main	0	0	12	13	0	0x14C	src/main/sdk/sceSifBindRpc.c	SoundRpcInit_1bc840
+0x11A4E8	sceSifCallRpc	libkernl	sifrpc	boundary	asm	1	1	main	0	0	66	69	0	0x200	src/main/sdk/sceSifCallRpc.c	SoundRpcCall_1bc5e0
+0x11B6C0	sceFsReset	libkernl	fileio	boundary	C	1	1	main	0	0	0	0	0	0x34	src/main/sdk/sceFsReset.c	IopRebootWithImage_15e560
+0x11B928	sceOpen_11b928	libkernl	fileio	boundary	asm	2	2	main	0	0	2	2	0	0x290	src/main/sdk/sceOpen_11b928.c	FileSlotOpenPath_1810a0 FileWriteAll_180060
+0x11BBB8	sceClose_11bbb8	libkernl	fileio	boundary	asm	2	2	main	0	0	2	2	0	0x178	src/main/sdk/sceClose_11bbb8.c	FileSlotClose_180540 FileWriteAll_180060
+0x11BD30	sceLseek_11bd30	libkernl	fileio	boundary	asm	2	3	main	0	0	1	2	0	0x23C	src/main/sdk/sceLseek_11bd30.c	FileSlotGetSize_180d50 FileSlotSeek_180ed0
+0x11BF70	sceRead_11bf70	libkernl	fileio	boundary	asm	1	1	main	0	0	2	2	0	0x26C	src/main/sdk/sceRead_11bf70.c	FileSlotRead_180aa0
+0x11C1E0	sceWrite_11c1e0	libkernl	fileio	boundary	asm	1	1	main	0	0	0	0	0	0x2C0	src/main/sdk/sceWrite_11c1e0.c	FileWriteAll_180060
+0x11E850	sceSifInitIopHeap	libkernl	iopheap	boundary	asm	2	2	main	0	0	0	0	0	0x88	src/main/sdk/sceSifInitIopHeap.c	IopHeapInitOnce_1c2310 IopRebootWithImage_15e560
+0x11E8D8	sceSifAllocIopHeap	libkernl	iopheap	boundary	asm	2	3	main	0	0	0	0	0	0x70	src/main/sdk/sceSifAllocIopHeap.c	AudioDecCreate_1d3210 IopHeapAllocLocked_1c22d0
+0x11EA40	sceSifFreeSysMemory_11ea40	libkernl	iopheap	boundary	asm	2	3	main	0	0	0	0	0	0x1C	src/main/sys/sceSifFreeSysMemory_11ea40.c	AudioDecDelete_1d31d0 IopHeapFreeLocked_1c2290
+0x11F7A0	sceSifLoadModule_11f7a0	libkernl	loadfile	boundary	asm	1	1	main	0	0	0	0	0	0x20	src/main/sdk/sceSifLoadModule_11f7a0.c	IopLoadModuleRetry_15e420
+0x11FC80	sceSifSyncIop_11fc80	libkernl	iopcontrol	boundary	asm	1	1	main	0	0	0	0	0	0x50	src/main/sdk/sceSifSyncIop_11fc80.c	IopRebootWithImage_15e560
+0x11FCD0	sceSifRebootIop_11fcd0	libkernl	iopcontrol	boundary	asm	1	1	main	0	0	0	0	0	0x110	src/main/sdk/sceSifRebootIop_11fcd0.c	IopRebootWithImage_15e560
+0x120660	DisableIntr_120660	libkernl	tlb/init/patch	boundary	asm	8	9	main	0	0	65	73	0	0x50	src/main/sys/DisableIntr_120660.c	FileReqThread_182c30 GfxSysInit_15dd20 SoundCalcDistVolPan_1b7de0 SoundCalcSegmentVolPan_1b7d30
+0x1206B0	EnableIntr_1206b0	libkernl	tlb/init/patch	boundary	asm	8	9	main	0	0	65	85	0	0x18	src/main/sys/EnableIntr_1206b0.c	FileReqThread_182c30 GfxSysInit_15dd20 SoundCalcDistVolPan_1b7de0 SoundCalcSegmentVolPan_1b7d30
+0x1229E8	sceSdRemote_1229e8	libsdr	sdremote	boundary	asm	6	19	main	0	0	17	23	0	0x388	src/main/sys/sceSdRemote_1229e8.c	SoundThreadCmdEffectEnable_1b6700 SoundThreadCmdSdRemote_1b6540 SoundThreadCmdSetInputVolume_1b6570 SoundThreadCmdSetReverbDepth_1b6630
+0x127D68	AtanDouble_127d68	libm	msun	boundary	asm	1	1	main	0	0	1	2	0	0x4C8	src/main/math/AtanDouble_127d68.c	FovHorizToVert_13fbe0
+0x128278	Cos_128278	libm	msun	boundary	asm	2	2	main	0	0	0	0	0	0x124	src/main/libc/Cos_128278.c	CameraSetEyeDistance_160030 FieldControlBeginMaybe_2f13b0
+0x1283A0	FabsDouble_1283a0	libm	msun	boundary	asm	7	21	main	0	0	4	4	0	0x34	src/main/math/FabsDouble_1283a0.c	AiCmdMoveToTarget_2c8c90 HatenaMarkListAssignNearby_344900 MinimapDrawEntry_325720 NavFindApproachPointMaybe_30bf70
+0x1283D8	Finite_1283d8	libm	msun	boundary	asm	1	1	main	0	0	0	0	0	0x20	src/main/math/Finite_1283d8.c	NumPutDouble_1b29d0
+0x128658	Isnan_128658	libm	msun	boundary	asm	1	1	main	0	0	2	2	0	0x3C	src/main/libc/Isnan_128658.c	NumPutNanInfStr_1b3990
+0x128880	Sin_128880	libm	msun	boundary	asm	4	5	main	0	0	0	0	0	0x134	src/main/libc/Sin_128880.c	AxisAngleBetweenVecs_1d7da0 CameraSetEyeDistance_160030 CameraShakeApply_3056b0 HatenaMarkStep_345540
+0x1289B8	Tan_1289b8	libm	msun	boundary	asm	1	1	main	0	0	0	0	0	0xA8	src/main/math/Tan_1289b8.c	FovHorizToVert_13fbe0
+0x128D30	Cosf_128d30	libm	msun	boundary	asm	98	169	main,normal,factory,insect	0	0	0	0	0	0xD4	src/main/math/Cosf_128d30.c	ActionMgrFindLiftableInFrontMaybe_232de0 ActionMgrFindTargetInFrontMaybe_2330f0 AiCmdCos_2cc010 AiCmdGetRelativeAngleMaybe_2c72e0
+0x128E30	Floorf_128e30	libm	msun	boundary	asm	6	6	main,factory	0	0	1	1	0	0xD8	src/main/libc/Floorf_128e30.c	AttackChainDraw_380660 EventCastPlayMotion_2583a0 MapAreaDataLoadStep_1e83f0 factory_FactoryGridSpanX_5028c0
+0x128FD0	Sinf_128fd0	libm	msun	boundary	asm	230	331	main,title,insmenu,normal,factory,insect	0	0	0	0	0	0xE8	src/main/math/Sinf_128fd0.c	ActionMgrFindLiftableInFrontMaybe_232de0 ActionMgrFindTargetInFrontMaybe_2330f0 AiCmdGetRelativeAngleMaybe_2c72e0 AiCmdObjGetYawOrTurnAngle_2c9ab0
+0x1290B8	Tanf_1290b8	libm	msun	boundary	asm	4	6	main,title,insect	0	0	0	0	0	0x78	src/main/math/Tanf_1290b8.c	GameSessionInit_1f5d80 ViewSetPerspective_1564a0 insect_InsectBattleDrawPreviewModel_4f5fc0 title_TitleSessionInit_4f0cb0
+0x129130	Acos_129130	libm	msun	boundary	asm	1	2	main	0	0	0	0	0	0x14	src/main/math/Acos_129130.c	CameraModeLockTargetUpdateMaybe_3062e0
+0x129148	Atan2_129148	libm	msun	boundary	asm	2	2	main,insect	0	0	0	0	0	0x14	src/main/math/Atan2_129148.c	CameraFollowLeaderStepMaybe_3081e0 insect_InsectPieceFaceCell_515590
+0x129160	Sqrt_129160	libm	msun	boundary	asm	2	2	main,insect	0	0	0	0	0	0x14	src/main/math/Sqrt_129160.c	MapCfgFuncPlightData_18abe0 insect_InsectPieceMoveTo_5157d0
+0x129178	Acosf_129178	libm	msun	boundary	asm	6	6	main	0	0	0	0	0	0x14	src/main/math/Acosf_129178.c	AiCmdStepTowardPointMaybe_2c8a70 AiWarpToWaypointOffscreenMaybe_2bc6c0 AxisAngleBetweenVecs_1d7da0 MtxTurnTowardsY_2cdbe0
+0x129190	Asinf_129190	libm	msun	boundary	asm	1	2	main	0	0	0	0	0	0x14	src/main/math/Asinf_129190.c	MatToRotPos_1cade0
+0x1291A8	Atan2f_1291a8	libm	msun	boundary	asm	56	88	main,factory,insect	0	0	0	0	0	0x14	src/main/libc/Atan2f_1291a8.c	AiCmdAtan2_2cc1e0 AiCmdStepTowardMaybe_2c9210 AiRouteAvoidCharasMaybe_2bd800 AttackChainAddState_382cf0
+0x1291C0	Powf_1291c0	libm	msun	boundary	asm	1	1	main	0	0	0	0	0	0x14	src/main/math/Powf_1291c0.c	AttackChainDraw_380660
+0x129690	sceCdPOffCallback_129690	libcdvd	cdvd	boundary	asm	1	1	main	0	0	0	0	0	0x80	src/main/file/sceCdPOffCallback_129690.c	CdDiskWatchInit_17ff70
+0x1297E0	sceCdLayerSearchFile_1297e0	libcdvd	cdvd	boundary	asm	4	5	main	0	0	1	1	0	0x2FC	src/main/sdk/sceCdLayerSearchFile_1297e0.c	CdDatArchiveOpen_183110 CdWaitFileFound_180290 FileCdSearchLocked_180360 FileSlotOpenPath_1810a0
+0x129AE0	sceCdSearchFile_129ae0	libcdvd	cdvd	boundary	asm	4	5	main	0	0	0	0	0	0x1C	src/main/sdk/sceCdSearchFile_129ae0.c	CdDatArchiveOpen_183110 CdWaitFileFound_180290 FileCdSearchLocked_180360 FileSlotOpenPath_1810a0
+0x129CF0	sceCdSync	libcdvd	cdvd	boundary	asm	2	4	main	0	0	2	2	0	0xA0	src/main/sdk/sceCdSync.c	CdDatArchiveOpen_183110 FileSlotRead_180aa0
+0x12A008	sceCdInit_12a008	libcdvd	cdvd	boundary	asm	1	1	main	0	0	0	0	0	0x2E8	src/main/sdk/sceCdInit_12a008.c	CdInitDvdMode_15e5d0
+0x12A508	CdDiskReadyNewMaybe_12a508	libcdvd	cdvd	boundary	asm	2	2	main	0	0	0	0	0	0x220	src/main/sys/CdDiskReadyNewMaybe_12a508.c	CdDatArchivesInit_182e70 CdWaitFileFound_180290
+0x12A728	sceCdRead_12a728	libcdvd	cdvd	boundary	asm	2	2	main	0	0	0	0	0	0x1E0	src/main/sdk/sceCdRead_12a728.c	CdDatArchiveOpen_183110 FileSlotRead_180aa0
+0x12A908	sceCdSeek_12a908	libcdvd	cdvd	boundary	asm	1	1	main	0	0	0	0	0	0xCC	src/main/sdk/sceCdSeek_12a908.c	OverlayCdSeek_1c32b0
+0x12A9D8	sceCdGetDiskType_12a9d8	libcdvd	cdvd	boundary	asm	1	1	main	0	0	1	1	0	0x98	src/main/sdk/sceCdGetDiskType_12a9d8.c	CdDiskWatchThread_17fdc0
+0x12AA98	sceCdGetError_12aa98	libcdvd	cdvd	boundary	asm	5	7	main	0	0	0	0	0	0x98	src/main/sdk/sceCdGetError_12aa98.c	CdDatArchiveOpen_183110 CdDatArchivesInit_182e70 CdWaitFileFound_180290 FileSlotOpenPath_1810a0
+0x12AB30	sceCdChangeThreadPriority_12ab30	libcdvd	cdvd	boundary	asm	1	1	main	0	0	0	0	0	0xC4	src/main/sdk/sceCdChangeThreadPriority_12ab30.c	SoundRpcInit_1bc840
+0x12ACD0	sceCdReadDvdDualInfo_12acd0	libcdvd	cdvd	boundary	asm	1	1	main	0	0	0	0	0	0xD0	src/main/file/sceCdReadDvdDualInfo_12acd0.c	CdDatArchivesInit_182e70
+0x12ADA0	sceCdMmode_12ada0	libcdvd	cdvd	boundary	asm	1	1	main	0	0	0	0	0	0xD0	src/main/sdk/sceCdMmode_12ada0.c	CdInitDvdMode_15e5d0
+0x12AE98	sceCdTrayReq_12ae98	libcdvd	cdvd	boundary	asm	1	1	main	0	0	0	0	0	0xEC	src/main/sdk/sceCdTrayReq_12ae98.c	CdWaitFileFound_180290
+0x12AF88	scePadInit	libpad	pad	boundary	asm	1	1	main	0	0	0	0	0	0x140	src/main/sdk/scePadInit.c	PadSysInit_185080
+0x12B3B0	scePadPortOpen	libpad	pad	boundary	asm	1	1	main	0	0	0	0	0	0x1E4	src/main/sdk/scePadPortOpen.c	PadPortOpen_184ed0
+0x12B800	scePadRead	libpad	pad	boundary	asm	1	1	main	0	0	0	0	0	0x74	src/main/sdk/scePadRead.c	PadReadData_184df0
+0x12B878	scePadGetState	libpad	pad	boundary	asm	4	5	main	0	0	0	0	0	0x78	src/main/sdk/scePadGetState.c	PadIsAnalogMode_184960 PadUpdateConnection_184a50 PadUpdateVibration_184250 PadWaitReady_1849e0
+0x12B9E0	scePadGetReqState	libpad	pad	boundary	asm	1	3	main	0	0	0	0	0	0x58	src/main/sdk/scePadGetReqState.c	PadUpdateConnection_184a50
+0x12BA70	scePadInfoAct	libpad	pad	boundary	asm	1	1	main	0	0	0	0	0	0x118	src/main/sdk/scePadInfoAct.c	PadUpdateConnection_184a50
+0x12BCA0	scePadInfoMode	libpad	pad	boundary	asm	2	4	main	0	0	0	0	0	0x134	src/main/sdk/scePadInfoMode.c	PadIsAnalogMode_184960 PadUpdateConnection_184a50
+0x12BDD8	scePadSetMainMode	libpad	pad	boundary	asm	1	1	main	0	0	0	0	0	0xB4	src/main/sdk/scePadSetMainMode.c	PadUpdateConnection_184a50
+0x12BE90	scePadSetActDirect	libpad	pad	boundary	asm	1	1	main	0	0	0	0	0	0xC8	src/main/sdk/scePadSetActDirect.c	PadUpdateVibration_184250
+0x12BF58	scePadSetActAlign	libpad	pad	boundary	asm	1	1	main	0	0	0	0	0	0xD8	src/main/sdk/scePadSetActAlign.c	PadUpdateConnection_184a50
+0x12C648	sceMcInit_12c648	libmc	mc	boundary	asm	3	3	main,title	0	0	0	0	0	0x228	src/main/sys/sceMcInit_12c648.c	McPollCardChange_372db0 SaveMcInitStatus_375ea0 title_TitleObjectsCreate_4ecbc0
+0x12C870	sceMcEnd_12c870	libmc	mc	boundary	asm	3	4	main	0	0	0	0	0	0x58	src/main/sdk/sceMcEnd_12c870.c	McEndSession_372d60 McPollCardChange_372db0 sceMcEndThunk_12c870
+0x12CA58	sceMcOpen_12ca58	libmc	mc	boundary	asm	4	6	main	0	0	1	1	0	0x128	src/main/sdk/sceMcOpen_12ca58.c	McLoadStep_373890 McSaveCreateStep_375090 McSaveSlotScanStep_374b00 McSaveStep_374110
+0x12CB80	sceMcMkdir	libmc	mc	boundary	asm	1	1	main	0	0	0	0	0	0x34	src/main/sdk/sceMcMkdir.c	McSaveCreateStep_375090
+0x12CBB8	sceMcClose_12cbb8	libmc	mc	boundary	asm	4	7	main	0	0	0	0	0	0xBC	src/main/sdk/sceMcClose_12cbb8.c	McLoadStep_373890 McSaveCreateStep_375090 McSaveSlotScanStep_374b00 McSaveStep_374110
+0x12CE08	sceMcRead_12ce08	libmc	mc	boundary	asm	2	3	main	0	0	0	0	0	0x114	src/main/sdk/sceMcRead_12ce08.c	McLoadStep_373890 McSaveSlotScanStep_374b00
+0x12CF20	sceMcWrite_12cf20	libmc	mc	boundary	asm	2	7	main	0	0	0	0	0	0x178	src/main/sdk/sceMcWrite_12cf20.c	McSaveCreateStep_375090 McSaveStep_374110
+0x12D098	sceMcSync_12d098	libmc	mc	boundary	asm	10	46	main	0	0	2	2	0	0xC4	src/main/thread/sceMcSync_12d098.c	McEndSession_372d60 McFormatStep_3736b0 McGetInfoStep_375640 McLoadStep_373890
+0x12D1B8	sceMcGetInfo_12d1b8	libmc	mc	boundary	asm	4	4	main	0	0	0	0	0	0x17C	src/main/sdk/sceMcGetInfo_12d1b8.c	McFormatStep_3736b0 McGetInfoStep_375640 McPollCardChange_372db0 McSaveStep_374110
+0x12D3A8	sceMcGetDir_12d3a8	libmc	mc	boundary	asm	2	3	main	0	0	0	0	0	0x14C	src/main/sdk/sceMcGetDir_12d3a8.c	McSaveDirScan_3748c0 McSaveSlotScanStep_374b00
+0x12D588	sceMcChdir_12d588	libmc	mc	boundary	asm	1	3	main	0	0	0	0	0	0x140	src/main/sdk/sceMcChdir_12d588.c	SaveDirRenameJpToUs_373160
+0x12D6C8	sceMcFormat_12d6c8	libmc	mc	boundary	asm	1	1	main	0	0	0	0	0	0xCC	src/main/sdk/sceMcFormat_12d6c8.c	McFormatStep_3736b0
+0x12D8B8	sceMcFlush_12d8b8	libmc	mc	boundary	asm	2	3	main	0	0	0	0	0	0xBC	src/main/sdk/sceMcFlush_12d8b8.c	McSaveCreateStep_375090 McSaveStep_374110
+0x12DB48	sceMcRename_12db48	libmc	mc	boundary	asm	2	4	main	0	0	0	0	0	0x158	src/main/sdk/sceMcRename_12db48.c	McSaveStep_374110 SaveDirRenameJpToUs_373160
+0x12DE80	Abort_12de80	libc	newlib	boundary	asm	56	80	main	0	0	2	2	0	0x18	src/main/libc/Abort_12de80.c	BattleApplyHit_2ef930 BattleCheckEnd_3a1e40 BattleModeUpdate_280220 Bitset256Test_3cc650
+0x12DE98	abs	libc	newlib	boundary	asm	18	36	main,insect	0	0	0	0	0	0x14	src/main/sdk/abs.c	CharaActionGaugeSpend_3abca0 CountDecimalDigits_28a770 DebugTaskItemAdjust_208a20 RevelationBoardCursorUpdateMaybe_34d080
+0x12DEB0	__assert	libc	newlib	boundary	asm	14	24	main	0	0	0	0	0	0x34	src/main/sdk/__assert.c	EffHdlAddByName_1a3420 EffHdlAddByName_1a37a0 EffHdlAddByName_1a39c0 EffHdlAddByName_1a3d40
+0x12DEE8	Atof_12dee8	libc	newlib	boundary	asm	3	3	main	0	0	0	0	0	0x18	src/main/libc/Atof_12dee8.c	GameSceneSoundEnvParseMapIndex_1d15c0 MesWinLayoutText_274e70 TextReaderReadTextArgs_15ebc0
+0x12DF00	atoi	libc	newlib	boundary	C	13	29	main,normal	0	0	1	1	0	0x28	src/main/sdk/atoi.c	EventCastCmdObject_24d420 FilePathGetDeviceIndex_181a80 GameSceneSoundEnvParseMapIndex_1d15c0 MapDefCmdBlockAttr_1ebb90
+0x12F4E0	Exit_12f4e0	libc	newlib	boundary	asm	2	96	main	0	0	1	1	0	0xAC	src/main/libc/Exit_12f4e0.c	ScriptVmExec_173b00 ScriptVmRunEntry_176940
+0x12F590	Fflush_12f590	libc	newlib	boundary	asm	1	1	main	0	0	11	16	0	0x114	src/main/libc/Fflush_12f590.c	ScriptVmExec_173b00
+0x12F9A0	Fprintf_12f9a0	libc	newlib	boundary	asm	58	175	main	0	0	0	0	0	0x54	src/main/libc/Fprintf_12f9a0.c	BattleApplyHit_2ef930 BattleCheckEnd_3a1e40 BattleModeUpdate_280220 Bitset256Test_3cc650
+0x1308F0	Index_1308f0	libc	newlib	boundary	asm	1	1	main	0	0	0	0	0	0x14	src/main/libc/Index_1308f0.c	MovieStreamOpen_1d3700
+0x130BA8	Memalign_130ba8	libc	newlib	boundary	asm	3	3	main	0	0	0	0	0	0x64	src/main/libc/Memalign_130ba8.c	GameDataHeapInit_1fed00 MenuResStackInit_206980 SysBootInit_1c2ee0
+0x130DD8	Malloc_130dd8	libc	newlib	boundary	asm	1	2	main	0	0	1	2	0	0x54	src/main/libc/Malloc_130dd8.c	SysCalcFreeHeapMaybe_15e1d0
+0x130E30	Free_130e30	libc	newlib	boundary	asm	1	2	main	0	0	2	4	0	0x48	src/main/libc/Free_130e30.c	SysCalcFreeHeapMaybe_15e1d0
+0x131910	memcmp	libc	newlib	boundary	asm	13	45	main	0	0	2	6	0	0x94	src/main/sdk/memcmp.c	FileAliasTableSet_1816a0 Im3SortByPriority_158e20 ImgGetEntryCount_159250 ImgGetEntryDesc_158f50
+0x1319A8	memcpy	libc	newlib	boundary	asm	188	294	main,title,insmenu,normal,factory,insect	0	0	23	31	0	0xB0	src/main/sdk/memcpy.c	AbilityModeRun_2790e0 AttackChainModeUpdate_27f840 BattleHistoryPush_3a7e70 BufReadU32_370e10
+0x131A58	memmove	libc	newlib	boundary	asm	4	4	main	0	0	3	8	0	0x104	src/main/sdk/memmove.c	DebugItemListDraw_299500 HandleHeapCompact_312aa0 MemMoveIfDiff_289c60 WeaponCombineLogAdd_3cbd10
+0x131B60	memset	libc	newlib	boundary	asm	319	412	main,title,insmenu,normal,factory,insect	0	0	24	25	0	0xC0	src/main/sdk/memset.c	ActionPacketClear_3e3e90 ActionResultClear_3a6e60 AiInit_2c1250 AudioDecCreate_1d3210
+0x132D08	Qsort_132d08	libc	newlib	boundary	asm	4	4	main,factory	0	0	0	0	0	0x9EC	src/main/libc/Qsort_132d08.c	CdDatArchiveOpen_183110 CollMeshBuildQuadTree_16c210 InsectCageUnitMarkersDraw_3888e0 factory_FactoryMarkerDrawAll_4f6ba0
+0x1336F8	Srand_1336f8	libc	newlib	boundary	asm	2	2	main	0	0	0	0	0	0x18	src/main/libc/Srand_1336f8.c	GameSessionInit_1f5d80 MainLoop_1c2c10
+0x133710	Rand_133710	libc	newlib	boundary	asm	54	100	main,normal,factory,insect	0	0	0	0	0	0x64	src/main/libc/Rand_133710.c	AiCmdEventLogRecord_2c1980 AiCmdPickCureItemMaybe_2c3500 AiCmdPickPosNearTargetMaybe_2c4620 AiCmdRandFloat_2cbf00
+0x1343B8	Sprintf_1343b8	libc	newlib	boundary	asm	227	445	main,normal,factory,insect	0	0	1	1	0	0x90	src/main/libc/Sprintf_1343b8.c	AbilityModeRun_2790e0 AttackChainModeUpdate_27f840 BgmPlayNowMaybe_207530 BgmPlayTrackIfChangedMaybe_207880
+0x1345B8	Strcasecmp_1345b8	libc	newlib	boundary	asm	23	35	main	0	0	0	0	0	0xD8	src/main/libc/Strcasecmp_1345b8.c	ArchiveFindByExt_181be0 ArchiveFindEntryByName_181e20 EffNameMapInsertUnique_1a52b0 EffNameMapInsertUnique_1a54f0
+0x134690	strcat	libc	newlib	boundary	asm	47	96	main,normal,factory,insect	0	0	0	0	0	0x12C	src/main/sdk/strcat.c	AmixerCfgClipActionCmd_16f8a0 Base58EncodeChecked_42f120 CdDatArchiveOpen_183110 DataTableLoadBinFile_368bf0
+0x1347C0	Strchr_1347c0	libc	newlib	boundary	asm	7	11	main,factory,insect	0	0	1	1	0	0x190	src/main/libc/Strchr_1347c0.c	EvCmdMenuThinkSetPrompt_25fa10 EvCmdMesWinSetStrVar_265a20 OverlayLocateFiles_1c3300 factory_FactoryHelpPageLoadPoll_4f1ce0
+0x134950	strcmp	libc	newlib	boundary	asm	113	192	main,normal,insect	0	0	1	2	0	0x144	src/main/sdk/strcmp.c	AiCmdObjMotionNameIs_2c9820 AiCmdObjPlayMotion_2ca3e0 AmixerBindResByNameMaybe_170330 AmixerCfgTransFromCmd_16fc80
+0x134A98	strcpy	libc	newlib	boundary	asm	335	557	main,title,normal,insect	0	0	11	15	0	0x114	src/main/sdk/strcpy.c	AbilityModeRun_2790e0 AbilityReqSet_27a450 ActCfgTableGetInfoNameByMode_21f5b0 ActionMgrLoadActionInfo_2336b0
+0x134BB0	strlen	libc	newlib	boundary	asm	173	249	main,title,normal,insect	0	0	13	21	0	0x138	src/main/sdk/strlen.c	ActionMgrLoadActionInfo_2336b0 AiCmdStrIntern_2c1ac0 AmixerCfgClipActionCmd_16f8a0 ArenaStrDup_3701d0
+0x134CE8	Strncasecmp_134ce8	libc	newlib	boundary	asm	3	3	main	0	0	0	0	0	0xD8	src/main/libc/Strncasecmp_134ce8.c	FilePathApplyAlias_181590 MotionEventSePlay_1b1250 MovieStreamOpen_1d3700
+0x134DC0	strncmp	libc	newlib	boundary	asm	13	84	main	0	0	0	0	0	0x1B8	src/main/sdk/strncmp.c	FontDrawText_26cdc0 GameSceneSoundEnvParseMapIndex_1d15c0 MesWinLayoutText_274e70 MesWinMeasureText_272b80
+0x134F78	strncpy	libc	newlib	boundary	asm	17	30	main,insect	0	0	10	12	0	0x1BC	src/main/sdk/strncpy.c	ArenaStrDup_3701d0 EvCmdMesWinSetStrVar_265a20 EventCastCmdObject_24d420 FilePathGetDeviceIndex_181a80
+0x135138	Strstr_135138	libc	newlib	boundary	asm	4	20	main	0	0	0	0	0	0x84	src/main/libc/Strstr_135138.c	EvCmdMenuThinkSetPrompt_25fa10 EventCastResolveEquipNameMaybe_24fd10 MesWinCountLabelChars_24e460 MesWinPageCharCount_24e350
+0x136390	Strupr_136390	libc	newlib	boundary	asm	1	1	main	0	0	0	0	0	0x4C	src/main/str/Strupr_136390.c	FileSlotOpenPath_1810a0
+0x1363E0	Toupper_1363e0	libc	newlib	boundary	asm	2	3	main	0	0	0	0	0	0x20	src/main/libc/Toupper_1363e0.c	MovieStreamOpen_1d3700 NumPutNanInfStr_1b3990
+0x138E68	Vprintf_138e68	libc	newlib	boundary	asm	1	1	main	0	0	0	0	0	0x28	src/main/libc/Vprintf_138e68.c	DbgPrintf_15e780
+0x139188	Divdi3_139188	libgcc	di3/softfloat	boundary	asm	1	1	main	0	0	1	1	0	0x694	src/main/libc/Divdi3_139188.c	VariantDiv_36c4d0
+0x139820	ModDi3_139820	libgcc	di3/softfloat	boundary	asm	2	4	main	0	0	1	1	0	0x690	src/main/libc/ModDi3_139820.c	ArenaAllocAligned_370330 VariantMod_36c200
+0x139EB0	UDivDi3_139eb0	libgcc	di3/softfloat	boundary	asm	4	5	main	0	0	6	7	0	0x57C	src/main/libc/UDivDi3_139eb0.c	Base58EncodeBlock_42f2d0 NumPutFormatU64_1a4970 PlayTimeSplit_3d6350 VariantDiv_36c4d0
+0x13A430	UModDi3_13a430	libgcc	di3/softfloat	boundary	asm	7	8	main	0	0	5	5	0	0x568	src/main/libc/UModDi3_13a430.c	Base58EncodeBlock_42f2d0 EventFireIntervalTriggers_3e0220 EventTriggerSysUpdateMaybe_3e02c0 NumPutFormatU64_1a4970
+0x13A998	S64ToDouble_13a998	libgcc	di3/softfloat	boundary	asm	1	1	main	0	0	5	11	0	0xA8	src/main/libc/S64ToDouble_13a998.c	VariantGetDouble_36f6c0
+0x13AA40	S64ToFloat_13aa40	libgcc	di3/softfloat	boundary	asm	2	2	main	0	0	2	4	0	0xE8	src/main/libc/S64ToFloat_13aa40.c	TreasureBoxTrapApply_33a400 VariantGetFloat_36f7a0
+0x13AB28	DoubleToU64_13ab28	libgcc	di3/softfloat	boundary	asm	14	22	main	0	0	2	3	0	0x118	src/main/math/DoubleToU64_13ab28.c	CharaSysBattleBegin_3a1350 CharaSysOnBattleEnd_3a11f0 EventTriggerSysUpdateMaybe_3e02c0 GameDataDeserialize_3e5fe0
+0x13AC40	DoubleToS64_13ac40	libgcc	di3/softfloat	boundary	asm	1	1	main	0	0	1	1	0	0x78	src/main/libc/DoubleToS64_13ac40.c	VariantGetS64_36f9a0
+0x13ACB8	FloatToU64_13acb8	libgcc	di3/softfloat	boundary	asm	4	5	main	0	0	1	2	0	0x128	src/main/libc/FloatToU64_13acb8.c	EventFireIntervalTriggers_3e0220 EventTriggerSysUpdateMaybe_3e02c0 ScriptEvalQueryOpMaybe_3daaf0 VariantGetU64_36f8f0
+0x13ADE0	FloatToS64_13ade0	libgcc	di3/softfloat	boundary	asm	2	3	main,normal	0	0	0	0	0	0x3C	src/main/libc/FloatToS64_13ade0.c	VariantGetS64_36f9a0 normal_MenuBattleEndMemberRowsRefreshMaybe_4ed370
+0x13AF68	fptodp	libgcc	di3/softfloat	boundary	asm	59	102	main,normal,factory,insect	0	0	2	2	0	0x3C	src/main/sdk/fptodp.c	AiCmdMoveToTarget_2c8c90 AiCmdPickPosNearTargetMaybe_2c4620 AiCmdStepTowardMaybe_2c9210 AiCmdTurnToward_2c87a0
+0x13B3A0	dpadd	libgcc	di3/softfloat	boundary	asm	15	18	main	0	0	19	131	0	0x58	src/main/sdk/dpadd.c	AiCmdPickPosNearTargetMaybe_2c4620 BattleHistoryCalcAverages_3a7bd0 CameraFollowLeaderStepMaybe_3081e0 CameraSetEyeDistance_160030
+0x13B3F8	dpsub	libgcc	di3/softfloat	boundary	asm	10	15	main	0	0	19	111	0	0x64	src/main/sdk/dpsub.c	AiCmdPickPosNearTargetMaybe_2c4620 CharaSelectStateFromFlagsMaybe_20e9f0 CharaSysEncounterDistTick_3a5890 EventIconDrawAll_278790
+0x13B460	dpmul	libgcc	di3/softfloat	boundary	asm	34	47	main,normal,factory,insect	0	0	17	158	0	0x284	src/main/sdk/dpmul.c	AiCmdPickPosNearTargetMaybe_2c4620 AiCmdTurnToward_2c87a0 AiUpdate_2c05b0 BattleApplyHit_2ef930
+0x13B6E8	dpdiv	libgcc	di3/softfloat	boundary	asm	8	10	main,insect	0	0	9	19	0	0x140	src/main/sdk/dpdiv.c	BattleHistoryCalcAverages_3a7bd0 CharaSysUpdate_3a0c10 EvMapObjUpdate_364ab0 LensFlareDraw_2ed830
+0x13B998	litodp	libgcc	di3/softfloat	boundary	asm	10	17	main,normal,insect	0	0	7	23	0	0xB8	src/main/sdk/litodp.c	AiCmdPickPosNearTargetMaybe_2c4620 BattleHistoryCalcAverages_3a7bd0 CharaSysEncounterDistRoll_3a59d0 LensFlareDraw_2ed830
+0x13BA50	dptoli	libgcc	di3/softfloat	boundary	asm	8	10	main	0	0	7	16	0	0x9C	src/main/sdk/dptoli.c	InsectItemSetColorFromFloats_3d1cc0 MenuObjBattlePairSpawnSparkMaybe_385a30 PlayTimeSplit_3d6350 ScriptEvalQueryOpMaybe_3daaf0
+0x13BB20	dptofp	libgcc	di3/softfloat	boundary	asm	48	91	main,normal,factory,insect	0	0	3	3	0	0x54	src/main/sdk/dptofp.c	AiCmdMoveToTarget_2c8c90 AiCmdPickPosNearTargetMaybe_2c4620 AiCmdTurnToward_2c87a0 AiUpdate_2c05b0
+0x13BB78	DoubleToUInt_13bb78	libgcc	di3/softfloat	boundary	asm	8	9	main	0	0	2	6	0	0xA0	src/main/math/DoubleToUInt_13bb78.c	CharaSysUpdate_3a0c10 ScriptEvalQueryOpMaybe_3daaf0 UnitBaseKillStampTime_3b1400 UnitBaseStampDeathTime_3b15a0
+0x165608	SdRemoteInitMasterVolume_165608	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	1	1	main	0	0	0	0	0	0x84	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundIopInit_1b7160
+0x1656B8	SoundIopSendCmdG0S2_1656b8	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	2	5	main	0	0	0	0	0	0xBC	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundIopInit_1b7160 SoundThreadCmdSetMasterVolume_1b6ae0
+0x165778	SoundIopSendCmdG0SA_165778	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	1	1	main	0	0	0	0	0	0xB0	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmdSpuTransferMaybe_1b6b20
+0x165828	SoundIopSendCmdG1S0_165828	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	2	2	main	0	0	0	0	0	0xD4	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmdBankAttach_1b6b40 SoundThreadCmdBankUpload_1b6ba0
+0x165900	SoundIopSendCmdG1S1_165900	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	2	2	main	0	0	0	0	0	0xA8	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmdBankDetach_1b69b0 SoundThreadCmdBankRelease_1b69e0
+0x1659A8	SoundIopSendCmdG1S2_1659a8	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	3	3	main	0	0	0	0	0	0xC0	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmd01Related_1b6c00 SoundThreadCmd02Related_1b6bf0 SoundThreadCmdSetOutputMode_1b6b10
+0x165A68	SoundIopSendCmdG1S3_165a68	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	1	1	main	0	0	0	0	0	0xB4	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmd0BRelated_1b6b00
+0x165B20	SoundIopSendCmdG2S0_165b20	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	2	2	main	0	0	0	0	0	0xB0	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmdSeqAttach_1b6b80 SoundThreadCmdSeqDataUpload_1b6bd0
+0x165BD0	SoundIopSendCmdG2S1_165bd0	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	2	2	main	0	0	0	0	0	0x9C	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmdSeqDataRelease_1b6a00 SoundThreadCmdSeqDetach_1b69d0
+0x165C70	SoundIopSendCmdG2S2_165c70	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	6	6	main	0	0	0	0	0	0xB4	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmd10Related_1b6a80 SoundThreadCmd11Related_1b6a60 SoundThreadCmdPause_1b6ad0 SoundThreadCmdSeqPlay_1b6ab0
+0x165D28	SoundIopSendCmdG2S3_165d28	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	1	1	main	0	0	0	0	0	0x9C	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmd13Related_1b6a30
+0x165DC8	SoundIopSendCmdG3S0_165dc8	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	2	2	main	0	0	0	0	0	0xB0	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmdNoteStreamAttachMaybe_1b6b60 SoundThreadCmdNoteStreamCreateMaybe_1b6bc0
+0x165E78	SoundIopSendCmdG3S1_165e78	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	2	2	main	0	0	0	0	0	0xA8	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmdNoteStreamDetachMaybe_1b69c0 SoundThreadCmdNoteStreamReleaseMaybe_1b69f0
+0x165F20	SoundIopSendCmdG3S2_165f20	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	6	9	main	0	0	0	0	0	0xFC	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmdKeyOff_1b6970 SoundThreadCmdKeyOnMutedMaybe_1b6900 SoundThreadCmdKeyOn_1b6800 SoundThreadCmdSetPan_1b68c0
+0x166020	SoundIopSendCmdG3S3_166020	libsdr-gcc	sdremote-cmd-island(gcc)	boundary	C	1	1	main	0	0	0	0	0	0xB4	src/main/sound/SdRemoteInitMasterVolume_165608.c	SoundThreadCmd14Related_1b6a10
+0x102EE0	IosBaseInitDtor_102ee0	msl-c++	runtime/eh/iostream/string	boundary-ptr	C	0	0	main	218	0	0	0	0	0xE8	src/main/libc/IosBaseInitDtor_102ee0.cpp	
+0x103420	WIosBaseInitDtor_103420	msl-c++	runtime/eh/iostream/string	boundary-ptr	C	0	0	main	218	0	0	0	0	0xE8	src/main/libc/WIosBaseInitDtor_103420.cpp	
+0x100218	KernelExitThunk_120d18	crt0	crt0	internal	C	0	0		0	0	2	2	1	0x8	src/main/sdk/KernelExitThunk_120d18.c	
+0x100400	OverlayLoadNotifyStubMaybe_100400	mwcc-rt	mwo3-overlay	internal	C	0	0		0	0	1	1	1	0x8	src/main/sys/OverlayLoadNotifyStubMaybe_100400.c	
+0x1004B0	FileReadAll_1004b0	mwcc-rt	mwo3-overlay	internal	asm	0	0		0	0	1	1	1	0xB4	src/main/file/FileReadAll_1004b0.c	
+0x100A60	EhCatchTypeCompare_100a60	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	2	4	2	0x24C	src/main/sys/EhCatchTypeCompare_100a60.c	
+0x100CB0	Unexpected_100cb0	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	0	1	1	2	0x24	src/main/sys/Unexpected_100cb0.c	
+0x100CE0	Terminate_100ce0	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	0	6	8	2	0x24	src/main/libc/Terminate_100ce0.c	
+0x100D60	DestroyGlobalChain_100d60	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	1	0x54	src/main/libc/DestroyGlobalChain_100d60.c	
+0x100DF0	RunStaticCtors_100df0	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	2	2	1	0x78	src/main/sys/RunStaticCtors_100df0.c	
+0x100ED0	DecodeVarUInt_100ed0	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	8	29	2	0x9C	src/main/util/DecodeVarUInt_100ed0.c	
+0x100F70	DecodeVarInt_100f70	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	6	47	2	0x9C	src/main/util/DecodeVarInt_100f70.c	
+0x101010	EhEndCatch_101010	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	0	7	12	1	0x38	src/main/sys/EhEndCatch_101010.c	
+0x101050	EhThrowHandler_101050	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	2	0x174	src/main/libc/EhThrowHandler_101050.c	
+0x1011D0	EhDispatchHandler_1011d0	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	3	0x2F8	src/main/sys/EhDispatchHandler_1011d0.c	
+0x1014D0	EhUnexpected_1014d0	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	1	0x1C8	src/main/sys/EhUnexpected_1014d0.c	
+0x101700	EhGetCatchRecord_101700	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	3	0x154	src/main/sys/EhGetCatchRecord_101700.c	
+0x101860	EhUnwindActions_101860	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	2	2	3	0x80C	src/main/sys/EhUnwindActions_101860.c	
+0x102070	EhSkipActions_102070	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	2	2	4	0x304	src/main/sys/EhSkipActions_102070.c	
+0x102380	EhFindCallSite_102380	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	3	3	3	0x1B4	src/main/sys/EhFindCallSite_102380.c	
+0x102550	EhRestoreContextAndJump_102550	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	2	2	3	0x64	src/main/sys/EhRestoreContextAndJump_102550.c	
+0x1025C0	ThrowException_1025c0	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	13	33	1	0x80	src/main/sys/ThrowException_1025c0.c	
+0x102640	EhSkipHeaderVarUInts_102640	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	4	0x50	src/main/sys/EhSkipHeaderVarUInts_102640.c	
+0x102690	EhFindExceptionTableMaybe_102690	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	0	1	1	4	0x20	src/main/sys/EhFindExceptionTableMaybe_102690.c	
+0x1026B0	EhRegisterFragmentStubMaybe_1026b0	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	0	1	1	2	0x8	src/main/sys/EhRegisterFragmentStubMaybe_1026b0.c	
+0x1026C0	EhParseHeader_1026c0	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	3	3	3	0xA4	src/main/sys/EhParseHeader_1026c0.c	
+0x102770	EhUnwindRestoreRegs_102770	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	2	2	4	0x178	src/main/sys/EhUnwindRestoreRegs_102770.c	
+0x102A50	IosInit_102a50	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	0	4	4	2	0x50	src/main/libc/IosInit_102a50.c	
+0x102B30	SharedArrayPtrCtor_102b30	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	5	7	1	0x94	src/main/libc/SharedArrayPtrCtor_102b30.c	
+0x102E80	FilebufDtor_102e80	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	1	0	0	1	0x60	src/main/libc/FilebufDtor_102e80.c	
+0x1033C0	WFilebufDtor_1033c0	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	1	0	0	1	0x60	src/main/libc/WFilebufDtor_1033c0.c	
+0x103F50	IstreamCtor_103f50	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	1	0xB0	src/main/libc/IstreamCtor_103f50.c	
+0x104000	WistreamCtor_104000	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	1	0xB0	src/main/libc/WistreamCtor_104000.c	
+0x104270	OstreamCtor_104270	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	3	1	0xAC	src/main/libc/OstreamCtor_104270.c	
+0x104320	WOstreamFlush_104320	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	2	4	1	0x1C0	src/main/libc/WOstreamFlush_104320.c	
+0x1044E0	WostreamCtor_1044e0	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	3	1	0xAC	src/main/libc/WostreamCtor_1044e0.c	
+0x105040	FilebufCtor_105040	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	0	1	3	1	0x50	src/main/libc/FilebufCtor_105040.c	
+0x105BE0	WFilebufCtor_105be0	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	0	1	3	1	0x50	src/main/libc/WFilebufCtor_105be0.c	
+0x106510	WOstreamSentryCtor_106510	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	2	0x2D4	src/main/libc/WOstreamSentryCtor_106510.c	
+0x106E20	StringResize_106e20	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	1	0x68	src/main/str/StringResize_106e20.c	
+0x107550	StringFindChar_107550	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	2	2	1	0x7C	src/main/str/StringFindChar_107550.c	
+0x107B70	StringCtorSubstrMaybe_107b70	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	1	0xC0	src/main/libc/StringCtorSubstrMaybe_107b70.c	
+0x107C30	StringCopyCtor_107c30	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	1	0x8C	src/main/str/StringCopyCtor_107c30.c	
+0x107CD0	StringReplaceFromStringMaybe_107cd0	msl-c++	runtime/eh/iostream/string	internal	asm	0	0		0	0	1	1	2	0x15C	src/main/libc/StringReplaceFromStringMaybe_107cd0.c	
+0x107E30	StringAssignRange_107e30	msl-c++	runtime/eh/iostream/string	internal	C	0	0		0	0	1	1	1	0x48	src/main/str/StringAssignRange_107e30.c	
+0x1082A0	sceGsGetGParam_1082a0	libgraph	gs	internal	C	0	0		0	0	7	8	1	0xC	src/main/sdk/sceGsGetGParam_1082a0.c	
+0x108318	GsIsNewRomVersionMaybe_108318	libgraph	gs	internal	asm	0	0		0	0	1	1	1	0xA0	src/main/gs/GsIsNewRomVersionMaybe_108318.c	
+0x1083B8	GetGsDxDyOffset_1083b8	libgraph	gs	internal	asm	0	0		0	0	1	1	1	0x10	src/main/sdk/GetGsDxDyOffset_1083b8.c	
+0x108800	sceGszbufaddr	libgraph	gs	internal	asm	0	0		0	0	2	3	1	0xC8	src/main/sdk/sceGszbufaddr.c	
+0x108AB0	sceGsSetDefClear	libgraph	gs	internal	asm	0	0		0	0	1	2	1	0x104	src/main/sdk/sceGsSetDefClear.c	
+0x109BB8	DmaWaitChannelIdle_109bb8	libgraph	gs	internal	asm	0	0		0	0	7	7	1	0x70	src/main/gs/DmaWaitChannelIdle_109bb8.c	
+0x109CB0	DmaAddrFromSpr_109cb0	libgraph	gs	internal	asm	0	0		0	0	5	5	1	0x28	src/main/gs/DmaAddrFromSpr_109cb0.c	
+0x109CD8	memclr	libdma	dma	internal	asm	0	0		0	0	1	1	1	0x34	src/main/sdk/memclr.c	
+0x10A350	sceDmaPause_10a350	libdma	dma	internal	asm	0	0		0	0	2	2	2	0x98	src/main/gs/sceDmaPause_10a350.c	
+0x10AC10	_sceVu0ecossin	libvu0	vu0	internal	asm	0	0		0	0	3	3	1	0x74	src/main/sdk/_sceVu0ecossin.c	
+0x10B610	MpegDualPrimeVectorsMaybe_10b610	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	2	9	0x184	src/main/movie/MpegDualPrimeVectorsMaybe_10b610.c	
+0x10B798	MpegMotionPredictMaybe_10b798	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	8	0x704	src/main/movie/MpegMotionPredictMaybe_10b798.c	
+0x10BEA0	MpegMotionCompensateMaybe_10bea0	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	7	0x250	src/main/movie/MpegMotionCompensateMaybe_10bea0.c	
+0x10C0F0	MpegFormPredictionMaybe_10c0f0	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	13	9	0x488	src/main/movie/MpegFormPredictionMaybe_10c0f0.c	
+0x10C578	MpegReconstructMacroblockMaybe_10c578	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	6	0x21C	src/main/movie/MpegReconstructMacroblockMaybe_10c578.c	
+0x10C798	MpegDecodePictureBodyMaybe_10c798	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	5	0x240	src/main/movie/MpegDecodePictureBodyMaybe_10c798.c	
+0x10C9D8	MpegDecodeSlices_10c9d8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	6	0x32C	src/main/movie/MpegDecodeSlices_10c9d8.c	
+0x10CD08	IpuDecodeMotionVectorMaybe_10cd08	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	5	8	0x428	src/main/movie/IpuDecodeMotionVectorMaybe_10cd08.c	
+0x10D130	MpegDecodeMotionVectorsMaybe_10d130	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	2	8	0x19C	src/main/movie/MpegDecodeMotionVectorsMaybe_10d130.c	
+0x10D2D0	IpuDecodeMacroblock_10d2d0	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	7	0x558	src/main/movie/IpuDecodeMacroblock_10d2d0.c	
+0x10D828	IpuDecodeMbAddrInc_10d828	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	7	0x178	src/main/movie/IpuDecodeMbAddrInc_10d828.c	
+0x10D9A0	IpuSyncWithRefill_10d9a0	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	5	0x168	src/main/movie/IpuSyncWithRefill_10d9a0.c	
+0x10DB08	IpuWaitCmd_10db08	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	6	10	4	0x180	src/main/movie/IpuWaitCmd_10db08.c	
+0x10DC88	IpuGetBits_10dc88	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	15	83	3	0xE8	src/main/movie/IpuGetBits_10dc88.c	
+0x10DD70	IpuShowBits_10dd70	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	5	9	3	0x8C	src/main/movie/IpuShowBits_10dd70.c	
+0x10DE00	IpuSkipBits_10de00	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	4	0x94	src/main/movie/IpuSkipBits_10de00.c	
+0x10DE98	IpuSyncIfBusy_10de98	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	8	13	4	0x34	src/main/movie/IpuSyncIfBusy_10de98.c	
+0x10DED0	IpuSkipBitsThunk_10de00	libmpeg	mpeg+ipu	internal	C	0	0		0	0	2	2	8	0x8	src/main/movie/IpuSkipBitsThunk_10de00.c	
+0x10DED8	MpegSkippedMacroblock_10ded8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	7	0xBC	src/main/movie/MpegSkippedMacroblock_10ded8.c	
+0x10DF98	MpegAddBlockClampPack_10df98	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	7	0xEC	src/main/movie/MpegAddBlockClampPack_10df98.c	
+0x10E088	MpegClampPackBlock_10e088	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	2	7	0xC0	src/main/movie/MpegClampPackBlock_10e088.c	
+0x10E148	MpegKickSprDmaMaybe_10e148	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	8	0x17C	src/main/movie/MpegKickSprDmaMaybe_10e148.c	
+0x10EFB8	DmaIpuFromStart_10efb8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	8	0xA0	src/main/movie/DmaIpuFromStart_10efb8.c	
+0x10F058	MpegParseSliceHeader_10f058	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	7	0x1A0	src/main/movie/MpegParseSliceHeader_10f058.c	
+0x10F1F8	MpegSetupSequenceBuffersMaybe_10f1f8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	4	0x314	src/main/movie/MpegSetupSequenceBuffersMaybe_10f1f8.c	
+0x10F510	MpegParseSequenceHeader_10f510	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	3	0x2AC	src/main/movie/MpegParseSequenceHeader_10f510.c	
+0x10F7C0	MpegParseGopHeader_10f7c0	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	3	0xA0	src/main/movie/MpegParseGopHeader_10f7c0.c	
+0x10F860	MpegParsePictureHeader_10f860	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	3	0x144	src/main/movie/MpegParsePictureHeader_10f860.c	
+0x10FDF8	MpegParseExtUserData_10fdf8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	3	3	4	0x1CC	src/main/movie/MpegParseExtUserData_10fdf8.c	
+0x10FFC8	IpuSyncIfBusy_10ffc8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	3	15	4	0x34	src/main/movie/IpuSyncIfBusy_10ffc8.c	
+0x110000	IpuSkipBitsThunk2_10de00	libmpeg	mpeg+ipu	internal	C	0	0		0	0	6	10	3	0x8	src/main/movie/IpuSkipBitsThunk2_10de00.c	
+0x110008	MpegNextPictureMaybe_110008	libmpeg	mpeg+ipu	internal	asm	0	0		0	5	2	2	2	0x154	src/main/movie/MpegNextPictureMaybe_110008.c	
+0x110160	IpuSkip32Bits_110160	libmpeg	mpeg+ipu	internal	C	0	0		0	0	2	3	5	0x8	src/main/movie/IpuSkip32Bits_110160.c	
+0x110168	IpuByteAlign_110168	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	3	5	3	0x50	src/main/movie/IpuByteAlign_110168.c	
+0x1103D8	MpegSetupBufferType_1103d8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	1	0xCC	src/main/movie/MpegSetupBufferType_1103d8.c	
+0x1107E0	MpegResetHwMaybe_1107e0	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	1	0xC8	src/main/movie/MpegResetHwMaybe_1107e0.c	
+0x1108A8	MpegGetPictureImpl_1108a8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	3	3	1	0x1B4	src/main/movie/MpegGetPictureImpl_1108a8.c	
+0x110A60	MpegPrepareDecodeBufferMaybe_110a60	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	4	4	0x2B4	src/main/movie/MpegPrepareDecodeBufferMaybe_110a60.c	
+0x110D18	MpegDecodeFramePicture_110d18	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	3	0x170	src/main/movie/MpegDecodeFramePicture_110d18.c	
+0x110E88	MpegDecodeFieldPicture_110e88	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	3	0x1C4	src/main/movie/MpegDecodeFieldPicture_110e88.c	
+0x111340	MpegInvokeCallback_111340	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	6	13	2	0x78	src/main/movie/MpegInvokeCallback_111340.c	
+0x1113B8	MpegInvokeNodataCallback_1113b8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	4	6	5	0x74	src/main/movie/MpegInvokeNodataCallback_1113b8.c	
+0x111430	MpegDecodePicture_111430	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	3	2	0x44	src/main/movie/MpegDecodePicture_111430.c	
+0x111478	MpegClearRefBuffMaybe_111478	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	1	0x54	src/main/movie/MpegClearRefBuffMaybe_111478.c	
+0x1115C8	MpegCheckStructureAndDecodeMaybe_1115c8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	3	4	0xCC	src/main/movie/MpegCheckStructureAndDecodeMaybe_1115c8.c	
+0x111698	MpegWorkAreaInit_111698	libmpeg	mpeg+ipu	internal	C	0	0		0	0	1	1	1	0x14	src/main/movie/MpegWorkAreaInit_111698.c	
+0x1116B0	MpegWorkAreaMark_1116b0	libmpeg	mpeg+ipu	internal	C	0	0		0	0	1	1	1	0xC	src/main/movie/MpegWorkAreaMark_1116b0.c	
+0x1116C0	MpegWorkAreaRestore_1116c0	libmpeg	mpeg+ipu	internal	C	0	0		0	0	1	1	5	0xC	src/main/movie/MpegWorkAreaRestore_1116c0.c	
+0x1116D0	MpegWorkAreaAlloc_1116d0	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	4	1	0x6C	src/main/movie/MpegWorkAreaAlloc_1116d0.c	
+0x111758	MpegDefaultCbStopDma_111758	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	0	0	1	0x24	src/main/movie/MpegDefaultCbStopDma_111758.c	
+0x111780	MpegDefaultCbRestartDma_111780	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	0	0	1	0x24	src/main/movie/MpegDefaultCbRestartDma_111780.c	
+0x1117A8	MpegCopyMbViaSprMaybe_1117a8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	4	0x290	src/main/movie/MpegCopyMbViaSprMaybe_1117a8.c	
+0x111A38	MpegOutputFrameMaybe_111a38	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	3	0x2C0	src/main/movie/MpegOutputFrameMaybe_111a38.c	
+0x111CF8	MpegOutputFieldPairMaybe_111cf8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	3	0x420	src/main/movie/MpegOutputFieldPairMaybe_111cf8.c	
+0x112118	MpegOutputPictureMaybe_112118	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	2	0xC0	src/main/movie/MpegOutputPictureMaybe_112118.c	
+0x1121D8	MpegOutputDecodedPictureMaybe_1121d8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	4	0x90	src/main/movie/MpegOutputDecodedPictureMaybe_1121d8.c	
+0x112268	MpegIpuCsc_112268	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	2	5	0x1C0	src/main/movie/MpegIpuCsc_112268.c	
+0x112428	MpegIpuDmaTransferMaybe_112428	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	4	0x4D8	src/main/movie/MpegIpuDmaTransferMaybe_112428.c	
+0x112900	MpegCscDmaHandler_112900	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	0	0	6	0x148	src/main/movie/MpegCscDmaHandler_112900.c	
+0x112A48	MpegToIpuDmaHandler_112a48	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	0	0	5	0xD8	src/main/movie/MpegToIpuDmaHandler_112a48.c	
+0x112D20	MpegDemuxSkipSystemHeaderMaybe_112d20	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	2	0x1D0	src/main/movie/MpegDemuxSkipSystemHeaderMaybe_112d20.c	
+0x112EF0	MpegDemuxParsePackHeaderMaybe_112ef0	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	1	0x6A8	src/main/movie/MpegDemuxParsePackHeaderMaybe_112ef0.c	
+0x113598	MpegParsePesHeader_113598	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	1	0x1DA8	src/main/movie/MpegParsePesHeader_113598.c	
+0x115918	MpegDefaultErrorPrint_115918	libmpeg	mpeg+ipu	internal	C	0	0		0	0	1	1	2	0x10	src/main/movie/MpegDefaultErrorPrint_115918.c	
+0x115928	IpuStopDmaAndReset_115928	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	4	4	5	0xA0	src/main/movie/IpuStopDmaAndReset_115928.c	
+0x1159C8	MpegIpuErrorReset_1159c8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	6	0xC8	src/main/movie/MpegIpuErrorReset_1159c8.c	
+0x115A90	MpegReportError_115a90	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	22	25	1	0x54	src/main/movie/MpegReportError_115a90.c	
+0x115AE8	MpegReportErrorFmt_115ae8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	6	8	1	0x40	src/main/movie/MpegReportErrorFmt_115ae8.c	
+0x115B28	DmaIpuFromSetChcr_115b28	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	3	0x74	src/main/movie/DmaIpuFromSetChcr_115b28.c	
+0x115BA0	DmaIpuToSetChcr_115ba0	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	2	2	3	0x74	src/main/movie/DmaIpuToSetChcr_115ba0.c	
+0x115C18	IpuStopDma_115c18	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	2	0xE4	src/main/movie/IpuStopDma_115c18.c	
+0x115D00	IpuRestartDma_115d00	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	2	0x150	src/main/movie/IpuRestartDma_115d00.c	
+0x115E50	IpuSync_115e50	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	2	0x68	src/main/movie/IpuSync_115e50.c	
+0x115EB8	DmaIpuToSetChcr_115eb8	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	2	0x74	src/main/movie/DmaIpuToSetChcr_115eb8.c	
+0x115F30	IpuInit_115f30	libmpeg	mpeg+ipu	internal	asm	0	0		0	0	1	1	1	0x238	src/main/movie/IpuInit_115f30.c	
+0x1161A0	SetGsCrt	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	2	1	0x10	src/main/sdk/SetGsCrt.c	
+0x1161C0	_Exit	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	3	0x10	src/main/sdk/_Exit.c	
+0x1162C0	AddDmacHandler_2	libkernl	syscall-stubs	internal	asm	0	0		0	0	2	2	5	0x10	src/main/sdk/AddDmacHandler_2.c	
+0x1162E0	_EnableIntc	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	1	0x10	src/main/sdk/_EnableIntc.c	
+0x1162F0	_DisableIntc	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	1	0x10	src/main/sdk/_DisableIntc.c	
+0x116300	_EnableDmac	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	1	0x10	src/main/sdk/_EnableDmac.c	
+0x116310	_DisableDmac	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	1	0x10	src/main/sdk/_DisableDmac.c	
+0x1163C0	_StartThread	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	1	0x10	src/main/sdk/_StartThread.c	
+0x1164A0	ReferThreadStatus	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	1	0x10	src/main/sdk/ReferThreadStatus.c	
+0x1164C0	SleepThread	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	4	0x10	src/main/sdk/SleepThread.c	
+0x1164E0	_iWakeupThread	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	3	0x10	src/main/sdk/_iWakeupThread.c	
+0x116580	EndOfHeap	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	5	0x10	src/main/sdk/EndOfHeap.c	
+0x116870	sceSifStopDma	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	2	0x10	src/main/sdk/sceSifStopDma.c	
+0x1168C0	GsGetIMR	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	1	0x10	src/main/sdk/GsGetIMR.c	
+0x1168E0	GsPutIMR	libkernl	syscall-stubs	internal	asm	0	0		0	0	2	3	1	0x10	src/main/sdk/GsPutIMR.c	
+0x116910	SetVSyncFlag	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	2	0x10	src/main/sdk/SetVSyncFlag.c	
+0x116970	isceSifSetDma	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	3	0x10	src/main/sdk/isceSifSetDma.c	
+0x116980	sceSifSetDChain	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	2	0x10	src/main/sdk/sceSifSetDChain.c	
+0x116990	isceSifSetDChain	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	3	0x10	src/main/sdk/isceSifSetDChain.c	
+0x1169A0	sceSifSetReg	libkernl	syscall-stubs	internal	asm	0	0		0	0	3	8	1	0x10	src/main/sdk/sceSifSetReg.c	
+0x1169B0	sceSifGetReg	libkernl	syscall-stubs	internal	asm	0	0		0	0	5	7	1	0x10	src/main/sdk/sceSifGetReg.c	
+0x1169D0	Deci2Call	libkernl	syscall-stubs	internal	asm	0	0		0	0	12	12	5	0x10	src/main/sdk/Deci2Call.c	
+0x116A00	GetMemorySize	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	5	0x10	src/main/sdk/GetMemorySize.c	
+0x116A10	_InitTLB	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	5	0x10	src/main/sdk/_InitTLB.c	
+0x116A20	sceResetttyinit_116a20	libkernl	syscall-stubs	internal	asm	0	0		0	0	1	1	1	0xC	src/main/sdk/sceResetttyinit_116a20.c	
+0x116A30	VSync_116a30	libkernl	vsync	internal	asm	0	0		0	0	1	1	1	0x90	src/main/gs/VSync_116a30.c	
+0x116AC0	VSync2_116ac0	libkernl	vsync	internal	asm	0	0		0	0	1	1	1	0xA4	src/main/sdk/VSync2_116ac0.c	
+0x116B68	write	libkernl	newlib-glue	internal	asm	0	0		0	0	1	1	5	0x7C	src/main/sdk/write.c	
+0x116BE8	read	libkernl	newlib-glue	internal	asm	0	0		0	0	1	1	5	0x74	src/main/sdk/read.c	
+0x116C88	CloseStub_116c88	libkernl	newlib-glue	internal	C	0	0		0	0	1	1	5	0x8	src/main/libc/CloseStub_116c88.c	
+0x116C98	LseekStub_116c98	libkernl	newlib-glue	internal	C	0	0		0	0	1	1	5	0x8	src/main/libc/LseekStub_116c98.c	
+0x116CA0	sbrk	libkernl	newlib-glue	internal	asm	0	0		0	0	1	1	4	0xAC	src/main/sdk/sbrk.c	
+0x116D50	IsattyStub_116d50	libkernl	newlib-glue	internal	C	0	0		0	0	1	1	4	0x8	src/main/libc/IsattyStub_116d50.c	
+0x116D58	fstat	libkernl	newlib-glue	internal	asm	0	0		0	0	1	1	5	0x14	src/main/sdk/fstat.c	
+0x116D70	GetpidStub_116d70	libkernl	newlib-glue	internal	C	0	0		0	0	1	1	4	0x8	src/main/libc/GetpidStub_116d70.c	
+0x116D78	kill	libkernl	newlib-glue	internal	C	0	0		0	0	1	1	4	0x28	src/main/sdk/kill.c	
+0x116DF0	_sceSDC	libkernl	cache	internal	asm	0	0		0	0	2	2	1	0xA4	src/main/sdk/_sceSDC.c	
+0x116F30	_sceIDC	libkernl	cache	internal	asm	0	0		0	0	2	2	3	0xA4	src/main/sdk/_sceIDC.c	
+0x117058	iInvalidDCache	libkernl	cache	internal	asm	0	0		0	0	1	1	2	0x14	src/main/sdk/iInvalidDCache.c	
+0x117070	CpuIntrDisabled_117070	libkernl	intc/dmac/thread	internal	asm	0	0		0	0	1	1	1	0x10	src/main/thread/CpuIntrDisabled_117070.c	
+0x117468	iWakeupThread_117468	libkernl	intc/dmac/thread	internal	asm	0	0		0	0	1	1	2	0x94	src/main/thread/iWakeupThread_117468.c	
+0x117858	DelayThreadAlarmHandler_117858	libkernl	intc/dmac/thread	internal	C+asm	0	0		0	0	0	0	1	0x28	src/main/sdk/DelayThreadAlarmHandler_117858.c	
+0x117880	sceDeci2Open	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	7	0x44	src/main/sdk/sceDeci2Open.c	
+0x1178F0	sceDeci2ReqSend	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	7	0x30	src/main/sdk/sceDeci2ReqSend.c	
+0x117920	sceDeci2Poll_117920	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	7	0x24	src/main/sys/sceDeci2Poll_117920.c	
+0x1179A0	sceDeci2ExRecv	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	8	0x34	src/main/sdk/sceDeci2ExRecv.c	
+0x1179D8	sceDeci2ExSend	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	8	0x34	src/main/sdk/sceDeci2ExSend.c	
+0x117A90	kputs_117a90	libkernl	deci2/tty	internal	asm	0	0		0	0	1	2	4	0x24	src/main/sdk/kputs_117a90.c	
+0x117AB8	QueueInit	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	7	0x24	src/main/sdk/QueueInit.c	
+0x117AE0	QueuePeekWriteDone	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	8	0x3C	src/main/sdk/QueuePeekWriteDone.c	
+0x117B20	QueuePeekReadDone	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	7	0x3C	src/main/sdk/QueuePeekReadDone.c	
+0x117B60	sceTtyHandler	libkernl	deci2/tty	internal	asm	0	0		0	0	0	0	7	0x194	src/main/sdk/sceTtyHandler.c	
+0x117CF8	sceTtyWrite	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	6	0x174	src/main/sdk/sceTtyWrite.c	
+0x117E70	sceTtyRead	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	6	0xD0	src/main/sdk/sceTtyRead.c	
+0x117F40	sceTtyInit	libkernl	deci2/tty	internal	asm	0	0		0	0	2	2	6	0xBC	src/main/sdk/sceTtyInit.c	
+0x118000	kputchar	libkernl	deci2/tty	internal	asm	0	0		0	0	1	3	9	0x38	src/main/sdk/kputchar.c	
+0x118038	deci2Putchar	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	3	0xB0	src/main/sdk/deci2Putchar.c	
+0x1180E8	serialPutchar	libkernl	deci2/tty	internal	asm	0	0		0	0	1	1	8	0x34	src/main/sdk/serialPutchar.c	
+0x118120	ftoi	libkernl	printf	internal	asm	0	0		0	0	1	1	4	0x90	src/main/sdk/ftoi.c	
+0x1181B0	printfloat_1181b0	libkernl	printf	internal	asm	0	0		0	0	1	1	3	0x1D8	src/main/libc/printfloat_1181b0.c	
+0x118388	printf_118388	libkernl	printf	internal	asm	0	0		0	0	6	6	2	0xD14	src/main/libc/printf_118388.c	
+0x1190A0	SnprintfPutcCb_1190a0	libkernl	printf	internal	asm	0	0		0	0	0	0	3	0x58	src/main/libc/SnprintfPutcCb_1190a0.c	
+0x1190F8	PrintfDeci2PutcCb_1190f8	libkernl	printf	internal	asm	0	0		0	0	0	0	2	0x28	src/main/dbg/PrintfDeci2PutcCb_1190f8.c	
+0x119120	KprintfSerialPutcCb_119120	libkernl	printf	internal	asm	0	0		0	0	0	0	7	0x28	src/main/dbg/KprintfSerialPutcCb_119120.c	
+0x119148	FormatPrintNestedMaybe_119148	libkernl	printf	internal	asm	0	0		0	0	1	2	4	0x4C	src/main/libc/FormatPrintNestedMaybe_119148.c	
+0x1191D0	sceSnprintfMaybe_1191d0	libkernl	printf	internal	asm	0	0		0	0	3	3	2	0x48	src/main/libc/sceSnprintfMaybe_1191d0.c	
+0x119288	scePrintf_119288	libkernl	printf	internal	asm	0	0		0	0	27	57	1	0x80	src/main/dbg/scePrintf_119288.c	
+0x119308	KprintfSerialMaybe_119308	libkernl	printf	internal	asm	0	0		0	0	3	9	6	0x80	src/main/libc/KprintfSerialMaybe_119308.c	
+0x119388	_set_sreg	libkernl	sifcmd	internal	asm	0	0		0	0	0	0	2	0x1C	src/main/sdk/_set_sreg.c	
+0x1193A8	_change_addr	libkernl	sifcmd	internal	asm	0	0		0	0	0	0	2	0x10	src/main/sdk/_change_addr.c	
+0x1193B8	sceSifGetSreg	libkernl	sifcmd	internal	asm	0	0		0	0	1	1	1	0x18	src/main/sdk/sceSifGetSreg.c	
+0x119400	sceSifInitCmd	libkernl	sifcmd	internal	asm	0	0		0	0	1	1	1	0x280	src/main/sdk/sceSifInitCmd.c	
+0x119680	sceSifExitCmd	libkernl	sifcmd	internal	asm	0	0		0	0	1	1	2	0x34	src/main/sdk/sceSifExitCmd.c	
+0x1196E8	sceSifAddCmdHandler	libkernl	sifcmd	internal	asm	0	0		0	0	4	8	1	0x78	src/main/sdk/sceSifAddCmdHandler.c	
+0x119760	sceSifRemoveCmdHandler	libkernl	sifcmd	internal	asm	0	0		0	0	2	2	2	0x4C	src/main/sdk/sceSifRemoveCmdHandler.c	
+0x1197B0	_sceSifSendCmd	libkernl	sifcmd	internal	asm	0	0		0	0	2	2	2	0x134	src/main/sdk/_sceSifSendCmd.c	
+0x1198E8	sceSifSendCmd	libkernl	sifcmd	internal	asm	0	0		0	0	6	10	1	0x3C	src/main/sdk/sceSifSendCmd.c	
+0x119928	isceSifSendCmd	libkernl	sifcmd	internal	asm	0	0		0	0	4	4	2	0x3C	src/main/sdk/isceSifSendCmd.c	
+0x119968	SifCmdIntrHandler_119968	libkernl	sifcmd	internal	asm	0	0		0	0	0	0	2	0x148	src/main/sdk/SifCmdIntrHandler_119968.c	
+0x119AB0	sceSifWriteBackDCache	libkernl	sifcmd	internal	asm	0	0		0	0	28	38	1	0xAC	src/main/sdk/sceSifWriteBackDCache.c	
+0x119D00	sceSifExitRpc	libkernl	sifrpc	internal	asm	0	0		0	0	1	1	1	0x24	src/main/sdk/sceSifExitRpc.c	
+0x119D28	_sceRpcGetPacket	libkernl	sifrpc	internal	asm	0	0		0	0	3	3	1	0xA8	src/main/sdk/_sceRpcGetPacket.c	
+0x119DD0	_sceRpcFreePacket	libkernl	sifrpc	internal	asm	0	0		0	0	4	9	1	0x1C	src/main/sdk/_sceRpcFreePacket.c	
+0x119DF0	_sceRpcGetFPacket	libkernl	sifrpc	internal	asm	0	0		0	0	4	4	2	0x30	src/main/sdk/_sceRpcGetFPacket.c	
+0x119E20	_sceRpcGetFPacket2	libkernl	sifrpc	internal	C	0	0		0	0	2	2	2	0x40	src/main/sdk/_sceRpcGetFPacket2.c	
+0x119E60	_request_end	libkernl	sifrpc	internal	asm	0	0		0	0	0	0	1	0xCC	src/main/sdk/_request_end.c	
+0x119F30	_request_rdata	libkernl	sifrpc	internal	asm	0	0		0	0	0	0	2	0x40	src/main/sdk/_request_rdata.c	
+0x119F70	requestrdata_119f70	libkernl	sifrpc	internal	asm	0	0		0	0	0	0	1	0xD0	src/main/sdk/requestrdata_119f70.c	
+0x11A1A8	_search_svdata	libkernl	sifrpc	internal	asm	0	0		0	0	1	1	2	0x4C	src/main/sdk/_search_svdata.c	
+0x11A1F8	_request_bind	libkernl	sifrpc	internal	asm	0	0		0	0	0	0	2	0x40	src/main/sdk/_request_bind.c	
+0x11A238	requestbind_11a238	libkernl	sifrpc	internal	asm	0	0		0	0	0	0	1	0xCC	src/main/sdk/requestbind_11a238.c	
+0x11A458	_request_call	libkernl	sifrpc	internal	asm	0	0		0	0	0	0	1	0x90	src/main/sdk/_request_call.c	
+0x11A6E8	sceSifCheckStatRpc	libkernl	sifrpc	internal	asm	0	0		0	0	2	4	1	0x3C	src/main/sdk/sceSifCheckStatRpc.c	
+0x11A728	sceSifSetRpcQueue	libkernl	sifrpc	internal	asm	0	0		0	0	1	1	3	0x94	src/main/sdk/sceSifSetRpcQueue.c	
+0x11A7C0	sceSifRegisterRpc	libkernl	sifrpc	internal	asm	0	0		0	0	1	1	3	0xD0	src/main/sdk/sceSifRegisterRpc.c	
+0x11A9B8	sceSifGetNextRequest	libkernl	sifrpc	internal	asm	0	0		0	0	1	1	4	0x58	src/main/sdk/sceSifGetNextRequest.c	
+0x11AA10	sceSifExecRequest	libkernl	sifrpc	internal	asm	0	0		0	0	1	1	4	0x1C4	src/main/sdk/sceSifExecRequest.c	
+0x11ABD8	sceSifRpcLoop	libkernl	sifrpc	internal	asm	0	0		0	0	1	1	3	0x40	src/main/sdk/sceSifRpcLoop.c	
+0x11AC18	StdioInitSemas_11ac18	libkernl	fileio	internal	asm	0	0		0	0	4	4	2	0x70	src/main/sdk/StdioInitSemas_11ac18.c	
+0x11AD08	FileIoAllocSlot_11ad08	libkernl	fileio	internal	asm	0	0		0	0	2	2	1	0x88	src/main/file/FileIoAllocSlot_11ad08.c	
+0x11AD90	SifCallRpcRetry_11ad90	libkernl	fileio	internal	asm	0	0		0	0	25	25	1	0xEC	src/main/file/SifCallRpcRetry_11ad90.c	
+0x11AE80	FileIoGetSlot_11ae80	libkernl	fileio	internal	asm	0	0		0	0	9	9	1	0x6C	src/main/file/FileIoGetSlot_11ae80.c	
+0x11AEF0	sceFsRcvIntr_11aef0	libkernl	fileio	internal	asm	0	0		0	0	0	0	2	0x3B4	src/main/sdk/sceFsRcvIntr_11aef0.c	
+0x11B2A8	FioSemaCreate_11b2a8	libkernl	fileio	internal	asm	0	0		0	0	1	1	2	0x54	src/main/sys/FioSemaCreate_11b2a8.c	
+0x11B300	FileIoLock_11b300	libkernl	fileio	internal	C	0	0		0	0	26	26	1	0x2C	src/main/file/FileIoLock_11b300.c	
+0x11B330	FileIoUnlock_11b330	libkernl	fileio	internal	C	0	0		0	0	26	72	1	0xC	src/main/file/FileIoUnlock_11b330.c	
+0x11B3E0	sceFsPoffIntr_11b3e0	libkernl	fileio	internal	asm	0	0		0	0	0	0	2	0x44	src/main/sys/sceFsPoffIntr_11b3e0.c	
+0x11B428	SceFsInit_11b428	libkernl	fileio	internal	asm	0	0		0	0	19	19	1	0x208	src/main/file/SceFsInit_11b428.c	
+0x11B630	FsVersion_11b630	libkernl	fileio	internal	asm	0	0		0	0	3	3	1	0x8C	src/main/sdk/FsVersion_11b630.c	
+0x11E9C8	sceSifFreeIopHeap	libkernl	iopheap	internal	asm	0	0		0	0	1	1	1	0x78	src/main/sdk/sceSifFreeIopHeap.c	
+0x11EDA0	_lf_bind	libkernl	loadfile	internal	asm	0	0		0	0	9	9	2	0x100	src/main/sdk/_lf_bind.c	
+0x11EEA0	_lf_version	libkernl	loadfile	internal	asm	0	0		0	0	7	7	2	0x8C	src/main/sdk/_lf_version.c	
+0x11F578	SifLoadModuleRpc_11f578	libkernl	loadfile	internal	asm	0	0		0	0	2	2	1	0x224	src/main/sdk/SifLoadModuleRpc_11f578.c	
+0x11FB00	sceSifResetIop	libkernl	iopcontrol	internal	asm	0	0		0	0	1	1	1	0x154	src/main/sdk/sceSifResetIop.c	
+0x120018	RFU086_WaitEvnetFlag	libkernl	tlb/init/patch	internal	asm	0	0		0	0	2	5	6	0x10	src/main/sdk/RFU086_WaitEvnetFlag.c	
+0x1200B8	InitTLB_1200b8	libkernl	tlb/init/patch	internal	asm	0	0		0	0	1	1	4	0x40	src/main/sdk/InitTLB_1200b8.c	
+0x1200F8	InitTLB32MB_1200f8	libkernl	tlb/init/patch	internal	asm	0	0		0	0	1	1	5	0x1F4	src/main/sdk/InitTLB32MB_1200f8.c	
+0x120C58	InitTLBThunk_1200b8	libkernl	tlb/init/patch	internal	C	0	0		0	0	4	4	3	0x8	src/main/sdk/InitTLBThunk_1200b8.c	
+0x120D18	KernelExit_120d18	libkernl	tlb/init/patch	internal	asm	0	0		0	0	3	5	2	0x28	src/main/sdk/KernelExit_120d18.c	
+0x120ED0	KernelWriteWordEret_120ed0	libkernl	tlb/init/patch	internal	asm	0	0		0	0	3	3	6	0x68	src/main/sys/KernelWriteWordEret_120ed0.c	
+0x120F50	Timer2SetMode_120f50	libkernl	timer/alarm	internal	asm	0	0		0	0	6	10	5	0x10	src/main/sys/Timer2SetMode_120f50.c	
+0x120F60	Timer2SetCompare_120f60	libkernl	timer/alarm	internal	asm	0	0		0	0	2	4	5	0x10	src/main/sys/Timer2SetCompare_120f60.c	
+0x1212C0	SetNextComp_1212c0	libkernl	timer/alarm	internal	asm	0	0		0	0	5	5	4	0x190	src/main/sys/SetNextComp_1212c0.c	
+0x121450	TimerAlarmInsertSorted_121450	libkernl	timer/alarm	internal	asm	0	0		0	0	3	3	4	0x84	src/main/sys/TimerAlarmInsertSorted_121450.c	
+0x1214D8	TimerAlarmUnlink_1214d8	libkernl	timer/alarm	internal	asm	0	0		0	0	4	4	4	0x38	src/main/sys/TimerAlarmUnlink_1214d8.c	
+0x1217B8	iGetTimerSystemTime_1217b8	libkernl	timer/alarm	internal	asm	0	0		0	0	6	6	4	0x4C	src/main/sys/iGetTimerSystemTime_1217b8.c	
+0x121888	iAllocTimerCounter_121888	libkernl	timer/alarm	internal	asm	0	0		0	0	2	2	3	0x70	src/main/sdk/iAllocTimerCounter_121888.c	
+0x1218F8	AllocTimerCounter_1218f8	libkernl	timer/alarm	internal	asm	0	0		0	0	1	1	2	0x48	src/main/sys/AllocTimerCounter_1218f8.c	
+0x121AE0	iStartTimerCounter_121ae0	libkernl	timer/alarm	internal	asm	0	0		0	0	2	2	3	0xAC	src/main/sdk/iStartTimerCounter_121ae0.c	
+0x121B90	StartTimerCounter_121b90	libkernl	timer/alarm	internal	asm	0	0		0	0	1	1	2	0x4C	src/main/sys/StartTimerCounter_121b90.c	
+0x121F20	iSetTimerHandler_121f20	libkernl	timer/alarm	internal	asm	0	0		0	0	2	2	3	0xF4	src/main/sdk/iSetTimerHandler_121f20.c	
+0x122018	SetTimerHandler_122018	libkernl	timer/alarm	internal	asm	0	0		0	0	1	1	2	0x7C	src/main/sys/SetTimerHandler_122018.c	
+0x122140	TimerUSec2BusClock_122140	libkernl	timer/alarm	internal	asm	0	0		0	0	1	1	1	0x70	src/main/sys/TimerUSec2BusClock_122140.c	
+0x122290	AlarmHandlerDispatch_122290	libkernl	timer/alarm	internal	asm	0	0		0	0	0	0	2	0x5C	src/main/sys/AlarmHandlerDispatch_122290.c	
+0x1222F0	SetTimerAlarm_1222f0	libkernl	timer/alarm	internal	asm	0	0		0	0	1	1	1	0x12C	src/main/sdk/SetTimerAlarm_1222f0.c	
+0x122420	iSetTimerAlarm_122420	libkernl	timer/alarm	internal	asm	0	0		0	0	2	2	2	0xF0	src/main/sdk/iSetTimerAlarm_122420.c	
+0x1227E8	IopResetCallbacksInvokeMaybe_1227e8	libkernl	iop-reset-cb	internal	asm	0	0		0	0	2	4	1	0xA8	src/main/sdk/IopResetCallbacksInvokeMaybe_1227e8.c	
+0x122890	sceSdRemoteInit_122890	libsdr	sdremote	internal	asm	0	0		0	0	1	1	1	0xB0	src/main/sdk/sceSdRemoteInit_122890.c	
+0x122D70	sceSdRemoteCallbackInit_122d70	libsdr	sdremote	internal	asm	0	0		0	0	1	1	1	0xFC	src/main/sdk/sceSdRemoteCallbackInit_122d70.c	
+0x122FA8	SdrCallbackThread_122fa8	libsdr	sdremote	internal	asm	0	0		0	0	0	0	2	0x70	src/main/sys/SdrCallbackThread_122fa8.c	
+0x123018	SdrCallbackRpcDispatch_123018	libsdr	sdremote	internal	asm	0	0		0	0	0	0	3	0xF8	src/main/sound/SdrCallbackRpcDispatch_123018.c	
+0x123110	IeeeAcos_123110	libm	msun	internal	asm	0	0		0	0	1	1	1	0x724	src/main/libc/IeeeAcos_123110.c	
+0x123838	IeeeAtan2_123838	libm	msun	internal	asm	0	0		0	0	1	1	1	0x33C	src/main/libc/IeeeAtan2_123838.c	
+0x123B78	IeeeRemPio2_123b78	libm	msun	internal	asm	0	0		0	0	3	3	1	0x5B8	src/main/libc/IeeeRemPio2_123b78.c	
+0x124130	IeeeSqrt_124130	libm	msun	internal	asm	0	0		0	0	2	3	1	0x31C	src/main/libc/IeeeSqrt_124130.c	
+0x124450	IeeeAcosf_124450	libm	msun	internal	asm	0	0		0	0	1	1	1	0x424	src/main/math/IeeeAcosf_124450.c	
+0x124878	IeeeAsinf_124878	libm	msun	internal	asm	0	0		0	0	1	1	1	0x3A0	src/main/math/IeeeAsinf_124878.c	
+0x124C18	IeeeAtan2f_124c18	libm	msun	internal	asm	0	0		0	0	1	1	1	0x1E0	src/main/math/IeeeAtan2f_124c18.c	
+0x124DF8	IeeePowf_124df8	libm	msun	internal	asm	0	0		0	0	1	1	1	0x7E0	src/main/math/IeeePowf_124df8.c	
+0x1255D8	RemPio2f_1255d8	libm	msun	internal	asm	0	0		0	0	3	3	1	0x3B0	src/main/libc/RemPio2f_1255d8.c	
+0x125988	IeeeSqrtf_125988	libm	msun	internal	asm	0	0		0	0	3	4	2	0xCC	src/main/math/IeeeSqrtf_125988.c	
+0x125A58	KernelCos_125a58	libm	msun	internal	asm	0	0		0	0	2	5	1	0x2D4	src/main/math/KernelCos_125a58.c	
+0x125D30	KernelRemPio2_125d30	libm	msun	internal	asm	0	0		0	0	1	1	2	0xB4C	src/main/math/KernelRemPio2_125d30.c	
+0x126880	KernelSin_126880	libm	msun	internal	asm	0	0		0	0	2	5	1	0x238	src/main/math/KernelSin_126880.c	
+0x126AB8	KernelTan_126ab8	libm	msun	internal	asm	0	0		0	0	1	2	1	0x568	src/main/math/KernelTan_126ab8.c	
+0x127020	KernelCosf_127020	libm	msun	internal	asm	0	0		0	0	2	5	1	0x150	src/main/math/KernelCosf_127020.c	
+0x127170	KernelRemPio2f_127170	libm	msun	internal	asm	0	0		0	0	1	1	2	0x864	src/main/libc/KernelRemPio2f_127170.c	
+0x1279D8	KernelSinf_1279d8	libm	msun	internal	asm	0	0		0	0	2	5	1	0x104	src/main/math/KernelSinf_1279d8.c	
+0x127AE0	KernelTanf_127ae0	libm	msun	internal	asm	0	0		0	0	1	2	1	0x284	src/main/math/KernelTanf_127ae0.c	
+0x128230	Copysign_128230	libm	msun	internal	asm	0	0		0	0	1	1	4	0x44	src/main/math/Copysign_128230.c	
+0x1283F8	FloorDouble_1283f8	libm	msun	internal	asm	0	0		0	0	1	1	3	0x214	src/main/math/FloorDouble_1283f8.c	
+0x128610	Isinf_128610	libm	msun	internal	asm	0	0		0	0	2	2	1	0x48	src/main/libc/Isinf_128610.c	
+0x128698	ScalbnDouble_128698	libm	msun	internal	asm	0	0		0	0	1	4	3	0x1E4	src/main/math/ScalbnDouble_128698.c	
+0x128A60	Atanf_128a60	libm	msun	internal	asm	0	0		0	0	1	2	2	0x28C	src/main/math/Atanf_128a60.c	
+0x128CF0	Copysignf_128cf0	libm	msun	internal	asm	0	0		0	0	1	1	3	0x3C	src/main/math/Copysignf_128cf0.c	
+0x128E08	Fabsf_128e08	libm	msun	internal	asm	0	0		0	0	6	6	2	0x28	src/main/libc/Fabsf_128e08.c	
+0x128F08	Scalbnf_128f08	libm	msun	internal	asm	0	0		0	0	2	5	2	0xC8	src/main/math/Scalbnf_128f08.c	
+0x129240	cd_callback	libcdvd	cdvd	internal	asm	0	0		0	0	1	1	1	0xA0	src/main/sdk/cd_callback.c	
+0x129450	CdReadUnalignedCb_129450	libcdvd	cdvd	internal	asm	0	0		0	0	0	0	1	0xB8	src/main/sdk/CdReadUnalignedCb_129450.c	
+0x129508	CdInitSemas_129508	libcdvd	cdvd	internal	asm	0	0		0	0	6	6	1	0xE4	src/main/sdk/CdInitSemas_129508.c	
+0x1295F0	CdvdExit_1295f0	libcdvd	cdvd	internal	asm	0	0		0	0	1	1	1	0xA0	src/main/sdk/CdvdExit_1295f0.c	
+0x129710	sceCdPoffIntr_129710	libcdvd	cdvd	internal	asm	0	0		0	0	0	0	2	0x54	src/main/sys/sceCdPoffIntr_129710.c	
+0x129768	PowerOffCB_129768	libcdvd	cdvd	internal	asm	0	0		0	0	2	2	1	0x78	src/main/sdk/PowerOffCB_129768.c	
+0x129B00	CdCheckNCmd_129b00	libcdvd	cdvd	internal	asm	0	0		0	0	3	3	1	0x158	src/main/sdk/CdCheckNCmd_129b00.c	
+0x129C58	sceCdNcmdDiskReady_129c58	libcdvd	cdvd	internal	asm	0	0		0	0	2	2	1	0x98	src/main/sdk/sceCdNcmdDiskReady_129c58.c	
+0x129D90	sceCdSyncS_129d90	libcdvd	cdvd	internal	asm	0	0		0	0	3	3	1	0x6C	src/main/sdk/sceCdSyncS_129d90.c	
+0x129E00	CdCheckSCmd_129e00	libcdvd	cdvd	internal	asm	0	0		0	0	7	7	1	0x158	src/main/file/CdCheckSCmd_129e00.c	
+0x12A2F0	sceCdDiskReady	libcdvd	cdvd	internal	asm	0	0		0	0	1	1	1	0x218	src/main/sdk/sceCdDiskReady.c	
+0x12B0C8	PadCmdCallbackHandler_12b0c8	libpad	pad	internal	asm	0	0		0	0	0	0	2	0x48	src/main/sys/PadCmdCallbackHandler_12b0c8.c	
+0x12B110	PadInitAfterBindMaybe_12b110	libpad	pad	internal	asm	0	0		0	0	1	1	1	0xF4	src/main/sdk/PadInitAfterBindMaybe_12b110.c	
+0x12B298	PadSifDmaSendMaybe_12b298	libpad	pad	internal	asm	0	0		0	0	1	1	1	0x114	src/main/sdk/PadSifDmaSendMaybe_12b298.c	
+0x12B650	scePadGetDmaStr	libpad	pad	internal	asm	0	0		0	0	10	10	1	0x158	src/main/sdk/scePadGetDmaStr.c	
+0x12B928	scePadSetReqState	libpad	pad	internal	asm	0	0		0	0	4	4	1	0xB4	src/main/sdk/scePadSetReqState.c	
+0x12C440	scePadGetModVersion	libpad	pad	internal	asm	0	0		0	0	1	1	1	0x64	src/main/sdk/scePadGetModVersion.c	
+0x12D160	McGetInfoCb_12d160	libmc	mc	internal	asm	0	0		0	0	0	0	1	0x58	src/main/sdk/McGetInfoCb_12d160.c	
+0x12D4F8	mceStorePwd	libmc	mc	internal	asm	0	0		0	0	0	0	1	0x8C	src/main/sdk/mceStorePwd.c	
+0x12DF28	CallocR_12df28	libc	newlib	internal	asm	0	0		0	0	1	2	4	0xB4	src/main/libc/CallocR_12df28.c	
+0x12DFE0	CloseR_12dfe0	libc	newlib	internal	asm	0	0		0	0	1	1	4	0x58	src/main/libc/CloseR_12dfe0.c	
+0x12E038	Quorem_12e038	libc	newlib	internal	asm	0	0		0	0	1	2	4	0x22C	src/main/libc/Quorem_12e038.c	
+0x12E268	DtoaR_12e268	libc	newlib	internal	asm	0	0		0	0	1	1	3	0x1264	src/main/libc/DtoaR_12e268.c	
+0x12F4D0	GetReent_12f4d0	libc	newlib	internal	asm	0	0		0	0	4	4	5	0xC	src/main/libc/GetReent_12f4d0.c	
+0x12F6A8	StdioStdInit_12f6a8	libc	newlib	internal	asm	0	0		0	0	1	3	2	0x5C	src/main/libc/StdioStdInit_12f6a8.c	
+0x12F878	CleanupR_12f878	libc	newlib	internal	asm	0	0		0	0	0	0	2	0x1C	src/main/libc/CleanupR_12f878.c	
+0x12F8B8	StdioSinit_12f8b8	libc	newlib	internal	asm	0	0		0	0	10	10	1	0x8C	src/main/libc/StdioSinit_12f8b8.c	
+0x12F948	FiprintfR_12f948	libc	newlib	internal	asm	0	0		0	0	1	1	1	0x54	src/main/libc/FiprintfR_12f948.c	
+0x12F9F8	FreeR_12f9f8	libc	newlib	internal	asm	0	0		0	0	7	11	1	0x2F4	src/main/libc/FreeR_12f9f8.c	
+0x12FCF0	MallocTrim_12fcf0	libc	newlib	internal	asm	0	0		0	0	1	1	2	0x16C	src/main/libc/MallocTrim_12fcf0.c	
+0x130310	FstatR_130310	libc	newlib	internal	asm	0	0		0	0	2	3	4	0x5C	src/main/libc/FstatR_130310.c	
+0x130478	Sfvwrite_130478	libc	newlib	internal	asm	0	0		0	0	2	2	3	0x3E0	src/main/libc/Sfvwrite_130478.c	
+0x130858	Fwalk_130858	libc	newlib	internal	asm	0	0		0	0	3	3	1	0x94	src/main/libc/Fwalk_130858.c	
+0x130998	LocaleconvR_130998	libc	newlib	internal	C	0	0		0	0	1	1	3	0xC	src/main/libc/LocaleconvR_130998.c	
+0x1309D0	Localeconv_1309d0	libc	newlib	internal	asm	0	0		0	0	1	1	2	0x1C	src/main/libc/Localeconv_1309d0.c	
+0x1309F0	LseekR_1309f0	libc	newlib	internal	asm	0	0		0	0	2	2	4	0x60	src/main/libc/LseekR_1309f0.c	
+0x130A50	Smakebuf_130a50	libc	newlib	internal	asm	0	0		0	0	3	3	3	0x154	src/main/libc/Smakebuf_130a50.c	
+0x130C10	MemalignR_130c10	libc	newlib	internal	asm	0	0		0	0	1	1	1	0x1C8	src/main/libc/MemalignR_130c10.c	
+0x130E78	MallocExtendTop_130e78	libc	newlib	internal	asm	0	0		0	0	1	1	2	0x258	src/main/libc/MallocExtendTop_130e78.c	
+0x1310D0	MallocR_1310d0	libc	newlib	internal	asm	0	0		0	0	8	10	1	0x728	src/main/libc/MallocR_1310d0.c	
+0x1317F8	MbtowcR_1317f8	libc	newlib	internal	asm	0	0		0	0	2	2	2	0x34	src/main/libc/MbtowcR_1317f8.c	
+0x131830	memchr	libc	newlib	internal	asm	0	0		0	0	3	3	2	0xE0	src/main/sdk/memchr.c	
+0x131C20	MallocLock_131c20	libc	newlib	internal	asm	0	0		0	0	8	8	1	0x7C	src/main/libc/MallocLock_131c20.c	
+0x131CA0	MallocUnlock_131ca0	libc	newlib	internal	asm	0	0		0	0	8	13	1	0x4C	src/main/libc/MallocUnlock_131ca0.c	
+0x131CF0	Balloc_131cf0	libc	newlib	internal	asm	0	0		0	0	9	11	3	0xA4	src/main/libc/Balloc_131cf0.c	
+0x131D98	_Bfree	libc	newlib	internal	asm	0	0		0	0	5	20	3	0x2C	src/main/sdk/_Bfree.c	
+0x131DC8	Multadd_131dc8	libc	newlib	internal	asm	0	0		0	0	3	11	4	0x108	src/main/libc/Multadd_131dc8.c	
+0x131ED0	S2b_131ed0	libc	newlib	internal	asm	0	0		0	0	1	1	3	0x130	src/main/libc/S2b_131ed0.c	
+0x132000	Hi0Bits_132000	libc	newlib	internal	asm	0	0		0	0	3	3	4	0x80	src/main/libc/Hi0Bits_132000.c	
+0x132080	Lo0Bits_132080	libc	newlib	internal	asm	0	0		0	1	1	2	4	0xBC	src/main/libc/Lo0Bits_132080.c	
+0x132140	I2b_132140	libc	newlib	internal	asm	0	0		0	0	3	4	3	0x38	src/main/libc/I2b_132140.c	
+0x132178	Mult_132178	libc	newlib	internal	asm	0	0		0	0	3	4	3	0x20C	src/main/libc/Mult_132178.c	
+0x132388	Pow5mult_132388	libc	newlib	internal	asm	0	0		0	0	2	6	3	0xFC	src/main/libc/Pow5mult_132388.c	
+0x132488	Lshift_132488	libc	newlib	internal	asm	0	0		0	0	2	10	3	0x158	src/main/libc/Lshift_132488.c	
+0x1325E0	Mcmp_1325e0	libc	newlib	internal	asm	0	0		0	0	4	10	3	0x68	src/main/libc/Mcmp_1325e0.c	
+0x132648	Diff_132648	libc	newlib	internal	asm	0	0		0	0	2	2	3	0x190	src/main/libc/Diff_132648.c	
+0x1327D8	Ulp_1327d8	libc	newlib	internal	asm	0	0		0	0	1	4	3	0xD0	src/main/libc/Ulp_1327d8.c	
+0x1328A8	B2d_1328a8	libc	newlib	internal	asm	0	0		0	0	1	2	4	0x198	src/main/libc/B2d_1328a8.c	
+0x132A40	D2b_132a40	libc	newlib	internal	asm	0	0		0	0	2	2	3	0x184	src/main/libc/D2b_132a40.c	
+0x132BC8	Ratio_132bc8	libc	newlib	internal	asm	0	0		0	0	1	1	3	0xCC	src/main/libc/Ratio_132bc8.c	
+0x133778	ReadR_133778	libc	newlib	internal	asm	0	0		0	0	1	1	4	0x60	src/main/libc/ReadR_133778.c	
+0x133F78	SbrkR_133f78	libc	newlib	internal	asm	0	0		0	0	2	5	3	0x58	src/main/libc/SbrkR_133f78.c	
+0x133FD0	InitSignalR_133fd0	libc	newlib	internal	asm	0	0		0	0	3	3	3	0x70	src/main/libc/InitSignalR_133fd0.c	
+0x1340C0	RaiseR_1340c0	libc	newlib	internal	asm	0	0		0	0	1	1	2	0xD8	src/main/libc/RaiseR_1340c0.c	
+0x134230	Raise_134230	libc	newlib	internal	asm	0	0		0	0	1	1	1	0x20	src/main/libc/Raise_134230.c	
+0x1342B8	KillR_1342b8	libc	newlib	internal	asm	0	0		0	0	1	1	3	0x5C	src/main/libc/KillR_1342b8.c	
+0x134318	GetpidR_134318	libc	newlib	internal	asm	0	0		0	0	1	1	3	0x14	src/main/libc/GetpidR_134318.c	
+0x134448	Sread_134448	libc	newlib	internal	asm	0	0		0	0	0	0	3	0x64	src/main/libc/Sread_134448.c	
+0x1344B0	Swrite_1344b0	libc	newlib	internal	asm	0	0		0	0	0	0	3	0x80	src/main/libc/Swrite_1344b0.c	
+0x134530	Sseek_134530	libc	newlib	internal	asm	0	0		0	0	0	0	3	0x64	src/main/libc/Sseek_134530.c	
+0x134598	Sclose_134598	libc	newlib	internal	asm	0	0		0	0	0	0	3	0x1C	src/main/libc/Sclose_134598.c	
+0x1351C0	StrtodR_1351c0	libc	newlib	internal	asm	0	0		0	0	1	1	2	0xF14	src/main/libc/StrtodR_1351c0.c	
+0x1360D8	Strtod_1360d8	libc	newlib	internal	asm	0	0		0	0	2	2	1	0x24	src/main/libc/Strtod_1360d8.c	
+0x136128	StrtolR_136128	libc	newlib	internal	asm	0	0		0	0	1	1	2	0x238	src/main/libc/StrtolR_136128.c	
+0x136360	Strtol_136360	libc	newlib	internal	asm	0	0		0	0	1	1	1	0x2C	src/main/libc/Strtol_136360.c	
+0x136670	Sprint_136670	libc	newlib	internal	asm	0	0		0	0	1	14	3	0x48	src/main/libc/Sprint_136670.c	
+0x1366B8	Sbprintf_1366b8	libc	newlib	internal	asm	0	0		0	0	1	1	3	0xB4	src/main/libc/Sbprintf_1366b8.c	
+0x136770	VfiprintfR_136770	libc	newlib	internal	asm	0	0		0	0	2	2	2	0xC70	src/main/libc/VfiprintfR_136770.c	
+0x1373E0	Sprint_1373e0	libc	newlib	internal	asm	0	0		0	0	1	33	2	0x48	src/main/libc/Sprint_1373e0.c	
+0x137428	Sbprintf_137428	libc	newlib	internal	asm	0	0		0	0	1	1	2	0xB4	src/main/libc/Sbprintf_137428.c	
+0x1374E0	VfprintfR_1374e0	libc	newlib	internal	asm	0	0		0	0	5	5	1	0x16E8	src/main/libc/VfprintfR_1374e0.c	
+0x138BC8	VfprintfCvt_138bc8	libc	newlib	internal	asm	0	0		0	0	1	1	2	0x1C0	src/main/libc/VfprintfCvt_138bc8.c	
+0x138D88	VfprintfExponent_138d88	libc	newlib	internal	asm	0	0		0	0	1	1	2	0xDC	src/main/libc/VfprintfExponent_138d88.c	
+0x138FA0	WriteR_138fa0	libc	newlib	internal	asm	0	0		0	0	1	1	4	0x60	src/main/libc/WriteR_138fa0.c	
+0x139000	Swsetup_139000	libc	newlib	internal	asm	0	0		0	0	4	4	2	0x10C	src/main/libc/Swsetup_139000.c	
+0x139110	MulDi3_139110	libgcc	di3/softfloat	internal	asm	0	0		0	0	5	8	1	0x74	src/main/libc/MulDi3_139110.c	
+0x13AE20	PackF_13ae20	libgcc	di3/softfloat	internal	asm	0	0		0	0	1	1	2	0xB4	src/main/libc/PackF_13ae20.c	
+0x13AED8	UnpackF_13aed8	libgcc	di3/softfloat	internal	asm	0	0		0	0	1	1	1	0x5C	src/main/libc/UnpackF_13aed8.c	
+0x13AF38	MakeFp_13af38	libgcc	di3/softfloat	internal	asm	0	0		0	0	1	1	1	0x2C	src/main/libc/MakeFp_13af38.c	
+0x13AFA8	PackD_13afa8	libgcc	di3/softfloat	internal	asm	0	0		0	0	6	6	1	0xD8	src/main/libc/PackD_13afa8.c	
+0x13B080	UnpackD_13b080	libgcc	di3/softfloat	internal	asm	0	0		0	0	8	13	1	0xBC	src/main/libc/UnpackD_13b080.c	
+0x13B140	FpaddParts_13b140	libgcc	di3/softfloat	internal	asm	0	0		0	0	2	2	1	0x25C	src/main/libc/FpaddParts_13b140.c	
+0x13B828	FpCmpPartsD_13b828	libgcc	di3/softfloat	internal	asm	0	0		0	0	1	1	2	0x120	src/main/libc/FpCmpPartsD_13b828.c	
+0x13B948	DoubleCmp_13b948	libgcc	di3/softfloat	internal	asm	0	0		0	0	19	56	1	0x4C	src/main/math/DoubleCmp_13b948.c	
+0x13BAF0	MakeDp_13baf0	libgcc	di3/softfloat	internal	asm	0	0		0	0	1	1	1	0x2C	src/main/libc/MakeDp_13baf0.c	
+0x100008	entry	crt0	crt0	data-ref	asm	0	0		0	1	0	0		0x210	src/main/sdk/entry.c	
+0x1008A0	ExceptionDtor_1008a0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x4C	src/main/libc/ExceptionDtor_1008a0.c	
+0x1008F0	ExceptionWhat_1008f0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0xC	src/main/libc/ExceptionWhat_1008f0.c	
+0x100920	BadAllocDtor_100920	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x60	src/main/libc/BadAllocDtor_100920.c	
+0x100980	BadAllocWhat_100980	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0xC	src/main/libc/BadAllocWhat_100980.c	
+0x100D10	DefaultUnexpectedHandler_100d10	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x24	src/main/libc/DefaultUnexpectedHandler_100d10.c	
+0x100D40	DefaultTerminateHandler_100d40	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x1C	src/main/libc/DefaultTerminateHandler_100d40.c	
+0x1016A0	BadExceptionDtor_1016a0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x60	src/main/libc/BadExceptionDtor_1016a0.c	
+0x102540	BadExceptionWhat_102540	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0xC	src/main/libc/BadExceptionWhat_102540.c	
+0x1028F0	IosBaseFailureDtor_1028f0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x7C	src/main/libc/IosBaseFailureDtor_1028f0.c	
+0x102970	IosBaseDtor_102970	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	6	6		0xB4	src/main/libc/IosBaseDtor_102970.c	
+0x102A30	WStreambufSetbuf_102a30	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/WStreambufSetbuf_102a30.c	
+0x102A40	StreambufSetbuf_102a40	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/StreambufSetbuf_102a40.c	
+0x102AA0	IosBaseFailureWhat_102aa0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/IosBaseFailureWhat_102aa0.c	
+0x102FD0	OstreamDtor_102fd0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	1	1		0x98	src/main/libc/OstreamDtor_102fd0.c	
+0x103070	IstreamDtor_103070	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	1	1		0x98	src/main/libc/IstreamDtor_103070.c	
+0x103510	WostreamDtor_103510	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	1	1		0x98	src/main/libc/WostreamDtor_103510.c	
+0x1035B0	WistreamDtor_1035b0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	1	1		0x98	src/main/libc/WistreamDtor_1035b0.c	
+0x103650	WiosDtor_103650	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x60	src/main/libc/WiosDtor_103650.c	
+0x1036B0	WStreambufDtor_1036b0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x4C	src/main/libc/WStreambufDtor_1036b0.c	
+0x103700	IosDtor_103700	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x60	src/main/libc/IosDtor_103700.c	
+0x103760	StreambufDtor_103760	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x4C	src/main/libc/StreambufDtor_103760.c	
+0x1037B0	WFilebufSetbuf_1037b0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x10	src/main/libc/WFilebufSetbuf_1037b0.c	
+0x1037C0	FilebufSetbuf_1037c0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x10	src/main/libc/FilebufSetbuf_1037c0.c	
+0x1037D0	WStreambufSync_1037d0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/WStreambufSync_1037d0.c	
+0x1037E0	WStreambufShowmanyc_1037e0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/WStreambufShowmanyc_1037e0.c	
+0x1037F0	StreambufSync_1037f0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/StreambufSync_1037f0.c	
+0x103800	StreambufShowmanyc_103800	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/StreambufShowmanyc_103800.c	
+0x103810	StreambufUnderflow_103810	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/StreambufUnderflow_103810.c	
+0x103820	StreambufUflow_103820	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x50	src/main/libc/StreambufUflow_103820.cpp	
+0x103870	StreambufPbackfail_103870	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/StreambufPbackfail_103870.c	
+0x103880	StreambufOverflow_103880	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/StreambufOverflow_103880.c	
+0x103890	StreambufXsputn_103890	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	2	0	0		0x11C	src/main/libc/StreambufXsputn_103890.c	
+0x1039B0	StreambufXsgetn_1039b0	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	2	0	0		0x114	src/main/libc/StreambufXsgetn_1039b0.c	
+0x103AD0	StreambufSeekpos_103ad0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x10	src/main/libc/StreambufSeekpos_103ad0.c	
+0x103AE0	StreambufSeekoff_103ae0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x10	src/main/libc/StreambufSeekoff_103ae0.c	
+0x103AF0	WStreambufOverflow_103af0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/WStreambufOverflow_103af0.c	
+0x103B00	WStreambufXsputn_103b00	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	2	0	0		0x1D4	src/main/libc/WStreambufXsputn_103b00.c	
+0x103CE0	WStreambufPbackfail_103ce0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/WStreambufPbackfail_103ce0.c	
+0x103CF0	WStreambufUflow_103cf0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x50	src/main/libc/WStreambufUflow_103cf0.cpp	
+0x103D40	WStreambufUnderflow_103d40	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8	src/main/libc/WStreambufUnderflow_103d40.c	
+0x103D50	WStreambufXsgetn_103d50	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	2	0	0		0x1D4	src/main/libc/WStreambufXsgetn_103d50.c	
+0x103F30	WStreambufSeekpos_103f30	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x10	src/main/libc/WStreambufSeekpos_103f30.c	
+0x103F40	WStreambufSeekoff_103f40	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x10	src/main/libc/WStreambufSeekoff_103f40.c	
+0x104590	FilebufSync_104590	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0xAC	src/main/libc/FilebufSync_104590.cpp	
+0x104640	FilebufSeekpos_104640	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x108	src/main/libc/FilebufSeekpos_104640.cpp	
+0x104750	FilebufSeekoff_104750	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x174	src/main/libc/FilebufSeekoff_104750.c	
+0x1048D0	FilebufOverflow_1048d0	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x3E0	src/main/sdk/FilebufOverflow_1048d0.c	
+0x104CB0	FilebufPbackfail_104cb0	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0xC8	src/main/libc/FilebufPbackfail_104cb0.c	
+0x104D80	FilebufUflow_104d80	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x128	src/main/libc/FilebufUflow_104d80.c	
+0x104EB0	FilebufUnderflow_104eb0	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x168	src/main/libc/FilebufUnderflow_104eb0.c	
+0x105020	FilebufShowmanyc_105020	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x18	src/main/libc/FilebufShowmanyc_105020.c	
+0x105090	WFilebufSync_105090	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0xAC	src/main/libc/WFilebufSync_105090.cpp	
+0x105140	WFilebufSeekpos_105140	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x108	src/main/libc/WFilebufSeekpos_105140.cpp	
+0x105250	WFilebufSeekoff_105250	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x184	src/main/libc/WFilebufSeekoff_105250.c	
+0x1053E0	WFilebufOverflow_1053e0	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x448	src/main/sdk/WFilebufOverflow_1053e0.c	
+0x105830	WFilebufPbackfail_105830	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0xC8	src/main/libc/WFilebufPbackfail_105830.c	
+0x105900	WFilebufUflow_105900	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x128	src/main/libc/WFilebufUflow_105900.c	
+0x105A30	WFilebufUnderflow_105a30	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x178	src/main/libc/WFilebufUnderflow_105a30.c	
+0x105BB0	WFilebufShowmanyc_105bb0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x28	src/main/libc/WFilebufShowmanyc_105bb0.c	
+0x1067F0	OstreamVirtualDtorThunk_1067f0	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x10	src/main/libc/OstreamVirtualDtorThunk_1067f0.c	
+0x106800	IstreamVirtualDtorThunk_106800	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x10	src/main/libc/IstreamVirtualDtorThunk_106800.c	
+0x106810	WostreamVirtualDtorThunk_106810	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x10	src/main/libc/WostreamVirtualDtorThunk_106810.c	
+0x106820	WistreamVirtualDtorThunk_106820	msl-c++	runtime/eh/iostream/string	data-ref	asm	0	0		0	1	0	0		0x10	src/main/libc/WistreamVirtualDtorThunk_106820.c	
+0x1073B0	LogicErrorDtor_1073b0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x7C	src/main/libc/LogicErrorDtor_1073b0.c	
+0x107430	LengthErrorDtor_107430	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8C	src/main/libc/LengthErrorDtor_107430.c	
+0x1074C0	OutOfRangeDtor_1074c0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	1	0	0		0x8C	src/main/libc/OutOfRangeDtor_1074c0.c	
+0x107CC0	LogicErrorWhat_107cc0	msl-c++	runtime/eh/iostream/string	data-ref	C	0	0		0	3	0	0		0x8	src/main/libc/LogicErrorWhat_107cc0.c	
+0x10E2C8	MpegMcLumaCopy_10e2c8	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0x78	src/main/movie/MpegMcLumaCopy_10e2c8.c	
+0x10E340	MpegMcChromaCopy_10e340	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0x94	src/main/movie/MpegMcChromaCopy_10e340.c	
+0x10E3D8	MpegMcLumaHalfV_10e3d8	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xB8	src/main/movie/MpegMcLumaHalfV_10e3d8.c	
+0x10E490	MpegMcChromaHalfV_10e490	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xCC	src/main/movie/MpegMcChromaHalfV_10e490.c	
+0x10E560	MpegMcLumaHalfH_10e560	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xAC	src/main/movie/MpegMcLumaHalfH_10e560.c	
+0x10E610	MpegMcChromaHalfH_10e610	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xB8	src/main/movie/MpegMcChromaHalfH_10e610.c	
+0x10E6C8	MpegMcLumaHalfHV_10e6c8	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xF8	src/main/movie/MpegMcLumaHalfHV_10e6c8.c	
+0x10E7C0	MpegMcChromaHalfHV_10e7c0	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xFC	src/main/movie/MpegMcChromaHalfHV_10e7c0.c	
+0x10E8C0	MpegMcLumaAvg_10e8c0	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0x9C	src/main/movie/MpegMcLumaAvg_10e8c0.c	
+0x10E960	MpegMcChromaAvg_10e960	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xAC	src/main/movie/MpegMcChromaAvg_10e960.c	
+0x10EA10	MpegMcLumaAvgHalfV_10ea10	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xDC	src/main/movie/MpegMcLumaAvgHalfV_10ea10.c	
+0x10EAF0	MpegMcChromaAvgHalfV_10eaf0	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xE4	src/main/movie/MpegMcChromaAvgHalfV_10eaf0.c	
+0x10EBD8	MpegMcLumaAvgHalfH_10ebd8	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xD8	src/main/movie/MpegMcLumaAvgHalfH_10ebd8.c	
+0x10ECB0	MpegMcChromaAvgHalfH_10ecb0	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xD0	src/main/movie/MpegMcChromaAvgHalfH_10ecb0.c	
+0x10ED80	MpegMcLumaAvgHalfHV_10ed80	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0x120	src/main/movie/MpegMcLumaAvgHalfHV_10ed80.c	
+0x10EEA0	MpegMcChromaAvgHalfHV_10eea0	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0x114	src/main/movie/MpegMcChromaAvgHalfHV_10eea0.c	
+0x10F9A8	MpegParseSequenceExt_10f9a8	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0x140	src/main/movie/MpegParseSequenceExt_10f9a8.c	
+0x10FAE8	MpegParseQuantMatrixExt_10fae8	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xE8	src/main/movie/MpegParseQuantMatrixExt_10fae8.c	
+0x10FBD0	MpegParseSeqScalableExt_10fbd0	libmpeg	mpeg+ipu	data-ref	C	0	0		0	1	0	0		0xC	src/main/movie/MpegParseSeqScalableExt_10fbd0.c	
+0x10FBE0	MpegParseUnknownExt_10fbe0	libmpeg	mpeg+ipu	data-ref	C	0	0		0	2	0	0		0xC	src/main/movie/MpegParseUnknownExt_10fbe0.c	
+0x10FBF0	MpegParsePictureCodingExt_10fbf0	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0x1E4	src/main/movie/MpegParsePictureCodingExt_10fbf0.c	
+0x1101B8	MpegParseSeqDisplayExt_1101b8	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0x8C	src/main/movie/MpegParseSeqDisplayExt_1101b8.c	
+0x110248	MpegParseCopyrightExt_110248	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0x94	src/main/movie/MpegParseCopyrightExt_110248.c	
+0x1102E0	MpegParsePicDisplayExt_1102e0	libmpeg	mpeg+ipu	data-ref	asm	0	0		0	1	0	0		0xF4	src/main/movie/MpegParsePicDisplayExt_1102e0.c	
+0x120780	kFindAddress_120780	libkernl	tlb/init/patch	data-ref	asm	0	0		0	1	0	0		0x40	src/main/sdk/kFindAddress_120780.c	
+0x120990	KCopyBody_120990	libkernl	tlb/init/patch	data-ref	asm	0	0		0	1	0	0		0x38	src/main/sdk/KCopyBody_120990.c	
+0x120B00	KCopyBody_120b00	libkernl	tlb/init/patch	data-ref	asm	0	0		0	1	0	0		0x30	src/main/sdk/KCopyBody_120b00.c	
+0x120DB0	KCopyBody_120db0	libkernl	tlb/init/patch	data-ref	asm	0	0		0	1	0	0		0x38	src/main/sdk/KCopyBody_120db0.c	
+0x100000	EntryPad_100000	crt0	crt0	unreached	asm	0	0		0	0	0	0		0x8	src/main/sys/EntryPad_100000.c	
+0x100220	CrtRootExitThread_100220	crt0	crt0	unreached	asm	0	0		0	0	0	0		0x10	src/main/sys/CrtRootExitThread_100220.c	
+0x102AB0	SharedArrayPtrDtor_102ab0	msl-c++	runtime/eh/iostream/string	unreached	C	0	0		0	0	4	4		0x78	src/main/libc/SharedArrayPtrDtor_102ab0.c	
+0x105C30	WFilebufGetcPeek_105c30	msl-c++	runtime/eh/iostream/string	unreached	C	0	0		0	0	2	2		0xAC	src/main/libc/WFilebufGetcPeek_105c30.c	
+0x105CE0	WFilebufGetBytesPeekMaybe_105ce0	msl-c++	runtime/eh/iostream/string	unreached	asm	0	0		0	0	2	2		0x114	src/main/libc/WFilebufGetBytesPeekMaybe_105ce0.c	
+0x105E00	WFilebufPutBytesMaybe_105e00	msl-c++	runtime/eh/iostream/string	unreached	asm	0	0		0	0	1	2		0x128	src/main/libc/WFilebufPutBytesMaybe_105e00.c	
+0x105F30	FilebufGetcPeek_105f30	msl-c++	runtime/eh/iostream/string	unreached	C	0	0		0	0	2	2		0xAC	src/main/libc/FilebufGetcPeek_105f30.c	
+0x105FE0	FilebufGetBytesPeekMaybe_105fe0	msl-c++	runtime/eh/iostream/string	unreached	asm	0	0		0	0	2	2		0x114	src/main/libc/FilebufGetBytesPeekMaybe_105fe0.c	
+0x106100	FilebufPutBytesMaybe_106100	msl-c++	runtime/eh/iostream/string	unreached	asm	0	0		0	0	1	2		0x128	src/main/libc/FilebufPutBytesMaybe_106100.c	
+0x109C28	DmaWatchAddr_109c28	libgraph	gs	unreached	asm	0	0		0	0	1	1		0x84	src/main/gs/DmaWatchAddr_109c28.c	
+0x10A028	sceDmaPutStallAddr_10a028	libdma	dma	unreached	asm	0	0		0	0	0	0		0x18	src/main/gs/sceDmaPutStallAddr_10a028.c	
+0x10A0A8	sceDmaSendN_10a0a8	libdma	dma	unreached	asm	0	0		0	0	0	0		0x74	src/main/gs/sceDmaSendN_10a0a8.c	
+0x10A120	sceDmaSendI_10a120	libdma	dma	unreached	asm	0	0		0	0	0	0		0x74	src/main/gs/sceDmaSendI_10a120.c	
+0x10A198	sceDmaRecv_10a198	libdma	dma	unreached	asm	0	0		0	0	0	0		0x48	src/main/gs/sceDmaRecv_10a198.c	
+0x10A1E0	sceDmaRecvN_10a1e0	libdma	dma	unreached	asm	0	0		0	0	0	0		0x7C	src/main/gs/sceDmaRecvN_10a1e0.c	
+0x10A260	sceDmaRecvI_10a260	libdma	dma	unreached	asm	0	0		0	0	0	0		0x80	src/main/gs/sceDmaRecvI_10a260.c	
+0x10A318	sceDmaWatch_10a318	libdma	dma	unreached	asm	0	0		0	0	0	0		0x34	src/main/gs/sceDmaWatch_10a318.c	
+0x10A3E8	sceDmaRestart_10a3e8	libdma	dma	unreached	asm	0	0		0	0	0	0		0x14	src/main/gs/sceDmaRestart_10a3e8.c	
+0x10AA98	sceVu0DivVectorXYZ	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x20	src/main/sdk/sceVu0DivVectorXYZ.c	
+0x10AB10	sceVu0MulVector	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x14	src/main/sdk/sceVu0MulVector.c	
+0x10AB40	sceVu0TransMatrix	libvu0	vu0	unreached	asm	0	0		0	0	1	1		0x2C	src/main/sdk/sceVu0TransMatrix.c	
+0x10ABA8	sceVu0FTOI4Vector	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/sceVu0FTOI4Vector.c	
+0x10ABB8	sceVu0FTOI0Vector	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/sceVu0FTOI0Vector.c	
+0x10ABC8	sceVu0ITOF4Vector	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/sceVu0ITOF4Vector.c	
+0x10ABD8	sceVu0ITOF0Vector	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/sceVu0ITOF0Vector.c	
+0x10AED0	sceVu0ClampVector	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x24	src/main/sdk/sceVu0ClampVector.c	
+0x10AEF8	sceVu0CameraMatrix	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0xB0	src/main/sdk/sceVu0CameraMatrix.c	
+0x10AFA8	sceVu0NormalLightMatrix	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0xC0	src/main/sdk/sceVu0NormalLightMatrix.c	
+0x10B068	sceVu0LightColorMatrix	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x68	src/main/sdk/sceVu0LightColorMatrix.c	
+0x10B0D0	sceVu0ViewScreenMatrix	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x104	src/main/sdk/sceVu0ViewScreenMatrix.c	
+0x10B1D8	sceVu0DropShadowMatrix	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x190	src/main/sdk/sceVu0DropShadowMatrix.c	
+0x10B368	sceVu0RotTransPersN	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x58	src/main/sdk/sceVu0RotTransPersN.c	
+0x10B3C0	sceVu0RotTransPers	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x44	src/main/sdk/sceVu0RotTransPers.c	
+0x10B408	sceVu0CopyVectorXYZ	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x1C	src/main/sdk/sceVu0CopyVectorXYZ.c	
+0x10B428	sceVu0InterVectorXYZ	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x2C	src/main/sdk/sceVu0InterVectorXYZ.c	
+0x10B470	sceVu0ClipScreen	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x48	src/main/sdk/sceVu0ClipScreen.c	
+0x10B4B8	sceVu0ClipScreen3	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x60	src/main/sdk/sceVu0ClipScreen3.c	
+0x10B518	sceVu0ClipAll	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x90	src/main/sdk/sceVu0ClipAll.c	
+0x10B5A8	sceVpu0Reset	libvu0	vu0	unreached	asm	0	0		0	0	0	0		0x5C	src/main/sdk/sceVpu0Reset.c	
+0x1106E0	IpuDmaSendChainMaybe_1106e0	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x100	src/main/movie/IpuDmaSendChainMaybe_1106e0.c	
+0x111190	MpegGetPictureRaw8_111190	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x44	src/main/movie/MpegGetPictureRaw8_111190.c	
+0x1111D8	MpegGetPictureAbort_1111d8	libmpeg	mpeg+ipu	unreached	C	0	0		0	0	0	0		0x10	src/main/movie/MpegGetPictureAbort_1111d8.c	
+0x111278	MpegIsRefBuffEmpty_111278	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x10	src/main/movie/MpegIsRefBuffEmpty_111278.c	
+0x111288	MpegSetDecodeMode_111288	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x14	src/main/movie/MpegSetDecodeMode_111288.c	
+0x1112A0	MpegGetDecodeMode_1112a0	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x20	src/main/movie/MpegGetDecodeMode_1112a0.c	
+0x1112F8	MpegSetBufferType_1112f8	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x34	src/main/movie/MpegSetBufferType_1112f8.c	
+0x111330	MpegGetBufferType_111330	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0xC	src/main/movie/MpegGetBufferType_111330.c	
+0x1114D0	MpegGetPictureRaw8Xy_1114d0	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x50	src/main/movie/MpegGetPictureRaw8Xy_1114d0.c	
+0x111520	MpegSetPtsOverrideMaybe_111520	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x18	src/main/movie/MpegSetPtsOverrideMaybe_111520.c	
+0x111538	MpegClearPtsOverrideMaybe_111538	libmpeg	mpeg+ipu	unreached	C	0	0		0	0	0	0		0x14	src/main/movie/MpegClearPtsOverrideMaybe_111538.c	
+0x111550	MpegSetImageBuff_111550	libmpeg	mpeg+ipu	unreached	C	0	0		0	0	0	0		0x10	src/main/movie/MpegSetImageBuff_111550.c	
+0x111560	MpegGetDisplayWidth_111560	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0xC	src/main/movie/MpegGetDisplayWidth_111560.c	
+0x111570	MpegGetDisplayHeight_111570	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0xC	src/main/movie/MpegGetDisplayHeight_111570.c	
+0x111580	MpegGetFrameCentreOffsets_111580	libmpeg	mpeg+ipu	unreached	C	0	0		0	0	0	0		0xC	src/main/movie/MpegGetFrameCentreOffsets_111580.c	
+0x111590	MpegGetFrameCentreOffsets_111590	libmpeg	mpeg+ipu	unreached	C	0	0		0	0	0	0		0xC	src/main/movie/MpegGetFrameCentreOffsets_111590.c	
+0x1115A0	MpegSwapBrokenLinkFlag_1115a0	libmpeg	mpeg+ipu	unreached	C	0	0		0	0	0	0		0x10	src/main/movie/MpegSwapBrokenLinkFlag_1115a0.c	
+0x1115B0	MpegSetNextPtsMaybe_1115b0	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x18	src/main/movie/MpegSetNextPtsMaybe_1115b0.c	
+0x111740	MpegWorkAreaRemaining_111740	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x18	src/main/movie/MpegWorkAreaRemaining_111740.c	
+0x112B20	MpegMatchStreamIdMaybe_112b20	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x1FC	src/main/movie/MpegMatchStreamIdMaybe_112b20.c	
+0x115720	MpegDemuxPss_115720	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0x20	src/main/movie/MpegDemuxPss_115720.c	
+0x115870	MpegMakeStreamKeyMaybe_115870	libmpeg	mpeg+ipu	unreached	asm	0	0		0	0	0	0		0xA8	src/main/movie/MpegMakeStreamKeyMaybe_115870.c	
+0x116180	RFU000FullReset_116180	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU000FullReset_116180.c	
+0x116190	ResetEE_116190	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/ResetEE_116190.c	
+0x1161B0	RFU003_1161b0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU003_1161b0.c	
+0x1161D0	RFU005_1161d0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU005_1161d0.c	
+0x1161E0	_LoadExecPS2	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/_LoadExecPS2.c	
+0x1161F0	ExecPS2_1161f0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/ExecPS2_1161f0.c	
+0x116200	RFU008_116200	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU008_116200.c	
+0x116210	RFU009_116210	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU009_116210.c	
+0x116220	AddSbusIntcHandler_116220	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/AddSbusIntcHandler_116220.c	
+0x116230	RemoveSbusIntcHandler_116230	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RemoveSbusIntcHandler_116230.c	
+0x116240	Interrupt2Iop_116240	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/Interrupt2Iop_116240.c	
+0x116250	SetVTLBRefillHandler	libkernl	syscall-stubs	unreached	asm	0	0		0	0	2	4		0x10	src/main/sdk/SetVTLBRefillHandler.c	
+0x116260	SetVCommonHandler_116260	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/SetVCommonHandler_116260.c	
+0x116270	SetVInterruptHandler_116270	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetVInterruptHandler_116270.c	
+0x116290	AddIntcHandler_2	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/AddIntcHandler_2.c	
+0x116320	SetAlarm_116320	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetAlarm_116320.c	
+0x116330	ReleaseAlarm_116330	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/ReleaseAlarm_116330.c	
+0x116340	_iEnableIntc	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/_iEnableIntc.c	
+0x116350	_iDisableIntc	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/_iDisableIntc.c	
+0x116360	_iEnableDmac	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/_iEnableDmac.c	
+0x116370	_iDisableDmac	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/_iDisableDmac.c	
+0x116380	iSetAlarm_116380	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iSetAlarm_116380.c	
+0x116390	iReleaseAlarm_116390	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iReleaseAlarm_116390.c	
+0x1163D0	ExitThread_1163d0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/ExitThread_1163d0.c	
+0x116400	iTerminateThread_116400	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iTerminateThread_116400.c	
+0x116410	DisableDispatchThread_116410	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/DisableDispatchThread_116410.c	
+0x116420	EnableDispatchThread_116420	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/EnableDispatchThread_116420.c	
+0x116440	iChangeThreadPriority_116440	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iChangeThreadPriority_116440.c	
+0x116460	iRotateThreadReadyQueue_116460	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iRotateThreadReadyQueue_116460.c	
+0x116470	ReleaseWaitThread_116470	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/ReleaseWaitThread_116470.c	
+0x116480	iReleaseWaitThread_116480	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iReleaseWaitThread_116480.c	
+0x1164B0	iReferThreadStatus_1164b0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iReferThreadStatus_1164b0.c	
+0x1164D0	WakeupThread	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/WakeupThread.c	
+0x1164F0	CancelWakeupThread_1164f0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/CancelWakeupThread_1164f0.c	
+0x116500	iCancelWakeupThread_116500	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iCancelWakeupThread_116500.c	
+0x116510	SuspendThread	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/SuspendThread.c	
+0x116520	_iSuspendThread	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/_iSuspendThread.c	
+0x116530	ResumeThread_116530	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/ResumeThread_116530.c	
+0x116540	iResumeThread_116540	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iResumeThread_116540.c	
+0x116550	JoinThread_116550	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/JoinThread_116550.c	
+0x116560	SetupThread_116560	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetupThread_116560.c	
+0x116570	SetupHeap_116570	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetupHeap_116570.c	
+0x116590	RFU063_116590	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU063_116590.c	
+0x116610	ReferSemaStatus_116610	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/ReferSemaStatus_116610.c	
+0x116620	iReferSemaStatus_116620	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iReferSemaStatus_116620.c	
+0x116630	RFU073_116630	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU073_116630.c	
+0x116640	SetOsdConfigParam	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	2		0x10	src/main/sdk/SetOsdConfigParam.c	
+0x116650	GetOsdConfigParam	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	2		0x10	src/main/sdk/GetOsdConfigParam.c	
+0x116660	GetGsHParam_116660	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/GetGsHParam_116660.c	
+0x116670	GetGsVParam_116670	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/GetGsVParam_116670.c	
+0x116680	SetGsHParam_116680	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetGsHParam_116680.c	
+0x116690	SetGsVParam_116690	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetGsVParam_116690.c	
+0x1166A0	RFU080CreateEventFlag_1166a0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU080CreateEventFlag_1166a0.c	
+0x1166B0	RFU081DeleteEventFlag_1166b0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU081DeleteEventFlag_1166b0.c	
+0x1166C0	RFU082SetEventFlag_1166c0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU082SetEventFlag_1166c0.c	
+0x1166D0	RFU083iSetEventFlag_1166d0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU083iSetEventFlag_1166d0.c	
+0x1166E0	RFU084ClearEventFlag_1166e0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU084ClearEventFlag_1166e0.c	
+0x1166F0	RFU085iClearEventFlag_1166f0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU085iClearEventFlag_1166f0.c	
+0x116700	RFU086WaitEventFlag_116700	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU086WaitEventFlag_116700.c	
+0x116710	RFU087PollEventFlag_116710	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU087PollEventFlag_116710.c	
+0x116720	RFU088iPollEventFlag_116720	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU088iPollEventFlag_116720.c	
+0x116730	RFU089ReferEventFlagStatus_116730	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU089ReferEventFlagStatus_116730.c	
+0x116740	RFU090iReferEventFlagStatus_116740	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU090iReferEventFlagStatus_116740.c	
+0x116750	RFU091_116750	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/RFU091_116750.c	
+0x116760	EnableIntcHandler_116760	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/EnableIntcHandler_116760.c	
+0x116770	iEnableIntcHandler_116770	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iEnableIntcHandler_116770.c	
+0x116780	DisableIntcHandler_116780	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/DisableIntcHandler_116780.c	
+0x116790	iDisableIntcHandler_116790	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iDisableIntcHandler_116790.c	
+0x1167A0	EnableDmacHandler_1167a0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/EnableDmacHandler_1167a0.c	
+0x1167B0	iEnableDmacHandler_1167b0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iEnableDmacHandler_1167b0.c	
+0x1167C0	DisableDmacHandler_1167c0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/DisableDmacHandler_1167c0.c	
+0x1167D0	iDisableDmacHandler_1167d0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iDisableDmacHandler_1167d0.c	
+0x1167E0	KSeg0_1167e0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/KSeg0_1167e0.c	
+0x1167F0	EnableCache_1167f0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/EnableCache_1167f0.c	
+0x116800	DisableCache_116800	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/DisableCache_116800.c	
+0x116810	GetCop0_116810	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/GetCop0_116810.c	
+0x116830	CpuConfig_116830	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/CpuConfig_116830.c	
+0x116840	iGetCop0_116840	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iGetCop0_116840.c	
+0x116850	iFlushCache_116850	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iFlushCache_116850.c	
+0x116860	iCpuConfig_116860	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iCpuConfig_116860.c	
+0x116880	SetCPUTimerHandler_116880	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetCPUTimerHandler_116880.c	
+0x116890	SetCPUTimer_116890	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetCPUTimer_116890.c	
+0x1168A0	SetOsdConfigParam2_1168a0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetOsdConfigParam2_1168a0.c	
+0x1168B0	GetOsdConfigParam2_1168b0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/GetOsdConfigParam2_1168b0.c	
+0x1168D0	iGsGetIMR_1168d0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iGsGetIMR_1168d0.c	
+0x1168F0	iGsPutIMR_1168f0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iGsPutIMR_1168f0.c	
+0x116900	SetPgifHandler_116900	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetPgifHandler_116900.c	
+0x116920	SetSyscall_116920	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/SetSyscall_116920.c	
+0x116930	print_116930	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/print_116930.c	
+0x116950	isceSifDmaStat_116950	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/isceSifDmaStat_116950.c	
+0x1169C0	_ExecOSD	libkernl	syscall-stubs	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/_ExecOSD.c	
+0x1169E0	PSMode_1169e0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/PSMode_1169e0.c	
+0x1169F0	MachineType_1169f0	libkernl	syscall-stubs	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/MachineType_1169f0.c	
+0x116C60	open	libkernl	newlib-glue	unreached	asm	0	0		0	0	0	0		0x28	src/main/sdk/open.c	
+0x116C90	IoctlStub_116c90	libkernl	newlib-glue	unreached	C	0	0		0	0	0	0		0x8	src/main/libc/IoctlStub_116c90.c	
+0x116DA0	stat	libkernl	newlib-glue	unreached	asm	0	0		0	0	0	0		0x28	src/main/sdk/stat.c	
+0x116DC8	unlink	libkernl	newlib-glue	unreached	asm	0	0		0	0	0	0		0x28	src/main/sdk/unlink.c	
+0x116F18	iSyncDCache	libkernl	cache	unreached	asm	0	0		0	0	0	0		0x18	src/main/sdk/iSyncDCache.c	
+0x116FD8	InvalidDCache	libkernl	cache	unreached	asm	0	0		0	0	0	0		0x7C	src/main/sdk/InvalidDCache.c	
+0x117220	iEnableIntc_117220	libkernl	intc/dmac/thread	unreached	asm	0	0		0	0	0	0		0x20	src/main/sdk/iEnableIntc_117220.c	
+0x117240	iDisableIntc_117240	libkernl	intc/dmac/thread	unreached	asm	0	0		0	0	0	0		0x20	src/main/sdk/iDisableIntc_117240.c	
+0x117260	iEnableDmac_117260	libkernl	intc/dmac/thread	unreached	asm	0	0		0	0	0	0		0x20	src/main/sdk/iEnableDmac_117260.c	
+0x117280	iDisableDmac_117280	libkernl	intc/dmac/thread	unreached	asm	0	0		0	0	0	0		0x20	src/main/sdk/iDisableDmac_117280.c	
+0x1172A0	KernelTopThread_1172a0	libkernl	intc/dmac/thread	unreached	asm	0	0		0	0	0	0		0xD8	src/main/thread/KernelTopThread_1172a0.c	
+0x117378	InitThread_117378	libkernl	intc/dmac/thread	unreached	asm	0	0		0	0	1	1		0xEC	src/main/sys/InitThread_117378.c	
+0x117500	iRotateThreadReadyQueue_117500	libkernl	intc/dmac/thread	unreached	asm	0	0		0	0	0	0		0x7C	src/main/sdk/iRotateThreadReadyQueue_117500.c	
+0x117580	iSuspendThread_117580	libkernl	intc/dmac/thread	unreached	asm	0	0		0	0	0	0		0x98	src/main/thread/iSuspendThread_117580.c	
+0x1178C8	sceDeci2Close	libkernl	deci2/tty	unreached	asm	0	0		0	0	0	0		0x24	src/main/sdk/sceDeci2Close.c	
+0x117948	Deci2Related_117948	libkernl	deci2/tty	unreached	asm	0	0		0	0	0	0		0x30	src/main/sdk/Deci2Related_117948.c	
+0x117978	Deci2Related_117978	libkernl	deci2/tty	unreached	asm	0	0		0	0	0	0		0x24	src/main/sdk/Deci2Related_117978.c	
+0x117A10	sceDeci2ExReqSend	libkernl	deci2/tty	unreached	asm	0	0		0	0	0	0		0x30	src/main/sdk/sceDeci2ExReqSend.c	
+0x117A40	sceDeci2ExLock_117a40	libkernl	deci2/tty	unreached	asm	0	0		0	0	0	0		0x24	src/main/sdk/sceDeci2ExLock_117a40.c	
+0x117A68	sceDeci2ExUnLock_117a68	libkernl	deci2/tty	unreached	asm	0	0		0	0	0	0		0x24	src/main/sdk/sceDeci2ExUnLock_117a68.c	
+0x119198	sceVsnprintfMaybe_119198	libkernl	printf	unreached	asm	0	0		0	0	0	0		0x38	src/main/dbg/sceVsnprintfMaybe_119198.c	
+0x119218	sceVprintfMaybe_119218	libkernl	printf	unreached	asm	0	0		0	0	0	0		0x70	src/main/sdk/sceVprintfMaybe_119218.c	
+0x1193D0	sceSifSetSreg	libkernl	sifcmd	unreached	asm	0	0		0	0	0	0		0x1C	src/main/sdk/sceSifSetSreg.c	
+0x1193F0	sceSifGetDataTable	libkernl	sifcmd	unreached	C	0	0		0	0	0	0		0xC	src/main/sdk/sceSifGetDataTable.c	
+0x1196B8	sceSifSetCmdBuffer	libkernl	sifcmd	unreached	asm	0	0		0	0	0	0		0x18	src/main/sdk/sceSifSetCmdBuffer.c	
+0x1196D0	sceSifSetSysCmdBuffer	libkernl	sifcmd	unreached	asm	0	0		0	0	0	0		0x18	src/main/sdk/sceSifSetSysCmdBuffer.c	
+0x11A040	sceSifGetOtherData	libkernl	sifrpc	unreached	asm	0	0		0	0	0	0		0x164	src/main/sdk/sceSifGetOtherData.c	
+0x11A890	sceSifRemoveRpc	libkernl	sifrpc	unreached	asm	0	0		0	0	1	1		0x94	src/main/sdk/sceSifRemoveRpc.c	
+0x11A928	sceSifRemoveRpcQueue	libkernl	sifrpc	unreached	asm	0	0		0	0	1	1		0x90	src/main/sdk/sceSifRemoveRpcQueue.c	
+0x11AC88	FileIoCountSlots_11ac88	libkernl	fileio	unreached	asm	0	0		0	0	2	2		0x7C	src/main/file/FileIoCountSlots_11ac88.c	
+0x11B340	scePowerOffHandler_11b340	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0xA0	src/main/file/scePowerOffHandler_11b340.c	
+0x11B6F8	FileIoSetIopBufferMaybe_11b6f8	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x140	src/main/sdk/FileIoSetIopBufferMaybe_11b6f8.c	
+0x11B838	FileIoSetIopParamRelated_11b838	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0xF0	src/main/sdk/FileIoSetIopParamRelated_11b838.c	
+0x11C4A0	sceIoctl_11c4a0	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x388	src/main/sdk/sceIoctl_11c4a0.c	
+0x11C828	sceIoctl2_11c828	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x1E8	src/main/sdk/sceIoctl2_11c828.c	
+0x11CA10	FileIoPathCmdRpc_11ca10	libkernl	fileio	unreached	asm	0	0		0	0	6	6		0x1B0	src/main/file/FileIoPathCmdRpc_11ca10.c	
+0x11CBC0	sceRemove_11cbc0	libkernl	fileio	unreached	C	0	0		0	0	0	0		0x1C	src/main/sdk/sceRemove_11cbc0.c	
+0x11CBE0	sceMkdir_11cbe0	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x1B8	src/main/sdk/sceMkdir_11cbe0.c	
+0x11CD98	sceRmdir_11cd98	libkernl	fileio	unreached	C	0	0		0	0	0	0		0x1C	src/main/sdk/sceRmdir_11cd98.c	
+0x11CDB8	sceFormat_11cdb8	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x280	src/main/sdk/sceFormat_11cdb8.c	
+0x11D038	sceAddDrv_11d038	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x12C	src/main/sdk/sceAddDrv_11d038.c	
+0x11D168	sceDelDrv_11d168	libkernl	fileio	unreached	C	0	0		0	0	0	0		0x1C	src/main/sdk/sceDelDrv_11d168.c	
+0x11D188	sceDopen_11d188	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0xC8	src/main/sdk/sceDopen_11d188.c	
+0x11D250	sceDclose_11d250	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x164	src/main/sdk/sceDclose_11d250.c	
+0x11D3B8	sceDread_11d3b8	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x154	src/main/sdk/sceDread_11d3b8.c	
+0x11D510	sceGetstat_11d510	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x1B4	src/main/sdk/sceGetstat_11d510.c	
+0x11D6C8	sceChstat_11d6c8	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x24C	src/main/sdk/sceChstat_11d6c8.c	
+0x11D918	sceRename_11d918	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x208	src/main/sdk/sceRename_11d918.c	
+0x11DB20	sceChdir_11db20	libkernl	fileio	unreached	C	0	0		0	0	0	0		0x1C	src/main/sdk/sceChdir_11db20.c	
+0x11DB40	sceSync_11db40	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x1AC	src/main/sdk/sceSync_11db40.c	
+0x11DCF0	sceMount_11dcf0	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x280	src/main/sdk/sceMount_11dcf0.c	
+0x11DF70	sceUmount_11df70	libkernl	fileio	unreached	C	0	0		0	0	0	0		0x1C	src/main/sdk/sceUmount_11df70.c	
+0x11DF90	sceLseek64_11df90	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x23C	src/main/sdk/sceLseek64_11df90.c	
+0x11E1D0	sceDevctl_11e1d0	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x2A8	src/main/sdk/sceDevctl_11e1d0.c	
+0x11E478	sceSymlink_11e478	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x1F8	src/main/sdk/sceSymlink_11e478.c	
+0x11E670	sceReadlink_11e670	libkernl	fileio	unreached	asm	0	0		0	0	0	0		0x1E0	src/main/sdk/sceReadlink_11e670.c	
+0x11E948	sceSifAllocSysMemory_11e948	libkernl	iopheap	unreached	asm	0	0		0	0	0	0		0x80	src/main/sdk/sceSifAllocSysMemory_11e948.c	
+0x11EA60	sceSifLoadIopHeap	libkernl	iopheap	unreached	asm	0	0		0	0	0	0		0xF0	src/main/sdk/sceSifLoadIopHeap.c	
+0x11EB50	sceSifQueryMemSize_11eb50	libkernl	iopheap	unreached	asm	0	0		0	0	0	0		0x70	src/main/sdk/sceSifQueryMemSize_11eb50.c	
+0x11EBC0	sceSifQueryMaxFreeMemSize_11ebc0	libkernl	iopheap	unreached	asm	0	0		0	0	0	0		0x70	src/main/sdk/sceSifQueryMaxFreeMemSize_11ebc0.c	
+0x11EC30	sceSifQueryTotalFreeMemSize_11ec30	libkernl	iopheap	unreached	asm	0	0		0	0	0	0		0x70	src/main/sdk/sceSifQueryTotalFreeMemSize_11ec30.c	
+0x11ECA0	sceSifQueryBlockTopAddress_11eca0	libkernl	iopheap	unreached	asm	0	0		0	0	0	0		0x7C	src/main/sdk/sceSifQueryBlockTopAddress_11eca0.c	
+0x11ED20	sceSifQueryBlockSize_11ed20	libkernl	iopheap	unreached	asm	0	0		0	0	0	0		0x7C	src/main/sdk/sceSifQueryBlockSize_11ed20.c	
+0x11EF30	sceSifLoadFileReset	libkernl	loadfile	unreached	asm	0	0		0	0	0	0		0x38	src/main/sdk/sceSifLoadFileReset.c	
+0x11EF68	SifLoadModuleBufferRpc_11ef68	libkernl	loadfile	unreached	asm	0	0		0	0	2	2		0x208	src/main/sdk/SifLoadModuleBufferRpc_11ef68.c	
+0x11F170	sceSifStopModule_11f170	libkernl	loadfile	unreached	asm	0	0		0	0	0	0		0x208	src/main/sdk/sceSifStopModule_11f170.c	
+0x11F378	sceSifUnloadModule_11f378	libkernl	loadfile	unreached	asm	0	0		0	0	0	0		0x90	src/main/sdk/sceSifUnloadModule_11f378.c	
+0x11F408	sceSifSearchModuleByName_11f408	libkernl	loadfile	unreached	asm	0	0		0	0	0	0		0xA0	src/main/sdk/sceSifSearchModuleByName_11f408.c	
+0x11F4A8	sceSifSearchModuleByAddress_11f4a8	libkernl	loadfile	unreached	asm	0	0		0	0	0	0		0x90	src/main/sdk/sceSifSearchModuleByAddress_11f4a8.c	
+0x11F538	sceSifLoadModuleBuffer_11f538	libkernl	loadfile	unreached	asm	0	0		0	0	0	0		0x1C	src/main/sdk/sceSifLoadModuleBuffer_11f538.c	
+0x11F558	sceSifLoadStartModuleBuffer_11f558	libkernl	loadfile	unreached	asm	0	0		0	0	0	0		0x1C	src/main/sdk/sceSifLoadStartModuleBuffer_11f558.c	
+0x11F7C0	sceSifLoadStartModule_11f7c0	libkernl	loadfile	unreached	asm	0	0		0	0	0	0		0x1C	src/main/sdk/sceSifLoadStartModule_11f7c0.c	
+0x11F7E0	_sceSifLoadElfPart	libkernl	loadfile	unreached	asm	0	0		0	0	2	2		0x104	src/main/sdk/_sceSifLoadElfPart.c	
+0x11F8E8	sceSifLoadElfPart	libkernl	loadfile	unreached	C	0	0		0	0	0	0		0x1C	src/main/sdk/sceSifLoadElfPart.c	
+0x11F908	sceSifLoadElf	libkernl	loadfile	unreached	asm	0	0		0	0	0	0		0x28	src/main/sdk/sceSifLoadElf.c	
+0x11F930	sceSifGetIopAddr	libkernl	iopcontrol	unreached	asm	0	0		0	0	0	0		0xEC	src/main/sdk/sceSifGetIopAddr.c	
+0x11FA20	sceSifSetIopAddr	libkernl	iopcontrol	unreached	asm	0	0		0	0	0	0		0xDC	src/main/sdk/sceSifSetIopAddr.c	
+0x11FC58	sceSifIsAliveIop	libkernl	iopcontrol	unreached	asm	0	0		0	0	0	0		0x28	src/main/sdk/sceSifIsAliveIop.c	
+0x11FDE0	SetTLBHandler_11fde0	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x60	src/main/sdk/SetTLBHandler_11fde0.c	
+0x11FE40	SetDebugHandler_11fe40	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x84	src/main/sdk/SetDebugHandler_11fe40.c	
+0x11FEC8	KCopy_11fec8	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/KCopy_11fec8.c	
+0x11FF10	RFU091	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	2		0x10	src/main/sdk/RFU091.c	
+0x11FF20	RFU116_SetSyscall	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	4		0x10	src/main/sdk/RFU116_SetSyscall.c	
+0x11FF30	InitTLBFunctions_11ff30	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0xC4	src/main/sdk/InitTLBFunctions_11ff30.c	
+0x11FFF8	PutTLBEntry_11fff8	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/PutTLBEntry_11fff8.c	
+0x120008	iPutTLBEntry_120008	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iPutTLBEntry_120008.c	
+0x120028	SetTLBEntry_120028	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x30	src/main/sdk/SetTLBEntry_120028.c	
+0x120058	iSetTLBEntry_120058	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iSetTLBEntry_120058.c	
+0x120068	GetTLBEntry_120068	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/GetTLBEntry_120068.c	
+0x120078	iGetTLBEntry_120078	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iGetTLBEntry_120078.c	
+0x120088	ProbeTLBEntry_120088	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/ProbeTLBEntry_120088.c	
+0x120098	iProbeTLBEntry_120098	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/iProbeTLBEntry_120098.c	
+0x1200A8	ExpandScratchPad_1200a8	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/ExpandScratchPad_1200a8.c	
+0x120300	kTLBException_120300	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x360	src/main/sdk/kTLBException_120300.c	
+0x1206C8	SupplementCrt0_1206c8	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0x60	src/main/sdk/SupplementCrt0_1206c8.c	
+0x120728	GetLibcEhSemaId_120728	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x10	src/main/sdk/GetLibcEhSemaId_120728.c	
+0x120738	KCopy_120738	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/KCopy_120738.c	
+0x1207C0	FindAddress_1207c0	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	4		0x10	src/main/sdk/FindAddress_1207c0.c	
+0x1207D0	GetSyscallHandlerMaybe_1207d0	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x34	src/main/sys/GetSyscallHandlerMaybe_1207d0.c	
+0x120808	GetSystemCallTableEntry_120808	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0xFC	src/main/sdk/GetSystemCallTableEntry_120808.c	
+0x120908	RFU116_SetSyscall_2	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	2		0x10	src/main/sdk/RFU116_SetSyscall_2.c	
+0x120918	InitSys_120918	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0x54	src/main/sdk/InitSys_120918.c	
+0x120970	RFU116_SetSyscall_3	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	3		0x10	src/main/sdk/RFU116_SetSyscall_3.c	
+0x120980	KCopy_120980	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/KCopy_120980.c	
+0x1209C8	RFU091_2	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/RFU091_2.c	
+0x1209D8	PatchIsNeeded_1209d8	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0x68	src/main/sys/PatchIsNeeded_1209d8.c	
+0x120A40	InitExecPS2_120a40	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0xAC	src/main/sdk/InitExecPS2_120a40.c	
+0x120AF0	KCopy_120af0	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	4		0x10	src/main/sdk/KCopy_120af0.c	
+0x120B30	RFU116_SetSyscall_4	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/RFU116_SetSyscall_4.c	
+0x120B40	KernelSetArgvMaybe_120b40	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	3	3		0x118	src/main/sys/KernelSetArgvMaybe_120b40.c	
+0x120C60	ExecPS2_120c60	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x70	src/main/sdk/ExecPS2_120c60.c	
+0x120CD0	LoadExecPS2_120cd0	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x48	src/main/sdk/LoadExecPS2_120cd0.c	
+0x120D40	ExecOSD_120d40	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	0	0		0x4C	src/main/sdk/ExecOSD_120d40.c	
+0x120D90	RFU116_SetSyscall_5	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	3		0x10	src/main/sdk/RFU116_SetSyscall_5.c	
+0x120DA0	KCopy_120da0	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	2		0x10	src/main/sdk/KCopy_120da0.c	
+0x120DE8	RFU091_3	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0x10	src/main/sdk/RFU091_3.c	
+0x120DF8	InitAlarm_120df8	libkernl	tlb/init/patch	unreached	asm	0	0		0	0	1	1		0xD4	src/main/sdk/InitAlarm_120df8.c	
+0x120F38	TimerNopStubRelated_120f38	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x8	src/main/sdk/TimerNopStubRelated_120f38.c	
+0x120F40	Timer2SetCount_120f40	libkernl	timer/alarm	unreached	asm	0	0		0	0	2	2		0x10	src/main/sys/Timer2SetCount_120f40.c	
+0x120F70	InitTimer_120f70	libkernl	timer/alarm	unreached	asm	0	0		0	0	1	1		0x154	src/main/sys/InitTimer_120f70.c	
+0x1210C8	EndTimer_1210c8	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0xB8	src/main/sdk/EndTimer_1210c8.c	
+0x121180	GetTimerPreScaleFactor_121180	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x2C	src/main/sdk/GetTimerPreScaleFactor_121180.c	
+0x1211B0	StartTimerSystemTime_1211b0	libkernl	timer/alarm	unreached	asm	0	0		0	0	1	1		0x90	src/main/sys/StartTimerSystemTime_1211b0.c	
+0x121240	StopTimerSystemTime_121240	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x7C	src/main/sdk/StopTimerSystemTime_121240.c	
+0x121510	TimerAlarmIntcHandler_121510	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x2A4	src/main/sys/TimerAlarmIntcHandler_121510.c	
+0x121808	GetTimerSystemTime_121808	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x7C	src/main/sys/GetTimerSystemTime_121808.c	
+0x121940	iFreeTimerCounter_121940	libkernl	timer/alarm	unreached	asm	0	0		0	0	2	2		0xA0	src/main/sdk/iFreeTimerCounter_121940.c	
+0x1219E0	FreeTimerCounter_1219e0	libkernl	timer/alarm	unreached	asm	0	0		0	0	1	1		0x4C	src/main/sys/FreeTimerCounter_1219e0.c	
+0x121A30	iGetTimerUsedUnitNum_121a30	libkernl	timer/alarm	unreached	asm	0	0		0	0	1	1		0x50	src/main/sys/iGetTimerUsedUnitNum_121a30.c	
+0x121A80	GetTimerUsedUnitNum_121a80	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x5C	src/main/sys/GetTimerUsedUnitNum_121a80.c	
+0x121BE0	iStopTimerCounter_121be0	libkernl	timer/alarm	unreached	asm	0	0		0	0	1	1		0xC4	src/main/sys/iStopTimerCounter_121be0.c	
+0x121CA8	StopTimerCounter_121ca8	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x4C	src/main/sys/StopTimerCounter_121ca8.c	
+0x121CF8	SetTimerCount_121cf8	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0xCC	src/main/sdk/SetTimerCount_121cf8.c	
+0x121DC8	iGetTimerBaseTime_121dc8	libkernl	timer/alarm	unreached	asm	0	0		0	0	1	1		0x48	src/main/sys/iGetTimerBaseTime_121dc8.c	
+0x121E10	GetTimerBaseTime_121e10	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x4C	src/main/sys/GetTimerBaseTime_121e10.c	
+0x121E60	iGetTimerCount_121e60	libkernl	timer/alarm	unreached	asm	0	0		0	0	1	1		0x6C	src/main/sys/iGetTimerCount_121e60.c	
+0x121ED0	GetTimerCount_121ed0	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x4C	src/main/sys/GetTimerCount_121ed0.c	
+0x122098	TimerBusClock2USec_122098	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0xA8	src/main/sys/TimerBusClock2USec_122098.c	
+0x1221B0	TimerBusClock2Freq_1221b0	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x54	src/main/sys/TimerBusClock2Freq_1221b0.c	
+0x122240	AlarmPoolInit_122240	libkernl	timer/alarm	unreached	asm	0	0		0	0	1	1		0x4C	src/main/sys/AlarmPoolInit_122240.c	
+0x122510	ReleaseTimerAlarm_122510	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0xA8	src/main/sdk/ReleaseTimerAlarm_122510.c	
+0x1225B8	iReleaseTimerAlarm_1225b8	libkernl	timer/alarm	unreached	asm	0	0		0	0	0	0		0x78	src/main/sdk/iReleaseTimerAlarm_1225b8.c	
+0x122630	IopResetCallbacksInitMaybe_122630	libkernl	iop-reset-cb	unreached	asm	0	0		0	0	1	1		0x24	src/main/sys/IopResetCallbacksInitMaybe_122630.c	
+0x1226D8	IopResetCallbackRegisterMaybe_1226d8	libkernl	iop-reset-cb	unreached	asm	0	0		0	0	0	0		0xB8	src/main/sdk/IopResetCallbackRegisterMaybe_1226d8.c	
+0x122790	IopResetCallbackUnregisterMaybe_122790	libkernl	iop-reset-cb	unreached	asm	0	0		0	0	0	0		0x54	src/main/sdk/IopResetCallbackUnregisterMaybe_122790.c	
+0x122940	sceSdTransToIOP_122940	libsdr	sdremote	unreached	asm	0	0		0	0	0	0		0x84	src/main/sdk/sceSdTransToIOP_122940.c	
+0x122E70	sceSdRemoteCallbackQuit_122e70	libsdr	sdremote	unreached	asm	0	0		0	0	1	1		0x138	src/main/sdk/sceSdRemoteCallbackQuit_122e70.c	
+0x1292E0	CdCallbackThread_1292e0	libcdvd	cdvd	unreached	asm	0	0		0	0	0	0		0xD0	src/main/sdk/CdCallbackThread_1292e0.c	
+0x1293B0	sceCdInitEeCB_1293b0	libcdvd	cdvd	unreached	asm	0	0		0	0	0	0		0x9C	src/main/sdk/sceCdInitEeCB_1293b0.c	
+0x12AA70	CdGetDiskTypeOrNoneMaybe_12aa70	libcdvd	cdvd	unreached	asm	0	0		0	0	0	0		0x24	src/main/sdk/CdGetDiskTypeOrNoneMaybe_12aa70.c	
+0x12ABF8	sceCdSetTimeoutMaybe_12abf8	libcdvd	cdvd	unreached	asm	0	0		0	0	0	0		0xD4	src/main/sdk/sceCdSetTimeoutMaybe_12abf8.c	
+0x12AE70	sceCdChgSys_12ae70	libcdvd	cdvd	unreached	C	0	0		0	0	0	0		0x24	src/main/sdk/sceCdChgSys_12ae70.c	
+0x12B208	scePadEnd_12b208	libpad	pad	unreached	asm	0	0		0	0	0	0		0x90	src/main/sdk/scePadEnd_12b208.c	
+0x12B598	scePadPortClose	libpad	pad	unreached	asm	0	0		0	0	0	0		0xB8	src/main/sdk/scePadPortClose.c	
+0x12B7A8	scePadGetFrameCount	libpad	pad	unreached	asm	0	0		0	0	0	0		0x58	src/main/sdk/scePadGetFrameCount.c	
+0x12B8F0	scePadStateIntToStr	libpad	pad	unreached	asm	0	0		0	0	0	0		0x34	src/main/sdk/scePadStateIntToStr.c	
+0x12BA38	scePadReqIntToStr	libpad	pad	unreached	asm	0	0		0	0	0	0		0x34	src/main/sdk/scePadReqIntToStr.c	
+0x12BB88	scePadInfoComb	libpad	pad	unreached	asm	0	0		0	0	0	0		0x118	src/main/sdk/scePadInfoComb.c	
+0x12C030	scePadGetButtonMask	libpad	pad	unreached	asm	0	0		0	0	1	1		0xB0	src/main/sdk/scePadGetButtonMask.c	
+0x12C0E0	scePadSetButtonInfo	libpad	pad	unreached	asm	0	0		0	0	2	2		0xB0	src/main/sdk/scePadSetButtonInfo.c	
+0x12C190	scePadInfoPressMode	libpad	pad	unreached	asm	0	0		0	0	0	0		0x5C	src/main/sdk/scePadInfoPressMode.c	
+0x12C1F0	scePadEnterPressMode	libpad	pad	unreached	asm	0	0		0	0	0	0		0x54	src/main/sdk/scePadEnterPressMode.c	
+0x12C248	scePadExitPressMode	libpad	pad	unreached	asm	0	0		0	0	0	0		0x54	src/main/sdk/scePadExitPressMode.c	
+0x12C2A0	scePadSetVrefParam	libpad	pad	unreached	asm	0	0		0	0	0	0		0xCC	src/main/sdk/scePadSetVrefParam.c	
+0x12C370	scePadGetPortMax	libpad	pad	unreached	asm	0	0		0	0	0	0		0x64	src/main/sdk/scePadGetPortMax.c	
+0x12C3D8	scePadGetSlotMax	libpad	pad	unreached	asm	0	0		0	0	0	0		0x68	src/main/sdk/scePadGetSlotMax.c	
+0x12C4A8	scePadSetWarningLevel	libpad	pad	unreached	asm	0	0		0	0	0	0		0x68	src/main/sdk/scePadSetWarningLevel.c	
+0x12C510	PadSetCmdCallbackMaybe_12c510	libpad	pad	unreached	asm	0	0		0	0	1	1		0x124	src/main/sdk/PadSetCmdCallbackMaybe_12c510.c	
+0x12C998	sceMcGetSlotMax_12c998	libmc	mc	unreached	asm	0	0		0	0	0	0		0xC0	src/main/sdk/sceMcGetSlotMax_12c998.c	
+0x12CC78	sceMcSeek_12cc78	libmc	mc	unreached	asm	0	0		0	0	0	0		0xE0	src/main/sdk/sceMcSeek_12cc78.c	
+0x12D338	sceMcUdCheckNewCard_12d338	libmc	mc	unreached	asm	0	0		0	0	0	0		0x70	src/main/sdk/sceMcUdCheckNewCard_12d338.c	
+0x12D798	sceMcDelete_12d798	libmc	mc	unreached	asm	0	0		0	0	0	0		0x11C	src/main/sdk/sceMcDelete_12d798.c	
+0x12D978	sceMcSetFileInfo_12d978	libmc	mc	unreached	asm	0	0		0	0	0	0		0x1CC	src/main/sdk/sceMcSetFileInfo_12d978.c	
+0x12DCA0	sceMcUnformat_12dca0	libmc	mc	unreached	asm	0	0		0	0	0	0		0xCC	src/main/sdk/sceMcUnformat_12dca0.c	
+0x12DD70	sceMcGetEntSpace_12dd70	libmc	mc	unreached	asm	0	0		0	0	0	0		0x10C	src/main/sdk/sceMcGetEntSpace_12dd70.c	
+0x12F708	SfMoreGlue_12f708	libc	newlib	unreached	asm	0	0		0	0	1	1		0x78	src/main/libc/SfMoreGlue_12f708.c	
+0x12F780	Sfp_12f780	libc	newlib	unreached	asm	0	0		0	0	0	0		0xF8	src/main/libc/Sfp_12f780.c	
+0x12FE60	Fseek_12fe60	libc	newlib	unreached	asm	0	0		0	0	4	4		0x4AC	src/main/libc/Fseek_12fe60.c	
+0x130370	Ftell_130370	libc	newlib	unreached	asm	0	0		0	0	2	2		0x104	src/main/libc/Ftell_130370.c	
+0x130908	SetlocaleR_130908	libc	newlib	unreached	asm	0	0		0	0	1	1		0x8C	src/main/libc/SetlocaleR_130908.c	
+0x1309A8	Setlocale_1309a8	libc	newlib	unreached	asm	0	0		0	0	0	0		0x24	src/main/libc/Setlocale_1309a8.c	
+0x132C98	MprecLog10_132c98	libc	newlib	unreached	asm	0	0		0	0	0	0		0x70	src/main/libc/MprecLog10_132c98.c	
+0x1337D8	ReallocR_1337d8	libc	newlib	unreached	asm	0	0		0	0	1	1		0x5A0	src/main/libc/ReallocR_1337d8.c	
+0x133D78	Lflush_133d78	libc	newlib	unreached	asm	0	0		0	0	0	0		0x34	src/main/libc/Lflush_133d78.c	
+0x133DB0	Srefill_133db0	libc	newlib	unreached	asm	0	0		0	0	2	2		0x17C	src/main/libc/Srefill_133db0.c	
+0x133F30	Srget_133f30	libc	newlib	unreached	asm	0	0		0	0	4	4		0x48	src/main/libc/Srget_133f30.c	
+0x134040	SignalR_134040	libc	newlib	unreached	asm	0	0		0	0	1	1		0x80	src/main/libc/SignalR_134040.c	
+0x134198	SigtrampR_134198	libc	newlib	unreached	asm	0	0		0	0	0	0		0x98	src/main/libc/SigtrampR_134198.c	
+0x134250	Signal_134250	libc	newlib	unreached	asm	0	0		0	0	0	0		0x24	src/main/libc/Signal_134250.c	
+0x134330	SprintfR_134330	libc	newlib	unreached	asm	0	0		0	0	0	0		0x88	src/main/libc/SprintfR_134330.c	
+0x136100	Strtof_136100	libc	newlib	unreached	asm	0	0		0	0	0	0		0x28	src/main/libc/Strtof_136100.c	
+0x136400	Submore_136400	libc	newlib	unreached	asm	0	0		0	0	1	1		0xE8	src/main/libc/Submore_136400.c	
+0x1364E8	Ungetc_1364e8	libc	newlib	unreached	asm	0	0		0	0	6	6		0x188	src/main/libc/Ungetc_1364e8.c	
+0x138E90	Swbuf_138e90	libc	newlib	unreached	asm	0	0		0	0	4	12		0x110	src/main/libc/Swbuf_138e90.c	
+0x165690	SdRemoteNopStubRelated_165690	libsdr-gcc	sdremote-cmd-island(gcc)	unreached	C	0	0		0	0	0	0		0x8	src/main/sound/SdRemoteInitMasterVolume_165608.c	
+0x165698	SdRemoteQuit_165698	libsdr-gcc	sdremote-cmd-island(gcc)	unreached	C	0	0		0	0	0	0		0x20	src/main/sound/SdRemoteInitMasterVolume_165608.c	
+0x446470	KernelTlbMapPageRelated_446470	libkernl	kernel-patch(copied to kernel)	unreached	asm	0	0		0	0	0	0		0x130	src/main/sdk/KernelTlbMapPageRelated_446470.c	
+0x446B20	KernelInitSystemConfigMaybe_446b20	libkernl	kernel-patch(copied to kernel)	unreached	C	0	0		0	0	0	0		0xC0	src/main/sdk/KernelInitSystemConfigMaybe_446b20.c	
+0x446BE0	KernelGetOsdConfigParam2_446be0	libkernl	kernel-patch(copied to kernel)	unreached	C	0	0		0	0	0	0		0x11C	src/main/sdk/KernelGetOsdConfigParam2_446be0.c	
+0x446D00	KernelVblankResetRelated_446d00	libkernl	kernel-patch(copied to kernel)	unreached	asm	0	0		0	0	0	0		0xD0	src/main/sdk/KernelVblankResetRelated_446d00.c	
+0x446DD0	KernelExecPS2Maybe_446dd0	libkernl	kernel-patch(copied to kernel)	unreached	C	0	0		0	0	0	0		0x1E4	src/main/sdk/KernelExecPS2Maybe_446dd0.c	
+0x447158	KernelInsertAlarm_447158	libkernl	kernel-patch(copied to kernel)	unreached	C	0	0		0	0	0	0		0x104	src/main/sdk/KernelInsertAlarm_447158.c	
+0x447260	KernelSetAlarm_447260	libkernl	kernel-patch(copied to kernel)	unreached	C+asm	0	0		0	0	0	0		0x13C	src/main/sdk/KernelSetAlarm_447260.c	
+0x4473A0	KernelReleaseAlarm_4473a0	libkernl	kernel-patch(copied to kernel)	unreached	C+asm	0	0		0	0	0	0		0x1A0	src/main/sdk/KernelReleaseAlarm_4473a0.c	
+0x447540	iSetAlarm	libkernl	kernel-patch(copied to kernel)	unreached	C+asm	0	0		0	0	0	0		0x20	src/main/sdk/iSetAlarm.c	
+0x447560	KernelAlarmArmTimer3_447560	libkernl	kernel-patch(copied to kernel)	unreached	asm	0	0		0	0	0	0		0x24	src/main/sdk/KernelAlarmArmTimer3_447560.c	
+0x447588	KernelAlarmIntrHandlerMaybe_447588	libkernl	kernel-patch(copied to kernel)	unreached	asm	0	0		0	0	0	0		0x1E0	src/main/sdk/KernelAlarmIntrHandlerMaybe_447588.c	

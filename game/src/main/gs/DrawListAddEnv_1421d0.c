@@ -1,0 +1,48 @@
+/* rgp:hwaccess */ #include "port/hwaccess.h"
+#line 1
+/* rgp:protos */
+#define RGP_SELF_DrawListAddEnv_1421d0 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+#include "vec.h"
+
+typedef struct {
+    u8 pad0[0x28];
+    s32 base;
+    s32 n;
+} Q;
+
+typedef struct {
+    s32 idx;
+    u8 *dst;
+    u8 *tbl[1];
+} Obj;
+
+/*rgp*/
+/*rgp*/
+extern u128 D_0047DE40 __attribute__((section(".sdata")));
+
+void DrawListAddEnv_1421d0(Obj *arg0)
+{
+    u8 *p;
+    Q *q;
+    s32 k;
+    s32 h;
+
+    h = *(s32 *)((u8 *)arg0 + 0x270);
+    p = arg0->tbl[arg0->idx];
+    if (p != NULL) {
+        q = (Q *)(p + 8);
+    } else {
+        q = NULL;
+    }
+    if (q == NULL) {
+        return;
+    }
+    k = q->base + q->n * 16;
+    MemStackAllocQw_14d950(q, DrawEnvWritePacket_157460(h, k));
+    *(u128 *)arg0->dst = D_0047DE40;
+    *(u32 *)(arg0->dst + 4) = ((u32)k);
+    arg0->dst += 0x10;
+}

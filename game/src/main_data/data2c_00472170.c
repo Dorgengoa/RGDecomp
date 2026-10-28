@@ -1,0 +1,38 @@
+/* rgp:protos */
+#include "port/game_protos.h"
+#line 1
+/* rg:datareloc */
+/* Generated: do not edit. */
+#include "types.h"
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+u32 D_00472170[32] __attribute__((section(".data$rg00472170"), aligned(16))) = {
+    @X@00472170@, @X@00472174@, (u32)&SaveObjGetHeaderSize_370f50, (u32)&SaveObjGetObjSize_370660, (u32)&SaveObjGetDataSize_370670, (u32)&SaveObjSerializeNop_3706c0, (u32)&SaveObjDeserializeNop_3706d0, (u32)&EquipSlotReset_3a0910, (u32)&EquipSlotGetKind_3a09a0, (u32)&EquipSlotIsKind_39feb0, (u32)&EquipSlotClear_3a0900, (u32)&EquipSlotSetAbility_3a07b0, (u32)&EquipSlotBuildAbilityResNameNone_27a440, (u32)&EquipSlotBuildAbilitySndNameNone_2f40a0, (u32)&EquipSlotGetNthLinkedMemberId_3a04b0, (u32)&EquipSlotFindNthLinkedNop_3a0250, (u32)&EquipSlotGetOwnerNop_39fd10, (u32)&EquipSlotCanActivate_3a00f0, (u32)&EquipSlotGetFlag26B0True_2c31c0, (u32)&EquipSlotNopSlot4C_39ef00, (u32)&EquipSlotHasGaugeMaybe_39ef10, (u32)&EquipSlotUseRefillGauge_3a0070, (u32)&EquipSlotHasGaugeLeft_39ef40, (u32)&EquipSlotClearGauge_3a0030, (u32)&EquipSlotClearUseOutOfBattle_39fe20, (u32)&EquipSlotClearUseInBattle_39fdd0, (u32)&EquipSlotInBattle_39fda0, (u32)&EquipSlotClearGaugeInBattle_39fd50, (u32)&EquipSlotInBattle_39fd20, (u32)&EquipSlotDrainGauge_39fc20, @X@004721E8@, @X@004721EC@
+};
+typedef char data2c_sizecheck_00472170[(sizeof(D_00472170) == 128) ? 1 : -1];

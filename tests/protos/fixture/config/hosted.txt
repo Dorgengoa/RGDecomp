@@ -1,0 +1,2 @@
+# GUEST HOST: a guest is static inside its host's file (tests/protos fixture)
+Guest_200100     Host_200000

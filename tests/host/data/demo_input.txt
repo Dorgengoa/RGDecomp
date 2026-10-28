@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: CC0-1.0
+# rg-host-demo headless regression input (game VBlank = demo frame index).
+0 5 START
+10 39 CROSS+R1
+20 39 UP+SQUARE

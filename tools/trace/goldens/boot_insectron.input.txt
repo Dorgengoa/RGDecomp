@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: CC0-1.0
+# Boot the manufactured game-save fixture "insectron" (docs/TEST-FIXTURES.md "Manufactured
+# saves", docs/SAVE-FORMAT.md): out/fixtures/cards/insectron/ = save2 + story var 5
+# (Insectron rank) = 3 + two registered Insectron teams ALPHA / BRAVO in chunk 15
+# (tools/fixtures/saveedit.py patch --var 5=3 --insect-team ...).  The title then shows the
+# INSECTRON row (McSaveHeaderCheckClearedMaybe_372fd0: summary var 5 >= 3); it starts the
+# standalone Insectron session (INSMENU overlay, loader index 6), Watch Battle loads both
+# teams from the card and starts a CPU-vs-CPU battle (INSECT overlay, index 5, game mode 15).
+# Keys = fields of a plain rg-game run (port).  Milestones (RG_STATUS_EVERY):
+#   ~2,250  ovl=6 sysmode=0: INSMENU loaded ("INSECTRON BATTLE / Press X")
+#   ~10,200 ovl=5: INSECT loaded (announcer intro), ~11,400 "BATTLE START", gamemode 15/101
+# boot-end: 11500   (CPU vs CPU Insectron battle running, game mode 15/101)
+1880 1883 DOWN   # title menu: CONTINUE -> INSECTRON (the row exists because of the save)
+1900 1905 CROSS  # INSECTRON -> INSMENU session
+3010 3013 CROSS  # "Press X"
+3410 3413 CROSS  # "Welcome to the Insectron Stadium!" -> mode list
+3610 3613 DOWN
+3630 3633 DOWN   # Watch Battle
+3660 3663 CROSS
+4010 4013 CROSS  # "Is this mode okay?" Yes
+4410 4413 CROSS  # Player 1 data select
+4710 4713 DOWN   # "Select registered team"
+4730 4733 CROSS
+5110 5113 CROSS  # MEMORY CARD slot 1
+5300 5303 CROSS  # FILE 01 (2/20 registered teams)
+5500 5503 CROSS  # "Load the data in file 1?" Yes
+5810 5813 CROSS  # "File 1 loaded."
+6000 6003 CROSS  # team 01 ALPHA
+6030 6033 LEFT   # (confirm box defaults to No)
+6060 6063 CROSS  # Yes
+6410 6413 CROSS  # "File 1 loaded."
+6500 6503 CIRCLE # back out of the slot list / password menu
+6650 6653 CIRCLE
+6910 6913 CROSS  # Player 2 data select
+7010 7013 DOWN   # "Select registered team"
+7030 7033 CROSS
+7200 7203 CROSS  # slot 1
+7400 7403 CROSS  # FILE 01
+7600 7603 CROSS  # Yes
+7900 7903 CROSS  # "File 1 loaded."
+8050 8053 DOWN   # team 02 BRAVO
+8100 8103 CROSS
+8130 8133 LEFT
+8160 8163 CROSS  # Yes
+8500 8503 CROSS  # "File 2 loaded." -> back on Watch Battle, cursor on Battle Start!!
+8910 8913 CROSS  # Battle Start!!
+10010 10013 CROSS # "Let's begin the match!" -> INSECT

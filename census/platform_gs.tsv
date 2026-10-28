@@ -1,0 +1,264 @@
+# census: gs
+# source: ../RGDecomp
+# commit: 2efa6b43548fed253fafdee4d22c8d61d506acde
+# binaries: ../work/SCUS_974.90 + BIN/*.BIN (retail)
+# generator: tools/census/platform/gs.py
+# rows: 255
+# data_gif_tags: 3
+# note: static only; values computed at runtime show as dyn. ad_code low-confidence rows are single small-int stores and may be false positives
+kind	reg	name	value	decoded	count	where	confidence	note
+priv	0x12000000	PMODE	0x120000C0		1	sceGsPutDispEnv@0x1087B0	high	
+priv	0x12000000	PMODE	0x7F23		1	GsDbufPutEnv_144150@0x14423C	high	
+priv	0x12000000	PMODE	dyn		2	GsDbufPutEnv_144150@0x1443B8 sceGsPutDispEnv@0x108770	high	
+priv	0x12000020	SMODE2	dyn		1	sceGsPutDispEnv@0x1087CC	high	
+priv	0x12000070	DISPFB1	dyn		2	GsDbufPutEnv_144150@0x144294 sceGsPutDispEnv@0x108788	high	
+priv	0x12000080	DISPLAY1	dyn		2	GsDbufPutEnv_144150@0x1443B0 sceGsPutDispEnv@0x108790	high	
+priv	0x12000090	DISPFB2	dyn		1	sceGsPutDispEnv@0x1087D8	high	
+priv	0x120000A0	DISPLAY2	dyn		1	sceGsPutDispEnv@0x1087E0	high	
+priv	0x120000C0	EXTDATA	dyn		1	sceGsPutDispEnv@0x108798	high	
+priv	0x120000E0	BGCOLOR	dyn		1	sceGsPutDispEnv@0x1087E8	high	
+priv	0x12001000	CSR	0x2		2	sceGsExecStoreImage@0x1096F4 sceGsExecStoreImage@0x109ADC	high	
+priv	0x12001000	CSR	0x100		2	sceGsExecStoreImage@0x1098A0 sceGsResetGraph_108110@0x10821C	high	
+priv	0x12001000	CSR	0x200		1	sceGsResetGraph_108110@0x108194	high	
+priv	0x12001040	BUSDIR	0x0		1	sceGsExecStoreImage@0x1098A8	high	
+priv	0x12001040	BUSDIR	0x1		1	sceGsExecStoreImage@0x1097F0	high	
+ad_code	0x00	PRIM	0x6	SPRITE	1	sceGsSetDefClear	high	
+ad_code	0x00	PRIM	0x0	POINT	81	ActDataClone_225d40 AttackChainStep_382270 BattleApplyHit_2ef930 BattleRecordReset_3a7fd0 BattleSetupEncounter_3a3970 BlurWorkTexRegister_2f67b0 CBlurTexBlurMaybe_1789e0 CBlurTexRegisterWork_1791e0 CharaBodyInitMaybe_238980 CharaInit_2150c0 CharaNormalTableClear_225a80 CharaNormalTableClone_225830 C	low	
+ad_code	0x00	PRIM	0x1	LINE	2	EvScriptCmdDoorObjInit_2ff5d0	low	
+ad_code	0x00	PRIM	0x72	LINESTRIP+TME+FGE+ABE	5	MinimapDrawEntry_325720	low	
+ad_code	0x00	PRIM	0x13F	(7)+IIP+TME+FGE+FST	1	DebugItemIconGridUpdate_29a2f0	low	
+ad_code	0x00	PRIM	0xFFFFFFFC	TRISTRIP+IIP+TME+FGE+ABE+AA1+FST+CTXT+FIX	1	WeaponCombineCheck_3c3e30	low	
+ad_code	0x00	PRIM	0xFFFFFFFF	(7)+IIP+TME+FGE+ABE+AA1+FST+CTXT+FIX	9	MpegCreate_1104a8 MpegOutputFieldPairMaybe_111cf8 MpegOutputFrameMaybe_111a38 StreambufSeekoff_103ae0 StreambufSeekpos_103ad0 WStreambufSeekoff_103f40 WStreambufSeekpos_103f30	low	
+ad_code	0x00	PRIM	dyn		63	ActCfgTableReset_225160 CharaNormalTableInit_2259c0 CharaNormalTableMtnNormalStart_23ccd0 CharaResolveActionHitMaybe_3b28d0 CharaTableInit_225660 CharaTableMtnDefineStart_23c550 EffectArchiveLoadFromDesc_2e2560 EvScriptCmdM05ChangeInit_2fdd20 EvScriptCmdObjLiftInit_2feb60 EvScriptCmdObjLiftTargetSet	low	
+ad_code	0x01	RGBAQ	dyn		1	sceGsSetDefClear	high	
+ad_code	0x01	RGBAQ	0x66		1	sceGsSetDefDispEnv_1083c8	low	
+ad_code	0x01	RGBAQ	dyn		4	GsPktAddTexSprite_13e520 GsPktSetRGBAQVec_13edd0 GsPktSetRGBAQ_13ee40 MpegSetNextPtsMaybe_1115b0	low	
+ad_code	0x02	ST	dyn		8	BattleEffectBurstSpawn_2d4760 CharaMonCopyResRequest_1f2430 MesWinLayoutText_274e70 SoundCategoryFadeInit_1b60c0 SoundCategoryTableInitMaybe_1bbbb0 factory_FactoryBeltExtendToward_500630 insect_InsectBattleCamUpdate_4f2100	high	
+ad_code	0x02	ST	0x8		1	FixedTexUploadImpl_15d680	low	
+ad_code	0x02	ST	dyn		28	AiSetMoveToChara_2c0e30 BgmParamRefreshCondsMaybe_3ece90 CharaLoadWeapon1Chr_1f4c70 EvMapObjPartStep_363ba0 EvMapObjThrowStart_3661f0 EventCastListAllocIds_24bae0 EventGlobalObjReset_257940 EventVoiceTick_24f720 FileReqSubmit_1827a0 FuncDataTableFindNearestPlightsMaybe_190220 GsPktSetSTVec_13ecc0 Gs	low	
+ad_code	0x03	UV	dyn		9	BattleEffectBurstSpawn_2d4760 LoadingScreenFrame_3435d0 MenuCatalogPageCloseState_35c510 MesWinLayoutText_274e70 factory_FactoryBeltExtendToward_500630 insect_InsectBattleCamUpdate_4f2100	high	
+ad_code	0x03	UV	dyn		9	CharaLoadWeapon2Chr_1f4b50 GsPktSetUVFixed_13ed90 GsPktSetUV_13ed60 MenuItemCloseSlideStep_2b1cf0 MenuWeaponCombineConfirmDialogStateMaybe_2aa050 ParticleEmitterSpawnMaybe_1a8ad0 factory_FactoryDraw_50a710 factory_FactoryStep_5069e0 insect_InsectBattleMenuMatchIntro_4fe160	low	
+ad_code	0x04	XYZF2	dyn		9	BattleEffectBurstSpawn_2d4760 CharaAbilityResRequest_1f0650 LoadingScreenFrame_3435d0 MenuCatalogPageCloseState_35c510 MesWinLayoutText_274e70 MeshMaterialBuildPkt_14ac90 SoundCategoryTableInitMaybe_1bbbb0 factory_FactoryProduceRun_505e00	high	
+ad_code	0x04	XYZF2	dyn		37	CharaInit_2150c0 CharaPartyResRequestMaybe_1f00e0 CharaPcBtChrRequestLoadMaybe_1f0af0 CharaResetBattleStateMaybe_212f20 CharaRestoreSavedMotion_20a640 CharaSaveMotion_20a6f0 DrawRotatedQuad_383c70 FileIoPathCmdRpc_11ca10 MapCaptionShow_33f940 MapSceneCfgInit_1937a0 MenuItemScreenCloseState_2b17e0 in	low	
+ad_code	0x05	XYZ2	dyn		5	CharaAbilityResRequest_1f0650 CharaMonCopyResRequest_1f2430 insect_InsectBattleCamUpdate_4f2100 sceGsSetDefClear	high	
+ad_code	0x05	XYZ2	dyn		14	CharaMonsterResRequest_1f11c0 CharaPcResRequest_1f1f40 EvCmdPcModelApply_241870 GsPktSetXYZPixelVec_13ef70 GsPktSetXYZPixel_13f110 GsPktSetXYZVecI_13eeb0 GsPktSetXYZ_13ef10 GsPktSetXYZfVec_13efe0 GsPktSetXYZf_13f060 LoadingScreenRequestEnd_343100 MallocExtendTop_130e78 MenuModelPageOpenState_358840	low	
+ad_code	0x06	TEX0_1	0x140		1	DebugItemIconGridShow_29a890	high	
+ad_code	0x06	TEX0_1	dyn		4	GsPktSetTexture_13ec00 SoundCategoryTableInitMaybe_1bbbb0 insect_InsectBattleCamUpdate_4f2100	high	
+ad_code	0x06	TEX0_1	0x13F		1	DebugItemIconGridUpdate_29a2f0	low	
+ad_code	0x06	TEX0_1	dyn		4	IosInit_102a50 TexEnvBuildDmaChainMaybe_14abb0 insect_InsectSeqCmdSpiderWebInit_4ebdc0 scePadSetActDirect	low	
+ad_code	0x07	TEX0_2	dyn		8	MesWinMeasureText_272b80 SoundCategoryFadeInit_1b60c0 insect_InsectBattleCamUpdate_4f2100 insect_InsectBattleFlowTeamSelectInput_507c80	high	
+ad_code	0x07	TEX0_2	dyn		2	LoadingScreenTryFinish_3430c0 MeshMaterialDescInitShadowProjMaybe_14bb40	low	
+ad_code	0x08	CLAMP_1	0xE	WMS=REGION_CLAMP WMT=REGION_REPEAT	13	MenuLayoutPartyPanelMaybe_29cfb0	high	
+ad_code	0x08	CLAMP_1	0x140	WMS=REPEAT WMT=REPEAT	1	DebugItemIconGridShow_29a890	high	
+ad_code	0x08	CLAMP_1	dyn		12	GsPktSetTexture_13ec00 LoadingScreenFrame_3435d0 MesWinMeasureText_272b80 MeshMaterialBuildPkt_14ac90 SoundStreamSlotUpdate_1bea70 factory_FactoryProduceRun_505e00 insect_InsectBattleFlowLayout_506b20	high	
+ad_code	0x08	CLAMP_1	0x72	WMS=REGION_CLAMP WMT=REPEAT	1	MinimapDrawEntry_325720	low	
+ad_code	0x08	CLAMP_1	dyn		6	DebugItemListInit_29a2a0 MpegDemuxPssRing_115340 SoundStreamSlotInit_1be9f0 normal_MenuBattleEndMemberRowsRefreshMaybe_4ed370 normal_MenuBattleEndOpen_4ec990 sceLseek64_11df90	low	
+ad_code	0x09	CLAMP_2	dyn		6	MesWinLayoutText_274e70 SoundStreamSlotUpdate_1bea70 factory_FactoryProduceRun_505e00 insect_InsectBattleCamUpdate_4f2100 insect_InsectBattleFlowLayout_506b20	high	
+ad_code	0x09	CLAMP_2	dyn		1	normal_MenuBattleEndInit_4ee600	low	
+ad_code	0x0A	FOG	dyn		3	MesWinMeasureText_272b80 factory_FactoryProduceRun_505e00 insect_InsectBattleFlowLayout_506b20	high	
+ad_code	0x0C	XYZF3	dyn		3	MesWinMeasureText_272b80 factory_FactoryProduceRun_505e00 insect_InsectBattleCamUpdate_4f2100	high	
+ad_code	0x0D	XYZ3	dyn		1	factory_FactoryProduceRun_505e00	high	
+ad_code	0x0D	XYZ3	dyn		2	ScriptVmExec_173b00 insect_InsectBattleFlowDispatch_50b8d0	low	
+ad_code	0x14	TEX1_1	0xEA		1	SaveSlotListRefreshDetailMaybe_3783c0	high	
+ad_code	0x14	TEX1_1	dyn		3	GsPktSetTexture_13ec00 MesWinLayoutText_274e70 MeshMaterialBuildPkt_14ac90	high	
+ad_code	0x14	TEX1_1	dyn		8	DebugFontLoad_313130 MesWinDrawChoiceArrow_271730 SceneInit_1c4460 StaticInitTextLayout_46cad0 normal_TransHunterMsgOpenState_51eb20	low	
+ad_code	0x17	TEX2_2	dyn		1	MesWinLayoutText_274e70	high	
+ad_code	0x18	XYOFFSET_1	dyn		2	MesWinMeasureText_272b80 sceGsSetDefDrawEnv	high	
+ad_code	0x18	XYOFFSET_1	dyn		1	MapAreaModelInit_1899c0	low	
+ad_code	0x19	XYOFFSET_2	dyn		3	insect_InsectBattleFlowTeamSelectInput_507c80	high	
+ad_code	0x1A	PRMODECONT	0x1	1	1	GsPktOpen_13f4a0	high	
+ad_code	0x1A	PRMODECONT	dyn		1	sceGsSetDefDrawEnv	high	
+ad_code	0x1B	PRMODE	0x16		8	MenuDrawItemTabs_2a4ee0 MenuItemCategoryTabsLayout_288ac0 normal_ShopMenuSellTabsLayout_50e980 normal_ThinkMenuTabsLayout_520500	low	
+ad_code	0x1B	PRMODE	0xFFFFD8F1		6	MenuCatalogTabSpritesUpdate_3603e0 MenuModelPageTabSpritesUpdate_3593e0	low	
+ad_code	0x1C	TEXCLUT	dyn		1	MesWinMeasureText_272b80	high	
+ad_code	0x1C	TEXCLUT	0xFFFFD8F1		3	factory_FactoryMaterialTabHighlight_4f3740	low	
+ad_code	0x1C	TEXCLUT	dyn		17	CompleteCheckCategoryMsgState_39e0b0 InsectMenuCageCollectState_3956d0 InsectMenuCageFullMsgState_397500 InsectMenuEmptyCageChoiceSelect_3970f0 LeaderSwitchOpenState_39ca50 LeaderSwitchTooFarState_39c150 MenuCageCatchNoticeStateMaybe_2b1a50 MenuItemMsgPopupState_2a6670 MenuNoticeMsgBoxState_294df0 M	low	
+ad_code	0x35	MIPTBP1_2	dyn		1	MesWinLayoutText_274e70	high	
+ad_code	0x36	MIPTBP2_1	0xEA		1	SaveSlotListRefreshDetailMaybe_3783c0	high	
+ad_code	0x36	MIPTBP2_1	dyn		1	MesWinMeasureText_272b80	high	
+ad_code	0x3B	TEXA	dyn		3	GsPktSetTexa_13eca0 SaveIconSysFormatTitle_3ee980 litodp	low	
+ad_code	0x3D	FOGCOL	dyn		1	MesWinMeasureText_272b80	high	
+ad_code	0x3D	FOGCOL	dyn		1	FogColRegWrite_156c00	low	
+ad_code	0x3F	TEXFLUSH	0x0		3	DrawListAddVramCopy_1414a0 GsPktOpen_13f4a0 GsPktSetTexture_13ec00	high	
+ad_code	0x3F	TEXFLUSH	dyn		2	GsBuildImageUploadPkt_1581b0 GsBuildImageUploadRefPkt_158390	high	
+ad_code	0x3F	TEXFLUSH	0x0		1	GsPktClose_13f5b0	low	
+ad_code	0x40	SCISSOR_1	0xE		4	MenuLayoutPartyPanelMaybe_29cfb0	high	
+ad_code	0x40	SCISSOR_1	dyn		1	sceGsSetDefDrawEnv	high	
+ad_code	0x40	SCISSOR_1	dyn		4	LensFlareSetupElements_2ee040	low	
+ad_code	0x42	ALPHA_1	0x44	(Cs-Cd)*As>>7+Cd FIX=0	1	GsEnvInit_1573b0	high	
+ad_code	0x42	ALPHA_1	0x42	(0-Cs)*As>>7+Cd FIX=0	1	DrawPktBuildPlaneShadowMtx_147eb0	low	
+ad_code	0x42	ALPHA_1	0x48	(Cs-0)*As>>7+Cd FIX=0	1	DrawPktBuildPlaneShadowMtx_147eb0	low	
+ad_code	0x42	ALPHA_1	dyn		1	MenuPartyMemberCmdSelectState_2b9720	low	
+ad_code	0x44	DIMX	dyn		1	MesWinMeasureText_272b80	high	
+ad_code	0x45	DTHE	dyn		1	sceGsSetDefDrawEnv	high	
+ad_code	0x46	COLCLAMP	dyn		1	sceGsSetDefDrawEnv	high	
+ad_code	0x47	TEST_1	0x30000	ZTE ALWAYS	3	sceGsSetDefClear sceGsSetDefDrawEnv	high	
+ad_code	0x47	TEST_1	0x5000B	ATE GEQUAL ref=0 fail=KEEP; ZTE GEQUAL	1	GsEnvInit_1573b0	high	
+ad_code	0x4A	FBA_1	dyn		1	GsEnvInit_1573b0	high	
+ad_code	0x4C	FRAME_1	dyn		2	GsEnvInit_1573b0 sceGsSetDefDrawEnv	high	
+ad_code	0x4E	ZBUF_1	dyn		2	GsEnvInit_1573b0 sceGsSetDefDrawEnv	high	
+ad_code	0x4E	ZBUF_1	dyn		2	factory_FactoryProduceShowMessage_4f62d0 normal_TransHunterRewardOpenState_51d570	low	
+ad_code	0x50	BITBLTBUF	dyn		4	DrawListAddVramCopy_1414a0 GsBuildImageUploadPkt_1581b0 GsBuildImageUploadRefPkt_158390 sceGsSetDefStoreImage	high	
+ad_code	0x50	BITBLTBUF	dyn		4	EventScriptVmInit_23ffa0 MenuRevelationBoardState_347dd0 RevelationBoardCursorUpdateMaybe_34d080 RevelationBoardFocusChara_345ed0	low	
+ad_code	0x51	TRXPOS	dyn		4	DrawListAddVramCopy_1414a0 GsBuildImageUploadPkt_1581b0 GsBuildImageUploadRefPkt_158390 sceGsSetDefStoreImage	high	
+ad_code	0x52	TRXREG	dyn		4	DrawListAddVramCopy_1414a0 GsBuildImageUploadPkt_1581b0 GsBuildImageUploadRefPkt_158390 sceGsSetDefStoreImage	high	
+ad_code	0x53	TRXDIR	0x1		1	sceGsSetDefStoreImage	high	
+ad_code	0x53	TRXDIR	0x2		1	DrawListAddVramCopy_1414a0	high	
+ad_code	0x53	TRXDIR	dyn		2	GsBuildImageUploadPkt_1581b0 GsBuildImageUploadRefPkt_158390	high	
+ad_code	0x54	HWREG	dyn		4	CharaBaseCtor_3a9190 CharaInitFromData_3af8f0 CharaKind1002Ctor_3a9090 CharaResetState_3af9b0	low	
+ad_code	0x61	FINISH	0x0		1	sceGsSetDefStoreImage	high	
+ad_data	0x00	PRIM	0x3	TRIANGLE	1	main:0x436C60	high	
+ad_data	0x01	RGBAQ	0x0		1	main:0x436C60	high	
+ad_data	0x06	TEX0_1	0x20153005DD412580		1	main:0x455390	high	
+ad_data	0x14	TEX1_1	0x61		1	main:0x455390	high	
+ad_data	0x1A	PRMODECONT	0x0	0	1	main:0x436C60	high	
+ad_data	0x1A	PRMODECONT	0x1	1	1	main:0x455390	high	
+ad_data	0x3B	TEXA	0x8000008080	TA0=128 AEM=1 TA1=128	1	main:0x455390	high	
+ad_data	0x3D	FOGCOL	0xC8C8C8		1	main:0x455390	high	
+ad_data	0x3F	TEXFLUSH	0x0		1	main:0x449F60	high	
+ad_data	0x40	SCISSOR_1	0xDF0000027F0000		1	main:0x455390	high	
+ad_data	0x42	ALPHA_1	0x44	(Cs-Cd)*As>>7+Cd FIX=0	1	main:0x455390	high	
+ad_data	0x46	COLCLAMP	0x1	1	1	main:0x455390	high	
+api_arg	arg1	DrawEnvSetCenter_157560	0x0x1		1	GfxSetVideoMode_1451f0	high	
+api_arg	arg2	DrawEnvSetCenter_157560	0x0x1		1	GfxSetVideoMode_1451f0	high	
+api_arg	arg2	DrawEnvSetFrameFromDesc_144fe0	0x0x30		30	BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 DrawListBeginPlaneShadowPass_147b80 DrawListEndPlaneShadowPass_146cc0 FocusFilterDrawMaybe_17c000 GlareFilterDrawMaybe_17a0d0 MinimapDrawEntry_325720 ModelDrawOffscreenCompositeMaybe_16aac0 ScreenCo	high	
+api_arg	arg1	DrawEnvSetScissor_157580	0x69x1		1	MenuMobPreviewDraw_35fa50	high	
+api_arg	arg2	DrawEnvSetScissor_157580	0x64x1		1	MenuMobPreviewDraw_35fa50	high	
+api_arg	arg3	DrawEnvSetScissor_157580	0x1D5x1		1	MenuMobPreviewDraw_35fa50	high	
+api_arg	arg1	DrawEnvSetVsyncInterval_144140	0x2x4, 0x1x2		6	SceneOverlayModeOff_288300 SceneOverlayModeOn_288340 SystemHeapsInit_2020d0 title_TitleSceneOverlayModeOff_4eaa00 title_TitleSceneOverlayModeOn_4eaa40 title_TitleSessionInit_4f0cb0	high	
+api_arg	arg2	DrawEnvSetVsyncInterval_144140	0x0x6		6	SceneOverlayModeOff_288300 SceneOverlayModeOn_288340 SystemHeapsInit_2020d0 title_TitleSceneOverlayModeOff_4eaa00 title_TitleSceneOverlayModeOn_4eaa40 title_TitleSessionInit_4f0cb0	high	
+api_arg	arg1	GsFbaSetEnable_156e80	0x0x2, 0x1x1		3	GsPktInit_13f7f0 GsPktSetDefaultState_13fa80 MeshMaterialBuildPkt_14ac90	high	
+api_arg	arg1	GsFrameSetMaskMode_156cc0	0x1x1		1	MeshMaterialBuildPkt_14ac90	high	
+api_arg	arg1	GsPktAddDmaCallTag_13f1f0	0x445C60x1		1	ModelDrawOffscreenCompositeMaybe_16aac0	high	
+api_arg	arg2	GsPktAddTexSprite_13e520	dynx5, 0xFFFFFFF4x1, 0x24x1		7	DrawListEndPlaneShadowPass_146cc0 ShadowMapBlur_145b60	high	
+api_arg	arg1	GsPktBeginPrimAD_13f6b0	0x6x2, dynx1		3	GsPktAddTexSprite_13e520 GsPktOpenPrim_13f730	high	
+api_arg	arg1	GsPktEnableAlphaTest_13e4d0	0x1x91, 0x0x60, dynx1		152	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BladeLineDraw_2d5c40 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CameraDbgDrawTargetSphere_305b70 DamagePopupDrawAll_2d2ea0 DebugItemListDraw_299500 DebugMenuWidgetDrawWindow_209310 DofFilterDrawMaybe_17d150 DoorC	high	
+api_arg	arg1	GsPktEnableZTest_13e460	0x0x127, 0x1x40, dynx1		168	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BladeLineDraw_2d5c40 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CameraDbgDrawTargetSphere_305b70 CompassHudRender_370fb0 DamagePopupDrawAll_2d2ea0 DebugItemListDraw_299500 DebugMenuWidgetDrawWindow_209310 DofFilt	high	
+api_arg	arg1	GsPktInit_13f7f0	0x0x7		7	DrawListBeginPrim_141b00 DrawListClearScreen_1423c0 DrawListEmitFrameEnvMaybe_142280 GfxBlitTexRect_141000 GfxDrawPerfMeter_1431c0 GfxEndFrame_141c20 RefractionCaptureFrame_13ffd0	high	
+api_arg	arg1	GsPktOpenGifTag_13f3b0	0x6x4, 0x4x1		5	GsPktAddTexSprite_13e520 GsPktDrawSprite_13ea30 GsPktTileScreenSprites_177cf0 ScreenFadeBlockDrawWipeStrips_177a70	high	
+api_arg	arg2	GsPktOpenGifTag_13f3b0	0x43x2, 0x4343x1, 0x43431x1, 0x441x1		5	GsPktAddTexSprite_13e520 GsPktDrawSprite_13ea30 GsPktTileScreenSprites_177cf0 ScreenFadeBlockDrawWipeStrips_177a70	high	
+api_arg	arg3	GsPktOpenGifTag_13f3b0	0x0x5		5	GsPktAddTexSprite_13e520 GsPktDrawSprite_13ea30 GsPktTileScreenSprites_177cf0 ScreenFadeBlockDrawWipeStrips_177a70	high	
+api_arg	arg1	GsPktOpenPrim_13f730	0x6x187, 0x4x35, 0x3x13, 0x1x8, 0x2x7, 0x0x6, 0x5x5		261	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 CompassHudRender_370fb0 DamagePopupDraw_2d3240 DebugMenuWidgetDrawWindow_209310 DofFilterDrawMaybe_17d150 DoorCursorDr	high	PRIM type: SPRITEx187, LINESTRIPx7, LINEx8, TRIFANx5, TRISTRIPx35, POINTx6, TRIANGLEx13
+api_arg	arg3	GsPktPushQword_13f170	dynx6, 0x0x2		8	GsPktTileScreenSprites_177cf0 ScreenFadeBlockDrawWipeStrips_177a70	high	
+api_arg	arg1	GsPktReserveQwords_13f230	0x0x1, dynx1		2	ScreenTexOverlayWriteSpriteMaybe_16a890	high	
+api_arg	arg1	GsPktSetAlphaBlend_13e500	0x1x130, 0x0x59, 0x4x1, dynx1		191	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BladeLineDraw_2d5c40 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CameraDbgDrawTargetSphere_305b70 CompassHudRender_370fb0 DamagePopupDrawAll_2d2ea0 DebugItemListDraw_299500 DebugMenuWidget	high	
+api_arg	arg1	GsPktSetAlphaTestFunc_13e4c0	0x6x24, 0x5x11, 0x1x8, dynx3, 0x0x2, 0x2x1		49	BloomExtractBlurMaybe_179360 CompassHudRender_370fb0 DamagePopupDrawAll_2d2ea0 DoorCursorDraw_304aa0 DrawBillboard32_2783c0 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 FontPktSetFlatState_26fd20 FontPktSetTextState_26fc80 GlareFilterDrawMaybe_17a0d0 GsPktSetup2DState_26fdc0 MenuFadeDra	high	
+api_arg	arg2	GsPktSetAlphaTestFunc_13e4c0	0x0x32, 0x1x9, dynx4, 0x10x2, 0x81x1, 0x80x1		49	BloomExtractBlurMaybe_179360 CompassHudRender_370fb0 DamagePopupDrawAll_2d2ea0 DoorCursorDraw_304aa0 DrawBillboard32_2783c0 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 FontPktSetFlatState_26fd20 FontPktSetTextState_26fc80 GlareFilterDrawMaybe_17a0d0 GsPktSetup2DState_26fdc0 MenuFadeDra	high	
+api_arg	arg1	GsPktSetAntialias_13e390	0x0x27, 0x1x2		29	FontPktSetTextState_26fc80 GsPktSetup2DState_26fdc0 GsPktSetup2DState_3892a0 GsPktSetupUiDrawState_2932b0 HpGaugeDrawBarThin_31d440 HpGaugeDrawBar_31c310 ItemSpriteSpinDrawCb_2b3bb0 MenuTestDraw_2038f0 MinimapDrawEntry_325720 RevelationBoardDraw_349e70 ScreenMarkerDrawAll_31af50 SunFlareDrawQuadsMay	high	
+api_arg	arg1	GsPktSetBlendMode_13e4f0	0x1x83, 0x2x33, 0x9x7, dynx6, 0x3x2, 0x7x2, 0x8x2, 0x0x2, 0xAx1		138	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BladeLineDraw_2d5c40 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CameraDbgDrawTargetSphere_305b70 CompassHudRender_370fb0 DamagePopupDrawAll_2d2ea0 DebugItemListDraw_299500 DebugMenuWidget	high	
+api_arg	arg2	GsPktSetDefaultState_13fa80	dynx13, 0x453E18x1		14	CompassHudRender_370fb0 InsectMenuDraw_397bd0 MinimapDrawEntry_325720	high	
+api_arg	arg1	GsPktSetDestAlphaMode_13e4b0	0x1x6, 0x0x1		7	FrameAlphaClear_179b20 MinimapDrawEntry_325720 SunFlareDrawQuadsMaybe_17b390	high	
+api_arg	arg1	GsPktSetDestAlphaTest_13e4a0	0x0x13, 0x1x6		19	FocusFilterDrawMaybe_17c000 FrameAlphaClear_179b20 MinimapDrawEntry_325720 ShadowMapRender_146680 SunFlareDrawQuadsMaybe_17b390	high	
+api_arg	arg1	GsPktSetFog_13e370	0x0x1		1	SunFlareDrawQuadsMaybe_17b390	high	
+api_arg	arg1	GsPktSetFrameMask_13e420	0x1x21, 0x2x14, 0x0x6, 0xFFFFFFFFx5, 0x3x3		49	BattleEffectBurstDraw_2d4260 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 DofFilterDrawMaybe_17d150 DrawListEndPlaneShadowPass_146cc0 EffectEntryDrawNodes_2da850 FocusFilterDrawMaybe_17c000 FrameAlphaClear_179b20 FuncDataTableDrawFireFlaresMay	high	
+api_arg	arg1	GsPktSetGouraud_13e3b0	0x1x42, 0x0x24		66	BattleEffectBurstDraw_2d4260 BladeLineDraw_2d5c40 DoorCursorDraw_304aa0 DrawClippedGouraudQuad_17f3b0 EffectTimedSlotDrawMaybe_2d4950 FontDrawTextGradient_26c6e0 FontPktSetFlatState_26fd20 FontPktSetTextState_26fc80 GsPktSetup2DState_26fdc0 GsPktSetup2DState_3892a0 GsPktSetupUiDrawState_2932b0 Guard	high	
+api_arg	arg1	GsPktSetOriginMode_13e2f0	0x0x97, 0x1x33, 0x2x2		132	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BladeLineDraw_2d5c40 BloomExtractBlurMaybe_179360 CameraDbgDrawTargetSphere_305b70 CompassHudRender_370fb0 DamagePopupDrawAll_2d2ea0 DebugItemListDraw_299500 DebugMenuWidgetDrawWindow_209310 DofFilterDrawMaybe_17d150 Doo	high	
+api_arg	arg1	GsPktSetPrimType_13f470	0x6x5		5	ScreenFadeBlockDraw_177540 ScreenTexOverlayDrawMultiMaybe_16a510 ScreenTexOverlayDrawSingleMaybe_16a780	high	PRIM type: SPRITEx5
+api_arg	arg1	GsPktSetRGBAQ_13ee40	dynx108, 0x80x98, 0x0x46, 0xFFx6, 0x40x5, 0x48x4, 0x20x3, 0x64x2, 0x55x2, 0xE4x2, 0xAx2, 0x1x1		284	AttackChainDraw_380660 BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 CompassHudRender_370fb0 DofFilterDrawMaybe_17d150 DrawListClearScreen_1423c0 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 DynClothDebu	high	
+api_arg	arg2	GsPktSetRGBAQ_13ee40	dynx105, 0x80x103, 0x0x41, 0xFFx7, 0x40x6, 0x48x4, 0x64x2, 0x3Cx2, 0x20x2, 0x55x2, 0xE4x2, 0xAx2		284	AttackChainDraw_380660 BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 CompassHudRender_370fb0 DofFilterDrawMaybe_17d150 DrawListClearScreen_1423c0 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 DynClothDebu	high	
+api_arg	arg3	GsPktSetRGBAQ_13ee40	dynx102, 0x80x101, 0x0x46, 0xFFx9, 0x40x5, 0xA0x4, 0x20x2, 0x55x2, 0xE4x2, 0xAx2, 0x1x1, 0x50x1		284	AttackChainDraw_380660 BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 CompassHudRender_370fb0 DofFilterDrawMaybe_17d150 DrawListClearScreen_1423c0 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 DynClothDebu	high	
+api_arg	arg1	GsPktSetScissorDefault_28c2d0	0x4DB440x1, 0x4DB800x1, 0x4DB7D0x1, 0x4DB7A0x1, 0x4DB770x1, 0x4DB740x1, 0x4E9240x1, 0x5278F0x1, 0x527E80x1, 0x528070x1		10	MenuScissorDrawCb_2b3b20 MenuScissorDrawCb_2bb3d0 MenuScissorDrawCb_2bb400 MenuScissorDrawCb_2bb430 MenuScissorDrawCb_2bb460 MenuScissorDrawCb_2bb490 MenuScissorDrawCb_3805d0 normal_BtlChgMenuScissorResetDrawCb_503900 normal_ShopMenuScissorDrawCb_510ce0 normal_ThinkMenuScissorDrawCb_521130	high	
+api_arg	arg1	GsPktSetScissor_28c2e0	0x47ED00x1, 0x480540x1, 0x480530x1		3	MenuScissorDrawCb_2bb3a0 normal_BtlChgMenuScissorDrawCb_5038a0 normal_BtlChgMenuScissorDrawCb_5038d0	high	
+api_arg	arg3	GsPktSetScissor_28c2e0	0x0x3		3	MenuScissorDrawCb_2bb3a0 normal_BtlChgMenuScissorDrawCb_5038a0 normal_BtlChgMenuScissorDrawCb_5038d0	high	
+api_arg	arg1	GsPktSetTexFilter_13e3d0	0x1x59, 0x0x47, dynx2		108	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BladeLineDraw_2d5c40 BloomExtractBlurMaybe_179360 CBlurTexBlurMaybe_1789e0 CompassHudRender_370fb0 DamagePopupDrawAll_2d2ea0 DoorCursorDraw_304aa0 DrawBillboard32_2783c0 DrawTexturedRect_26a920 EffectEntryDrawNodes_2da85	high	
+api_arg	arg1	GsPktSetTexture_13ec00	dynx158, 0x0x2		160	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 CompassHudRender_370fb0 DamagePopupDraw_2d3240 DofFilterDrawMaybe_17d150 DrawBillboard32_2783c0 DrawCameraFacingQuad_2	high	
+api_arg	arg1	GsPktSetTextured_13e400	0x1x121, 0x0x81		202	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BladeLineDraw_2d5c40 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CameraDbgDrawTargetSphere_305b70 CompassHudRender_370fb0 DamagePopupDrawAll_2d2ea0 DebugItemListDraw_299500 DebugMenuWidget	high	
+api_arg	arg1	GsPktSetUVFixed_13ed90	dynx65, 0x0x4, 0x8x3		72	CBlurTexBlurMaybe_1789e0 DofFilterDrawMaybe_17d150 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 FocusFilterDrawMaybe_17c000 GfxBlitTexRect_141000 GsPktSpriteSplitU_17adf0 LetterboxDraw_277ff0 LoadingIconDraw_2ee320 MenuWinDraw_26b840 MovieDrawFrame_1d5870 ParticleSwirlDraw_17d7b0 PauseR	high	
+api_arg	arg2	GsPktSetUVFixed_13ed90	dynx60, 0x8x8, 0x0x4		72	CBlurTexBlurMaybe_1789e0 DofFilterDrawMaybe_17d150 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 FocusFilterDrawMaybe_17c000 GfxBlitTexRect_141000 GsPktSpriteSplitU_17adf0 LetterboxDraw_277ff0 LoadingIconDraw_2ee320 MenuWinDraw_26b840 MovieDrawFrame_1d5870 ParticleSwirlDraw_17d7b0 PauseR	high	
+api_arg	arg1	GsPktSetUV_13ed60	dynx210, 0x0x46, 0x40x8, 0x17Fx8, 0x7Fx6, 0x3Fx5, 0x20x4, 0xFFx2, 0x10x2, 0x54x2, 0x86x2, 0xA8x2		324	BattleEffectParticleDraw_2d4400 BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CompassHudRender_370fb0 DamagePopupDraw_2d3240 DrawBillboard32_2783c0 DrawCameraFacingQuad_2d4d40 DrawRotatedQuad_383c70 EffSpriteListDraw_2dcab0 FocusFilterDrawMay	high	
+api_arg	arg2	GsPktSetUV_13ed60	dynx202, 0x0x46, 0x17Fx8, 0x40x5, 0x11x4, 0x80x4, 0x3Fx4, 0xC0x3, 0x22x3, 0x34x3, 0x20x3, 0x1x2		324	BattleEffectParticleDraw_2d4400 BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CompassHudRender_370fb0 DamagePopupDraw_2d3240 DrawBillboard32_2783c0 DrawCameraFacingQuad_2d4d40 DrawRotatedQuad_383c70 EffSpriteListDraw_2dcab0 FocusFilterDrawMay	high	
+api_arg	arg1	GsPktSetUseUV_13e3e0	0x1x52, 0x0x3		55	AttackChainDraw_380660 BladeLineDraw_2d5c40 EffectTimedSlotDrawMaybe_2d4950 GsPktSetup2DState_3892a0 GsPktSetupUiDrawState_2932b0 GuardWaveEffectDraw_2d5830 ItemSpriteSpinDrawCb_2b3bb0 LensFlareDraw_2ed830 LetterboxDraw_277ff0 LightningMgrDraw_2d6530 LoadingIconDraw_2ee320 MapCaptionDraw_33f330 Menu	high	
+api_arg	arg1	GsPktSetXYZPixel_13f110	dynx180, 0x0x37, 0x8x4, 0x10x4, 0x20x3, 0xFFFFFFFFx3, 0x1FFx3, 0x50x3, 0x200x2, 0x80x2, 0x88x2, 0x178x2		269	BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 DrawColorRect_1cc040 DrawListClearScreen_1423c0 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 FocusFilterDrawMaybe_17c000 FrameAlphaClear_179b20 GfxDrawPerfMe	high	
+api_arg	arg2	GsPktSetXYZPixel_13f110	dynx186, 0x0x37, 0x19Fx5, 0xFFFFFFFFx3, 0x1C0x3, 0x1BFx3, 0x28x3, 0x18Ex3, 0x6Cx2, 0x82x2, 0x94x2, 0x42x2		269	BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 DrawColorRect_1cc040 DrawListClearScreen_1423c0 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 FocusFilterDrawMaybe_17c000 FrameAlphaClear_179b20 GfxDrawPerfMe	high	
+api_arg	arg3	GsPktSetXYZPixel_13f110	0x0x229, dynx40		269	BattleSparkBurstDraw_382fd0 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CBlurTexBlurMaybe_1789e0 CBlurTexClearMaybe_179020 DrawColorRect_1cc040 DrawListClearScreen_1423c0 DrawListEndPlaneShadowPass_146cc0 DrawTexturedRect_26a920 FocusFilterDrawMaybe_17c000 FrameAlphaClear_179b20 GfxDrawPerfMe	high	
+api_arg	arg1	GsPktSetXYZ_13ef10	dynx126, 0x0x9, 0xFFFFFFF8x4, 0x1B00x1		140	BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CompassHudRender_370fb0 DamagePopupDraw_2d3240 DofFilterDrawMaybe_17d150 DoorCursorDraw_304aa0 FocusFilterDrawMaybe_17c000 GfxBlitTexRect_141000 GsPktSpriteSplitU_17adf0 GuardWaveEffectDraw_2d5830 InsectCageUnitMarkersDraw_3888e0 LensFlareDraw_2ed83	high	
+api_arg	arg2	GsPktSetXYZ_13ef10	dynx129, 0x0x6, 0xFFFFFFF8x4, 0x180x1		140	BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CompassHudRender_370fb0 DamagePopupDraw_2d3240 DofFilterDrawMaybe_17d150 DoorCursorDraw_304aa0 FocusFilterDrawMaybe_17c000 GfxBlitTexRect_141000 GsPktSpriteSplitU_17adf0 GuardWaveEffectDraw_2d5830 InsectCageUnitMarkersDraw_3888e0 LensFlareDraw_2ed83	high	
+api_arg	arg3	GsPktSetXYZ_13ef10	0x0x94, dynx46		140	BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CompassHudRender_370fb0 DamagePopupDraw_2d3240 DofFilterDrawMaybe_17d150 DoorCursorDraw_304aa0 FocusFilterDrawMaybe_17c000 GfxBlitTexRect_141000 GsPktSpriteSplitU_17adf0 GuardWaveEffectDraw_2d5830 InsectCageUnitMarkersDraw_3888e0 LensFlareDraw_2ed83	high	
+api_arg	arg1	GsPktSetZTest_13e450	0x0x56, 0x2x14		70	BattleEffectBurstDraw_2d4260 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 DofFilterDrawMaybe_17d150 DoorCursorDraw_304aa0 DrawClippedGouraudQuad_17f3b0 DrawListBeginPlaneShadowPass_147b80 DrawListClearScreen_1423c0 DrawListEndPlaneShadowPass_146cc0 FocusFilterDrawMaybe_17c000 FontDrawTextGradi	high	
+api_arg	arg1	GsPktSetZWriteMask_13e430	0x1x118, 0x0x40		158	AttackChainDraw_380660 BattleEffectBurstDraw_2d4260 BattleSparkBurstDraw_382fd0 BladeLineDraw_2d5c40 BloomExtractBlurMaybe_179360 CBlurDrawMaybe_1784e0 CameraDbgDrawTargetSphere_305b70 CompassHudRender_370fb0 DamagePopupDrawAll_2d2ea0 DebugItemListDraw_299500 DebugMenuWidgetDrawWindow_209310 DofFilt	high	
+api_arg	arg1	GsPktSpriteSplitU_17adf0	dynx7, 0x0x1		8	GlareFilterDrawMaybe_17a0d0	high	
+api_arg	arg2	GsPktSpriteSplitU_17adf0	dynx7, 0x0x1		8	GlareFilterDrawMaybe_17a0d0	high	
+api_arg	arg3	GsPktSpriteUVRect_26eb30	dynx10, 0x0x1		11	FontDrawGlyphOutline_26e450 FontDrawGlyph_26de80	high	
+api_arg	arg1	GsPktWriteAD_13ec80	0x40x32, 0x3Bx7, 0x3Fx1		40	DofFilterDrawMaybe_17d150 FontSetScissor_26e380 GsPktSetScissorFull_26fe60 GsPktSetScissorRows_26ff00 GsPktSetScissor_28c2e0 HpGaugeDrawBarThin_31d440 HpGaugeDrawBar_31c310 MenuScissorDrawCb_358da0 MenuScissorDrawCb_35b8f0 MesWinSetScissorFull_271ef0 MesWinSetScissor_271fa0 ParticleSwirlDraw_17d7b0	high	
+api_arg	arg2	GsPktWriteAD_13ec80	dynx39, 0x0x1		40	DofFilterDrawMaybe_17d150 FontSetScissor_26e380 GsPktSetScissorFull_26fe60 GsPktSetScissorRows_26ff00 GsPktSetScissor_28c2e0 HpGaugeDrawBarThin_31d440 HpGaugeDrawBar_31c310 MenuScissorDrawCb_358da0 MenuScissorDrawCb_35b8f0 MesWinSetScissorFull_271ef0 MesWinSetScissor_271fa0 ParticleSwirlDraw_17d7b0	high	
+api_arg	arg3	GsPktWriteAD_13ec80	dynx39, 0x41800000x1		40	DofFilterDrawMaybe_17d150 FontSetScissor_26e380 GsPktSetScissorFull_26fe60 GsPktSetScissorRows_26ff00 GsPktSetScissor_28c2e0 HpGaugeDrawBarThin_31d440 HpGaugeDrawBar_31c310 MenuScissorDrawCb_358da0 MenuScissorDrawCb_35b8f0 MesWinSetScissorFull_271ef0 MesWinSetScissor_271fa0 ParticleSwirlDraw_17d7b0	high	
+api_arg	arg1	GsTestSetAlphaFail_1570a0	0x1x1		1	MeshMaterialBuildPkt_14ac90	high	
+api_arg	arg1	GsTestSetAlphaTest_157100	0x1x2, 0x0x1		3	GsPktDisableTests_13f9e0 GsPktInit_13f7f0 GsPktSetDefaultState_13fa80	high	
+api_arg	arg1	GsTestSetDate_156ff0	0x0x3, dynx1		4	GsPktDisableTests_13f9e0 GsPktInit_13f7f0 GsPktSetDefaultState_13fa80 MeshMaterialBuildPkt_14ac90	high	
+api_arg	arg1	GsTestSetZTest_156f40	0x0x3, 0x2x3, dynx1		7	GsPktDisableTests_13f9e0 GsPktEnableZTest_13e460 GsPktInit_13f7f0 GsPktSetDefaultState_13fa80 MeshMaterialBuildPkt_14ac90	high	
+api_arg	arg1	GsTex1SetFilter_15ac10	0x1x2, dynx1, 0x0x1		4	DofFilterDrawMaybe_17d150 GsPktSetTexture_13ec00 ShadowMapBlur_145b60	high	
+api_arg	arg1	GsZbufSetZMask_156ee0	0x1x3, dynx1		4	GsPktDisableTests_13f9e0 GsPktInit_13f7f0 GsPktSetDefaultState_13fa80 MeshMaterialBuildPkt_14ac90	high	
+api_arg	arg0	sceGsResetGraph_108110	0x0x2		2	GfxSetVideoMode_1451f0 SysInitHardware_15e670	high	
+api_arg	arg1	sceGsResetGraph_108110	dynx1, 0x1x1		2	GfxSetVideoMode_1451f0 SysInitHardware_15e670	high	
+api_arg	arg2	sceGsResetGraph_108110	dynx1, 0x2x1		2	GfxSetVideoMode_1451f0 SysInitHardware_15e670	high	
+api_arg	arg3	sceGsResetGraph_108110	dynx1, 0x1x1		2	GfxSetVideoMode_1451f0 SysInitHardware_15e670	high	
+api_arg	arg1	sceGsSetDefDBuff	dynx1, 0x0x1		2	GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600	high	
+api_arg	arg2	sceGsSetDefDBuff	dynx1, 0x280x1		2	GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600	high	
+api_arg	arg3	sceGsSetDefDBuff	dynx1, 0x1C0x1		2	GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600	high	
+api_arg	arg3	sceGsSetDefStoreImage	dynx1, 0x30x1		2	GfxEndFrame_141c20 GsDownloadImage_140f20	high	
+api_arg	arg1	sceGsSwapDBuff	0x0x1		1	GfxSetVideoMode_1451f0	high	
+api_arg	arg0	sceGsSyncPath_109030	0x0x6		6	FixedTexUploadImpl_15d680 GfxEndFrame_141c20 GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600 GsDownloadImage_140f20	high	
+api_arg	arg1	sceGsSyncPath_109030	0x0x6		6	FixedTexUploadImpl_15d680 GfxEndFrame_141c20 GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600 GsDownloadImage_140f20	high	
+api_arg	arg2	sceGsSyncPath_109030	dynx5, 0x40x1		6	FixedTexUploadImpl_15d680 GfxEndFrame_141c20 GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600 GsDownloadImage_140f20	high	
+api_arg	arg0	sceGsSyncV	0x0x9		9	GfxSetVideoMode_1451f0 GsClearDoubleBuffers_15e600 GsDbufPutEnv_144150 PadPortOpen_184ed0 PadWaitReady_1849e0 SysInitHardware_15e670 title_TitleSessionInit_4f0cb0	high	
+api_arg	arg0	sceGsSyncVCallback_109b18	0x15DF20x1		1	GfxSysInit_15dd20	high	
+table	0x42	ALPHA_1	0x800000002A	(0-0)*FIX>>7+Cs FIX=128	1	D_00449EF0[0] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x44	(Cs-Cd)*As>>7+Cd FIX=0	1	D_00449EF0[1] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x48	(Cs-0)*As>>7+Cd FIX=0	1	D_00449EF0[2] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x42	(0-Cs)*As>>7+Cd FIX=0	1	D_00449EF0[3] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x8000000064	(Cs-Cd)*FIX>>7+Cd FIX=128	1	D_00449EF0[4] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x4A	(0-0)*As>>7+Cd FIX=0	1	D_00449EF0[5] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x89	(Cd-0)*As>>7+0 FIX=0	1	D_00449EF0[6] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x46	(0-Cd)*As>>7+Cd FIX=0	1	D_00449EF0[7] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x88	(Cs-0)*As>>7+0 FIX=0	1	D_00449EF0[8] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x8000000068	(Cs-0)*FIX>>7+Cd FIX=128	1	D_00449EF0[9] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x8000000062	(0-Cs)*FIX>>7+Cd FIX=128	1	D_00449EF0[10] (GsEnvSetBlendPreset_157150)	high	
+table	0x42	ALPHA_1	0x0	(Cs-Cs)*As>>7+Cs FIX=0	1	D_00449EF0[11] (GsEnvSetBlendPreset_157150)	high	
+summary		ALPHA_1	ad_code=1, ad_data=1					
+summary		BGCOLOR	priv-dyn=1					
+summary		BITBLTBUF	ad_code-dyn=4					
+summary		BUSDIR	priv=2					
+summary		CLAMP_1	ad_code=14, ad_code-dyn=12					
+summary		CLAMP_2	ad_code-dyn=6					
+summary		COLCLAMP	ad_code-dyn=1, ad_data=1					
+summary		CSR	priv=5					
+summary		DIMX	ad_code-dyn=1					
+summary		DISPFB1	priv-dyn=2					
+summary		DISPFB2	priv-dyn=1					
+summary		DISPLAY1	priv-dyn=2					
+summary		DISPLAY2	priv-dyn=1					
+summary		DTHE	ad_code-dyn=1					
+summary		EXTDATA	priv-dyn=1					
+summary		FBA_1	ad_code-dyn=1					
+summary		FINISH	ad_code=1					
+summary		FOG	ad_code-dyn=3					
+summary		FOGCOL	ad_code-dyn=1, ad_data=1					
+summary		FRAME_1	ad_code-dyn=2					
+summary		MIPTBP1_2	ad_code-dyn=1					
+summary		MIPTBP2_1	ad_code=1, ad_code-dyn=1					
+summary		PMODE	priv=2, priv-dyn=2					
+summary		PRIM	ad_code=1, ad_data=1					
+summary		PRMODECONT	ad_code=1, ad_code-dyn=1, ad_data=2					
+summary		RGBAQ	ad_code-dyn=1, ad_data=1					
+summary		SCISSOR_1	ad_code=4, ad_code-dyn=1, ad_data=1					
+summary		SMODE2	priv-dyn=1					
+summary		ST	ad_code-dyn=8					
+summary		TEST_1	ad_code=4					
+summary		TEX0_1	ad_code=1, ad_code-dyn=4, ad_data=1					
+summary		TEX0_2	ad_code-dyn=8					
+summary		TEX1_1	ad_code=1, ad_code-dyn=3, ad_data=1					
+summary		TEX2_2	ad_code-dyn=1					
+summary		TEXA	ad_data=1					
+summary		TEXCLUT	ad_code-dyn=1					
+summary		TEXFLUSH	ad_code=3, ad_code-dyn=2, ad_data=1					
+summary		TRXDIR	ad_code=2, ad_code-dyn=2					
+summary		TRXPOS	ad_code-dyn=4					
+summary		TRXREG	ad_code-dyn=4					
+summary		UV	ad_code-dyn=9					
+summary		XYOFFSET_1	ad_code-dyn=2					
+summary		XYOFFSET_2	ad_code-dyn=3					
+summary		XYZ2	ad_code-dyn=5					
+summary		XYZ3	ad_code-dyn=1					
+summary		XYZF2	ad_code-dyn=9					
+summary		XYZF3	ad_code-dyn=3					
+summary		ZBUF_1	ad_code-dyn=2					

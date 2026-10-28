@@ -1,0 +1,224 @@
+# census: div_sites
+# source: ../RGDecomp
+# commit: 2efa6b43548fed253fafdee4d22c8d61d506acde
+# generator: tools/census/div_sites.py
+# dropped: float(literal/cast)=577 float(declared-name)=265
+file	line	symbol	image	lib	category	type	divisor	dividend	context
+src/overlays/factory/menu/factory_FactoryMarkerDrawNumber_4f5710.c	572	factory_FactoryMarkerDrawNumber_4f5710	factory	game	div	int	nd	f10	a = t->f10 / nd - 1;
+src/overlays/insect/insect/insect_InsectAiPlanScissorThrow_51f1d0.c	101	insect_InsectAiPlanScissorThrow_51f1d0	insect	game	div	int	dx	(ox - tx)	sx = (ox - tx) / dx;
+src/overlays/insect/insect/insect_InsectAiPlanScissorThrow_51f1d0.c	104	insect_InsectAiPlanScissorThrow_51f1d0	insect	game	div	int	dy	(oy - ty)	sy = (oy - ty) / dy;
+src/overlays/insect/insect/insect_InsectAiSpecialTargetEmperorsRage_51e8f0.c	75	insect_InsectAiSpecialTargetEmperorsRage_51e8f0	insect	game	div	int	lx	(ex - sx)	dx = (ex - sx) / lx;
+src/overlays/insect/insect/insect_InsectAiSpecialTargetEmperorsRage_51e8f0.c	78	insect_InsectAiSpecialTargetEmperorsRage_51e8f0	insect	game	div	int	ly	(ey - sy)	dy = (ey - sy) / ly;
+src/overlays/insect/insect/insect_InsectAiSpecialTargetScissorThrow_51e150.c	89	insect_InsectAiSpecialTargetScissorThrow_51e150	insect	game	div	int	nx	dx	sx = dx / nx;
+src/overlays/insect/insect/insect_InsectAiSpecialTargetScissorThrow_51e150.c	92	insect_InsectAiSpecialTargetScissorThrow_51e150	insect	game	div	int	ny	dy	sy = dy / ny;
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	578	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	cel2 = o->f94[func_133710() % n];
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	682	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	cel2 = o->f94[func_133710() % n];
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	771	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	i = func_133710() % n;
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	855	insect_InsectAiThinkStep_51f500	insect	game	mod	unknown	m	func_133710()	j = func_133710() % m;
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	962	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	i = func_133710() % n;
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	1055	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	i = func_133710() % n;
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	1171	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	i = func_133710() % n;
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	1228	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	i = func_133710() % n;
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	1298	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	i = func_133710() % n;
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	1355	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	i = func_133710() % n;
+src/overlays/insect/insect/insect_InsectAiThinkStep_51f500.c	1432	insect_InsectAiThinkStep_51f500	insect	game	mod	int	n	func_133710()	i = func_133710() % n;
+src/overlays/insect/insect/insect_InsectBattleFadeStart_50e1e0.c	23	insect_InsectBattleFadeStart_50e1e0	insect	game	div	int	d	(*r - t)	*q = (*r - t) / d;
+src/overlays/insect/insect/insect_InsectBattleFlowAutoSelectTeam_508380.c	52	insect_InsectBattleFlowAutoSelectTeam_508380	insect	game	mod	int	n	func_133710()	insect_InsectTeamSlotAddMember_514190(s, func_133710() % n);
+src/overlays/insect/insect/insect_InsectBattleFlowLayout_506b20.c	423	insect_InsectBattleFlowLayout_506b20	insect	game	mod	int	c	func_133710()	j = func_133710() % c;
+src/overlays/insect/insect/insect_InsectBoardAbilityCanHit_4eea10.c	253	insect_InsectBoardAbilityCanHit_4eea10	insect	game	div	int	adx	(*ax - cx)	stx = (*ax - cx) / adx;
+src/overlays/insect/insect/insect_InsectBoardAbilityCanHit_4eea10.c	256	insect_InsectBoardAbilityCanHit_4eea10	insect	game	div	int	ady	(*ay - cy)	sty = (*ay - cy) / ady;
+src/overlays/insect/insect/insect_InsectBoardAbilityFindTarget_4ef0f0.c	142	insect_InsectBoardAbilityFindTarget_4ef0f0	insect	game	div	int	ly	(ey - ty)	m = (ey - ty) / ly;
+src/overlays/insect/insect/insect_InsectSeqExecAbiImpact_519760.c	488	insect_InsectSeqExecAbiImpact_519760	insect	game	div	unknown	func_12DE98(d7)	d7	step = d7 / func_12DE98(d7);
+src/overlays/insect/insect/insect_InsectSeqExecAroundDmg_5176c0.c	157	insect_InsectSeqExecAroundDmg_5176c0	insect	game	mod	int	d	func_133710()	s32 rr = func_133710() % d;
+src/overlays/insect/insect/insect_InsectSeqExecAroundDmg_5176c0.c	161	insect_InsectSeqExecAroundDmg_5176c0	insect	game	mod	int	pw	func_133710()	dmg = dmg + func_133710() % pw;
+src/overlays/insect/insect/insect_InsectSeqExecDarkImpact_517d90.c	176	insect_InsectSeqExecDarkImpact_517d90	insect	game	div	int	ax	sx	sx = sx / ax;
+src/overlays/insect/insect/insect_InsectSeqExecDarkImpact_517d90.c	179	insect_InsectSeqExecDarkImpact_517d90	insect	game	div	int	ay	sy	sy = sy / ay;
+src/overlays/insect/insect/insect_InsectSeqExecHeraculesCrash_517120.c	149	insect_InsectSeqExecHeraculesCrash_517120	insect	game	div	int	lx	sx	sx = sx / lx;
+src/overlays/insect/insect/insect_InsectSeqExecHeraculesCrash_517120.c	152	insect_InsectSeqExecHeraculesCrash_517120	insect	game	div	int	ly	sy	sy = sy / ly;
+src/overlays/insect/insect/insect_InsectSeqExecMove_51b2f0.c	90	insect_InsectSeqExecMove_51b2f0	insect	game	div	int	func_12DE98(dx)	dx	dx = dx / func_12DE98(dx);
+src/overlays/insect/insect/insect_InsectSeqExecMove_51b2f0.c	93	insect_InsectSeqExecMove_51b2f0	insect	game	div	int	func_12DE98(dy)	dy	dy = dy / func_12DE98(dy);
+src/main/ai/AiCmdPickCureItemMaybe_2c3500.cpp	120	AiCmdPickCureItemMaybe_2c3500	main	game	mod	int	m	Rand_133710()	if (InvHasItemById_2c43f0(0x40DE) && Rand_133710() % m == 0) {
+src/main/ai/AiCmdPickCureItemMaybe_2c3500.cpp	123	AiCmdPickCureItemMaybe_2c3500	main	game	mod	int	m	Rand_133710()	if (InvHasItemById_2c43f0(0x40DF) && Rand_133710() % m == 0) {
+src/main/ai/AiCmdPickCureItemMaybe_2c3500.cpp	172	AiCmdPickCureItemMaybe_2c3500	main	game	mod	int	n	Rand_133710()	ScriptSlotStoreIntRef_2cc900(self, list[Rand_133710() % n]);
+src/main/ai/AiCmdPickEquipByStatsRelated_2c31d0.cpp	511	AiCmdPickEquipByStatsRelated_2c31d0	main	game	div_assign	int	n	sum[j]	sum[j] /= n;
+src/main/ai/AiCmdUseItem_2ca5a0.cpp	226	AiCmdUseItem_2ca5a0	main	game	mod	int	k	Rand_133710()	sel = buf260[Rand_133710() % k];
+src/main/battle/BattleSetupEncounter_3a3970.cpp	556	BattleSetupEncounter_3a3970	main	game	div	int	grp->n	sum	grp->avg = sum / grp->n;
+src/main/container/DataTableHashName_368a10.c	22	DataTableHashName_368a10	main	game	mod	int	temp_5	(u32)((var_6 + ((u32)((*var_16 - 0x20) * temp_5) / 224U)) + var_7)	var_7 = (u32)((var_6 + ((u32)((*var_16 - 0x20) * temp_5) / 224U)) + var_7) % temp_5;
+src/main/container/PoolFreeElemByPtr_36aa80.c	10	index_of	main	game	div	int	size	diff	index=diff/size;
+src/main/container/PoolFreeElemByPtr_36aa80.c	11	index_of	main	game	mod	int	size	diff	if (diff%size > 0) return -1;
+src/main/container/PoolInit_36ae50.c	65	PoolInit_36ae50	main	game	mod	int	o->f18	f10	rem = o->f10 % o->f18 > 0;
+src/main/container/PoolInit_36ae50.c	66	PoolInit_36ae50	main	game	div	int	o->f18	f10	q = o->f10 / o->f18;
+src/main/container/PoolInit_36ae50.c	73	PoolInit_36ae50	main	game	div	int	o->f10	avail	o->f14 = avail / o->f10;
+src/main/container/PoolInit_36ae50.c	100	PoolInit_36ae50	main	game	div	int	o->f10	fC	o->f14 = (s32)o->fC / o->f10;
+src/main/effect/EffTexAnimeParamUpdateMaybe_1982e0.cpp	105	EffTexAnimeParamUpdateMaybe_1982e0	main	game	mod	int	(a->x10 * a->x14)	pos	cell = pos % (a->x10 * a->x14);
+src/main/effect/EffTexAnimeParamUpdateMaybe_1982e0.cpp	106	EffTexAnimeParamUpdateMaybe_1982e0	main	game	mod	int	a->x10	cell	o->x50 = a->x08 * (f32)(cell % a->x10);
+src/main/effect/EffTexAnimeParamUpdateMaybe_1982e0.cpp	107	EffTexAnimeParamUpdateMaybe_1982e0	main	game	div	int	a->x10	cell	o->x54 = -a->x0C * (f32)(cell / a->x10);
+src/main/effect/EffTexAnimeParamUpdateMaybe_1982e0.cpp	118	EffTexAnimeParamUpdateMaybe_1982e0	main	game	mod	int	(a->x10 * a->x14)	cells[t->sub]	cell = key->cells[t->sub] % (a->x10 * a->x14);
+src/main/effect/EffTexAnimeParamUpdateMaybe_1982e0.cpp	119	EffTexAnimeParamUpdateMaybe_1982e0	main	game	mod	int	a->x10	cell	o->x50 = a->x08 * (f32)(cell % a->x10);
+src/main/effect/EffTexAnimeParamUpdateMaybe_1982e0.cpp	120	EffTexAnimeParamUpdateMaybe_1982e0	main	game	div	int	a->x10	cell	o->x54 = -a->x0C * (f32)(cell / a->x10);
+src/main/effect/EffTexUvRandParamRandomize_198920.c	49	EffTexUvRandParamRandomize_198920	main	game	mod	int	(arg0->m10 * arg0->m14)	(arg0->m18 + m)	idx = (arg0->m18 + m) % (arg0->m10 * arg0->m14);
+src/main/effect/EffTexUvRandParamRandomize_198920.c	50	EffTexUvRandParamRandomize_198920	main	game	mod	int	arg0->m10	idx	arg1->m50 = arg0->m8 * (f32)(idx % arg0->m10);
+src/main/effect/EffTexUvRandParamRandomize_198920.c	51	EffTexUvRandParamRandomize_198920	main	game	div	int	arg0->m10	idx	arg1->m54 = -arg0->mC * (f32)(idx / arg0->m10);
+src/main/effect/ParticleEmitterSpawnMaybe_1a8ad0.cpp	482	ParticleEmitterSpawnMaybe_1a8ad0	main	game	mod_assign	int	cnt	seq	inst->seq %= cnt;
+src/main/event/EventPathEvalXform_2e3da0.cpp	41	EventPathEvalXform_2e3da0	main	game	mod	int	EventPathGetTotalLength_2e4550(arg2)	arg3	arg3 = arg3 % EventPathGetTotalLength_2e4550(arg2);
+src/main/file/FileSlotRead_180aa0.c	89	FileSlotRead_180aa0	main	game	div	int	e->bsize	pos	sect = e->pos / e->bsize;
+src/main/file/FileSlotRead_180aa0.c	90	FileSlotRead_180aa0	main	game	div	int	e->bsize	size	k = size / e->bsize;
+src/main/file/FileSlotRead_180aa0.c	91	FileSlotRead_180aa0	main	game	mod	int	e->bsize	size	if (size % e->bsize != 0) {
+src/main/file/FileSlotSeek_180ed0.c	51	FileSlotSeek_180ed0	main	game	div	int	blk	arg1	n = arg1 / blk;
+src/main/file/FileSlotSeek_180ed0.c	52	FileSlotSeek_180ed0	main	game	mod	int	blk	arg1	if (arg1 % blk != 0) {
+src/main/font/TextCalcGapWidthMaybe_2741c0.c	23	TextCalcGapWidthMaybe_2741c0	main	game	div	int	lines	return (arg1 - sum)	return (arg1 - sum) / lines;
+src/main/font/TextScrollBarDraw_208010.c	60	TextScrollBarDraw_208010	main	game	mod	int	vis	hgt * total	if (hgt * total % vis > 0) {
+src/main/gfx/GfxBlitTexRect_141000.c	111	GfxBlitTexRect_141000	main	game	div	int	n	w2 * (i + 1)	s32 a = src->y0 + w2 * (i + 1) / n;
+src/main/gfx/GfxBlitTexRect_141000.c	112	GfxBlitTexRect_141000	main	game	div	int	n	w4 * i	s32 b = dst->y0 + w4 * i / n;
+src/main/gfx/GfxBlitTexRect_141000.c	113	GfxBlitTexRect_141000	main	game	div	int	n	w4 * (i + 1)	s32 c = dst->y0 + w4 * (i + 1) / n;
+src/main/gfx/GfxBlitTexRect_141000.c	114	GfxBlitTexRect_141000	main	game	div	int	n	w2 * i	GsPktSetUVFixed_13ed90(draw, src->y0 + w2 * i / n, src->x0);
+src/main/gfx/GsPktSpriteSplitU_17adf0.c	21	GsPktSpriteSplitU_17adf0	main	game	div	int	n	(i * dy)	GsPktSetUVFixed_13ed90(arg0, arg5 + (i * dy) / n, arg6);
+src/main/gfx/GsPktSpriteSplitU_17adf0.c	22	GsPktSpriteSplitU_17adf0	main	game	div	int	n	(i * dx)	GsPktSetXYZ_13ef10(arg0, arg1 + (i * dx) / n, arg2, 0);
+src/main/gfx/GsPktSpriteSplitU_17adf0.c	23	GsPktSpriteSplitU_17adf0	main	game	div	int	n	((i + 1) * dy)	GsPktSetUVFixed_13ed90(arg0, arg5 + ((i + 1) * dy) / n, arg8);
+src/main/gfx/GsPktSpriteSplitU_17adf0.c	24	GsPktSpriteSplitU_17adf0	main	game	div	int	n	((i + 1) * dx)	GsPktSetXYZ_13ef10(arg0, arg1 + ((i + 1) * dx) / n, arg4, 0);
+src/main/gfx/LightFlickerScale_18e2c0.c	34	LightFlickerScale_18e2c0	main	game	mod	int	period	t	return mul(1.0f, 1.0f - (0.5f * amp) * (1.0f + Sinf_128fd0((D_0047D5D4 * (f32)(t % period)) / (f32)period)));
+src/main/gfx/LightFlickerScale_18e2c0.c	39	LightFlickerScale_18e2c0	main	game	mod	int	period	t	return mul(1.0f, 1.0f - (amp * (f32)(t % period)) / (f32)period);
+src/main/gfx/PrimBatchBegin_164320.c	41	PrimBatchBegin_164320	main	game	div	int	k	cnt	cnt = cnt / k - 1;
+src/main/gfx/TexGroupAllocVram_157e70.c	146	TexGroupAllocVram_157e70	main	game	mod	int	d	m	node->f33 = m % d;
+src/main/gfx/TexSetClutIndex_15a5b0.c	29	TexSetClutIndex_15a5b0	main	game	mod	int	temp_3	arg1	arg0->unk33 = arg1 % temp_3;
+src/main/item/InsectItemCreateWithRandomName_3cff30.cpp	215	InsectItemCreateWithRandomName_3cff30	main	game	mod	int	m	Rand_133710()	o->v114((char *)arr[Rand_133710() % m]);
+src/main/item/InsectRollStatGain_3d11e0.cpp	178	InsectRollStatGain_3d11e0	main	game	mod	int	m	Rand_133710()	picked[n] = cand[Rand_133710() % m];
+src/main/item/InsectRollStatGain_3d11e0.cpp	181	InsectRollStatGain_3d11e0	main	game	mod	int	range	Rand_133710()	stats[picked[i]] += base + Rand_133710() % range;
+src/main/item/InvIdGetMajorIndex_3d55f0.c	33	InvIdGetMajorIndex_3d55f0	main	game	div	int	D_00465A00[0]	return (p0 - D_00465A08[0])	return (p0 - D_00465A08[0]) / D_00465A00[0];
+src/main/item/InvIdGetMajorIndex_3d55f0.c	35	InvIdGetMajorIndex_3d55f0	main	game	div	int	D_00465A30[0]	return (p0 - D_00465A38[0])	return (p0 - D_00465A38[0]) / D_00465A30[0];
+src/main/item/InvIdGetMajorIndex_3d55f0.c	47	InvIdGetMajorIndex_3d55f0	main	game	div	int	D_00465B28[0]	return (p0 - D_00465B30[0])	return (p0 - D_00465B30[0]) / D_00465B28[0];
+src/main/item/InvIdGetMidIndex_3d52b0.c	23	InvIdGetMidIndex_3d52b0	main	game	mod	int	D_00465A00[0]	return (arg0 - D_00465A08[0])	return (arg0 - D_00465A08[0]) % D_00465A00[0] / D_004659F0[0];
+src/main/item/InvIdGetMidIndex_3d52b0.c	23	InvIdGetMidIndex_3d52b0	main	game	div	int	D_004659F0[0]	return (arg0 - D_00465A08[0]) % D_00465A00[0]	return (arg0 - D_00465A08[0]) % D_00465A00[0] / D_004659F0[0];
+src/main/item/InvIdGetMidIndex_3d52b0.c	25	InvIdGetMidIndex_3d52b0	main	game	mod	int	D_00465A30[0]	return (arg0 - D_00465A38[0])	return (arg0 - D_00465A38[0]) % D_00465A30[0] / D_00465A20[0];
+src/main/item/InvIdGetMidIndex_3d52b0.c	25	InvIdGetMidIndex_3d52b0	main	game	div	int	D_00465A20[0]	return (arg0 - D_00465A38[0]) % D_00465A30[0]	return (arg0 - D_00465A38[0]) % D_00465A30[0] / D_00465A20[0];
+src/main/item/InvIdGetMidIndex_3d52b0.c	27	InvIdGetMidIndex_3d52b0	main	game	div	int	D_00465A48[0]	return (arg0 - D_00465A60[0])	return (arg0 - D_00465A60[0]) / D_00465A48[0];
+src/main/item/InvIdGetMidIndex_3d52b0.c	31	InvIdGetMidIndex_3d52b0	main	game	div	int	D_00465AB8[0]	return (arg0 - D_00465AD0[0])	return (arg0 - D_00465AD0[0]) / D_00465AB8[0];
+src/main/item/InvIdGetMidIndex_3d52b0.c	37	InvIdGetMidIndex_3d52b0	main	game	mod	int	D_00465B28[0]	return (arg0 - D_00465B30[0])	return (arg0 - D_00465B30[0]) % D_00465B28[0] / D_00465B18[0];
+src/main/item/InvIdGetMidIndex_3d52b0.c	37	InvIdGetMidIndex_3d52b0	main	game	div	int	D_00465B18[0]	return (arg0 - D_00465B30[0]) % D_00465B28[0]	return (arg0 - D_00465B30[0]) % D_00465B28[0] / D_00465B18[0];
+src/main/item/InvIdGetMinorIndex_3d5440.c	25	InvIdGetMinorIndex_3d5440	main	game	mod	int	D_00465A00[0]	return (arg0 - D_00465A08[0])	return (arg0 - D_00465A08[0]) % D_00465A00[0] % D_004659F0[0];
+src/main/item/InvIdGetMinorIndex_3d5440.c	25	InvIdGetMinorIndex_3d5440	main	game	mod	int	D_004659F0[0]	return (arg0 - D_00465A08[0]) % D_00465A00[0]	return (arg0 - D_00465A08[0]) % D_00465A00[0] % D_004659F0[0];
+src/main/item/InvIdGetMinorIndex_3d5440.c	27	InvIdGetMinorIndex_3d5440	main	game	mod	int	D_00465A30[0]	return (arg0 - D_00465A38[0])	return (arg0 - D_00465A38[0]) % D_00465A30[0] % D_00465A20[0];
+src/main/item/InvIdGetMinorIndex_3d5440.c	27	InvIdGetMinorIndex_3d5440	main	game	mod	int	D_00465A20[0]	return (arg0 - D_00465A38[0]) % D_00465A30[0]	return (arg0 - D_00465A38[0]) % D_00465A30[0] % D_00465A20[0];
+src/main/item/InvIdGetMinorIndex_3d5440.c	29	InvIdGetMinorIndex_3d5440	main	game	mod	int	D_00465A48[0]	return (arg0 - D_00465A60[0])	return (arg0 - D_00465A60[0]) % D_00465A48[0];
+src/main/item/InvIdGetMinorIndex_3d5440.c	33	InvIdGetMinorIndex_3d5440	main	game	mod	int	D_00465AB8[0]	return (arg0 - D_00465AD0[0])	return (arg0 - D_00465AD0[0]) % D_00465AB8[0];
+src/main/item/InvIdGetMinorIndex_3d5440.c	39	InvIdGetMinorIndex_3d5440	main	game	mod	int	D_00465B28[0]	return (arg0 - D_00465B30[0])	return (arg0 - D_00465B30[0]) % D_00465B28[0] % D_00465B18[0];
+src/main/item/InvIdGetMinorIndex_3d5440.c	39	InvIdGetMinorIndex_3d5440	main	game	mod	int	D_00465B18[0]	return (arg0 - D_00465B30[0]) % D_00465B28[0]	return (arg0 - D_00465B30[0]) % D_00465B28[0] % D_00465B18[0];
+src/main/map/SunLightInit_293d70.c	74	SunLightInit_293d70	main	game	mod	int	arg0->unk164	Rand_133710()	arg0->unk15C = arg0->unk160 + Rand_133710() % arg0->unk164;
+src/main/map/SunLightUpdate_293bd0.c	67	SunLightUpdate_293bd0	main	game	mod	int	arg0->m164	Rand_133710()	x = Rand_133710() % arg0->m164;
+src/main/map/TimeOfDayCalcWeights_18d390.c	36	TimeOfDayCalcWeights_18d390	main	game	mod	int	n	(k + 1)	m = (k + 1) % n;
+src/main/map/TimeOfDaySlot_18d7d0.c	41	TimeOfDaySlot_18d7d0	main	game	mod	int	count	return result	return result % count;
+src/main/math/RandUniqueFill_3950e0.c	13	RandUniqueFill_3950e0	main	game	mod	int	m	Rand_133710()	arr[i] = Rand_133710() % m;
+src/main/math/RandUniqueFill_3950e0.c	25	RandUniqueFill_3950e0	main	game	mod	int	m	Rand_133710()	arr[i] = Rand_133710() % m;
+src/main/math/SplinePathBuild_256ac0.c	34	SplinePathBuild_256ac0	main	game	div	int	(o->n - 1)	total	t[i] = o->total / (o->n - 1);
+src/main/math/SplinePathPairBuild_256de0.c	48	SplinePathPairBuild_256de0	main	game	div	int	(arg0->n - 1)	len	w.seg[j] = arg0->len / (arg0->n - 1);
+src/main/math/SplinePathPairBuild_256de0.c	66	SplinePathPairBuild_256de0	main	game	div	int	(arg0->n - 1)	len	w.seg[j] = arg0->len / (arg0->n - 1);
+src/main/mem/ArenaAllocAligned_370330.c	63	ArenaAllocAligned_370330	main	game	mod	int	a	size	r1 = size % a > 0;
+src/main/mem/ArenaAllocAligned_370330.c	64	ArenaAllocAligned_370330	main	game	div	int	a	size	q = size / a;
+src/main/mem/BlockHeapCarveBottom_1c25a0.c	57	BlockHeapCarveBottom_1c25a0	main	game	mod	int	arg2	var_7	temp_hi = var_7 % arg2;
+src/main/mem/BlockHeapCarveTop_1c2460.c	61	BlockHeapCarveTop_1c2460	main	game	mod	int	arg2	top	rem = top % arg2;
+src/main/mem/HandleHeapAlloc_312bf0.c	53	HandleHeapAlloc_312bf0	main	game	div	int	p->bs	(size + p->bs - 1)	n = p->bs * ((size + p->bs - 1) / p->bs);
+src/main/mem/HandleHeapCreate_3129b0.c	20	HandleHeapCreate_3129b0	main	game	div	int	arg3	(u32) ((arg1 + arg3) - 1)	(((LaneA_0*)temp_2)->f0) = (s32) (arg3 * ((u32) ((arg1 + arg3) - 1) / arg3));
+src/main/mem/HandleHeapCreate_3129b0.c	24	HandleHeapCreate_3129b0	main	game	div	int	arg3	arg2	(((LaneA_0*)temp_2)->f4) = (s32) (arg3 * (arg2 / arg3));
+src/main/mem/HandleHeapCreate_3129b0.c	35	HandleHeapCreate_3129b0	main	game	div	int	temp_4	(u32) (temp_4 + 0xB)	(((LaneA_0*)temp_2)->f20) = (s32) (temp_4 * ((u32) (temp_4 + 0xB) / temp_4));
+src/main/mem/HandleHeapRefInit_3128b0.c	25	HandleHeapRefInit_3128b0	main	game	div	int	arg3	(arg1 + arg3 - 1)	obj->unk0 = arg3 * ((arg1 + arg3 - 1) / arg3);
+src/main/mem/HandleHeapRefInit_3128b0.c	26	HandleHeapRefInit_3128b0	main	game	div	int	arg3	arg2	obj->unk4 = arg3 * (arg2 / arg3);
+src/main/mem/HandleHeapRefInit_3128b0.c	34	HandleHeapRefInit_3128b0	main	game	div	int	t	(t + 0xB)	obj->unk20 = t * ((t + 0xB) / t);
+src/main/mem/MemStackHeapAllocBackAligned_14dd20.c	29	MemStackHeapAllocBackAligned_14dd20	main	game	mod	int	arg2	((u32)data >> 4)	if ((r = ((u32)data >> 4) % arg2) != 0) {
+src/main/mem/MemStackHeapAllocFrontAligned_14dde0.c	31	MemStackHeapAllocFrontAligned_14dde0	main	game	mod	int	arg2	((u32)p >> 4)	r = ((u32)p >> 4) % arg2;
+src/main/mem/MemStackHeapAlloc_14db10.c	80	MemStackHeapAlloc_14db10	main	game	mod	int	units	((u32)data >> 4)	rem = ((u32)data >> 4) % units;
+src/main/menu/HelpBoardScrollBarLayout_34de40.c	68	HelpBoardScrollBarLayout_34de40	main	game	div	int	au.v[1]	(h - (au.v[0] + au.v[2]))	q = (h - (au.v[0] + au.v[2])) / au.v[1] - (t + 2);
+src/main/menu/InfoEdgeEntryViewState_398ab0.c	94	InfoEdgeEntryViewState_398ab0	main	game	div	int	b	(a - b * 10)	c = (a - b * 10) / b;
+src/main/menu/InfoEdgeScrollBarLayout_398f80.c	68	InfoEdgeScrollBarLayout_398f80	main	game	div	int	au.v[1]	(h - (au.v[0] + au.v[2]))	q = (h - (au.v[0] + au.v[2])) / au.v[1] - (t + 2);
+src/main/menu/InsectMenuCaughtChoiceSelect_396640.c	130	InsectMenuCaughtChoiceSelect_396640	main	game	div	int	cnt	sum	} else if (sum / cnt == 5) {
+src/main/menu/MenuGridGetCursor_2abb30.c	15	MenuGridGetCursor_2abb30	main	game	mod	int	D_004659F0.v	val	*arg1 = val % D_004659F0.v;
+src/main/menu/MenuGridGetCursor_2abb30.c	16	MenuGridGetCursor_2abb30	main	game	div	int	D_004659F0.v	val	*arg2 = val / D_004659F0.v;
+src/main/menu/MenuItemModelZoomOutState_2a7b50.c	99	MenuItemModelZoomOutState_2a7b50	main	game	mod	int	w	k	g->x14 = k % w;
+src/main/menu/MenuWeaponCombineAnimTickMaybe_361cd0.cpp	214	MenuWeaponCombineAnimTickMaybe_361cd0	main	game	mod	int	D_004659F0[0]	n	o = ItemFindOwnerChara_3d4d80(InvFindByCategoryIndex_3c86e0(c->m18, 0, id, n % D_004659F0[0], n / D_004659F0[0], 0), 0);
+src/main/menu/MenuWeaponCombineAnimTickMaybe_361cd0.cpp	214	MenuWeaponCombineAnimTickMaybe_361cd0	main	game	div	int	D_004659F0[0]	n	o = ItemFindOwnerChara_3d4d80(InvFindByCategoryIndex_3c86e0(c->m18, 0, id, n % D_004659F0[0], n / D_004659F0[0], 0), 0);
+src/main/menu/MenuWeaponCombineResultState_2ab4e0.cpp	156	MenuWeaponCombineResultState_2ab4e0	main	game	mod	int	D_004659F0[0]	n	*(s16 *)(m + 0x14) = n % D_004659F0[0];
+src/main/menu/MenuWeaponCombineResultState_2ab4e0.cpp	157	MenuWeaponCombineResultState_2ab4e0	main	game	div	int	D_004659F0[0]	n	*(s16 *)(m + 0x16) = n / D_004659F0[0];
+src/main/menu/MenuWeaponCombineResultState_2ab4e0.cpp	193	MenuWeaponCombineResultState_2ab4e0	main	game	mod	int	D_004659F0[0]	n	*(s16 *)(m + 0x14) = n % D_004659F0[0];
+src/main/menu/MenuWeaponCombineResultState_2ab4e0.cpp	194	MenuWeaponCombineResultState_2ab4e0	main	game	div	int	D_004659F0[0]	n	*(s16 *)(m + 0x16) = n / D_004659F0[0];
+src/main/menu/RevelationBoardCursorUpdateMaybe_34d080.cpp	61	Split	main	game	div	int	n	v	c->x12 = v / n;
+src/main/menu/RevelationBoardCursorUpdateMaybe_34d080.cpp	62	Split	main	game	mod	int	n	v	c->x10 = v % n;
+src/main/movie/AudioDecEndPut_1d24c0.c	22	AudioDecEndPut_1d24c0	main	game	mod	int	*(s32 *)((u8 *)arg0 + 0x3C)	(*(s32 *)((u8 *)arg0 + 0x34) + (s32)var_5)	*(s32 *)((u8 *)arg0 + 0x34) = (*(s32 *)((u8 *)arg0 + 0x34) + (s32)var_5) % *(s32 *)((u8 *)arg0 + 0x3C);
+src/main/movie/AudioDecIopGetArea_1d2df0.c	18	AudioDecIopGetArea_1d2df0	main	game	mod	int	temp_11	((arg5 + temp_11) - temp_10 - 0x400)	temp_9 = (((arg5 + temp_11) - temp_10 - 0x400) % temp_11) / 1024 * 1024;
+src/main/movie/AudioDecSendToIop_1d2e90.c	40	AudioDecSendToIop_1d2e90	main	game	mod	int	arg0->unk48	unk54	dst = arg0->unk44 + arg0->unk54 % arg0->unk48;
+src/main/movie/AudioDecSendToIop_1d2e90.c	51	AudioDecSendToIop_1d2e90	main	game	mod	int	arg0->size	(arg0->size + (arg0->pos - arg0->rem))	src = arg0->base + (arg0->size + (arg0->pos - arg0->rem)) % arg0->size;
+src/main/movie/AudioDecSendToIop_1d2e90.c	61	AudioDecSendToIop_1d2e90	main	game	mod	int	arg0->unk48	(arg0->unk4C + n)	arg0->unk4C = (arg0->unk4C + n) % arg0->unk48;
+src/main/movie/ReadBufBeginGet_1d3300.c	15	ReadBufBeginGet_1d3300	main	game	mod	int	o->f14008	(o->f14008 + (o->f14000 - o->f14004))	*out = (u8 *)o + (o->f14008 + (o->f14000 - o->f14004)) % o->f14008;
+src/main/movie/ReadBufEndPut_1d3360.c	14	ReadBufEndPut_1d3360	main	game	mod	int	o->f14008	(o->f14000 + n)	o->f14000 = (o->f14000 + n) % o->f14008;
+src/main/movie/ViBufAddDma_1d4240.c	46	ViBufAddDma_1d4240	main	game	mod	int	r->size	(d + r->size - r->rd)	d = (d + r->size - r->rd) % r->size;
+src/main/movie/ViBufAddDma_1d4240.c	47	ViBufAddDma_1d4240	main	game	mod	int	r->size	(r->rd + d)	r->rd = (r->rd + d) % r->size;
+src/main/movie/ViBufAddDma_1d4240.c	49	ViBufAddDma_1d4240	main	game	mod	int	r->size	(r->rd + r->cnt)	idx = (r->rd + r->cnt) % r->size;
+src/main/movie/ViBufAddDma_1d4240.c	53	ViBufAddDma_1d4240	main	game	mod	int	r->size	(r->size + (r->rd + r->cnt - 1))	j = (r->size + (r->rd + r->cnt - 1)) % r->size;
+src/main/movie/ViBufAddDma_1d4240.c	64	ViBufAddDma_1d4240	main	game	mod	int	r->size	(idx + 1)	idx = (idx + 1) % r->size;
+src/main/movie/ViBufBeginPut_1d44b0.c	28	ViBufBeginPut_1d44b0	main	game	mod	int	r->n18	(s + b)	{ s32 s = (r->nC + a) << 11; m = (s + b) % r->n18; }
+src/main/movie/ViBufModifyPts_1d3ca0.c	14	ViBufModifyPts_1d3ca0	main	game	mod	int	q->n	(q->n + (q->head - c))	s32 idx = (q->n + (q->head - c)) % q->n;
+src/main/movie/ViBufModifyPts_1d3ca0.c	30	ViBufModifyPts_1d3ca0	main	game	mod	int	mod	(pos + mod - rpos)	ok = (pos + mod - rpos) % mod < rlen;
+src/main/movie/ViBufModifyPts_1d3ca0.c	35	ViBufModifyPts_1d3ca0	main	game	mod	int	mod	(pos + len)	e->pos = (pos + len) % mod;
+src/main/movie/ViBufModifyPts_1d3ca0.c	51	ViBufModifyPts_1d3ca0	main	game	mod	int	q->n	(idx + 1)	idx = (idx + 1) % q->n;
+src/main/movie/ViBufPutTs_1d3b60.c	45	ViBufPutTs_1d3b60	main	game	mod	int	q->m54	(q->m5C + 1)	q->m5C = (q->m5C + 1) % q->m54;
+src/main/movie/ViBufRestartDma_1d3e70.cpp	78	ViBufRestartDma_1d3e70	main	game	mod	int	RAW(c, s32, 8)	(RAW(c, s32, 8) - r)	r = (RAW(c, s32, 8) - r) % RAW(c, s32, 8);
+src/main/movie/ViBufRestartDma_1d3e70.cpp	89	ViBufRestartDma_1d3e70	main	game	mod	int	(u32)(c->count << 11)	(c->cur - c->base)	if (c->base + (c->cur - c->base) % (u32)(c->count << 11) == c->base + (((c->idx + c->num) % c->count) << 11)) {
+src/main/movie/ViBufRestartDma_1d3e70.cpp	89	ViBufRestartDma_1d3e70	main	game	mod	int	c->count	(c->idx + c->num)	if (c->base + (c->cur - c->base) % (u32)(c->count << 11) == c->base + (((c->idx + c->num) % c->count) << 11)) {
+src/main/movie/ViBufRestartDma_1d3e70.cpp	95	ViBufRestartDma_1d3e70	main	game	mod	int	RAW(c, s32, 8)	(b + RAW(c, s32, 8) - c->idx)	r = (b + RAW(c, s32, 8) - c->idx) % RAW(c, s32, 8);
+src/main/movie/VoBufGetNextTag_1d4900.c	18	VoBufGetNextTag_1d4900	main	game	mod	int	count	(self->unkC - self->unk10 + 1 + count)	idx = (self->unkC - self->unk10 + 1 + count) % count;
+src/main/movie/VoBufGetTag_1d4940.c	29	VoBufGetTag_1d4940	main	game	mod	int	r->m14	(r->m14 + (r->m0C - r->m10))	return &r->m08[(r->m14 + (r->m0C - r->m10)) % r->m14];
+src/main/movie/VoBufGetWriteTag_1d48c0.c	7	VoBufGetWriteTag_1d48c0	main	game	mod	int	p->m14	(p->m0C + p->m14)	return p->m08 + ((p->m0C + p->m14) % p->m14) * 0x48;
+src/main/movie/VoBufIncCount_1d4a10.c	47	VoBufIncCount_1d4a10	main	game	mod	int	r->m14	(r->m0C + 1)	r->m0C = (r->m0C + 1) % r->m14;
+src/main/pad/PadAnyInput_183e80.c	16	axis	main	game	div	int	d	((t - 0x31) << 7)	t = ((t - 0x31) << 7) / d;
+src/main/pad/PadAnyInput_183e80.c	18	axis	main	game	div	int	d	((t + 0x32) << 7)	t = ((t + 0x32) << 7) / d;
+src/main/script/ScriptVmExec_173b00.cpp	366	ScriptVmExec_173b00	main	game	div	int	d	a.u.i	pushInt(vm, a.u.i / d); \
+src/main/script/ScriptVmExec_173b00.cpp	698	ScriptVmExec_173b00	main	game	mod	int	y	toInt(pop(vm), vm->entry)	pushInt(vm, toInt(pop(vm), vm->entry) % y);
+src/main/script/VariantMod_36c200.c	60	VariantMod_36c200	main	game	mod	int	y	x	r32 = x % y;
+src/main/script/VariantMod_36c200.c	68	VariantMod_36c200	main	game	mod	int	y	x	r32 = x % y;
+src/main/script/VariantMod_36c200.c	76	VariantMod_36c200	main	game	mod	int	y	x	r32 = x % y;
+src/main/script/VariantMod_36c200.c	84	VariantMod_36c200	main	game	mod	int	y	x	r32 = x % y;
+src/main/script/VariantMod_36c200.c	92	VariantMod_36c200	main	game	mod	int	y	x	r32 = x % y;
+src/main/script/VariantMod_36c200.c	100	VariantMod_36c200	main	game	mod	int	y	x	r32 = x % y;
+src/main/sound/RingBufCommitFill_1c1da0.c	50	RingBufCommitFill_1c1da0	main	game	div	int	r->unit	(u32)d	avail = r->unit * ((u32)d / r->unit);
+src/main/sound/RingBufCommitFill_1c1da0.c	57	RingBufCommitFill_1c1da0	main	game	mod	int	r->unit	(u32)e	if ((u32)e % r->unit != 0) {
+src/main/sound/RingBufCommitFill_1c1da0.c	58	RingBufCommitFill_1c1da0	main	game	div	int	r->unit	(u32)e	e = r->unit * ((u32)e / r->unit + 1);
+src/main/sound/RingBufCommitFill_1c1da0.c	71	RingBufCommitFill_1c1da0	main	game	mod	int	r->cap	(r->rd + n)	r->rd = (r->rd + n) % r->cap;
+src/main/sound/RingBufConsume_1c1bd0.c	65	RingBufConsume_1c1bd0	main	game	mod	int	r->cap	(r->wr + n)	r->wr = (r->wr + n) % r->cap;
+src/main/sound/RingBufConsume_1c1bd0.c	68	RingBufConsume_1c1bd0	main	game	mod	int	r->unit	wr	if (r->wr % r->unit != 0) {
+src/main/sound/RingBufConsume_1c1bd0.c	70	RingBufConsume_1c1bd0	main	game	div	int	r->unit	wr	r->wr = r->unit * (r->wr / r->unit + 1) % r->cap;
+src/main/sound/RingBufConsume_1c1bd0.c	70	RingBufConsume_1c1bd0	main	game	mod	int	r->cap	unit * (r->wr / r->unit + 1)	r->wr = r->unit * (r->wr / r->unit + 1) % r->cap;
+src/main/sound/RingBufFillFromFile_1c1090.cpp	39	rdown	main	game	div	int	b	v	static inline u32 rdown(u32 v, u32 b) { return b * (v / b); }
+src/main/sound/RingBufFillFromFile_1c1090.cpp	40	rup	main	game	div	int	b	v	static inline u32 rup(u32 v, u32 b) { return b * (v / b + 1); }
+src/main/sound/RingBufFillFromFile_1c1090.cpp	127	RingBufFillFromFile_1c1090	main	game	mod	int	r->blk	(u32)got	if ((u32)got % r->blk != 0) {
+src/main/sound/RingBufGetWriteSpan_1c2010.c	25	rdown	main	game	div	int	b	v	static inline u32 rdown(u32 v, u32 b) { return b * (v / b); }
+src/main/sound/RingBufGetWriteSpan_1c2010.c	26	rup	main	game	div	int	b	v	static inline u32 rup(u32 v, u32 b) { return b * (v / b + 1); }
+src/main/sound/RingBufGetWriteSpan_1c2010.c	58	RingBufGetWriteSpan_1c2010	main	game	mod	int	r->blk	(u32)m	if ((u32)m % r->blk != 0) {
+src/main/sound/RingBufInit_1c1710.c	59	RingBufInit_1c1710	main	game	div	int	arg0->unk0	arg2	arg0->unk8 = arg0->unk0 * (arg2 / arg0->unk0);
+src/main/sound/RingBufSetLoop_1c1670.c	21	RingBufSetLoop_1c1670	main	game	div	int	*(u32 *)(p + 0x0)	v	*(u32 *)(p + 0x2C) = *(u32 *)(p + 0x0) * (v / *(u32 *)(p + 0x0));
+src/main/sound/RingBufSetLoop_1c1670.c	22	RingBufSetLoop_1c1670	main	game	mod	int	*(u32 *)(p + 0x0)	v	*(u32 *)(p + 0x30) = v % *(u32 *)(p + 0x0);
+src/main/sound/SoundBankUploadPart_1ba770.c	83	SoundBankUploadPart_1ba770	main	game	mod	int	(u32)align	total	if (total % (u32)align != 0) {
+src/main/sound/SoundBankUploadPart_1ba770.c	84	SoundBankUploadPart_1ba770	main	game	div	int	(u32)align	total	total = align * (total / (u32)align + 1);
+src/main/sound/SoundStreamProcessCmds_1c05f0.cpp	199	SoundStreamProcessCmds_1c05f0	main	game	div	int	bs	total	s32 aligned = bs * (total / bs);
+src/main/sound/SoundStreamProcessCmds_1c05f0.cpp	200	SoundStreamProcessCmds_1c05f0	main	game	mod	int	bs	total	s32 rem = total % bs;
+src/main/sound/SoundStreamSlotFillFromRingBuf_1bdb80.c	75	SoundStreamSlotFillFromRingBuf_1bdb80	main	game	div	int	count	total	step = total / count;
+src/main/sound/SoundStreamSlotRingWrite_1bde90.c	46	SoundStreamSlotRingWrite_1bde90	main	game	mod	int	size	(o->wr + len)	o->wr = (o->wr + len) % size;
+src/main/sound/WavHeaderParse_1bc220.cpp	124	WavHeaderParse_1bc220	main	game	div	int	arg0->unk20	*(s32 *)(p + 0xC)	arg0->unk28 = *(s32 *)(p + 0xC) / arg0->unk20;
+src/main/sound/WavHeaderParse_1bc220.cpp	138	WavHeaderParse_1bc220	main	game	div	int	arg0->unk1C	unk4	arg0->unk58 = arg0->unk4 / arg0->unk1C;
+src/main/str/MsgIntToDigitText_28a660.c	41	MsgIntToDigitText_28a660	main	game	div	int	d	n	q = n / d;
+src/main/sys/CodeCipherDecode_42edb0.c	18	CodeCipherDecode_42edb0	main	game	mod	int	(u32)(len - 2)	CodeCipherRandNext_42efe0()	q = buf + CodeCipherRandNext_42efe0() % (u32)(len - 2);
+src/main/sys/CodeCipherEncode_42eee0.c	42	CodeCipherEncode_42eee0	main	game	mod	int	(arg1 - 2U)	CodeCipherRandNext_42efe0()	buf_pos = arg0 + CodeCipherRandNext_42efe0() % (arg1 - 2U);
+src/main/ui/CaptionPanelPlaceGlyph_33e570.c	99	CaptionPanelPlaceGlyph_33e570	main	game	mod	int	cols	n	x = w * (n % cols);
+src/main/ui/CaptionPanelPlaceGlyph_33e570.c	100	CaptionPanelPlaceGlyph_33e570	main	game	div	int	cols	n	y = h * (n / cols);
+src/main/ui/LoadingScreenStart_343240.cpp	96	LoadingScreenStart_343240	main	game	div	int	D_004E8960.m424	0x138	s32 w = 0x138 / D_004E8960.m424;
+src/main/ui/MesWinCalcCharWaitFrames_24e270.c	21	MesWinCalcCharWaitFrames_24e270	main	game	div	int	n	return t	return t / n;
+src/main/ui/MesWinDrawGlyphs_271b70.c	103	MesWinDrawGlyphs_271b70	main	game	div	int	div	y	idx = e->y / div;
+src/main/ui/MesWinGetGlyphColor_2724a0.c	43	MesWinGetGlyphColor_2724a0	main	game	div	int	n	k	i = k / n;
+src/main/ui/MesWinScrollOnNewline_276520.c	46	MesWinScrollOnNewline_276520	main	game	div	int	d	x56	if (arg0->x56 / d - ((arg0->x80 - arg0->x44) / d + 1) <= 0) {
+src/main/ui/MesWinScrollOnNewline_276520.c	46	MesWinScrollOnNewline_276520	main	game	div	int	d	(arg0->x80 - arg0->x44)	if (arg0->x56 / d - ((arg0->x80 - arg0->x44) / d + 1) <= 0) {
+src/main/ui/MinimapTileIndexToXY_323290.c	27	MinimapTileIndexToXY_323290	main	game	div	int	(s16)c	(s16)a	q = (s16)((s16)a / (s16)c);
+src/main/ui/MinimapTileIndexToXY_323290.c	29	MinimapTileIndexToXY_323290	main	game	mod	int	(s16)q	arg1	*arg2 = arg1 % (s16)q;
+src/main/ui/MinimapTileIndexToXY_323290.c	30	MinimapTileIndexToXY_323290	main	game	div	int	(s16)q	arg1	*arg3 = arg1 / (s16)q;
+src/main/ui/SaveUiScrollBarLayoutMaybe_377830.c	92	SaveUiScrollBarLayoutMaybe_377830	main	game	div	int	h1	(a - (h0 + h2))	v = (f32)((a - (h0 + h2)) / h1 - (n + 2));
+src/main/ui/UiLayoutWindowFrame_28b8e0.c	44	UiLayoutWindowFrame_28b8e0	main	game	div	int	n	(height - 12)	q = (height - 12) / n;
+src/overlays/normal/menu/normal_MenuBattleEndItemRowsShow_4ea890.cpp	456	normal_MenuBattleEndItemRowsShow_4ea890	normal	game	div	int	dv	lvl	if (lvl / dv != 0) {
+src/overlays/normal/menu/normal_ShopMenuScrollBarLayout_50b2a0.c	144	normal_ShopMenuScrollBarLayout_50b2a0	normal	game	div	int	au.v[1]	(h - (au.v[0] + au.v[2]))	q = (h - (au.v[0] + au.v[2])) / au.v[1] - (t + 2);
+src/overlays/normal/menu/normal_TransHunterScrollBarLayout_51ed00.c	163	normal_TransHunterScrollBarLayout_51ed00	normal	game	div	int	au.v[1]	(h - (au.v[0] + au.v[2]))	q = (h - (au.v[0] + au.v[2])) / au.v[1] - (t + 2);
+src/overlays/normal/menu/normal_TransWarpScrollBarLayout_51b700.c	90	normal_TransWarpScrollBarLayout_51b700	normal	game	div	int	h1	(a - (h0 + h2))	v = (f32)((a - (h0 + h2)) / h1 - (n + 2));

@@ -1,0 +1,5 @@
+# as det_input.txt, but CROSS released one VBlank earlier
+30 89 CROSS
+120 START
+200 260 RIGHT
+400 430 CROSS+SQUARE

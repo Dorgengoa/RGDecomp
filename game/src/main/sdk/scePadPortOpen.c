@@ -1,0 +1,137 @@
+#include "types.h"
+
+extern void scePrintf_119288(void);
+extern void memset(void);
+extern void sceSifCallRpc(void);
+
+asm void scePadPortOpen(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0xB0;
+    sd         $20, 0x50($29);
+    sd         $19, 0x40($29);
+    daddu      $20, $6, $0;
+    sd         $18, 0x30($29);
+    daddu      $19, $4, $0;
+    sd         $31, 0xA0($29);
+    daddu      $18, $5, $0;
+    sd         $30, 0x90($29);
+    andi       $2, $20, 0x3F;
+    sd         $23, 0x80($29);
+    sd         $22, 0x70($29);
+    sd         $21, 0x60($29);
+    sd         $17, 0x20($29);
+    beqz       $2, L0012B414;
+    sd        $16, 0x10($29);
+    lui        $2, 0x45;
+    lw         $3, -0x6AF4($2);
+    beqz       $3, L0012B4FC;
+    lui       $4, 0x45;
+    daddu      $5, $20, $0;
+    jal        scePrintf_119288;
+    addiu     $4, $4, 0x7CF0;
+    b          L0012B564;
+    daddu     $2, $0, $0;
+  L0012B414:
+    addiu      $4, $0, 0x1C;
+    addiu      $3, $0, 0x70;
+    mult1      $3, $19, $3;
+    mult       $4, $18, $4;
+    lui        $30, 0x49;
+    addiu      $5, $0, 0x1;
+    addiu      $2, $30, -0x12B0;
+    addu       $4, $4, $3;
+    addu       $2, $2, $4;
+    lw         $3, 0x10($2);
+    bne        $3, $5, L0012B46C;
+    daddu     $16, $20, $0;
+    lui        $2, 0x45;
+    lw         $3, -0x6AF4($2);
+    beqz       $3, L0012B4FC;
+    lui       $4, 0x45;
+    daddu      $5, $19, $0;
+    addiu      $4, $4, 0x7D20;
+    jal        scePrintf_119288;
+    daddu     $6, $18, $0;
+    b          L0012B564;
+    daddu     $2, $0, $0;
+  L0012B46C:
+    lui        $23, 0x49;
+    addiu      $22, $0, 0x5;
+    addiu      $21, $0, 0x2;
+    addiu      $17, $0, 0x1;
+    nop;
+  L0012B480:
+    sw         $0, 0x58($16);
+    daddu      $4, $16, $0;
+    sb         $22, 0x70($16);
+    addiu      $5, $0, 0xFF;
+    sb         $21, 0x71($16);
+    addiu      $6, $0, 0x20;
+    sb         $0, 0x67($16);
+    jal        memset;
+    addiu     $17, $17, -0x1;
+    sw         $0, 0x60($16);
+    bgez       $17, L0012B480;
+    addiu     $16, $16, 0x80;
+    addiu      $17, $0, 0x1;
+    addiu      $16, $23, -0x10C0;
+    sw         $17, -0x10C0($23);
+    lui        $4, 0x49;
+    sw         $19, 0x4($16);
+    addiu      $4, $4, -0x1300;
+    sw         $18, 0x8($16);
+    addiu      $5, $0, 0x1;
+    sw         $20, 0x10($16);
+    daddu      $6, $0, $0;
+    daddu      $7, $16, $0;
+    sw         $0, 0x0($29);
+    addiu      $8, $0, 0x80;
+    daddu      $9, $16, $0;
+    addiu      $10, $0, 0x80;
+    jal        sceSifCallRpc;
+    daddu     $11, $0, $0;
+    bgez       $2, L0012B504;
+    addiu     $3, $0, 0x1C;
+  L0012B4FC:
+    b          L0012B564;
+    daddu     $2, $0, $0;
+  L0012B504:
+    addiu      $7, $0, 0x70;
+    mult1      $7, $19, $7;
+    mult       $3, $18, $3;
+    lui        $2, 0x49;
+    sll        $5, $18, 5;
+    addiu      $2, $2, -0x11C0;
+    addiu      $4, $30, -0x12B0;
+    addu       $5, $5, $2;
+    sll        $6, $19, 7;
+    addu       $3, $3, $7;
+    addu       $6, $6, $5;
+    addu       $2, $4, $3;
+    lw         $8, 0x14($16);
+    sw         $17, 0x10($2);
+    daddu      $5, $2, $0;
+    daddu      $7, $2, $0;
+    sw         $0, 0x0($6);
+    addu       $2, $3, $4;
+    sw         $0, 0xC($5);
+    sw         $8, 0x8($7);
+    daddu      $4, $5, $0;
+    sw         $20, 0x0($2);
+    sw         $6, 0x4($4);
+    lw         $2, 0xC($16);
+  L0012B564:
+    ld         $31, 0xA0($29);
+    ld         $30, 0x90($29);
+    ld         $23, 0x80($29);
+    ld         $22, 0x70($29);
+    ld         $21, 0x60($29);
+    ld         $20, 0x50($29);
+    ld         $19, 0x40($29);
+    ld         $18, 0x30($29);
+    ld         $17, 0x20($29);
+    ld         $16, 0x10($29);
+    jr         $31;
+    addiu     $29, $29, 0xB0;
+}

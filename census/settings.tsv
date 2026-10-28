@@ -1,0 +1,100 @@
+id	type	category	default	original	flags	menu	readers	reader_sites	values	label	src
+display.window_mode	ENUM	display	windowed	windowed	DISPLAY,ORIG	yes	11	src/host/host_sdl.c:174 src/host/host_sdl.c:175 src/host/host_sdl.c:204 src/host/host_sdl.c:205 src/host/host_sdl.c:206 src/host/host_sdl.c:443 ...	windowed|fullscreen|exclusive	Window mode	src/settings/rg_settings_core.c:60
+display.width	INT	display	1280		DISPLAY	yes	7	src/game/rg_game_main.c:573 src/game/rg_game_main.c:575 src/host/host_sdl.c:176 src/host/host_sdl.c:177 src/host/host_sdl.c:211 src/host/host_sdl.c:455 ...		Window width	src/settings/rg_settings_core.c:64
+display.height	INT	display	960		DISPLAY	yes	5	src/game/rg_game_main.c:574 src/game/rg_game_main.c:576 src/host/host_sdl.c:178 src/host/host_sdl.c:212 src/host/host_sdl.c:456		Window height	src/settings/rg_settings_core.c:67
+display.monitor	INT	display	0		DISPLAY	yes	2	src/host/host_sdl.c:430 src/host/host_sdl.c:431		Monitor	src/settings/rg_settings_core.c:70
+display.scale	ENUM	display	linear	linear	DISPLAY,ORIG	yes	7	src/host/host_sdl.c:180 src/host/host_sdl.c:181 src/host/host_sdl.c:207 src/host/host_sdl.c:426 src/host/host_sdl.c:427 src/runtime/runtime.c:466 ...	linear|nearest|integer|stretch	Scaling	src/settings/rg_settings_core.c:73
+display.vsync	BOOL	display	false	false	DISPLAY,ORIG	yes	9	src/host/host_sdl.c:182 src/host/host_sdl.c:183 src/host/host_sdl.c:208 src/host/host_sdl.c:428 src/host/host_sdl.c:428 src/host/host_sdl.c:429 ...		VSync	src/settings/rg_settings_core.c:76
+display.pacing	ENUM	display	host	retail	ORIG	yes	2	src/runtime/runtime.c:314 src/runtime/runtime.c:314	retail|host	Frame pacing	src/settings/rg_settings_core.c:79
+display.frame_rate	ENUM	display	original	original	ORIG	yes	4	src/runtime/runtime.c:321 src/runtime/runtime.c:322 src/runtime/runtime.c:1756 src/runtime/runtime.c:1757	original|30|60|120|144|uncapped	Frame rate cap	src/settings/rg_settings_core.c:83
+display.interpolation	BOOL	display	false	false	ORIG	yes	2	src/runtime/runtime.c:330 src/runtime/runtime.c:330		Unlocked frame rate (interpolation)	src/settings/rg_settings_core.c:87
+display.fps_counter	ENUM	display	off	off	ORIG	yes	2	src/host/host_sdl.c:475 src/host/host_sdl.c:476	off|fps|detailed	FPS counter	src/settings/rg_settings_core.c:90
+display.backend	ENUM	display	d3d11	d3d11	ORIG,RESTART	yes	2	src/runtime/runtime.c:1472 src/runtime/runtime.c:1473	d3d11|vulkan	Graphics API	src/settings/rg_settings_core.c:94
+graphics.internal_res	ENUM	graphics	window	native	ORIG	yes	2	src/gpu/gpu_gfx.c:25 src/gpu/gpu_gfx.c:27	native|2x|3x|4x|5x|6x|7x|8x|window	Internal resolution	src/settings/rg_settings_core.c:100
+graphics.aspect	ENUM	graphics	4:3	4:3	DISPLAY,ORIG	yes	2	src/settings/rg_aspect.c:86 src/settings/rg_aspect.c:87	4:3|16:9|16:10|21:9|auto	Aspect ratio	src/settings/rg_settings_core.c:104
+graphics.movie_aspect	ENUM	graphics	keep	keep	ORIG	yes	2	src/settings/rg_aspect.c:88 src/settings/rg_aspect.c:89	keep|stretch	Movie aspect	src/settings/rg_settings_core.c:108
+graphics.ui_layout	ENUM	graphics	keep	keep	ORIG	yes	2	src/settings/rg_aspect.c:90 src/settings/rg_aspect.c:91	keep|stretch	Wide-screen UI	src/settings/rg_settings_core.c:112
+graphics.antialiasing	ENUM	graphics	off	off	ORIG	yes	2	src/gpu/gpu_gfx.c:30 src/gpu/gpu_gfx.c:32	off|fxaa|ssaa2|ssaa3|ssaa4	Anti-aliasing	src/settings/rg_settings_core.c:116
+graphics.downsample	ENUM	graphics	box	box	ORIG	yes	2	src/gpu/gpu_gfx.c:36 src/gpu/gpu_gfx.c:38	box|bilinear|bicubic|lanczos	Downsampling filter	src/settings/rg_settings_core.c:119
+graphics.anisotropic	ENUM	graphics	16x	off	ORIG	yes	2	src/gpu/gpu_gfx.c:45 src/gpu/gpu_gfx.c:46	off|2x|4x|8x|16x	Anisotropic filtering	src/settings/rg_settings_core.c:123
+graphics.texture_filter	ENUM	graphics	bilinear	original	ORIG	yes	2	src/gpu/gpu_gfx.c:41 src/gpu/gpu_gfx.c:42	original|bilinear|nearest	Texture filtering	src/settings/rg_settings_core.c:126
+graphics.bloom	ENUM	graphics	original	original	ORIG,PLACEHOLDER	yes	1	src/gpu/gpu_gfx.c:49	original|enhanced|off	Bloom	src/settings/rg_settings_core.c:130
+graphics.depth_of_field	ENUM	graphics	original	original	ORIG,PLACEHOLDER	yes	1	src/gpu/gpu_gfx.c:49	original|enhanced|off	Depth of field	src/settings/rg_settings_core.c:133
+graphics.motion_blur	ENUM	graphics	original	original	ORIG,PLACEHOLDER	yes	1	src/gpu/gpu_gfx.c:50	original|enhanced|off	Motion blur	src/settings/rg_settings_core.c:136
+graphics.lod_bias	FLOAT	graphics	0.0	0.0	ORIG,PLACEHOLDER	yes	0			Draw distance / LOD bias	src/settings/rg_settings_core.c:139
+graphics.shadow_res	ENUM	graphics	original	original	ORIG,PLACEHOLDER	yes	0		original|2x|4x	Shadow resolution	src/settings/rg_settings_core.c:141
+graphics.gamma	FLOAT	graphics	1.0	1.0	ORIG	yes	2	src/gpu/gpu_gfx.c:53 src/gpu/gpu_gfx.c:53		Gamma	src/settings/rg_settings_core.c:143
+graphics.brightness	FLOAT	graphics	1.0	1.0	ORIG	yes	2	src/gpu/gpu_gfx.c:54 src/gpu/gpu_gfx.c:55		Brightness	src/settings/rg_settings_core.c:146
+graphics.sharpen	FLOAT	graphics	0.0	0.0	ORIG	yes	2	src/gpu/gpu_gfx.c:56 src/gpu/gpu_gfx.c:56		Sharpening	src/settings/rg_settings_core.c:149
+graphics.output_filter	ENUM	graphics	off	off	ORIG	yes	2	src/gpu/gpu_gfx.c:57 src/gpu/gpu_gfx.c:58	off|scanlines|crt	Output filter	src/settings/rg_settings_core.c:152
+audio.enabled	BOOL	audio	true	true	ORIG,RESTART	yes	5	src/host/host_sdl.c:184 src/host/host_sdl.c:185 src/host/host_sdl.c:209 src/runtime/runtime.c:462 src/runtime/runtime.c:463		Sound	src/settings/rg_settings_core.c:157
+audio.master_volume	INT	audio	100	100	ORIG	yes	2	src/host/host_sdl.c:465 src/host/host_sdl.c:466		Master volume	src/settings/rg_settings_core.c:159
+audio.latency_ms	INT	audio	64			yes	5	src/host/host_sdl.c:186 src/host/host_sdl.c:187 src/host/host_sdl.c:187 src/host/host_sdl.c:467 src/host/host_sdl.c:468		Audio buffer (ms)	src/settings/rg_settings_core.c:161
+audio.music_volume	INT	audio	100	100	ORIG	yes	1	src/runtime/runtime.c:1739		Music volume	src/settings/rg_settings_core.c:166
+audio.effects_volume	INT	audio	100	100	ORIG	yes	1	src/runtime/runtime.c:1739		Effects volume	src/settings/rg_settings_core.c:169
+audio.voice_volume	INT	audio	100	100	ORIG	yes	1	src/runtime/runtime.c:1739		Voice volume	src/settings/rg_settings_core.c:172
+audio.movie_volume	INT	audio	100	100	ORIG	yes	1	src/runtime/runtime.c:1740		Movie volume	src/settings/rg_settings_core.c:175
+audio.background	BOOL	audio	true	true	ORIG	yes	2	src/host/host_sdl.c:469 src/host/host_sdl.c:470		Play audio when unfocused	src/settings/rg_settings_core.c:179
+audio.device	STRING	audio				yes	3	src/host/host_sdl.c:471 src/host/host_sdl.c:472 src/host/host_sdl.c:1815		Output device	src/settings/rg_settings_core.c:182
+gameplay.text_speed	ENUM	gameplay	original	original	GAMEPLAY,ORIG,PLACEHOLDER	yes	0		original|fast|instant	Text speed	src/settings/rg_settings_core.c:187
+gameplay.skip_seen_movies	BOOL	gameplay	true	false	ORIG,PLACEHOLDER	yes	0			Allow skipping seen movies	src/settings/rg_settings_core.c:189
+system.throttle	BOOL	system	true	true	HIDDEN,ORIG,RESTART	no	2	src/runtime/runtime.c:460 src/runtime/runtime.c:461		Real-time pacing	src/settings/rg_settings_core.c:193
+system.screenshot_dir	STRING	system	.			yes	4	src/host/host_sdl.c:188 src/host/host_sdl.c:189 src/host/host_sdl.c:477 src/host/host_sdl.c:478		Screenshot folder	src/settings/rg_settings_core.c:196
+input.deadzone_move	FLOAT	controls	0.25			yes	2	src/host/host_input.c:538 src/host/host_input.c:539		Move stick deadzone	src/host/host_input.c:431
+input.deadzone_camera	FLOAT	controls	0.25			yes	1	src/host/host_input.c:540		Camera stick deadzone	src/host/host_input.c:433
+input.trigger_threshold	FLOAT	controls	0.35			yes	1	src/host/host_input.c:541		Analog-as-button threshold	src/host/host_input.c:435
+input.sensitivity_move	FLOAT	controls	1.0			yes	1	src/host/host_input.c:542		Move sensitivity	src/host/host_input.c:438
+input.sensitivity_camera	FLOAT	controls	1.0			yes	1	src/host/host_input.c:543		Camera sensitivity	src/host/host_input.c:440
+input.invert_move_x	BOOL	controls	false			yes	1	src/host/host_input.c:544		Invert move X	src/host/host_input.c:442
+input.invert_move_y	BOOL	controls	false			yes	1	src/host/host_input.c:545		Invert move Y	src/host/host_input.c:443
+input.invert_camera_x	BOOL	controls	false			yes	1	src/host/host_input.c:546		Invert camera X	src/host/host_input.c:444
+input.invert_camera_y	BOOL	controls	false			yes	1	src/host/host_input.c:547		Invert camera Y	src/host/host_input.c:445
+input.mouse_sensitivity	FLOAT	controls	1.0			yes	1	src/host/host_input.c:548		Mouse sensitivity	src/host/host_input.c:446
+input.mouse_look	BOOL	controls	true	false	ORIG	yes	2	src/host/host_input.c:1470 src/host/host_input.c:1471		Mouse camera	src/host/host_input.c:451
+input.mouse_yaw_scale	FLOAT	controls	1.0			yes	1	src/host/host_input.c:1474		Mouse camera speed (horizontal)	src/host/host_input.c:454
+input.mouse_pitch_scale	FLOAT	controls	1.0			yes	1	src/host/host_input.c:1475		Mouse camera speed (vertical)	src/host/host_input.c:457
+input.mouse_invert_x	BOOL	controls	false			yes	1	src/host/host_input.c:1476		Mouse camera: invert X	src/host/host_input.c:460
+input.mouse_invert_y	BOOL	controls	false			yes	1	src/host/host_input.c:1477		Mouse camera: invert Y	src/host/host_input.c:461
+input.vibration	FLOAT	controls	1.0		HIDDEN	no	1	src/host/host_input.c:549		Vibration strength (unused: the game never vibrates)	src/host/host_input.c:464
+input.stick_compensation	BOOL	controls	false	false	GAMEPLAY,ORIG	yes	2	src/host/host_input.c:550 src/host/host_input.c:551		Stick dead-zone compensation	src/host/host_input.c:468
+input.stick_ds2_range	BOOL	controls	true			yes	2	src/host/host_input.c:552 src/host/host_input.c:553		Gamepad sticks: DualShock 2 range	src/host/host_input.c:473
+input.camera_convention	ENUM	controls	pc	original	ORIG	yes	2	src/host/host_input.c:554 src/host/host_input.c:555	pc|original	Camera stick direction	src/host/host_input.c:478
+input.players	ENUM	controls	one			yes	1	src/host/host_input.c:556	one|two	Players	src/host/host_input.c:485
+input.min_press_fields	INT	controls	2			yes	3	src/host/host_input.c:557 src/host/host_input.c:1104 src/host/host_input.c:1104		Minimum press length	src/host/host_input.c:487
+prompts.style	ENUM	controls	RG_PROMPTS_AUTO	RG_PROMPTS_PLAYSTATION	ORIG	yes	4	src/host/host_sdl.c:540 src/host/host_sdl.c:541 src/host/host_sdl.c:718 src/host/host_sdl.c:719	auto|playstation|xbox|nintendo|keyboard	Button prompts	src/host/host_input.c:492
+input.overlay_chord	BINDING	controls_ui	pad:back, pad:start	pad:back, pad:start	ORIG	yes	2	src/host/host_input.c:1098 src/host/host_input.c:1100		Open / close settings: hold together	src/host/host_input.c:501
+input.overlay_chord_hold	FLOAT	controls_ui	1.0	1.0	ORIG	yes	1	src/host/host_input.c:1102		Open / close settings: hold time	src/host/host_input.c:508
+input.bind.move_left	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Move left	src/host/host_input.c:27
+input.bind.move_right	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Move right	src/host/host_input.c:28
+input.bind.move_up	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Move forward	src/host/host_input.c:29
+input.bind.move_down	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Move back	src/host/host_input.c:30
+input.bind.camera_left	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Camera left	src/host/host_input.c:31
+input.bind.camera_right	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Camera right	src/host/host_input.c:32
+input.bind.camera_up	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Camera up	src/host/host_input.c:33
+input.bind.camera_down	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Camera down	src/host/host_input.c:34
+input.bind.dpad_up	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		D-pad up	src/host/host_input.c:35
+input.bind.dpad_down	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		D-pad down	src/host/host_input.c:36
+input.bind.dpad_left	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		D-pad left	src/host/host_input.c:37
+input.bind.dpad_right	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		D-pad right	src/host/host_input.c:38
+input.bind.confirm	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Confirm / Talk / Sword attack (Cross)	src/host/host_input.c:42
+input.bind.cancel	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Cancel / Jump (Circle)	src/host/host_input.c:43
+input.bind.attack	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Gun / Sub-weapon (Square)	src/host/host_input.c:44
+input.bind.menu	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Menu / Battle commands (Triangle)	src/host/host_input.c:45
+input.bind.camera_turn_left	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Camera left / Previous tab / Accept suggestion (L1)	src/host/host_input.c:46
+input.bind.camera_turn_right	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Camera right / Guard? / Next tab (R1)	src/host/host_input.c:47
+input.bind.decline	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Decline suggestion / Page (L2)	src/host/host_input.c:48
+input.bind.camera_recentre	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Recentre camera / Zoom (hold) (R2)	src/host/host_input.c:49
+input.bind.switch_leader	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Switch leader (L3)	src/host/host_input.c:50
+input.bind.first_person	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		First-person look (R3)	src/host/host_input.c:51
+input.bind.pause	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Pause / Skip (Start)	src/host/host_input.c:52
+input.bind.map	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Map / Camera type (Select)	src/host/host_input.c:53
+input.bind.walk	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Walk (hold: move at walking speed)	src/host/host_input.c:54
+input.bind.ui_up	BINDING	controls_ui	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Menu: up	src/host/host_input.c:55
+input.bind.ui_down	BINDING	controls_ui	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Menu: down	src/host/host_input.c:56
+input.bind.ui_left	BINDING	controls_ui	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Menu: decrease	src/host/host_input.c:57
+input.bind.ui_right	BINDING	controls_ui	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Menu: increase	src/host/host_input.c:58
+input.bind.ui_accept	BINDING	controls_ui	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Menu: accept	src/host/host_input.c:59
+input.bind.ui_back	BINDING	controls_ui	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Menu: back	src/host/host_input.c:60
+input.bind.ui_page_prev	BINDING	controls_ui	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Menu: previous page	src/host/host_input.c:61
+input.bind.ui_page_next	BINDING	controls_ui	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Menu: next page	src/host/host_input.c:62
+input.bind.ui_overlay	BINDING	controls_ui	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Open / close settings	src/host/host_input.c:63

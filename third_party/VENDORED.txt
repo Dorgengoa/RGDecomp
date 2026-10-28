@@ -1,0 +1,4 @@
+# tools/native/fetch_vulkan_deps.py: vendored archives and their SHA-256
+Vulkan-Headers vulkan-sdk-1.4.363.0 4a078be12bef21cfebc09d878b77a63cff9d68f899254a0b00d0e37ef73e7f7e
+volk vulkan-sdk-1.4.363.0 1547d8d74395d4048fb3f4a6313da56db626e89b55db238d0d7e8944c8a645f3
+VulkanMemoryAllocator v3.4.0 822aa850c6ce77346ae96a8a1d351d52e77e85929f35363849a0a4e638e0a2a1

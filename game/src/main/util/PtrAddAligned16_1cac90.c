@@ -1,0 +1,14 @@
+/* rgp:protos */
+#define RGP_SELF_PtrAddAligned16_1cac90 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/* Decoded by the pass-6 symbolic executor (build/w1_gen6.py):
+   stores in listing order, return value read off $v0 at the jr.
+   Field types are by ACCESS WIDTH; the build arbitrates. */
+
+s32 PtrAddAligned16_1cac90(s32 o, s32 p1)
+{
+    return (o + ((p1 + 0xF) & -0x10));
+}

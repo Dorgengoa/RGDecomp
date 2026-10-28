@@ -1,0 +1,165 @@
+# census: sif_rpc
+# source: ../RGDecomp
+# commit: 2efa6b43548fed253fafdee4d22c8d61d506acde
+# binaries: ../work/SCUS_974.90 + BIN/*.BIN (retail)
+# generator: tools/census/platform/sif_rpc.py
+# rows: 156
+# unresolved_sites: none
+# note: IOP side from irx.py (sifcmd export 17 = sceSifRegisterRpc, export 15 = sceSifBindRpc)
+kind	sid	fno	iop_module	iop_file	ee_family	ee_api	callers	game_reached	via	client	detail
+server	0x123456		pcm_mixer	PCMPLAY.IRX	GAME		SoundRpcInit_1bc840	yes	(game)	0x4A25C0	
+server	0x80000001		FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio		SceFsInit_11b428	yes	sceOpen_11b928 OverlayLoadFile_100410 sceGsSetDefDispEnv_1083c8 (+1)	0x489AC0	
+server	0x80000003		FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap		sceSifInitIopHeap	yes	sceSifInitIopHeap	0x489BC0	
+server	0x80000006		LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/loadfile		_lf_bind	yes	sceSifLoadModule_11f7a0	0x489F80	
+server	0x80000100		padman	PADMAN.IRX	libpad/pad		scePadInit	yes	scePadInit	0x48ED00	
+server	0x80000101		padman	PADMAN.IRX	libpad/pad		scePadInit	yes	scePadInit	0x48ED28	
+server	0x80000400		mcserv	MCSERV.IRX	libmc/mc		sceMcInit_12c648	yes	sceMcInit_12c648	0x48F000	
+server	0x80000592		cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd		sceCdInit_12a008	yes	sceCdInit_12a008	0x48EC68	
+server	0x80000593		cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd		CdCheckSCmd_129e00	yes	sceCdChangeThreadPriority_12ab30 sceCdGetDiskType_12a9d8 sceCdGetError_12aa98 (+3)	0x4494C0	
+server	0x80000595		cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd		CdCheckNCmd_129b00	yes	sceCdRead_12a728 sceCdSeek_12a908	0x448B10	
+server	0x80000597		cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd		sceCdLayerSearchFile_1297e0	yes	sceCdLayerSearchFile_1297e0 sceCdSearchFile_129ae0	0x48EC40	
+server	0x8000059A		cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd		sceCdDiskReady	yes	CdDiskReadyNewMaybe_12a508	0x48EC90	
+server	0x8000059C		cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd		CdDiskReadyNewMaybe_12a508	yes	CdDiskReadyNewMaybe_12a508	0x48EC90	
+server	0x80000701		sdr_driver	SDRDRV.IRX	libsdr/sdremote		sceSdRemoteInit_122890	yes	SdRemoteInitMasterVolume_165608	0x48D940	
+server	0x80000704		(EE-side server)	SdrCallbackThread_122fa8	libsdr/sdremote		SdrCallbackThread_122fa8	yes	SdRemoteInitMasterVolume_165608	?	
+call	0x123456	0x10	pcm_mixer	PCMPLAY.IRX	GAME	SoundRpcCall_1bc5e0	SoundRpcShutdown_1bc760	yes	(game)		
+call	0x123456	0x8000	pcm_mixer	PCMPLAY.IRX	GAME	SoundRpcCall_1bc5e0	SoundRpcInit_1bc840	yes	(game)		
+call	0x123456	0x8090	pcm_mixer	PCMPLAY.IRX	GAME	SoundRpcCall_1bc5e0	SoundStreamSlotSendToIopMaybe_1bd760	yes	(game)		
+call	0x123456	0x80A0	pcm_mixer	PCMPLAY.IRX	GAME	SoundRpcCall_1bc5e0	SoundStreamSlotSendToIopMaybe_1bd760	yes	(game)		
+call	0x123456	0x8400	pcm_mixer	PCMPLAY.IRX	GAME	SoundRpcCall_1bc5e0	SoundRpcShutdown_1bc760	yes	(game)		
+call	0x80000001	0x0	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceOpen_11b928	yes	sceOpen_11b928 OverlayLoadFile_100410 sceGsSetDefDispEnv_1083c8 (+1)		
+call	0x80000001	0x1	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceClose_11bbb8	yes	sceClose_11bbb8 OverlayLoadFile_100410 sceGsSetDefDispEnv_1083c8 (+1)		
+call	0x80000001	0x2	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceRead_11bf70	yes	sceRead_11bf70 OverlayLoadFile_100410 sceGsSetDefDispEnv_1083c8 (+1)		
+call	0x80000001	0x3	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceWrite_11c1e0	yes	sceWrite_11c1e0		
+call	0x80000001	0x4	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceLseek_11bd30	yes	sceLseek_11bd30 OverlayLoadFile_100410		
+call	0x80000001	0x5	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceIoctl_11c4a0	no			
+call	0x80000001	0x6	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	FileIoPathCmdRpc_11ca10	sceRemove_11cbc0	no			
+call	0x80000001	0x7	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceMkdir_11cbe0	no			
+call	0x80000001	0x8	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	FileIoPathCmdRpc_11ca10	sceRmdir_11cd98	no			
+call	0x80000001	0x9	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	FileIoPathCmdRpc_11ca10	sceDopen_11d188	no			
+call	0x80000001	0xA	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceDclose_11d250	no			
+call	0x80000001	0xB	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceDread_11d3b8	no			
+call	0x80000001	0xC	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceGetstat_11d510	no			
+call	0x80000001	0xD	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceChstat_11d6c8	no			
+call	0x80000001	0xE	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceFormat_11cdb8	no			
+call	0x80000001	0xF	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceAddDrv_11d038	no			
+call	0x80000001	0x10	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	FileIoPathCmdRpc_11ca10	sceDelDrv_11d168	no			
+call	0x80000001	0x11	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceRename_11d918	no			
+call	0x80000001	0x12	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	FileIoPathCmdRpc_11ca10	sceChdir_11db20	no			
+call	0x80000001	0x13	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceSync_11db40	no			
+call	0x80000001	0x14	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceMount_11dcf0	no			
+call	0x80000001	0x15	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	FileIoPathCmdRpc_11ca10	sceUmount_11df70	no			
+call	0x80000001	0x16	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceLseek64_11df90	no			
+call	0x80000001	0x17	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceDevctl_11e1d0	no			
+call	0x80000001	0x18	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceSymlink_11e478	no			
+call	0x80000001	0x19	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceReadlink_11e670	no			
+call	0x80000001	0x1A	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	sceIoctl2_11c828	no			
+call	0x80000001	0xFD	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	FileIoSetIopParamRelated_11b838	no			
+call	0x80000001	0xFE	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	FileIoSetIopBufferMaybe_11b6f8	no			
+call	0x80000001	0xFF	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/fileio	SifCallRpcRetry_11ad90	SceFsInit_11b428	yes	sceOpen_11b928 OverlayLoadFile_100410 sceGsSetDefDispEnv_1083c8 (+1)		
+call	0x80000003	0x1	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap	sceSifCallRpc	sceSifAllocIopHeap	yes	sceSifAllocIopHeap		
+call	0x80000003	0x2	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap	sceSifCallRpc	sceSifFreeIopHeap	yes	sceSifFreeSysMemory_11ea40		
+call	0x80000003	0x3	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap	sceSifCallRpc	sceSifLoadIopHeap	no			
+call	0x80000003	0x4	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap	sceSifCallRpc	sceSifAllocSysMemory_11e948	no			
+call	0x80000003	0x5	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap	sceSifCallRpc	sceSifQueryMemSize_11eb50	no			
+call	0x80000003	0x6	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap	sceSifCallRpc	sceSifQueryMaxFreeMemSize_11ebc0	no			
+call	0x80000003	0x7	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap	sceSifCallRpc	sceSifQueryTotalFreeMemSize_11ec30	no			
+call	0x80000003	0x8	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap	sceSifCallRpc	sceSifQueryBlockTopAddress_11eca0	no			
+call	0x80000003	0x9	FILEIO_service	IOPRP300.IMG:FILEIO	libkernl/iopheap	sceSifCallRpc	sceSifQueryBlockSize_11ed20	no			
+call	0x80000006	0x0	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/loadfile	SifLoadModuleRpc_11f578	sceSifLoadModule_11f7a0 sceSifLoadStartModule_11f7c0	yes	sceSifLoadModule_11f7a0		
+call	0x80000006	0x1	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/loadfile	_sceSifLoadElfPart	sceSifLoadElf sceSifLoadElfPart	no			
+call	0x80000006	0x2	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/iopcontrol	sceSifCallRpc	sceSifSetIopAddr	no			
+call	0x80000006	0x3	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/iopcontrol	sceSifCallRpc	sceSifGetIopAddr	no			
+call	0x80000006	0x6	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/loadfile	sceSifCallRpc	SifLoadModuleBufferRpc_11ef68	no			
+call	0x80000006	0x7	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/loadfile	sceSifCallRpc	sceSifStopModule_11f170	no			
+call	0x80000006	0x8	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/loadfile	sceSifCallRpc	sceSifUnloadModule_11f378	no			
+call	0x80000006	0x9	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/loadfile	sceSifCallRpc	sceSifSearchModuleByName_11f408	no			
+call	0x80000006	0xA	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/loadfile	sceSifCallRpc	sceSifSearchModuleByAddress_11f4a8	no			
+call	0x80000006	0xFF	LoadModuleByEE	IOPRP300.IMG:LOADFILE	libkernl/loadfile	sceSifCallRpc	_lf_bind	yes	sceSifLoadModule_11f7a0		
+call	0x80000100	0x1	padman	PADMAN.IRX	libpad/pad	sceSifCallRpc	PadInitAfterBindMaybe_12b110 PadSetCmdCallbackMaybe_12c510 scePadEnd_12b208 scePadGetModVersion scePadGetPortMax scePadGetSlotMax scePadPortClose scePadPortOpen scePadSetActAlign scePadSetButtonInfo scePadSetMainMode scePadSetVrefParam scePadSetWarningLevel	yes	scePadInit scePadPortOpen scePadSetActAlign scePadSetMainMode		
+call	0x80000400	0x1	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcGetInfo_12d1b8	yes	sceMcGetInfo_12d1b8		
+call	0x80000400	0x2	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcOpen_12ca58	yes	sceMcOpen_12ca58 sceMcMkdir		
+call	0x80000400	0x3	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcClose_12cbb8	yes	sceMcClose_12cbb8		
+call	0x80000400	0x4	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcSeek_12cc78	no			
+call	0x80000400	0x5	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcRead_12ce08	yes	sceMcRead_12ce08		
+call	0x80000400	0x6	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcWrite_12cf20	yes	sceMcWrite_12cf20		
+call	0x80000400	0xA	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcFlush_12d8b8	yes	sceMcFlush_12d8b8		
+call	0x80000400	0xC	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcChdir_12d588	yes	sceMcChdir_12d588		
+call	0x80000400	0xD	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcGetDir_12d3a8	yes	sceMcGetDir_12d3a8		
+call	0x80000400	0xE	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcRename_12db48 sceMcSetFileInfo_12d978	yes	sceMcRename_12db48		
+call	0x80000400	0xF	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcDelete_12d798	no			
+call	0x80000400	0x10	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcFormat_12d6c8	yes	sceMcFormat_12d6c8		
+call	0x80000400	0x11	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcUnformat_12dca0	no			
+call	0x80000400	0x12	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcGetEntSpace_12dd70	no			
+call	0x80000400	0x15	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcGetSlotMax_12c998	no			
+call	0x80000400	0x35	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcUdCheckNewCard_12d338	no			
+call	0x80000400	0xFE	mcserv	MCSERV.IRX	libmc/mc	sceSifCallRpc	sceMcInit_12c648	yes	sceMcInit_12c648		
+call	0x80000592	0x0	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdInit_12a008	yes	sceCdInit_12a008		
+call	0x80000593	0x3	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdGetDiskType_12a9d8	yes	sceCdGetDiskType_12a9d8		
+call	0x80000593	0x4	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdGetError_12aa98	yes	sceCdGetError_12aa98		
+call	0x80000593	0x5	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdTrayReq_12ae98	yes	sceCdTrayReq_12ae98		
+call	0x80000593	0x22	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdMmode_12ada0	yes	sceCdMmode_12ada0		fno read from a .data word (retail initial value shown)
+call	0x80000593	0x23	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdChangeThreadPriority_12ab30	yes	sceCdChangeThreadPriority_12ab30		
+call	0x80000593	0x25	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdSetTimeoutMaybe_12abf8	no			
+call	0x80000593	0x27	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdReadDvdDualInfo_12acd0	yes	sceCdReadDvdDualInfo_12acd0		
+call	0x80000595	0x1	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdRead_12a728	yes	sceCdRead_12a728		
+call	0x80000595	0x5	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdSeek_12a908	yes	sceCdSeek_12a908		
+call	0x80000595	0xE	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdNcmdDiskReady_129c58	yes	sceCdRead_12a728 sceCdSeek_12a908		
+call	0x80000597	0x0	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	sceCdLayerSearchFile_1297e0	yes	sceCdLayerSearchFile_1297e0 sceCdSearchFile_129ae0		
+call	0x8000059C	0x0	cdvd_ee_driver	IOPRP300.IMG:CDVDFSV	libcdvd/cdvd	sceSifCallRpc	CdDiskReadyNewMaybe_12a508 sceCdDiskReady	yes	CdDiskReadyNewMaybe_12a508		
+call	0x80000701	0x8010	sdr_driver	SDRDRV.IRX	GAME libsdr-gcc/sdremote-cmd-island(gcc)	sceSdRemote_1229e8	SdRemoteInitMasterVolume_165608 SoundThreadCmdEffectEnable_1b6700 SoundThreadCmdSetInputVolume_1b6570 SoundThreadCmdSetReverbDepth_1b6630	yes	(game) SdRemoteInitMasterVolume_165608		SdSetParam
+call	0x80000701	0x8050	sdr_driver	SDRDRV.IRX	GAME	sceSdRemote_1229e8	SoundThreadCmdSetReverbEndAddr_1b65d0	yes	(game)		SdSetAddr
+call	0x80000701	0x8070	sdr_driver	SDRDRV.IRX	GAME	sceSdRemote_1229e8	SoundThreadCmdEffectEnable_1b6700 SoundThreadCmdSetReverbDepth_1b6630 SoundThreadCmdSetReverbEndAddr_1b65d0	yes	(game)		SdSetCoreAttr
+call	0x80000701	0x8130	sdr_driver	SDRDRV.IRX	GAME	sceSdRemote_1229e8	SoundThreadCmdSetReverbMode_1b66b0	yes	(game)		SdSetEffectAttr
+call	0x80000701	0x8160	sdr_driver	SDRDRV.IRX	libsdr/sdremote	sceSdRemote_1229e8	sceSdRemoteCallbackQuit_122e70	no			SdSetTransIntrHandler
+call	0x80000701	0x8170	sdr_driver	SDRDRV.IRX	libsdr/sdremote	sceSdRemote_1229e8	sceSdRemoteCallbackQuit_122e70	no			SdSetSpu2IntrHandler
+call	0x80000701	0x90F0	sdr_driver	SDRDRV.IRX	libsdr-gcc/sdremote-cmd-island(gcc)	sceSdRemote_1229e8	SoundIopSendCmdG0S2_1656b8 SoundIopSendCmdG0SA_165778 SoundIopSendCmdG1S0_165828 SoundIopSendCmdG1S1_165900 SoundIopSendCmdG1S2_1659a8 SoundIopSendCmdG1S3_165a68 SoundIopSendCmdG2S0_165b20 SoundIopSendCmdG2S1_165bd0 SoundIopSendCmdG2S2_165c70 SoundIopSendCmdG2S3_165d28 SoundIopSendCmdG3S0_165dc8 SoundIopSendCmdG3S1_165e78 SoundIopSendCmdG3S2_165f20 SoundIopSendCmdG3S3_166020	yes	SoundIopSendCmdG0S2_1656b8 SoundIopSendCmdG0SA_165778 SoundIopSendCmdG1S0_165828 SoundIopSendCmdG1S1_165900 SoundIopSendCmdG1S2_1659a8 SoundIopSendCmdG1S3_165a68 SoundIopSendCmdG2S0_165b20 SoundIopSen		
+call	0x80000701	0xE620	sdr_driver	SDRDRV.IRX	libsdr/sdremote	sceSdRemote_1229e8	sceSdRemoteCallbackInit_122d70	yes	SdRemoteInitMasterVolume_165608		SdRemoteCallbackInit(sdrdrv)
+call	0x80000701	0xE630	sdr_driver	SDRDRV.IRX	libsdr/sdremote	sceSdRemote_1229e8	sceSdRemoteCallbackQuit_122e70	no			SdRemoteCallbackQuit(sdrdrv)
+module				cdrom0:\MODULES\sio2man.irx			LoadIopModules_15e240@0x15E268	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\padman.irx			LoadIopModules_15e240@0x15E284	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\mcman.irx			LoadIopModules_15e240@0x15E2A0	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\mcserv.irx			LoadIopModules_15e240@0x15E2BC	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\libsd.irx			LoadIopModules_15e240@0x15E2D8	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\sdrdrv.irx			LoadIopModules_15e240@0x15E2F4	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\modhsyn.irx			LoadIopModules_15e240@0x15E310	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\modmidi.irx			LoadIopModules_15e240@0x15E32C	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\modmsin.irx			LoadIopModules_15e240@0x15E348	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\cdvdstm.irx			LoadIopModules_15e240@0x15E364	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\sksound.irx			LoadIopModules_15e240@0x15E384	yes			upper/;sep=1 argsz=0xC args='maxtrack=16|'
+module				cdrom0:\MODULES\skhsynth.irx			LoadIopModules_15e240@0x15E3A4	yes			upper/;sep=1 argsz=0xC args='maxentry=16|'
+module				cdrom0:\MODULES\skmidi.irx			LoadIopModules_15e240@0x15E3C4	yes			upper/;sep=1 argsz=0x16 args='maxtrack=5|maxentry=16'
+module				cdrom0:\MODULES\skmsin.irx			LoadIopModules_15e240@0x15E3E4	yes			upper/;sep=1 argsz=0x16 args='maxtrack=9|maxentry=16'
+module				cdrom0:\MODULES\pcmplay.irx			LoadIopModules_15e240@0x15E400	yes			upper/;sep=1 argsz=0 args=''
+module				cdrom0:\MODULES\IOPRP300.IMG;1			IopRebootWithImage_15e560@0x15E56C	yes			IOP reboot with replacement image (sceSifRebootIop); then sceSifSyncIop/InitRpc/InitIopHeap
+iop_module			cdvd_st_driver 2.2	CDVDSTM.IRX							imports: cdvdman intrman ioman loadcore sifman stdio sysmem thbase thevent thsemap
+iop_module			Sound_Device_Library 3.3	LIBSD.IRX							imports: intrman loadcore sifman sysclib thevent
+iop_module			mcman 2.38	MCMAN.IRX							imports: cdvdman intrman ioman loadcore modload secrman sio2man stdio sysclib thbase thsemap
+iop_module	0x80000400		mcserv 2.16	MCSERV.IRX							imports: intrman loadcore mcman sifcmd sifman stdio sysclib thbase thsemap
+iop_module			SPU2_Synthesizer_Module 1.5	MODHSYN.IRX							imports: intrman libsd loadcore thbase
+iop_module			Midi_Sequencer_Module 2.2	MODMIDI.IRX							imports: intrman loadcore stdio sysclib
+iop_module			Midi_Message_Input_Module 1.1	MODMSIN.IRX							imports: intrman loadcore
+iop_module	0x80000100 0x80000101		padman 4.33	PADMAN.IRX							imports: intrman loadcore sifcmd sifman sio2man stdio sysclib sysmem thbase thevent thsemap timrman vblank
+iop_module	0x123456		pcm_mixer 1.2	PCMPLAY.IRX							imports: intrman libsd sifcmd stdio sysclib sysmem thbase thsemap
+iop_module	0x80000701		sdr_driver 4.1	SDRDRV.IRX							binds 0x80000704; imports: intrman libsd loadcore sifcmd sysclib sysmem thbase
+iop_module			sio2man 3.1	SIO2MAN.IRX							imports: dmacman intrman loadcore stdio sysclib thbase thevent thsemap
+iop_module			StandardKit/Sound/HardwareSynthesizer 1.3	SKHSYNTH.IRX							imports: intrman libsd loadcore modhsyn sksound sysclib sysmem
+iop_module			StandardKit/Sound/MIDIPlayer 1.1	SKMIDI.IRX							imports: intrman loadcore modmidi skhsynth sksound stdio sysclib sysmem
+iop_module			StandardKit/Sound/MIDI_Sequence_Input 1.1	SKMSIN.IRX							imports: intrman loadcore modmsin skhsynth sksound sysclib sysmem
+iop_module			StandardKit/Sound/Foundation 2.3	SKSOUND.IRX							imports: intrman libsd loadcore sdrdrv sysclib sysmem thbase thsemap timrman
+iop_module			System_Memory_Manager 2.3	IOPRP300.IMG:SYSMEM							imports:
+iop_module			Module_Manager 2.6	IOPRP300.IMG:LOADCORE							imports: sysmem
+iop_module			IOP_SIF_rpc_interface 2.8	IOPRP300.IMG:SIFCMD							imports: intrman loadcore sifman stdio thbase thevent
+iop_module			IOP_SIF_manager 2.4	IOPRP300.IMG:SIFMAN							imports: intrman loadcore
+iop_module			Multi_Thread_Manager 2.3	IOPRP300.IMG:THREADMAN							imports: heaplib intrman loadcore stdio sysclib sysmem timrman
+iop_module			IO/File_Manager 2.3	IOPRP300.IMG:IOMAN							imports: intrman loadcore sysclib sysmem thbase
+iop_module			Moldule_File_loader 2.9	IOPRP300.IMG:MODLOAD							imports: intrman ioman loadcore stdio sysclib sysmem thbase thevent thsemap
+iop_module	0x80000001 0x80000003 0x80000007		FILEIO_service 2.18	IOPRP300.IMG:FILEIO							imports: intrman ioman loadcore sifcmd sifman stdio sysclib sysmem thbase thevent thmsgbx thsemap
+iop_module			cdvd_driver 2.38	IOPRP300.IMG:CDVDMAN							imports: dmacman intrman ioman loadcore stdio sysclib sysmem thbase thevent thsemap
+iop_module	0x80000592 0x8000059A 0x80000593 0x8000059C 0x80000597 0x80000595		cdvd_ee_driver 2.38	IOPRP300.IMG:CDVDFSV							imports: cdvdman dmacman intrman ioman loadcore sifcmd sifman stdio sysclib sysmem thbase thevent
+iop_module	0x80000006		LoadModuleByEE 2.2	IOPRP300.IMG:LOADFILE							imports: intrman ioman loadcore modload sifcmd sifman stdio sysclib sysmem thbase
+iop_module			Timer_Manager 2.2	IOPRP300.IMG:TIMEMANI							imports: intrman loadcore
+iop_module			ROM_file_driver 2.1	IOPRP300.IMG:ROMDRV							imports: intrman ioman loadcore sysclib
+iop_module			SyncEE 2.2	IOPRP300.IMG:EESYNC							imports: ioman loadcore sifman sysmem
+iop_module			System_C_lib 2.3	IOPRP300.IMG:SYSCLIB							imports: loadcore
+iop_module			Stdio 2.3	IOPRP300.IMG:STDIO							imports: ioman loadcore sysclib
