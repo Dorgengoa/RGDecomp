@@ -1,0 +1,17 @@
+/* rgp:protos */
+#define RGP_SELF_ObjTypeVehicleGetTargetRef_3380d0 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/* Address of the sub-object at +0xE0. */
+
+typedef struct Obj_FUN_003380d0 {
+    u8 pad000[0xE0];
+    u8 sub[1];         /* +0xE0 */
+} Obj_FUN_003380d0;
+
+void *ObjTypeVehicleGetTargetRef_3380d0(Obj_FUN_003380d0 *o)
+{
+    return o->sub;
+}

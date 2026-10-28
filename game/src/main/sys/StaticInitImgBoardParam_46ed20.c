@@ -1,0 +1,38 @@
+/* rgp:protos */
+#define RGP_SELF_IosBaseInitDtor_102ee0 1
+#define RGP_SELF_StaticInitImgBoardParam_46ed20 1
+#define RGP_SELF_WIosBaseInitDtor_103420 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+extern s32 D_004655D8;
+extern s32 D_004655E0;
+extern s32 D_00467660;
+extern s32 D_004676C8;
+extern s32 D_004800F0;
+extern s32 D_004800F4;
+extern s32 D_00483C90;
+extern s32 D_00483C9C;
+extern s32 D_00483CA0;
+extern s32 D_00483CAC;
+extern s32 D_00483CB0;
+extern s32 D_00483CB4;
+extern u8 IosBaseInitDtor_102ee0[];
+extern u8 WIosBaseInitDtor_103420[];
+
+void StaticInitImgBoardParam_46ed20(void)
+{
+    IosBaseInitCtor_102bd0(&D_00483C9C);
+    RegisterGlobalObject_100dc0(&D_00483C9C, IosBaseInitDtor_102ee0, &D_00483C90);
+    WIosBaseInitCtor_103110(&D_00483CAC);
+    RegisterGlobalObject_100dc0(&D_00483CAC, WIosBaseInitDtor_103420, &D_00483CA0);
+    D_00483CB0 = D_004800F0;
+    *(s32 *)&D_00467660 = D_004655D8;
+    D_00483CB4 = D_004800F4;
+    *(s32 *)&D_004676C8 = D_004655E0;
+}

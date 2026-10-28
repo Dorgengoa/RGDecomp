@@ -1,0 +1,250 @@
+#include "types.h"
+
+extern void sceGsGetGParam_1082a0(void);
+extern void GsIsNewRomVersionMaybe_108318(void);
+extern void GetGsDxDyOffset_1083b8(void);
+extern void scePrintf_119288(void);
+
+asm void sceGsSetDefDispEnv_1083c8(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0x90;
+    sll        $5, $5, 16;
+    sd         $22, 0x70($29);
+    sll        $6, $6, 16;
+    sd         $21, 0x60($29);
+    sll        $7, $7, 16;
+    sd         $20, 0x50($29);
+    sll        $8, $8, 16;
+    sd         $19, 0x40($29);
+    sll        $9, $9, 16;
+    sd         $18, 0x30($29);
+    sra        $22, $5, 16;
+    sd         $16, 0x10($29);
+    sra        $18, $7, 16;
+    sd         $17, 0x20($29);
+    sra        $16, $6, 16;
+    sd         $31, 0x80($29);
+    sra        $21, $8, 16;
+    sra        $20, $9, 16;
+    jal        sceGsGetGParam_1082a0;
+    daddu     $19, $4, $0;
+    daddu      $17, $2, $0;
+    lhu        $4, 0x2($17);
+    addiu      $2, $4, -0x2;
+    sltiu      $2, $2, 0x2;
+    bnel       $2, $0, L00108468;
+    sw        $0, 0xC($29);
+    jal        GsIsNewRomVersionMaybe_108318;
+    nop;
+    beqz       $2, L00108460;
+    daddu     $5, $29, $0;
+    lh         $4, 0x2($17);
+    ori        $6, $29, 0x4;
+    ori        $7, $29, 0x8;
+    jal        GetGsDxDyOffset_1083b8;
+    ori       $8, $29, 0xC;
+    b          L00108474;
+    lhu       $4, 0x2($17);
+  L00108460:
+    lhu        $4, 0x2($17);
+    sw         $0, 0xC($29);
+  L00108468:
+    sw         $0, 0x8($29);
+    sw         $0, 0x4($29);
+    sw         $0, 0x0($29);
+  L00108474:
+    addiu      $3, $0, 0x66;
+    lhu        $6, 0x0($17);
+    sd         $3, 0x0($19);
+    lh         $2, 0x0($17);
+    beqz       $2, L0010849C;
+    addiu     $2, $0, 0x2;
+    lh         $2, 0x4($17);
+    bnez       $2, L0010849C;
+    addiu     $2, $0, 0x3;
+    addiu      $2, $0, 0x1;
+  L0010849C:
+    sd         $2, 0x8($19);
+    addiu      $2, $16, 0x3F;
+    andi       $3, $22, 0xF;
+    sra        $2, $2, 6;
+    sll        $4, $4, 16;
+    andi       $2, $2, 0x3F;
+    dsll       $3, $3, 15;
+    dsll       $2, $2, 9;
+    sra        $5, $4, 16;
+    or         $3, $3, $2;
+    addiu      $4, $0, 0x2;
+    bne        $5, $4, L00108578;
+    sd        $3, 0x10($19);
+    sll        $2, $6, 16;
+    addiu      $3, $0, 0x1;
+    sra        $2, $2, 16;
+    bne        $2, $3, L0010854C;
+    addiu     $2, $16, 0x9FF;
+    addiu      $3, $16, 0x9FF;
+    beql       $16, $0, L001084F0;
+        .word 0x000001CD;
+  L001084F0:
+    div $3, $16;
+    lw         $2, 0x4($29);
+    lw         $5, 0x0($29);
+    addu       $2, $20, $2;
+    lh         $6, 0x4($17);
+    addiu      $2, $2, 0x32;
+    daddiu     $5, $5, 0x27C;
+    andi       $2, $2, 0xFFF;
+    dsll       $7, $2, 12;
+    mflo       $3;
+    mult       $4, $3, $16;
+    mult1      $2, $21, $3;
+    addiu      $3, $3, -0x1;
+    dsll       $10, $3, 23;
+    addiu      $4, $4, -0x1;
+    dsll32     $3, $4, 0;
+    daddu      $5, $2, $5;
+    beqz       $6, L00108600;
+    andi      $5, $5, 0xFFF;
+    sll        $2, $18, 1;
+    or         $3, $10, $3;
+    b          L00108608;
+    addiu     $2, $2, -0x1;
+  L0010854C:
+    beql       $16, $0, L00108554;
+        .word 0x000001CD;
+  L00108554:
+    div $2, $16;
+    addiu      $7, $18, -0x1;
+    lw         $5, 0x0($29);
+    dsll32     $7, $7, 12;
+    lw         $3, 0x4($29);
+    daddiu     $5, $5, 0x27C;
+    addu       $3, $20, $3;
+    b          L00108648;
+    addiu     $3, $3, 0x19;
+  L00108578:
+    addiu      $2, $0, 0x3;
+    bne        $5, $2, L0010868C;
+    addiu     $2, $0, 0x50;
+    sll        $2, $6, 16;
+    addiu      $3, $0, 0x1;
+    sra        $2, $2, 16;
+    bne        $2, $3, L00108620;
+    addiu     $2, $16, 0x9FF;
+    addiu      $3, $16, 0x9FF;
+    beql       $16, $0, L001085A4;
+        .word 0x000001CD;
+  L001085A4:
+    div $3, $16;
+    lw         $2, 0x4($29);
+    lw         $5, 0x0($29);
+    addu       $2, $20, $2;
+    lh         $6, 0x4($17);
+    addiu      $2, $2, 0x48;
+    daddiu     $5, $5, 0x290;
+    andi       $2, $2, 0xFFF;
+    dsll       $7, $2, 12;
+    mflo       $3;
+    mult       $4, $3, $16;
+    mult1      $2, $21, $3;
+    addiu      $3, $3, -0x1;
+    dsll       $10, $3, 23;
+    addiu      $4, $4, -0x1;
+    dsll32     $3, $4, 0;
+    daddu      $5, $2, $5;
+    beqz       $6, L00108600;
+    andi      $5, $5, 0xFFF;
+    sll        $2, $18, 1;
+    or         $3, $10, $3;
+    b          L00108608;
+    addiu     $2, $2, -0x1;
+  L00108600:
+    addiu      $2, $18, -0x1;
+    or         $3, $10, $3;
+  L00108608:
+    dsll32     $2, $2, 12;
+    or         $2, $5, $2;
+    or         $3, $3, $2;
+    or         $2, $3, $7;
+    b          L00108710;
+    sd        $2, 0x18($19);
+  L00108620:
+    beql       $16, $0, L00108628;
+        .word 0x000001CD;
+  L00108628:
+    div $2, $16;
+    addiu      $7, $18, -0x1;
+    lw         $5, 0x0($29);
+    dsll32     $7, $7, 12;
+    lw         $3, 0x4($29);
+    daddiu     $5, $5, 0x290;
+    addu       $3, $20, $3;
+    addiu      $3, $3, 0x24;
+  L00108648:
+    andi       $3, $3, 0xFFF;
+    dsll       $3, $3, 12;
+    mflo       $2;
+    mult       $6, $21, $2;
+    mult1      $4, $2, $16;
+    addiu      $2, $2, -0x1;
+    daddu      $5, $6, $5;
+    dsll       $2, $2, 23;
+    andi       $5, $5, 0xFFF;
+    addiu      $4, $4, -0x1;
+    or         $5, $5, $7;
+    dsll32     $4, $4, 0;
+    or         $2, $2, $4;
+    or         $2, $2, $5;
+    or         $2, $2, $3;
+    b          L00108710;
+    sd        $2, 0x18($19);
+  L0010868C:
+    bne        $5, $2, L00108708;
+    lui       $4, 0x45;
+    addiu      $2, $0, 0x2D0;
+    lw         $5, 0x0($29);
+    subu       $2, $2, $16;
+    sll        $6, $21, 1;
+    srl        $3, $2, 31;
+    lw         $4, 0x4($29);
+    addu       $2, $2, $3;
+    daddiu     $7, $6, 0xE8;
+    sra        $2, $2, 1;
+    sll        $6, $16, 1;
+    sll        $2, $2, 1;
+    addu       $4, $20, $4;
+    daddu      $5, $2, $5;
+    addiu      $3, $18, -0x1;
+    daddu      $5, $5, $7;
+    addiu      $6, $6, -0x1;
+    dsll32     $3, $3, 12;
+    dsll32     $6, $6, 0;
+    andi       $5, $5, 0xFFF;
+    addiu      $4, $4, 0x23;
+    lui        $2, (0x800000 >> 16);
+    or         $3, $3, $6;
+    or         $5, $5, $2;
+    andi       $4, $4, 0xFFF;
+    or         $3, $3, $5;
+    dsll       $4, $4, 12;
+    or         $3, $3, $4;
+    b          L00108710;
+    sd        $3, 0x18($19);
+  L00108708:
+    jal        scePrintf_119288;
+    addiu     $4, $4, 0x5C48;
+  L00108710:
+    sd         $0, 0x20($19);
+    ld         $31, 0x80($29);
+    ld         $22, 0x70($29);
+    ld         $21, 0x60($29);
+    ld         $20, 0x50($29);
+    ld         $19, 0x40($29);
+    ld         $18, 0x30($29);
+    ld         $17, 0x20($29);
+    ld         $16, 0x10($29);
+    jr         $31;
+    addiu     $29, $29, 0x90;
+}
+

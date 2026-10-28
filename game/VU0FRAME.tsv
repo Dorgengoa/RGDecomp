@@ -1,0 +1,247 @@
+path	function	rule	detail
+src/main/ai/AiCmdGetRelativeAngleMaybe_2c72e0.c	AiCmdGetRelativeAngleMaybe_2c72e0	frame	
+src/main/ai/AiCmdStepTowardPointMaybe_2c8a70.c	AiCmdStepTowardPointMaybe_2c8a70	frame	
+src/main/anim/AnimApplyMaterialKeys_154200.c	Apply	frame	CopyXYZ
+src/main/anim/AnimApplyMaterialKeys_154200.c	CopyXYZ	helper	
+src/main/anim/AnimApplyMaterialKeys_154200.c	CopyXYZ	helper-call	Apply
+src/main/anim/AnimBlendTwoApplyMaterials_153500.c	Apply	frame	CopyXYZ
+src/main/anim/AnimBlendTwoApplyMaterials_153500.c	CopyXYZ	helper	
+src/main/anim/AnimBlendTwoApplyMaterials_153500.c	CopyXYZ	helper-call	Apply
+src/main/anim/AnimKeyBlendFrame_155bf0.c	AnimKeyBlendFrame_155bf0	frame	InterVector_155bf0
+src/main/anim/AnimKeyBlendFrame_155bf0.c	InterVector_155bf0	helper	
+src/main/anim/AnimKeyBlendFrame_155bf0.c	InterVector_155bf0	helper-call	AnimKeyBlendFrame_155bf0
+src/main/anim/AnimKeyBlendFrame_155bf0.c	InterVector_155bf0	helper-call	AnimKeyBlendFrame_155bf0
+src/main/anim/AnimKeyBlendFrame_155bf0.c	InterVector_155bf0	helper-call	AnimKeyBlendFrame_155bf0
+src/main/anim/AnimKeyBlendMaterial_1559e0.c	AnimKeyBlendMaterial_1559e0	frame	InterVector_1559e0
+src/main/anim/AnimKeyBlendMaterial_1559e0.c	InterVector_1559e0	helper	
+src/main/anim/AnimKeyBlendMaterial_1559e0.c	InterVector_1559e0	helper-call	AnimKeyBlendMaterial_1559e0
+src/main/anim/AnimKeyBlendMaterial_1559e0.c	InterVector_1559e0	helper-call	AnimKeyBlendMaterial_1559e0
+src/main/anim/AnimKeyEvalQuat_1555b0.c	AnimKeyEvalQuat_1555b0	frame	Dec
+src/main/anim/AnimKeyEvalQuat_1555b0.c	Dec	helper	
+src/main/anim/AnimKeyEvalQuat_1555b0.c	Dec	helper-call	AnimKeyEvalQuat_1555b0
+src/main/anim/AnimKeyEvalQuat_1555b0.c	Dec	helper-call	AnimKeyEvalQuat_1555b0
+src/main/anim/AnimKeyEvalScalarLinear_154a10.c	AnimKeyEvalScalarLinear_154a10	frame	InterVector_154a10
+src/main/anim/AnimKeyEvalScalarLinear_154a10.c	InterVector_154a10	helper	
+src/main/anim/AnimKeyEvalScalarLinear_154a10.c	InterVector_154a10	helper-call	AnimKeyEvalScalarLinear_154a10
+src/main/anim/AnimKeyEvalScalarLinear_154a10.c	InterVector_154a10	helper-call	AnimKeyEvalScalarLinear_154a10
+src/main/anim/AnimKeyEvalScalarLinear_154a10.c	InterVector_154a10	helper-call	AnimKeyEvalScalarLinear_154a10
+src/main/anim/AnimKeyEvalVec3Linear_155180.c	AnimKeyEvalVec3Linear_155180	frame	InterVector_155180
+src/main/anim/AnimKeyEvalVec3Linear_155180.c	InterVector_155180	helper	
+src/main/anim/AnimKeyEvalVec3Linear_155180.c	InterVector_155180	helper-call	AnimKeyEvalVec3Linear_155180
+src/main/anim/AnimKeyEvalVec3Linear_155180.c	InterVector_155180	helper-call	AnimKeyEvalVec3Linear_155180
+src/main/anim/AnimKeyEvalVec3Linear_155180.c	InterVector_155180	helper-call	AnimKeyEvalVec3Linear_155180
+src/main/anim/AnimSlotApplyToMaterial_154540.c	AnimSlotApplyToMaterial_154540	frame	
+src/main/anim/DynClothSolveSpring_16a480.c	DynClothSolveSpring_16a480	frame	
+src/main/anim/DynColliderEllipsoidPushSegmentMaybe_166ba0.c	DynColliderEllipsoidPushSegmentMaybe_166ba0	frame	
+src/main/camera/CameraBaseGetMatrix_15fc60.c	CameraBaseGetMatrix_15fc60	frame	
+src/main/camera/CameraBaseGetPos_142e40.c	CameraBaseGetPos_142e40	frame	
+src/main/camera/CameraBaseSetPos_154520.c	CameraBaseSetPos_154520	frame	
+src/main/camera/CameraBaseSetRotation_15fc20.c	CameraBaseSetRotation_15fc20	frame	
+src/main/camera/CameraObjCtor_177430.cpp	O177430	frame	UnitVector_177430
+src/main/camera/CameraObjCtor_177430.cpp	UnitVector_177430	helper	
+src/main/camera/CameraObjCtor_177430.cpp	UnitVector_177430	helper-call	O177430
+src/main/camera/CameraObjCtor_177430.cpp	UnitVector_177430	helper-call	O177430
+src/main/camera/CameraObjCtor_177430.cpp	UnitVector_177430	helper-call	O177430
+src/main/camera/CameraObjCtor_177430.cpp	UnitVector_177430	helper-call	O177430
+src/main/camera/CameraObjCtor_177430.cpp	UnitVector_177430	helper-call	O177430
+src/main/camera/CameraObjCtor_177430.cpp	UnitVector_177430	helper-call	O177430
+src/main/camera/OcclusionPlaneBuildFrustumMaybe_1971d0.c	OcclusionPlaneBuildFrustumMaybe_1971d0	frame	
+src/main/camera/OcclusionPlaneHidesSphereMaybe_1970b0.c	OcclusionPlaneHidesSphereMaybe_1970b0	frame	
+src/main/container/ParticleSwirlReset_17d750.c	ParticleSwirlReset_17d750	frame	
+src/main/effect/EffDefCmdObjCol_19e6a0.c	CopyXYZ	helper	
+src/main/effect/EffDefCmdObjCol_19e6a0.c	CopyXYZ	helper-call	EffDefCmdObjCol_19e6a0
+src/main/effect/EffDefCmdObjCol_19e6a0.c	EffDefCmdObjCol_19e6a0	frame	CopyXYZ
+src/main/effect/EffDefCmdObjRgba_19db50.c	CopyXYZ	helper	
+src/main/effect/EffDefCmdObjRgba_19db50.c	CopyXYZ	helper-call	EffDefCmdObjRgba_19db50
+src/main/effect/EffDefCmdObjRgba_19db50.c	EffDefCmdObjRgba_19db50	frame	CopyXYZ
+src/main/effect/LensFlareDraw_2ed830.cpp	LensFlareDraw_2ed830	frame	
+src/main/effect/ParticleEmitterSpawnMaybe_1a8ad0.cpp	CopyXYZ1a8ad0	helper	
+src/main/effect/ParticleEmitterSpawnMaybe_1a8ad0.cpp	CopyXYZ1a8ad0	helper-call	ParticleEmitterSpawnMaybe_1a8ad0
+src/main/effect/ParticleEmitterSpawnMaybe_1a8ad0.cpp	CopyXYZ1a8ad0	helper-call	ParticleEmitterSpawnMaybe_1a8ad0
+src/main/effect/ParticleEmitterSpawnMaybe_1a8ad0.cpp	CopyXYZb1a8ad0	helper	
+src/main/effect/ParticleEmitterSpawnMaybe_1a8ad0.cpp	CopyXYZb1a8ad0	helper-call	ParticleEmitterSpawnMaybe_1a8ad0
+src/main/effect/ParticleEmitterSpawnMaybe_1a8ad0.cpp	ParticleEmitterSpawnMaybe_1a8ad0	frame	CopyXYZ1a8ad0,CopyXYZb1a8ad0
+src/main/event/EvMapObjPointStep_3642d0.c	EvMapObjPointStep_3642d0	frame	
+src/main/gfx/MeshMaterialReset_14b230.c	MeshMaterialReset_14b230	frame	
+src/main/gfx/SunGlareFanDrawMaybe_17af60.c	SunGlareFanDrawMaybe_17af60	frame	
+src/main/map/CollSegmentVsPlanesMaybe_364520.c	CollSegmentVsPlanesMaybe_364520	frame	
+src/main/map/CollSpherePushOutMaybe_16dea0.c	CollSpherePushOutMaybe_16dea0	frame	
+src/main/map/CollSweepSphereTrisMaybe_16ebe0.c	CollSweepSphereTrisMaybe_16ebe0	frame	
+src/main/map/EvMapObjPartClipEdgesToColl_3636e0.c	EvMapObjPartClipEdgesToColl_3636e0	frame	
+src/main/map/FuncDataTableDrawFireFlaresMaybe_18eb30.c	FuncDataTableDrawFireFlaresMaybe_18eb30	frame	
+src/main/map/MapAreaModelInit_1899c0.c	MapAreaModelInit_1899c0	frame	
+src/main/map/MeshRaycastTris_16f3c0.c	MeshRaycastTris_16f3c0	frame	
+src/main/map/SunLightDraw_293410.cpp	SunLightDraw_293410	frame	
+src/main/math/AiCmdVecDot_2cc0b0.c	AiCmdVecDot_2cc0b0	frame	
+src/main/math/BoxToCenterExtentsVu0Maybe_14ff40.c	BoxToCenterExtentsVu0Maybe_14ff40	frame	
+src/main/math/BoxTransformExtentsVu0Maybe_14fed0.c	BoxTransformExtentsVu0Maybe_14fed0	frame	
+src/main/math/ScriptCmdVecDot_334160.c	ScriptCmdVecDot_334160	frame	
+src/main/math/SphereTriIntersectMaybe_17fb20.cpp	SphereTriIntersectMaybe_17fb20	frame	
+src/main/math/SweptSphereTriContactsMaybe_17f970.c	SweptSphereTriContactsMaybe_17f970	frame	
+src/main/math/TriCalcBounds_1cb540.c	TriCalcBounds_1cb540	frame	
+src/main/math/VecRotateAxisAngle_1d7f10.c	VecRotateAxisAngle_1d7f10	frame	
+src/main/math/VecRotateAxisPair_1d78a0.c	VecRotateAxisPair_1d78a0	frame	
+src/main/math/VecScalePoint_1cbc60.c	VecScalePoint_1cbc60	frame	
+src/main/math/VecSinCos_1cbfb0.c	VecSinCos_1cbfb0	frame	
+src/main/math/VecSolveDistanceConstraint_364740.c	VecSolveDistanceConstraint_364740	frame	
+src/main/matrix/CameraBaseLookAt_15fae0.cpp	CameraBaseLookAt_15fae0	frame	
+src/main/matrix/MatDecomposeScaleRotPos_1cad20.c	MatDecomposeScaleRotPos_1cad20	frame	RowLength
+src/main/matrix/MatDecomposeScaleRotPos_1cad20.c	RowLength	helper	
+src/main/matrix/MatDecomposeScaleRotPos_1cad20.c	RowLength	helper-call	MatDecomposeScaleRotPos_1cad20
+src/main/matrix/MatDecomposeScaleRotPos_1cad20.c	RowLength	helper-call	MatDecomposeScaleRotPos_1cad20
+src/main/matrix/MatDecomposeScaleRotPos_1cad20.c	RowLength	helper-call	MatDecomposeScaleRotPos_1cad20
+src/main/matrix/MatFromPosScale_1cb2b0.c	MatFromPosScale_1cb2b0	frame	
+src/main/matrix/MatFromQuatFull_13c4c0.c	MatFromQuatFull_13c4c0	frame	
+src/main/matrix/MatFromRotPos_1caf90.c	MatFromRotPos_1caf90	frame	
+src/main/matrix/MatIdentity_1cbe40.c	MatIdentity_1cbe40	frame	
+src/main/matrix/MatMulPointRelMaybe_1cb5d0.c	MatMulPointRelMaybe_1cb5d0	frame	
+src/main/matrix/MatMulPointXyz_1cb780.c	MatMulPointXyz_1cb780	frame	
+src/main/matrix/MatMulPoint_1cb8e0.c	MatMulPoint_1cb8e0	frame	
+src/main/matrix/MatMulVec4Args_1cb7f0.c	MatMulVec4Args_1cb7f0	frame	
+src/main/matrix/MatMulVec4_1cb940.c	MatMulVec4_1cb940	frame	
+src/main/matrix/MatMul_1cb700.c	MatMul_1cb700	frame	
+src/main/matrix/MatOrthonormalizeY_1cb300.c	MatOrthonormalizeY_1cb300	frame	
+src/main/matrix/MatScaleRows_1cbc20.c	MatScaleRows_1cbc20	frame	
+src/main/matrix/MatToRotPos_1cade0.c	MatToRotPos_1cade0	frame	Vu0CopyVectorW1
+src/main/matrix/MatToRotPos_1cade0.c	Vu0CopyVectorW1	helper	
+src/main/matrix/MatToRotPos_1cade0.c	Vu0CopyVectorW1	helper-call	MatToRotPos_1cade0
+src/main/matrix/MtxCopy_1cbde0.c	MtxCopy_1cbde0	frame	
+src/main/matrix/MtxInverseAffine_1cb640.c	MtxInverseAffine_1cb640	frame	
+src/main/matrix/MtxMulDir_1cb910.c	MtxMulDir_1cb910	frame	
+src/main/matrix/MtxMulPoint_13c890.c	MtxMulPoint_13c890	frame	
+src/main/matrix/MtxMulVec4_10a8c0.c	MtxMulVec4_10a8c0	frame	
+src/main/matrix/MtxMulVec4_13c900.c	MtxMulVec4_13c900	frame	
+src/main/matrix/XformPairInit_19a240.c	XformPairInit_19a240	frame	
+src/main/model/ClothSolveDistance_185450.c	ClothSolveDistance_185450	frame	
+src/main/model/CollFrameTreeCollectTris_16bfb0.cpp	CollFrameTreeCollectTris_16bfb0	frame	
+src/main/model/CollTriTransform_16c1a0.c	CollTriTransform_16c1a0	frame	
+src/main/model/FrameCalcLocalMatrix_149b40.c	FrameCalcLocalMatrix_149b40	frame	StoreMatrix,StoreZero
+src/main/model/FrameCalcLocalMatrix_149b40.c	StoreMatrix	helper	
+src/main/model/FrameCalcLocalMatrix_149b40.c	StoreMatrix	helper-call	FrameCalcLocalMatrix_149b40
+src/main/model/FrameCalcLocalMatrix_149b40.c	StoreZero	helper	
+src/main/model/FrameCalcLocalMatrix_149b40.c	StoreZero	helper-call	FrameCalcLocalMatrix_149b40
+src/main/model/FrameCalcWorldMatrix_148ff0.c	FrameCalcWorldMatrix_148ff0	frame	ScaleLoad,ScaleMul,InvScaleLoad,InvScaleMul,StoreMatrix,LoadScaleVec
+src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleLoad	helper	
+src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleLoad	helper-call	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleMul	helper	
+src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleMul	helper-decl	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	LoadScaleVec	helper	
+src/main/model/FrameCalcWorldMatrix_148ff0.c	LoadScaleVec	helper-call	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleLoad	helper	
+src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleLoad	helper-call	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleMul	helper	
+src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleMul	helper-decl	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleMul	helper-decl	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	StoreMatrix	helper	
+src/main/model/FrameCalcWorldMatrix_148ff0.c	StoreMatrix	helper-call	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	StoreMatrix	helper-call	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCopyXform_148ae0.c	CopyXYZ	helper	
+src/main/model/FrameCopyXform_148ae0.c	CopyXYZ	helper-call	FrameCopyXform_148ae0
+src/main/model/FrameCopyXform_148ae0.c	CopyXYZ	helper-call	SetRot
+src/main/model/FrameCopyXform_148ae0.c	CopyXYZ	helper-call	SetRot
+src/main/model/FrameCopyXform_148ae0.c	FrameCopyXform_148ae0	frame	CopyXYZ
+src/main/model/FrameCopyXform_148ae0.c	SetRot	frame	CopyXYZ
+src/main/model/FrameGetRot_14a1f0.c	FrameGetRot_14a1f0	frame	
+src/main/model/FrameResetXform_14a550.c	FrameResetXform_14a550	frame	
+src/main/model/FrameSetRotMode_14a250.c	CopyXYZ	helper	
+src/main/model/FrameSetRotMode_14a250.c	CopyXYZ	helper-call	SetZero
+src/main/model/FrameSetRotMode_14a250.c	SetZero	frame	CopyXYZ
+src/main/model/FrameSetRot_14a390.c	CopyXYZ	helper	
+src/main/model/FrameSetRot_14a390.c	CopyXYZ	helper-call	FrameSetRot_14a390
+src/main/model/FrameSetRot_14a390.c	CopyXYZ	helper-call	FrameSetRot_14a390
+src/main/model/FrameSetRot_14a390.c	FrameSetRot_14a390	frame	CopyXYZ
+src/main/model/FrameUpdateWorld_149680.c	FrameUpdateWorld_149680	frame	Vu0ScaleMatrix,ScaleLoad,ScaleMul,InvScaleLoad,InvScaleMul,StoreMatrix,LoadScaleVec
+src/main/model/FrameUpdateWorld_149680.c	InvScaleLoad	helper	
+src/main/model/FrameUpdateWorld_149680.c	InvScaleLoad	helper-call	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	InvScaleMul	helper	
+src/main/model/FrameUpdateWorld_149680.c	InvScaleMul	helper-decl	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	LoadScaleVec	helper	
+src/main/model/FrameUpdateWorld_149680.c	LoadScaleVec	helper-call	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	ScaleLoad	helper	
+src/main/model/FrameUpdateWorld_149680.c	ScaleLoad	helper-call	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	ScaleMul	helper	
+src/main/model/FrameUpdateWorld_149680.c	ScaleMul	helper-decl	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	ScaleMul	helper-decl	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	StoreMatrix	helper	
+src/main/model/FrameUpdateWorld_149680.c	StoreMatrix	helper-call	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	StoreMatrix	helper-call	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	Vu0ScaleMatrix	helper	
+src/main/model/FrameUpdateWorld_149680.c	Vu0ScaleMatrix	helper-call	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	Vu0ScaleMatrix	helper-call	FrameUpdateWorld_149680
+src/main/model/ModelInit_151d50.c	ModelInit_151d50	frame	
+src/main/model/ModelSetPos_151110.c	CopyXYZ	helper	
+src/main/model/ModelSetPos_151110.c	CopyXYZ	helper-call	ModelSetPos_151110
+src/main/model/ModelSetPos_151110.c	ModelSetPos_151110	frame	CopyXYZ
+src/main/model/ModelSetRot_151080.c	CopyXYZ	helper	
+src/main/model/ModelSetRot_151080.c	CopyXYZ	helper-call	ModelSetRot_151080
+src/main/model/ModelSetRot_151080.c	ModelSetRot_151080	frame	CopyXYZ
+src/main/model/ModelSetScale_150ff0.c	CopyXYZ	helper	
+src/main/model/ModelSetScale_150ff0.c	CopyXYZ	helper-call	ModelSetScale_150ff0
+src/main/model/ModelSetScale_150ff0.c	ModelSetScale_150ff0	frame	CopyXYZ
+src/main/model/NodeObjInit_1951b0.c	NodeObjInit_1951b0	frame	
+src/main/model/VertsPackQuantized_164bb0.c	Quant	helper	
+src/main/model/VertsPackQuantized_164bb0.c	Quant	helper-call	VertsPackQuantized_164bb0
+src/main/model/VertsPackQuantized_164bb0.c	Quant	helper-call	VertsPackQuantized_164bb0
+src/main/model/VertsPackQuantized_164bb0.c	VertsPackQuantized_164bb0	frame	Quant
+src/main/obj/ProjectileDrawModel_317640.c	CopyXYZ	helper	
+src/main/obj/ProjectileDrawModel_317640.c	CopyXYZ	helper-call	ProjectileDrawModel_317640
+src/main/obj/ProjectileDrawModel_317640.c	ProjectileDrawModel_317640	frame	CopyXYZ
+src/main/obj/ProjectileOnMapHit_317bf0.c	ProjectileOnMapHit_317bf0	frame	
+src/main/script/FixCameraRecInit_193860.c	FixCameraRecInit_193860	frame	
+src/main/sdk/sceVu0Normalize.c	sceVu0Normalize	frame	
+src/main/sdk/sceVu0UnitMatrix.c	sceVu0UnitMatrix	frame	
+src/main/sound/SoundCalcDistVolPan_1b7de0.c	SoundCalcDistVolPan_1b7de0	frame	
+src/main/util/Swap128_1cb4f0.c	Swap128_1cb4f0	frame	
+src/main/vec/TriNormalDot_1cb600.c	TriNormalDot_1cb600	frame	
+src/main/vec/TriNormal_1cb970.c	TriNormal_1cb970	frame	
+src/main/vec/VecAdd3_1cbd60.c	VecAdd3_1cbd60	frame	
+src/main/vec/VecAddInPlace_13e070.c	VecAddInPlace_13e070	frame	
+src/main/vec/VecAddMaxZero_1cbd40.c	VecAddMaxZero_1cbd40	frame	
+src/main/vec/VecAddMinZero_1cbd20.c	VecAddMinZero_1cbd20	frame	
+src/main/vec/VecAddXyzW0_1cbda0.c	VecAddXyzW0_1cbda0	frame	
+src/main/vec/VecAddXyzW1_1cbd80.c	VecAddXyzW1_1cbd80	frame	
+src/main/vec/VecAdd_13be20.c	VecAdd_13be20	frame	
+src/main/vec/VecAdd_1cbdc0.c	VecAdd_1cbdc0	frame	
+src/main/vec/VecCopyAsDir_1cbe20.c	VecCopyAsDir_1cbe20	frame	
+src/main/vec/VecCopyAsPoint_1cbe10.c	VecCopyAsPoint_1cbe10	frame	
+src/main/vec/VecCopy_1cbe30.c	VecCopy_1cbe30	frame	
+src/main/vec/VecCross_1cb9f0.c	VecCross_1cb9f0	frame	
+src/main/vec/VecDistSqXZ_1cb390.c	VecDistSqXZ_1cb390	frame	
+src/main/vec/VecDistSq_1cb3c0.c	VecDistSq_1cb3c0	frame	
+src/main/vec/VecDistXZ_1cb3f0.c	VecDistXZ_1cb3f0	frame	
+src/main/vec/VecDist_1cb420.c	VecDist_1cb420	frame	
+src/main/vec/VecDivScalarPoint_1cbbc0.c	VecDivScalarPoint_1cbbc0	frame	
+src/main/vec/VecDivScalar_1cbbf0.c	VecDivScalar_1cbbf0	frame	
+src/main/vec/VecDot3_1cba90.c	VecDot3_1cba90	frame	
+src/main/vec/VecDotDiff_1cba40.c	VecDotDiff_1cba40	frame	
+src/main/vec/VecDotXZ_1cba70.c	VecDotXZ_1cba70	frame	
+src/main/vec/VecLengthSqXZ_1cb450.c	VecLengthSqXZ_1cb450	frame	
+src/main/vec/VecLengthSq_1cb470.c	VecLengthSq_1cb470	frame	
+src/main/vec/VecLengthXZ_1cb490.c	VecLengthXZ_1cb490	frame	
+src/main/vec/VecLength_13d4a0.c	VecLength_13d4a0	frame	
+src/main/vec/VecLength_1cb4c0.c	VecLength_1cb4c0	frame	
+src/main/vec/VecLerpDir_1cbaf0.c	VecLerpDir_1cbaf0	frame	
+src/main/vec/VecLerpPoint_1cbac0.c	VecLerpPoint_1cbac0	frame	
+src/main/vec/VecLerp_1cbb20.c	VecLerp_1cbb20	frame	
+src/main/vec/VecLinearCombine_1cb8b0.c	VecLinearCombine_1cb8b0	frame	
+src/main/vec/VecMax_1cb5b0.c	VecMax_1cb5b0	frame	
+src/main/vec/VecMinMax_1cb570.c	VecMinMax_1cb570	frame	
+src/main/vec/VecMin_1cb590.c	VecMin_1cb590	frame	
+src/main/vec/VecNegate_1cb9a0.c	VecNegate_1cb9a0	frame	
+src/main/vec/VecNormalizeXZ_1cbb50.c	VecNormalizeXZ_1cbb50	frame	
+src/main/vec/VecNormalize_13bd90.c	VecNormalize_13bd90	frame	
+src/main/vec/VecNormalize_1cbb80.c	VecNormalize_1cbb80	frame	
+src/main/vec/VecScaleDir_1cbc80.c	VecScaleDir_1cbc80	frame	
+src/main/vec/VecScaleToLength_1cb510.c	VecScaleToLength_1cb510	frame	
+src/main/vec/VecScale_13be00.c	VecScale_13be00	frame	
+src/main/vec/VecScale_1cbca0.c	VecScale_1cbca0	frame	
+src/main/vec/VecSubAsPoint_1cbcc0.c	VecSubAsPoint_1cbcc0	frame	
+src/main/vec/VecSubCross_1cb9c0.c	VecSubCross_1cb9c0	frame	
+src/main/vec/VecSubDotXZ_1cba10.c	VecSubDotXZ_1cba10	frame	
+src/main/vec/VecSubXyzW0_1cbce0.c	VecSubXyzW0_1cbce0	frame	
+src/main/vec/VecSub_13be40.c	VecSub_13be40	frame	
+src/main/vec/VecSub_1cbd00.c	VecSub_1cbd00	frame	
+src/main/vec/VecWeightedSum3_1cb860.c	VecWeightedSum3_1cb860	frame	
+src/main/vec/VecWrapAngle_1cbe90.c	VecWrapAngle_1cbe90	frame	Wrap
+src/main/vec/VecWrapAngle_1cbe90.c	Wrap	helper	
+src/main/vec/VecWrapAngle_1cbe90.c	Wrap	helper-call	VecWrapAngle_1cbe90

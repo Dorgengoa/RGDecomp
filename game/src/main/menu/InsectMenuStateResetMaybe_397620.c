@@ -1,0 +1,20 @@
+/* rgp:protos */
+#define RGP_SELF_InsectMenuStateResetMaybe_397620 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+extern s16 D_00483500;
+extern u8 D_00483514;
+
+s32 InsectMenuStateResetMaybe_397620(void)
+{
+    D_00483500 = 0;
+    D_00483514 = 0;
+    return 1;
+}

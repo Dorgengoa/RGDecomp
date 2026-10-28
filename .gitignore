@@ -1,0 +1,9 @@
+# Never commit game data, builds or local tool copies
+/data/
+/build/
+/out/
+/.tools/
+*.iso
+# memory cards and save backups (RG_SAVES default; docs/SAVES.md): player data
+/saves/
+*.ps2

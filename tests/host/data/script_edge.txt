@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: CC0-1.0
+# Grammar edge cases accepted by tools/trace/input.py parse_script().
+5 cross+Start        # single-VBlank form, mixed case
+0x10 0o21 l1         # hex / octal
+0b10001 1_8 R1 extra tokens are ignored
+0 0 SELECT
+7 3 TRIANGLE         # empty range, still extends the table span
+300 400 UP+DOWN+LEFT+RIGHT
+350 360 L2+R2+L3+R3
+1000 START
++20 +21 SQUARE

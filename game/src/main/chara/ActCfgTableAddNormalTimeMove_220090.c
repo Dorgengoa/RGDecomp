@@ -1,0 +1,114 @@
+/* rgp:protos */
+#define RGP_SELF_ActCfgTableAddNormalTimeMove_220090 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+typedef struct Ent220090 {
+    u8 pad00[0x3E];
+    s16 m3E;
+} Ent220090;
+
+typedef struct A220090 {
+    s8 *m00;
+    void *m04;
+    u8 pad08[0xC];
+    u8 *m14;
+    u8 pad18[0xC];
+    s16 m24;
+    u8 pad26[0x6];
+    s16 m2C;
+    u8 pad2E[0x6];
+} A220090;
+
+typedef struct T220090 {
+    u8 pad00[0x28];
+    A220090 *m28;
+    s16 m2C;
+} T220090;
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+void ActCfgTableAddNormalTimeMove_220090(u8 *p0, void *p1, void *p2, const s8 *p3, f32 x, f32 y)
+{
+    Ent220090 *found;
+    void *node;
+    s32 cnt;
+    Ent220090 *e;
+    T220090 *t;
+    A220090 *arr;
+    A220090 *hit;
+    s32 i;
+    s32 c;
+    u8 *q;
+    const s8 *s;
+
+    node = DListGetHead_42ea60(p0 + 0x7C);
+    if (node == 0) {
+        found = 0;
+    } else {
+        found = 0;
+        cnt = ((unsigned short)DListGetCountPow2_42ea70(p0 + 0x7C));
+        while (cnt > 0) {
+            cnt = cnt >> 1;
+            e = ((Ent220090 *)DListNodeAdvance_42eb00(node, cnt));
+            if (e != 0) {
+                c = IntCompare_42ca30(p2, e->m3E);
+                if (c == 0) {
+                    found = e;
+                    break;
+                }
+                if (c > 0) {
+                    node = e;
+                }
+            }
+        }
+    }
+    if (found == 0) {
+        t = 0;
+    } else {
+        t = (T220090 *)((u8 *)found + 0x10);
+    }
+    if (t == 0) {
+        return;
+    }
+    if (p3 == 0) {
+        hit = 0;
+    } else {
+        arr = t->m28;
+        if (arr == 0) {
+            hit = 0;
+        } else {
+            for (i = 0; i < t->m2C; i++, arr = (A220090 *)((u8 *)arr + 0x34)) {
+                s = arr->m00;
+                if (*p3 != *s) {
+                    continue;
+                }
+                if (StrNotEqual_1f5300(s + 1, p3 + 1) == 0) {
+                    hit = arr;
+                    goto found_l;
+                }
+            }
+            hit = 0;
+        }
+    }
+found_l:
+    if (hit != 0) {
+        q = hit->m14;
+        if (q != 0) {
+            i = 0;
+            while (i < hit->m2C) {
+                ActTimeMoveAddOffset_227760(q, p1, x, y);
+                i++;
+                q += 0x14;
+            }
+        }
+        ActCfgTableAddTimeMoveRefs_21fbc0(p0, p1, hit->m04, hit->m24, x, y);
+    }
+}

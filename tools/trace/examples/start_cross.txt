@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: CC0-1.0
+# Example input script for trace.py --input (see input.py).
+# first_vbl last_vbl BUTTONS   -- game VBlank counter [0x004810C4], inclusive
+100 110 START
+200 210 CROSS
+260 262 DOWN+CROSS

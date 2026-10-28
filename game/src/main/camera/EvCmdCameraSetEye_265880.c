@@ -1,0 +1,57 @@
+/* rgp:protos */
+#define RGP_SELF_EvCmdCameraSetEye_265880 1
+#include "port/game_protos.h"
+#line 1
+#include "vec.h"
+
+/* Two tests branching the SAME way (both to the join) = `&&`.
+   The operand cursor is only advanced AFTER the null check; the `n >= 4` probe
+   reads the fourth operand cell directly at +0x18.
+
+   The four gp defaults are written into `v` and three of them are then
+   overwritten, and RETAIL KEEPS BOTH SETS.  MEASURED (7-arm sweep,
+   build/zz/sw-q08-EvCmdCameraSetEye_265880): with plain member writes on both sides mwcc
+   dead-store-eliminates the first three (6 words gone, 0xD0 vs 0xF4).  Writing
+   EITHER side through a cast pointer stops it -- casting the gp side and
+   casting the xyz side are ONE OBJECT (an inert pair) at 0xE8.  The remaining
+   3 words are the third fetch: it has to be a NAMED local assigned BEFORE the
+   default block, which buys the second callee-saved FPR ($f21/$f20) while the
+   value itself stays in $f0. */
+
+typedef struct Cmd { s32 a, b; } Cmd;
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+extern f32 D_0047E8F0, D_0047E8F4, D_0047E8F8, D_0047E8FC;
+
+s32 EvCmdCameraSetEye_265880(Cmd *p0, s32 n)
+{
+    void *e;
+    f32 x, y, z;
+    Vec4 v __attribute__((aligned(16)));
+
+    e = EventSceneGetCamera_265980();
+    if (n >= 4 && ScriptGetInt_26a2a0((s32)p0 + 0x18) == 1) {
+        e = ObjRecGetLiveObject_1c3bc0(GetCurrentScene_1f5be0(), 1);
+    }
+    if (e == 0) {
+        return 0;
+    }
+    x = TaggedGetFloat_26a280((s32)p0++);
+    y = TaggedGetFloat_26a280((s32)p0++);
+    z = TaggedGetFloat_26a280((s32)p0);
+    ((Vec4 *)&v)->x = D_0047E8F0;
+    ((Vec4 *)&v)->y = D_0047E8F4;
+    ((Vec4 *)&v)->z = D_0047E8F8;
+    ((Vec4 *)&v)->w = D_0047E8FC;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    *(Vec4 *)((u8 *)e + 0xF0) = v;
+    *(Vec4 *)((u8 *)e + 0x60) = v;
+    return 1;
+}

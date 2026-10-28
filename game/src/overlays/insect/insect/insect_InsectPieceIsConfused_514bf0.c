@@ -1,0 +1,18 @@
+/* rgp:protos */
+#define RGP_SELF_insect_InsectPieceIsConfused_514bf0 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+/* insect 0x00514bf0 -- 32 B / 8 words.  Four-member family (00514bf0/c10/c30/c50)
+ * that differs only in the constant handed to insect_InsectPieceTestStatus_513280.
+ * `sltu $2,$0,$2` after the call is the `!= 0` normalisation.
+ */
+
+typedef struct Ent Ent;
+
+/*rgp*/
+
+s32 insect_InsectPieceIsConfused_514bf0(Ent *e)
+{
+    return insect_InsectPieceTestStatus_513280(e, 2) != 0;
+}

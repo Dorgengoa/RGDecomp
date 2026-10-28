@@ -1,0 +1,1070 @@
+symbol	file	image	reason	lib	lib_reason	scope	detail
+AabbInFrustum_13be60	src/main/camera/AabbInFrustum_13be60.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+AabbLoadToVu_13bfc0	src/main/camera/AabbLoadToVu_13bfc0.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+AabbPlaneDistances_13bf50	src/main/camera/AabbPlaneDistances_13bf50.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+AabbProjectScreenBounds_13c4f0	src/main/camera/AabbProjectScreenBounds_13c4f0.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+FovHorizToVert_13fbe0	src/main/camera/FovHorizToVert_13fbe0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+KprintfSerialPutcCb_119120	src/main/dbg/KprintfSerialPutcCb_119120.c	main	asm-function	sdk	band:sce-sdk	file	ee
+PrintfDeci2PutcCb_1190f8	src/main/dbg/PrintfDeci2PutcCb_1190f8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+scePrintf_119288	src/main/dbg/scePrintf_119288.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceVsnprintfMaybe_119198	src/main/dbg/sceVsnprintfMaybe_119198.c	main	asm-function	sdk	band:sce-sdk	file	ee
+CdCheckSCmd_129e00	src/main/file/CdCheckSCmd_129e00.c	main	asm-function	sdk	band:sce-sdk	file	ee
+FileIoAllocSlot_11ad08	src/main/file/FileIoAllocSlot_11ad08.c	main	asm-function	sdk	band:sce-sdk	file	ee
+FileIoCountSlots_11ac88	src/main/file/FileIoCountSlots_11ac88.c	main	asm-function	sdk	band:sce-sdk	file	ee
+FileIoGetSlot_11ae80	src/main/file/FileIoGetSlot_11ae80.c	main	asm-function	sdk	band:sce-sdk	file	ee
+FileIoPathCmdRpc_11ca10	src/main/file/FileIoPathCmdRpc_11ca10.c	main	asm-function	sdk	band:sce-sdk	file	ee
+FileReadAll_1004b0	src/main/file/FileReadAll_1004b0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+SceFsInit_11b428	src/main/file/SceFsInit_11b428.c	main	asm-function	sdk	band:sce-sdk	file	ee
+SifCallRpcRetry_11ad90	src/main/file/SifCallRpcRetry_11ad90.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceCdPOffCallback_129690	src/main/file/sceCdPOffCallback_129690.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceCdReadDvdDualInfo_12acd0	src/main/file/sceCdReadDvdDualInfo_12acd0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+scePowerOffHandler_11b340	src/main/file/scePowerOffHandler_11b340.c	main	asm-function	sdk	band:sce-sdk	file	ee
+RefractionCaptureFrame_13ffd0	src/main/gfx/RefractionCaptureFrame_13ffd0.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+DmaAddrFromSpr_109cb0	src/main/gs/DmaAddrFromSpr_109cb0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DmaWaitChannelIdle_109bb8	src/main/gs/DmaWaitChannelIdle_109bb8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DmaWatchAddr_109c28	src/main/gs/DmaWatchAddr_109c28.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DrawCtxAddChangedCallTags_13fd70	src/main/gs/DrawCtxAddChangedCallTags_13fd70.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsIsNewRomVersionMaybe_108318	src/main/gs/GsIsNewRomVersionMaybe_108318.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktAddDmaCallTag_13f1f0	src/main/gs/GsPktAddDmaCallTag_13f1f0.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsPktAddTexSprite_13e520	src/main/gs/GsPktAddTexSprite_13e520.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsPktBeginPrimAD_13f6b0	src/main/gs/GsPktBeginPrimAD_13f6b0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktClose_13f5b0	src/main/gs/GsPktClose_13f5b0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktDisableTests_13f9e0	src/main/gs/GsPktDisableTests_13f9e0.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsPktDrawSprite_13ea30	src/main/gs/GsPktDrawSprite_13ea30.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsPktFinalizeTags_13f260	src/main/gs/GsPktFinalizeTags_13f260.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktInit_13f7f0	src/main/gs/GsPktInit_13f7f0.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsPktOpenGifTag_13f3b0	src/main/gs/GsPktOpenGifTag_13f3b0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktOpen_13f4a0	src/main/gs/GsPktOpen_13f4a0.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsPktPushQword_13f170	src/main/gs/GsPktPushQword_13f170.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsPktSetDefaultState_13fa80	src/main/gs/GsPktSetDefaultState_13fa80.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsPktSetRGBAQVec_13edd0	src/main/gs/GsPktSetRGBAQVec_13edd0.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+GsPktSetRGBAQ_13ee40	src/main/gs/GsPktSetRGBAQ_13ee40.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetSTVec_13ecc0	src/main/gs/GsPktSetSTVec_13ecc0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetST_13ed10	src/main/gs/GsPktSetST_13ed10.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetTexa_13eca0	src/main/gs/GsPktSetTexa_13eca0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetTexture_13ec00	src/main/gs/GsPktSetTexture_13ec00.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+GsPktSetUVFixed_13ed90	src/main/gs/GsPktSetUVFixed_13ed90.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetUV_13ed60	src/main/gs/GsPktSetUV_13ed60.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetXYZPixelVec_13ef70	src/main/gs/GsPktSetXYZPixelVec_13ef70.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetXYZPixel_13f110	src/main/gs/GsPktSetXYZPixel_13f110.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetXYZVecI_13eeb0	src/main/gs/GsPktSetXYZVecI_13eeb0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetXYZ_13ef10	src/main/gs/GsPktSetXYZ_13ef10.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GsPktSetXYZfVec_13efe0	src/main/gs/GsPktSetXYZfVec_13efe0.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+GsPktSetXYZf_13f060	src/main/gs/GsPktSetXYZf_13f060.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+GsPktWriteAD_13ec80	src/main/gs/GsPktWriteAD_13ec80.c	main	asm-function	sdk	band:sce-sdk	file	ee
+VSync_116a30	src/main/gs/VSync_116a30.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Vif0SendInitPacketMaybe_13bcc0	src/main/gs/Vif0SendInitPacketMaybe_13bcc0.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+sceDmaPause_10a350	src/main/gs/sceDmaPause_10a350.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDmaPutStallAddr_10a028	src/main/gs/sceDmaPutStallAddr_10a028.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDmaRecvI_10a260	src/main/gs/sceDmaRecvI_10a260.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDmaRecvN_10a1e0	src/main/gs/sceDmaRecvN_10a1e0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDmaRecv_10a198	src/main/gs/sceDmaRecv_10a198.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDmaRestart_10a3e8	src/main/gs/sceDmaRestart_10a3e8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDmaSendI_10a120	src/main/gs/sceDmaSendI_10a120.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDmaSendN_10a0a8	src/main/gs/sceDmaSendN_10a0a8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDmaSend_10a040	src/main/gs/sceDmaSend_10a040.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDmaWatch_10a318	src/main/gs/sceDmaWatch_10a318.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceGifPkTerminate_10a420	src/main/gs/sceGifPkTerminate_10a420.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceGsSetDefDispEnv_1083c8	src/main/gs/sceGsSetDefDispEnv_1083c8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Abort_12de80	src/main/libc/Abort_12de80.c	main	asm-function	library	path:libc	file	ee
+Atan2f_1291a8	src/main/libc/Atan2f_1291a8.c	main	asm-function	library	path:libc	file	ee
+Atof_12dee8	src/main/libc/Atof_12dee8.c	main	asm-function	library	path:libc	file	ee
+B2d_1328a8	src/main/libc/B2d_1328a8.c	main	asm-function	library	path:libc	file	ee
+Balloc_131cf0	src/main/libc/Balloc_131cf0.c	main	asm-function	library	path:libc	file	ee
+CallocR_12df28	src/main/libc/CallocR_12df28.c	main	asm-function	library	path:libc	file	ee
+CleanupR_12f878	src/main/libc/CleanupR_12f878.c	main	asm-function	library	path:libc	file	ee
+CloseR_12dfe0	src/main/libc/CloseR_12dfe0.c	main	asm-function	library	path:libc	file	ee
+Cos_128278	src/main/libc/Cos_128278.c	main	asm-function	library	path:libc	file	ee
+D2b_132a40	src/main/libc/D2b_132a40.c	main	asm-function	library	path:libc	file	ee
+DecimalRoundDigitsMaybe_106b50	src/main/libc/DecimalRoundDigitsMaybe_106b50.c	main	asm-function	library	path:libc	file	mmi+ee
+DecimalRoundDirectionMaybe_106ab0	src/main/libc/DecimalRoundDirectionMaybe_106ab0.c	main	asm-function	library	path:libc	file	ee
+DestroyGlobalChain_100d60	src/main/libc/DestroyGlobalChain_100d60.c	main	asm-function	library	path:libc	file	ee
+Diff_132648	src/main/libc/Diff_132648.c	main	asm-function	library	path:libc	file	ee
+Divdi3_139188	src/main/libc/Divdi3_139188.c	main	asm-function	library	path:libc	file	ee
+DoubleToS64_13ac40	src/main/libc/DoubleToS64_13ac40.c	main	asm-function	library	path:libc	file	ee
+DtoaR_12e268	src/main/libc/DtoaR_12e268.c	main	asm-function	library	path:libc	file	ee
+EhThrowHandler_101050	src/main/libc/EhThrowHandler_101050.c	main	asm-function	library	path:libc	file	mmi+ee
+Exit_12f4e0	src/main/libc/Exit_12f4e0.c	main	asm-function	library	path:libc	file	ee
+Fabsf_128e08	src/main/libc/Fabsf_128e08.c	main	asm-function	library	path:libc	file	ee
+Fflush_12f590	src/main/libc/Fflush_12f590.c	main	asm-function	library	path:libc	file	ee
+FilebufGetBytesPeekMaybe_105fe0	src/main/libc/FilebufGetBytesPeekMaybe_105fe0.c	main	asm-function	library	path:libc	file	mmi+ee
+FilebufPbackfail_104cb0	src/main/libc/FilebufPbackfail_104cb0.c	main	asm-function	library	path:libc	file	mmi+ee
+FilebufPutBytesMaybe_106100	src/main/libc/FilebufPutBytesMaybe_106100.c	main	asm-function	library	path:libc	file	mmi+ee
+FilebufSeekoff_104750	src/main/libc/FilebufSeekoff_104750.c	main	asm-function	library	path:libc	file	mmi+ee
+FilebufUflow_104d80	src/main/libc/FilebufUflow_104d80.c	main	asm-function	library	path:libc	file	mmi+ee
+FilebufUnderflow_104eb0	src/main/libc/FilebufUnderflow_104eb0.c	main	asm-function	library	path:libc	file	mmi+ee
+FiprintfR_12f948	src/main/libc/FiprintfR_12f948.c	main	asm-function	library	path:libc	file	ee
+FloatToS64_13ade0	src/main/libc/FloatToS64_13ade0.c	main	asm-function	library	path:libc	file	ee
+FloatToU64_13acb8	src/main/libc/FloatToU64_13acb8.c	main	asm-function	library	path:libc	file	ee
+Floorf_128e30	src/main/libc/Floorf_128e30.c	main	asm-function	library	path:libc	file	ee
+FormatPrintNestedMaybe_119148	src/main/libc/FormatPrintNestedMaybe_119148.c	main	asm-function	library	path:libc	file	ee
+FpCmpPartsD_13b828	src/main/libc/FpCmpPartsD_13b828.c	main	asm-function	library	path:libc	file	ee
+FpaddParts_13b140	src/main/libc/FpaddParts_13b140.c	main	asm-function	library	path:libc	file	ee
+Fprintf_12f9a0	src/main/libc/Fprintf_12f9a0.c	main	asm-function	library	path:libc	file	ee
+FreeR_12f9f8	src/main/libc/FreeR_12f9f8.c	main	asm-function	library	path:libc	file	ee
+Free_130e30	src/main/libc/Free_130e30.c	main	asm-function	library	path:libc	file	ee
+Fseek_12fe60	src/main/libc/Fseek_12fe60.c	main	asm-function	library	path:libc	file	ee
+FstatR_130310	src/main/libc/FstatR_130310.c	main	asm-function	library	path:libc	file	ee
+Ftell_130370	src/main/libc/Ftell_130370.c	main	asm-function	library	path:libc	file	ee
+Fwalk_130858	src/main/libc/Fwalk_130858.c	main	asm-function	library	path:libc	file	ee
+GetReent_12f4d0	src/main/libc/GetReent_12f4d0.c	main	asm-function	library	path:libc	file	ee
+GetpidR_134318	src/main/libc/GetpidR_134318.c	main	asm-function	library	path:libc	file	ee
+Hi0Bits_132000	src/main/libc/Hi0Bits_132000.c	main	asm-function	library	path:libc	file	ee
+I2b_132140	src/main/libc/I2b_132140.c	main	asm-function	library	path:libc	file	ee
+IeeeAcos_123110	src/main/libc/IeeeAcos_123110.c	main	asm-function	library	path:libc	file	ee
+IeeeAtan2_123838	src/main/libc/IeeeAtan2_123838.c	main	asm-function	library	path:libc	file	ee
+IeeeRemPio2_123b78	src/main/libc/IeeeRemPio2_123b78.c	main	asm-function	library	path:libc	file	ee
+IeeeSqrt_124130	src/main/libc/IeeeSqrt_124130.c	main	asm-function	library	path:libc	file	ee
+Index_1308f0	src/main/libc/Index_1308f0.c	main	asm-function	library	path:libc	file	ee
+InitSignalR_133fd0	src/main/libc/InitSignalR_133fd0.c	main	asm-function	library	path:libc	file	ee
+IosBaseDtor_102970	src/main/libc/IosBaseDtor_102970.c	main	asm-function	library	path:libc	file	mmi+ee
+Isinf_128610	src/main/libc/Isinf_128610.c	main	asm-function	library	path:libc	file	ee
+Isnan_128658	src/main/libc/Isnan_128658.c	main	asm-function	library	path:libc	file	ee
+IstreamCtor_103f50	src/main/libc/IstreamCtor_103f50.c	main	asm-function	library	path:libc	file	mmi+ee
+IstreamVirtualDtorThunk_106800	src/main/libc/IstreamVirtualDtorThunk_106800.c	main	asm-function	library	path:libc	file	ee
+KernelRemPio2f_127170	src/main/libc/KernelRemPio2f_127170.c	main	asm-function	library	path:libc	file	ee
+KillR_1342b8	src/main/libc/KillR_1342b8.c	main	asm-function	library	path:libc	file	ee
+KprintfSerialMaybe_119308	src/main/libc/KprintfSerialMaybe_119308.c	main	asm-function	library	path:libc	file	ee
+Lflush_133d78	src/main/libc/Lflush_133d78.c	main	asm-function	library	path:libc	file	ee
+Lo0Bits_132080	src/main/libc/Lo0Bits_132080.c	main	asm-function	library	path:libc	file	ee
+Localeconv_1309d0	src/main/libc/Localeconv_1309d0.c	main	asm-function	library	path:libc	file	ee
+LseekR_1309f0	src/main/libc/LseekR_1309f0.c	main	asm-function	library	path:libc	file	ee
+Lshift_132488	src/main/libc/Lshift_132488.c	main	asm-function	library	path:libc	file	ee
+MakeDp_13baf0	src/main/libc/MakeDp_13baf0.c	main	asm-function	library	path:libc	file	ee
+MakeFp_13af38	src/main/libc/MakeFp_13af38.c	main	asm-function	library	path:libc	file	ee
+MallocExtendTop_130e78	src/main/libc/MallocExtendTop_130e78.c	main	asm-function	library	path:libc	file	ee
+MallocLock_131c20	src/main/libc/MallocLock_131c20.c	main	asm-function	library	path:libc	file	ee
+MallocR_1310d0	src/main/libc/MallocR_1310d0.c	main	asm-function	library	path:libc	file	ee
+MallocTrim_12fcf0	src/main/libc/MallocTrim_12fcf0.c	main	asm-function	library	path:libc	file	ee
+MallocUnlock_131ca0	src/main/libc/MallocUnlock_131ca0.c	main	asm-function	library	path:libc	file	ee
+Malloc_130dd8	src/main/libc/Malloc_130dd8.c	main	asm-function	library	path:libc	file	ee
+MbtowcR_1317f8	src/main/libc/MbtowcR_1317f8.c	main	asm-function	library	path:libc	file	ee
+Mcmp_1325e0	src/main/libc/Mcmp_1325e0.c	main	asm-function	library	path:libc	file	ee
+MemalignR_130c10	src/main/libc/MemalignR_130c10.c	main	asm-function	library	path:libc	file	ee
+Memalign_130ba8	src/main/libc/Memalign_130ba8.c	main	asm-function	library	path:libc	file	ee
+ModDi3_139820	src/main/libc/ModDi3_139820.c	main	asm-function	library	path:libc	file	ee
+MprecLog10_132c98	src/main/libc/MprecLog10_132c98.c	main	asm-function	library	path:libc	file	ee
+MulDi3_139110	src/main/libc/MulDi3_139110.c	main	asm-function	library	path:libc	file	ee
+Mult_132178	src/main/libc/Mult_132178.c	main	asm-function	library	path:libc	file	ee
+Multadd_131dc8	src/main/libc/Multadd_131dc8.c	main	asm-function	library	path:libc	file	ee
+OstreamCtor_104270	src/main/libc/OstreamCtor_104270.c	main	asm-function	library	path:libc	file	mmi+ee
+OstreamFlush_1040b0	src/main/libc/OstreamFlush_1040b0.c	main	asm-function	library	path:libc	file	mmi+ee
+OstreamSentryCtor_106230	src/main/libc/OstreamSentryCtor_106230.c	main	asm-function	library	path:libc	file	mmi+ee
+OstreamVirtualDtorThunk_1067f0	src/main/libc/OstreamVirtualDtorThunk_1067f0.c	main	asm-function	library	path:libc	file	ee
+PackD_13afa8	src/main/libc/PackD_13afa8.c	main	asm-function	library	path:libc	file	ee
+PackF_13ae20	src/main/libc/PackF_13ae20.c	main	asm-function	library	path:libc	file	ee
+Pow5mult_132388	src/main/libc/Pow5mult_132388.c	main	asm-function	library	path:libc	file	ee
+Qsort_132d08	src/main/libc/Qsort_132d08.c	main	asm-function	library	path:libc	file	mmi+ee
+Quorem_12e038	src/main/libc/Quorem_12e038.c	main	asm-function	library	path:libc	file	ee
+RaiseR_1340c0	src/main/libc/RaiseR_1340c0.c	main	asm-function	library	path:libc	file	ee
+Raise_134230	src/main/libc/Raise_134230.c	main	asm-function	library	path:libc	file	ee
+Rand_133710	src/main/libc/Rand_133710.c	main	asm-function	library	path:libc	file	ee
+Ratio_132bc8	src/main/libc/Ratio_132bc8.c	main	asm-function	library	path:libc	file	ee
+ReadR_133778	src/main/libc/ReadR_133778.c	main	asm-function	library	path:libc	file	ee
+ReallocR_1337d8	src/main/libc/ReallocR_1337d8.c	main	asm-function	library	path:libc	file	ee
+RemPio2f_1255d8	src/main/libc/RemPio2f_1255d8.c	main	asm-function	library	path:libc	file	ee
+S2b_131ed0	src/main/libc/S2b_131ed0.c	main	asm-function	library	path:libc	file	ee
+S64ToDouble_13a998	src/main/libc/S64ToDouble_13a998.c	main	asm-function	library	path:libc	file	ee
+S64ToFloat_13aa40	src/main/libc/S64ToFloat_13aa40.c	main	asm-function	library	path:libc	file	ee
+Sbprintf_1366b8	src/main/libc/Sbprintf_1366b8.c	main	asm-function	library	path:libc	file	ee
+Sbprintf_137428	src/main/libc/Sbprintf_137428.c	main	asm-function	library	path:libc	file	ee
+SbrkR_133f78	src/main/libc/SbrkR_133f78.c	main	asm-function	library	path:libc	file	ee
+Sclose_134598	src/main/libc/Sclose_134598.c	main	asm-function	library	path:libc	file	ee
+SetlocaleR_130908	src/main/libc/SetlocaleR_130908.c	main	asm-function	library	path:libc	file	ee
+Setlocale_1309a8	src/main/libc/Setlocale_1309a8.c	main	asm-function	library	path:libc	file	ee
+SfMoreGlue_12f708	src/main/libc/SfMoreGlue_12f708.c	main	asm-function	library	path:libc	file	ee
+Sfp_12f780	src/main/libc/Sfp_12f780.c	main	asm-function	library	path:libc	file	ee
+Sfvwrite_130478	src/main/libc/Sfvwrite_130478.c	main	asm-function	library	path:libc	file	ee
+SharedArrayPtrCtor_102b30	src/main/libc/SharedArrayPtrCtor_102b30.c	main	asm-function	library	path:libc	file	mmi+ee
+SignalR_134040	src/main/libc/SignalR_134040.c	main	asm-function	library	path:libc	file	ee
+Signal_134250	src/main/libc/Signal_134250.c	main	asm-function	library	path:libc	file	ee
+SigtrampR_134198	src/main/libc/SigtrampR_134198.c	main	asm-function	library	path:libc	file	ee
+Sin_128880	src/main/libc/Sin_128880.c	main	asm-function	library	path:libc	file	ee
+Smakebuf_130a50	src/main/libc/Smakebuf_130a50.c	main	asm-function	library	path:libc	file	ee
+SnprintfPutcCb_1190a0	src/main/libc/SnprintfPutcCb_1190a0.c	main	asm-function	library	path:libc	file	ee
+Sprint_136670	src/main/libc/Sprint_136670.c	main	asm-function	library	path:libc	file	ee
+Sprint_1373e0	src/main/libc/Sprint_1373e0.c	main	asm-function	library	path:libc	file	ee
+SprintfR_134330	src/main/libc/SprintfR_134330.c	main	asm-function	library	path:libc	file	ee
+Sprintf_1343b8	src/main/libc/Sprintf_1343b8.c	main	asm-function	library	path:libc	file	ee
+Srand_1336f8	src/main/libc/Srand_1336f8.c	main	asm-function	library	path:libc	file	ee
+Sread_134448	src/main/libc/Sread_134448.c	main	asm-function	library	path:libc	file	ee
+Srefill_133db0	src/main/libc/Srefill_133db0.c	main	asm-function	library	path:libc	file	ee
+Srget_133f30	src/main/libc/Srget_133f30.c	main	asm-function	library	path:libc	file	ee
+Sseek_134530	src/main/libc/Sseek_134530.c	main	asm-function	library	path:libc	file	ee
+StdioSinit_12f8b8	src/main/libc/StdioSinit_12f8b8.c	main	asm-function	library	path:libc	file	ee
+StdioStdInit_12f6a8	src/main/libc/StdioStdInit_12f6a8.c	main	asm-function	library	path:libc	file	ee
+Strcasecmp_1345b8	src/main/libc/Strcasecmp_1345b8.c	main	asm-function	library	path:libc	file	ee
+Strchr_1347c0	src/main/libc/Strchr_1347c0.c	main	asm-function	library	path:libc	file	mmi+ee
+StreambufXsgetn_1039b0	src/main/libc/StreambufXsgetn_1039b0.c	main	asm-function	library	path:libc	file	mmi+ee
+StreambufXsputn_103890	src/main/libc/StreambufXsputn_103890.c	main	asm-function	library	path:libc	file	mmi+ee
+StringCtorSubstrMaybe_107b70	src/main/libc/StringCtorSubstrMaybe_107b70.c	main	asm-function	library	path:libc	file	mmi+ee
+StringReplaceFromStringMaybe_107cd0	src/main/libc/StringReplaceFromStringMaybe_107cd0.c	main	asm-function	library	path:libc	file	mmi+ee
+Strncasecmp_134ce8	src/main/libc/Strncasecmp_134ce8.c	main	asm-function	library	path:libc	file	ee
+Strstr_135138	src/main/libc/Strstr_135138.c	main	asm-function	library	path:libc	file	ee
+StrtodR_1351c0	src/main/libc/StrtodR_1351c0.c	main	asm-function	library	path:libc	file	ee
+Strtod_1360d8	src/main/libc/Strtod_1360d8.c	main	asm-function	library	path:libc	file	ee
+Strtof_136100	src/main/libc/Strtof_136100.c	main	asm-function	library	path:libc	file	ee
+StrtolR_136128	src/main/libc/StrtolR_136128.c	main	asm-function	library	path:libc	file	ee
+Strtol_136360	src/main/libc/Strtol_136360.c	main	asm-function	library	path:libc	file	ee
+Submore_136400	src/main/libc/Submore_136400.c	main	asm-function	library	path:libc	file	ee
+Swbuf_138e90	src/main/libc/Swbuf_138e90.c	main	asm-function	library	path:libc	file	ee
+Swrite_1344b0	src/main/libc/Swrite_1344b0.c	main	asm-function	library	path:libc	file	ee
+Swsetup_139000	src/main/libc/Swsetup_139000.c	main	asm-function	library	path:libc	file	ee
+Toupper_1363e0	src/main/libc/Toupper_1363e0.c	main	asm-function	library	path:libc	file	ee
+UDivDi3_139eb0	src/main/libc/UDivDi3_139eb0.c	main	asm-function	library	path:libc	file	ee
+UIntToDouble_100320	src/main/libc/UIntToDouble_100320.c	main	asm-function	library	path:libc	file	ee
+UModDi3_13a430	src/main/libc/UModDi3_13a430.c	main	asm-function	library	path:libc	file	ee
+Ulp_1327d8	src/main/libc/Ulp_1327d8.c	main	asm-function	library	path:libc	file	ee
+Ungetc_1364e8	src/main/libc/Ungetc_1364e8.c	main	asm-function	library	path:libc	file	ee
+UnpackD_13b080	src/main/libc/UnpackD_13b080.c	main	asm-function	library	path:libc	file	ee
+UnpackF_13aed8	src/main/libc/UnpackF_13aed8.c	main	asm-function	library	path:libc	file	ee
+VfiprintfR_136770	src/main/libc/VfiprintfR_136770.c	main	asm-function	library	path:libc	file	mmi+ee
+VfprintfCvt_138bc8	src/main/libc/VfprintfCvt_138bc8.c	main	asm-function	library	path:libc	file	ee
+VfprintfExponent_138d88	src/main/libc/VfprintfExponent_138d88.c	main	asm-function	library	path:libc	file	ee
+VfprintfR_1374e0	src/main/libc/VfprintfR_1374e0.c	main	asm-function	library	path:libc	file	mmi+ee
+Vprintf_138e68	src/main/libc/Vprintf_138e68.c	main	asm-function	library	path:libc	file	ee
+WFilebufGetBytesPeekMaybe_105ce0	src/main/libc/WFilebufGetBytesPeekMaybe_105ce0.c	main	asm-function	library	path:libc	file	mmi+ee
+WFilebufPbackfail_105830	src/main/libc/WFilebufPbackfail_105830.c	main	asm-function	library	path:libc	file	mmi+ee
+WFilebufPutBytesMaybe_105e00	src/main/libc/WFilebufPutBytesMaybe_105e00.c	main	asm-function	library	path:libc	file	mmi+ee
+WFilebufSeekoff_105250	src/main/libc/WFilebufSeekoff_105250.c	main	asm-function	library	path:libc	file	mmi+ee
+WFilebufUflow_105900	src/main/libc/WFilebufUflow_105900.c	main	asm-function	library	path:libc	file	mmi+ee
+WFilebufUnderflow_105a30	src/main/libc/WFilebufUnderflow_105a30.c	main	asm-function	library	path:libc	file	mmi+ee
+WOstreamFlush_104320	src/main/libc/WOstreamFlush_104320.c	main	asm-function	library	path:libc	file	mmi+ee
+WOstreamSentryCtor_106510	src/main/libc/WOstreamSentryCtor_106510.c	main	asm-function	library	path:libc	file	mmi+ee
+WStreambufXsgetn_103d50	src/main/libc/WStreambufXsgetn_103d50.c	main	asm-function	library	path:libc	file	mmi+ee
+WStreambufXsputn_103b00	src/main/libc/WStreambufXsputn_103b00.c	main	asm-function	library	path:libc	file	mmi+ee
+WistreamCtor_104000	src/main/libc/WistreamCtor_104000.c	main	asm-function	library	path:libc	file	mmi+ee
+WistreamVirtualDtorThunk_106820	src/main/libc/WistreamVirtualDtorThunk_106820.c	main	asm-function	library	path:libc	file	ee
+WostreamCtor_1044e0	src/main/libc/WostreamCtor_1044e0.c	main	asm-function	library	path:libc	file	mmi+ee
+WostreamVirtualDtorThunk_106810	src/main/libc/WostreamVirtualDtorThunk_106810.c	main	asm-function	library	path:libc	file	ee
+WriteR_138fa0	src/main/libc/WriteR_138fa0.c	main	asm-function	library	path:libc	file	ee
+printf_118388	src/main/libc/printf_118388.c	main	asm-function	library	path:libc	file	mmi+ee
+printfloat_1181b0	src/main/libc/printfloat_1181b0.c	main	asm-function	library	path:libc	file	ee
+sceSnprintfMaybe_1191d0	src/main/libc/sceSnprintfMaybe_1191d0.c	main	asm-function	library	path:libc	file	ee
+Acos_129130	src/main/math/Acos_129130.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Acosf_129178	src/main/math/Acosf_129178.c	main	asm-function	sdk	band:sce-sdk	file	ee
+AngleDiffSign_13c0d0	src/main/math/AngleDiffSign_13c0d0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+AngleStepToward_13c150	src/main/math/AngleStepToward_13c150.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Asinf_129190	src/main/math/Asinf_129190.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Atan2_129148	src/main/math/Atan2_129148.c	main	asm-function	sdk	band:sce-sdk	file	ee
+AtanDouble_127d68	src/main/math/AtanDouble_127d68.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Atanf_128a60	src/main/math/Atanf_128a60.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Copysign_128230	src/main/math/Copysign_128230.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Copysignf_128cf0	src/main/math/Copysignf_128cf0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Cosf_128d30	src/main/math/Cosf_128d30.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DoubleCmp_13b948	src/main/math/DoubleCmp_13b948.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DoubleToU64_13ab28	src/main/math/DoubleToU64_13ab28.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DoubleToUInt_13bb78	src/main/math/DoubleToUInt_13bb78.c	main	asm-function	sdk	band:sce-sdk	file	ee
+FabsDouble_1283a0	src/main/math/FabsDouble_1283a0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Finite_1283d8	src/main/math/Finite_1283d8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+FloorDouble_1283f8	src/main/math/FloorDouble_1283f8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IeeeAcosf_124450	src/main/math/IeeeAcosf_124450.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IeeeAsinf_124878	src/main/math/IeeeAsinf_124878.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IeeeAtan2f_124c18	src/main/math/IeeeAtan2f_124c18.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IeeePowf_124df8	src/main/math/IeeePowf_124df8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IeeeSqrtf_125988	src/main/math/IeeeSqrtf_125988.c	main	asm-function	sdk	band:sce-sdk	file	ee
+KernelCos_125a58	src/main/math/KernelCos_125a58.c	main	asm-function	sdk	band:sce-sdk	file	ee
+KernelCosf_127020	src/main/math/KernelCosf_127020.c	main	asm-function	sdk	band:sce-sdk	file	ee
+KernelRemPio2_125d30	src/main/math/KernelRemPio2_125d30.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+KernelSin_126880	src/main/math/KernelSin_126880.c	main	asm-function	sdk	band:sce-sdk	file	ee
+KernelSinf_1279d8	src/main/math/KernelSinf_1279d8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+KernelTan_126ab8	src/main/math/KernelTan_126ab8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+KernelTanf_127ae0	src/main/math/KernelTanf_127ae0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MtxPlaneProjection_13c930	src/main/math/MtxPlaneProjection_13c930.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+PointInTriangle2D_13d4d0	src/main/math/PointInTriangle2D_13d4d0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+PointInTriangle_13d720	src/main/math/PointInTriangle_13d720.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+PointSegmentClosest_13dcc0	src/main/math/PointSegmentClosest_13dcc0.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+Powf_1291c0	src/main/math/Powf_1291c0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+QuatSlerp_13c270	src/main/math/QuatSlerp_13c270.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+RayTriIntersect_13d8c0	src/main/math/RayTriIntersect_13d8c0.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+ScalbnDouble_128698	src/main/math/ScalbnDouble_128698.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Scalbnf_128f08	src/main/math/Scalbnf_128f08.c	main	asm-function	sdk	band:sce-sdk	file	ee
+SegmentSphereIntersectWorld_13d9d0	src/main/math/SegmentSphereIntersectWorld_13d9d0.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+SegmentSphereIntersect_13da60	src/main/math/SegmentSphereIntersect_13da60.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+Sinf_128fd0	src/main/math/Sinf_128fd0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Sqrt_129160	src/main/math/Sqrt_129160.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Tan_1289b8	src/main/math/Tan_1289b8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Tanf_1290b8	src/main/math/Tanf_1290b8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+U64ToDouble_100370	src/main/math/U64ToDouble_100370.c	main	asm-function	library	band:crt0+MSL-runtime	file	ee
+WrapAngle_13c050	src/main/math/WrapAngle_13c050.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MatFromQuat_13c440	src/main/matrix/MatFromQuat_13c440.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+MatFromSRTVu0_13bc90	src/main/matrix/MatFromSRTVu0_13bc90.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MatMul33_13d180	src/main/matrix/MatMul33_13d180.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MatRotateVu0_13bc20	src/main/matrix/MatRotateVu0_13bc20.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MatScaleRows_13cf00	src/main/matrix/MatScaleRows_13cf00.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MatZero_13d2c0	src/main/matrix/MatZero_13d2c0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MtxIdentity_13d2e0	src/main/matrix/MtxIdentity_13d2e0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MtxInverse_13cf40	src/main/matrix/MtxInverse_13cf40.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MtxLookAtKeepScale_13cc50	src/main/matrix/MtxLookAtKeepScale_13cc50.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+MtxMulAffine_13d110	src/main/matrix/MtxMulAffine_13d110.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MtxMulAffine_13d1d0	src/main/matrix/MtxMulAffine_13d1d0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MtxMulChain4_13cff0	src/main/matrix/MtxMulChain4_13cff0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MtxMulDir_13c860	src/main/matrix/MtxMulDir_13c860.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MtxMul_13d240	src/main/matrix/MtxMul_13d240.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MtxProjectPoint_13c8c0	src/main/matrix/MtxProjectPoint_13c8c0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+MtxRotX_13ce90	src/main/matrix/MtxRotX_13ce90.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+MtxRotY_13ce20	src/main/matrix/MtxRotY_13ce20.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+MtxRotZ_13cdb0	src/main/matrix/MtxRotZ_13cdb0.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+MtxTransformPointsMinMax_13c780	src/main/matrix/MtxTransformPointsMinMax_13c780.c	main	asm-block	sdk	band:sce-sdk	file	cop2+ee; reads live EE register $7
+MtxTransformPoints_13c810	src/main/matrix/MtxTransformPoints_13c810.c	main	asm-block	sdk	band:sce-sdk	file	cop2+ee; reads live EE register $7
+MtxYawFaceTarget_13cb30	src/main/matrix/MtxYawFaceTarget_13cb30.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+OperatorDelete_100840	src/main/mem/OperatorDelete_100840.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+OperatorNew_100990	src/main/mem/OperatorNew_100990.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+DmaIpuFromSetChcr_115b28	src/main/movie/DmaIpuFromSetChcr_115b28.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DmaIpuFromStart_10efb8	src/main/movie/DmaIpuFromStart_10efb8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DmaIpuToSetChcr_115ba0	src/main/movie/DmaIpuToSetChcr_115ba0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DmaIpuToSetChcr_115eb8	src/main/movie/DmaIpuToSetChcr_115eb8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuByteAlign_110168	src/main/movie/IpuByteAlign_110168.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuDecodeMacroblock_10d2d0	src/main/movie/IpuDecodeMacroblock_10d2d0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuDecodeMbAddrInc_10d828	src/main/movie/IpuDecodeMbAddrInc_10d828.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuDecodeMotionVectorMaybe_10cd08	src/main/movie/IpuDecodeMotionVectorMaybe_10cd08.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuDmaSendChainMaybe_1106e0	src/main/movie/IpuDmaSendChainMaybe_1106e0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuGetBits_10dc88	src/main/movie/IpuGetBits_10dc88.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuInit_115f30	src/main/movie/IpuInit_115f30.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+IpuRestartDma_115d00	src/main/movie/IpuRestartDma_115d00.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuShowBits_10dd70	src/main/movie/IpuShowBits_10dd70.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuSkipBits_10de00	src/main/movie/IpuSkipBits_10de00.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuStopDmaAndReset_115928	src/main/movie/IpuStopDmaAndReset_115928.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuStopDma_115c18	src/main/movie/IpuStopDma_115c18.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuSyncIfBusy_10de98	src/main/movie/IpuSyncIfBusy_10de98.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuSyncIfBusy_10ffc8	src/main/movie/IpuSyncIfBusy_10ffc8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuSyncWithRefill_10d9a0	src/main/movie/IpuSyncWithRefill_10d9a0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuSync_115e50	src/main/movie/IpuSync_115e50.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IpuWaitCmd_10db08	src/main/movie/IpuWaitCmd_10db08.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegAddBlockClampPack_10df98	src/main/movie/MpegAddBlockClampPack_10df98.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lui
+MpegAddCallback_1112c0	src/main/movie/MpegAddCallback_1112c0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegAddStrCallback_115740	src/main/movie/MpegAddStrCallback_115740.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegCheckStructureAndDecodeMaybe_1115c8	src/main/movie/MpegCheckStructureAndDecodeMaybe_1115c8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegClampPackBlock_10e088	src/main/movie/MpegClampPackBlock_10e088.c	main	asm-function	sdk	band:sce-sdk	file	empty
+MpegClearRefBuffMaybe_111478	src/main/movie/MpegClearRefBuffMaybe_111478.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegCopyMbViaSprMaybe_1117a8	src/main/movie/MpegCopyMbViaSprMaybe_1117a8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegCreate_1104a8	src/main/movie/MpegCreate_1104a8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegCscDmaHandler_112900	src/main/movie/MpegCscDmaHandler_112900.c	main	asm-block	sdk	band:sce-sdk	file	ee; instruction lui
+MpegDecodeFieldPicture_110e88	src/main/movie/MpegDecodeFieldPicture_110e88.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDecodeFramePicture_110d18	src/main/movie/MpegDecodeFramePicture_110d18.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDecodeMotionVectorsMaybe_10d130	src/main/movie/MpegDecodeMotionVectorsMaybe_10d130.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDecodePictureBodyMaybe_10c798	src/main/movie/MpegDecodePictureBodyMaybe_10c798.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDecodePicture_111430	src/main/movie/MpegDecodePicture_111430.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDecodeSlices_10c9d8	src/main/movie/MpegDecodeSlices_10c9d8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDefaultCbRestartDma_111780	src/main/movie/MpegDefaultCbRestartDma_111780.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDefaultCbStopDma_111758	src/main/movie/MpegDefaultCbStopDma_111758.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDemuxParsePackHeaderMaybe_112ef0	src/main/movie/MpegDemuxParsePackHeaderMaybe_112ef0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDemuxPssRing_115340	src/main/movie/MpegDemuxPssRing_115340.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDemuxPss_115720	src/main/movie/MpegDemuxPss_115720.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDemuxSkipSystemHeaderMaybe_112d20	src/main/movie/MpegDemuxSkipSystemHeaderMaybe_112d20.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegDualPrimeVectorsMaybe_10b610	src/main/movie/MpegDualPrimeVectorsMaybe_10b610.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegFormPredictionMaybe_10c0f0	src/main/movie/MpegFormPredictionMaybe_10c0f0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegGetBufferType_111330	src/main/movie/MpegGetBufferType_111330.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegGetDecodeMode_1112a0	src/main/movie/MpegGetDecodeMode_1112a0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegGetDisplayHeight_111570	src/main/movie/MpegGetDisplayHeight_111570.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegGetDisplayWidth_111560	src/main/movie/MpegGetDisplayWidth_111560.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegGetPictureImpl_1108a8	src/main/movie/MpegGetPictureImpl_1108a8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegGetPictureRaw8Xy_1114d0	src/main/movie/MpegGetPictureRaw8Xy_1114d0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegGetPictureRaw8_111190	src/main/movie/MpegGetPictureRaw8_111190.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegGetPicture_111148	src/main/movie/MpegGetPicture_111148.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegInvokeCallback_111340	src/main/movie/MpegInvokeCallback_111340.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegInvokeNodataCallback_1113b8	src/main/movie/MpegInvokeNodataCallback_1113b8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegIpuCsc_112268	src/main/movie/MpegIpuCsc_112268.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegIpuDmaTransferMaybe_112428	src/main/movie/MpegIpuDmaTransferMaybe_112428.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegIpuErrorReset_1159c8	src/main/movie/MpegIpuErrorReset_1159c8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegIsEnd_111268	src/main/movie/MpegIsEnd_111268.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegIsRefBuffEmpty_111278	src/main/movie/MpegIsRefBuffEmpty_111278.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegKickSprDmaMaybe_10e148	src/main/movie/MpegKickSprDmaMaybe_10e148.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegMakeStreamKeyMaybe_115870	src/main/movie/MpegMakeStreamKeyMaybe_115870.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegMatchStreamIdMaybe_112b20	src/main/movie/MpegMatchStreamIdMaybe_112b20.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegMcChromaAvgHalfHV_10eea0	src/main/movie/MpegMcChromaAvgHalfHV_10eea0.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcChromaAvgHalfH_10ecb0	src/main/movie/MpegMcChromaAvgHalfH_10ecb0.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcChromaAvgHalfV_10eaf0	src/main/movie/MpegMcChromaAvgHalfV_10eaf0.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcChromaAvg_10e960	src/main/movie/MpegMcChromaAvg_10e960.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcChromaCopy_10e340	src/main/movie/MpegMcChromaCopy_10e340.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcChromaHalfHV_10e7c0	src/main/movie/MpegMcChromaHalfHV_10e7c0.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcChromaHalfH_10e610	src/main/movie/MpegMcChromaHalfH_10e610.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcChromaHalfV_10e490	src/main/movie/MpegMcChromaHalfV_10e490.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcLumaAvgHalfHV_10ed80	src/main/movie/MpegMcLumaAvgHalfHV_10ed80.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcLumaAvgHalfH_10ebd8	src/main/movie/MpegMcLumaAvgHalfH_10ebd8.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+MpegMcLumaAvgHalfV_10ea10	src/main/movie/MpegMcLumaAvgHalfV_10ea10.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcLumaAvg_10e8c0	src/main/movie/MpegMcLumaAvg_10e8c0.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcLumaCopy_10e2c8	src/main/movie/MpegMcLumaCopy_10e2c8.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+MpegMcLumaHalfHV_10e6c8	src/main/movie/MpegMcLumaHalfHV_10e6c8.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+MpegMcLumaHalfH_10e560	src/main/movie/MpegMcLumaHalfH_10e560.c	main	asm-block	sdk	band:sce-sdk	file	mmi+ee; instruction lw
+MpegMcLumaHalfV_10e3d8	src/main/movie/MpegMcLumaHalfV_10e3d8.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+MpegMotionCompensateMaybe_10bea0	src/main/movie/MpegMotionCompensateMaybe_10bea0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegMotionPredictMaybe_10b798	src/main/movie/MpegMotionPredictMaybe_10b798.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegNextPictureMaybe_110008	src/main/movie/MpegNextPictureMaybe_110008.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegOutputDecodedPictureMaybe_1121d8	src/main/movie/MpegOutputDecodedPictureMaybe_1121d8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegOutputFieldPairMaybe_111cf8	src/main/movie/MpegOutputFieldPairMaybe_111cf8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegOutputFrameMaybe_111a38	src/main/movie/MpegOutputFrameMaybe_111a38.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegOutputPictureMaybe_112118	src/main/movie/MpegOutputPictureMaybe_112118.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParseCopyrightExt_110248	src/main/movie/MpegParseCopyrightExt_110248.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParseExtUserData_10fdf8	src/main/movie/MpegParseExtUserData_10fdf8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParseGopHeader_10f7c0	src/main/movie/MpegParseGopHeader_10f7c0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParsePesHeader_113598	src/main/movie/MpegParsePesHeader_113598.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParsePicDisplayExt_1102e0	src/main/movie/MpegParsePicDisplayExt_1102e0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParsePictureCodingExt_10fbf0	src/main/movie/MpegParsePictureCodingExt_10fbf0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParsePictureHeader_10f860	src/main/movie/MpegParsePictureHeader_10f860.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParseQuantMatrixExt_10fae8	src/main/movie/MpegParseQuantMatrixExt_10fae8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParseSeqDisplayExt_1101b8	src/main/movie/MpegParseSeqDisplayExt_1101b8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParseSequenceExt_10f9a8	src/main/movie/MpegParseSequenceExt_10f9a8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParseSequenceHeader_10f510	src/main/movie/MpegParseSequenceHeader_10f510.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegParseSliceHeader_10f058	src/main/movie/MpegParseSliceHeader_10f058.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegPrepareDecodeBufferMaybe_110a60	src/main/movie/MpegPrepareDecodeBufferMaybe_110a60.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegReconstructMacroblockMaybe_10c578	src/main/movie/MpegReconstructMacroblockMaybe_10c578.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegReportErrorFmt_115ae8	src/main/movie/MpegReportErrorFmt_115ae8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegReportError_115a90	src/main/movie/MpegReportError_115a90.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegResetHwMaybe_1107e0	src/main/movie/MpegResetHwMaybe_1107e0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegReset_1111e8	src/main/movie/MpegReset_1111e8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegSetBufferType_1112f8	src/main/movie/MpegSetBufferType_1112f8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegSetDecodeMode_111288	src/main/movie/MpegSetDecodeMode_111288.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegSetNextPtsMaybe_1115b0	src/main/movie/MpegSetNextPtsMaybe_1115b0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegSetPtsOverrideMaybe_111520	src/main/movie/MpegSetPtsOverrideMaybe_111520.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegSetupBufferType_1103d8	src/main/movie/MpegSetupBufferType_1103d8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegSetupSequenceBuffersMaybe_10f1f8	src/main/movie/MpegSetupSequenceBuffersMaybe_10f1f8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegSkippedMacroblock_10ded8	src/main/movie/MpegSkippedMacroblock_10ded8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegStopDmaMaybe_111050	src/main/movie/MpegStopDmaMaybe_111050.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegToIpuDmaHandler_112a48	src/main/movie/MpegToIpuDmaHandler_112a48.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegWorkAreaAlloc_1116d0	src/main/movie/MpegWorkAreaAlloc_1116d0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+MpegWorkAreaRemaining_111740	src/main/movie/MpegWorkAreaRemaining_111740.c	main	asm-function	sdk	band:sce-sdk	file	ee
+AddDmacHandler	src/main/sdk/AddDmacHandler.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+AddDmacHandler_2	src/main/sdk/AddDmacHandler_2.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+AddIntcHandler	src/main/sdk/AddIntcHandler.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+AddIntcHandler_2	src/main/sdk/AddIntcHandler_2.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+AddSbusIntcHandler_116220	src/main/sdk/AddSbusIntcHandler_116220.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+CancelWakeupThread_1164f0	src/main/sdk/CancelWakeupThread_1164f0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+CdCallbackThread_1292e0	src/main/sdk/CdCallbackThread_1292e0.c	main	asm-function	sdk	path:sdk	file	ee
+CdCheckNCmd_129b00	src/main/sdk/CdCheckNCmd_129b00.c	main	asm-function	sdk	path:sdk	file	ee
+CdGetDiskTypeOrNoneMaybe_12aa70	src/main/sdk/CdGetDiskTypeOrNoneMaybe_12aa70.c	main	asm-function	sdk	path:sdk	file	ee
+CdInitSemas_129508	src/main/sdk/CdInitSemas_129508.c	main	asm-function	sdk	path:sdk	file	ee
+CdReadUnalignedCb_129450	src/main/sdk/CdReadUnalignedCb_129450.c	main	asm-function	sdk	path:sdk	file	ee
+CdvdExit_1295f0	src/main/sdk/CdvdExit_1295f0.c	main	asm-function	sdk	path:sdk	file	ee
+ChangeThreadPriority	src/main/sdk/ChangeThreadPriority.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+CpuConfig_116830	src/main/sdk/CpuConfig_116830.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+CreateSema	src/main/sdk/CreateSema.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+CreateThread	src/main/sdk/CreateThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+Deci2Call	src/main/sdk/Deci2Call.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+Deci2Related_117948	src/main/sdk/Deci2Related_117948.c	main	asm-function	sdk	path:sdk	file	ee
+Deci2Related_117978	src/main/sdk/Deci2Related_117978.c	main	asm-function	sdk	path:sdk	file	ee
+DelayThreadAlarmHandler_117858	src/main/sdk/DelayThreadAlarmHandler_117858.c	main	asm-block	sdk	path:sdk	file	ee; instruction jal
+DeleteSema	src/main/sdk/DeleteSema.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+DeleteThread	src/main/sdk/DeleteThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+DisableCache_116800	src/main/sdk/DisableCache_116800.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+DisableDispatchThread_116410	src/main/sdk/DisableDispatchThread_116410.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+DisableDmacHandler_1167c0	src/main/sdk/DisableDmacHandler_1167c0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+DisableIntcHandler_116780	src/main/sdk/DisableIntcHandler_116780.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+EnableCache_1167f0	src/main/sdk/EnableCache_1167f0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+EnableDispatchThread_116420	src/main/sdk/EnableDispatchThread_116420.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+EnableDmacHandler_1167a0	src/main/sdk/EnableDmacHandler_1167a0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+EnableDmac_1171b8	src/main/sdk/EnableDmac_1171b8.c	main	asm-function	sdk	path:sdk	file	ee
+EnableIntcHandler_116760	src/main/sdk/EnableIntcHandler_116760.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+EnableIntc_1170e8	src/main/sdk/EnableIntc_1170e8.c	main	asm-function	sdk	path:sdk	file	ee
+EndOfHeap	src/main/sdk/EndOfHeap.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+EndTimer_1210c8	src/main/sdk/EndTimer_1210c8.c	main	asm-function	sdk	path:sdk	file	ee
+ExecOSD_120d40	src/main/sdk/ExecOSD_120d40.c	main	asm-function	sdk	path:sdk	file	ee
+ExecPS2_1161f0	src/main/sdk/ExecPS2_1161f0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+ExecPS2_120c60	src/main/sdk/ExecPS2_120c60.c	main	asm-function	sdk	path:sdk	file	ee
+ExitDeleteThread	src/main/sdk/ExitDeleteThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+ExitThread_1163d0	src/main/sdk/ExitThread_1163d0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+ExpandScratchPad_1200a8	src/main/sdk/ExpandScratchPad_1200a8.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+FileIoSetIopBufferMaybe_11b6f8	src/main/sdk/FileIoSetIopBufferMaybe_11b6f8.c	main	asm-function	sdk	path:sdk	file	ee
+FileIoSetIopParamRelated_11b838	src/main/sdk/FileIoSetIopParamRelated_11b838.c	main	asm-function	sdk	path:sdk	file	ee
+FilebufOverflow_1048d0	src/main/sdk/FilebufOverflow_1048d0.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+FindAddress_1207c0	src/main/sdk/FindAddress_1207c0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+FlushCache	src/main/sdk/FlushCache.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+FsVersion_11b630	src/main/sdk/FsVersion_11b630.c	main	asm-function	sdk	path:sdk	file	ee
+GetCop0_116810	src/main/sdk/GetCop0_116810.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GetGsDxDyOffset_1083b8	src/main/sdk/GetGsDxDyOffset_1083b8.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GetGsHParam_116660	src/main/sdk/GetGsHParam_116660.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GetGsVParam_116670	src/main/sdk/GetGsVParam_116670.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GetLibcEhSemaId_120728	src/main/sdk/GetLibcEhSemaId_120728.c	main	asm-function	sdk	path:sdk	file	ee
+GetMemorySize	src/main/sdk/GetMemorySize.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GetOsdConfigParam	src/main/sdk/GetOsdConfigParam.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GetOsdConfigParam2_1168b0	src/main/sdk/GetOsdConfigParam2_1168b0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GetSystemCallTableEntry_120808	src/main/sdk/GetSystemCallTableEntry_120808.c	main	asm-function	sdk	path:sdk	file	ee
+GetTLBEntry_120068	src/main/sdk/GetTLBEntry_120068.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GetThreadId	src/main/sdk/GetThreadId.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GetTimerPreScaleFactor_121180	src/main/sdk/GetTimerPreScaleFactor_121180.c	main	asm-function	sdk	path:sdk	file	ee
+GsGetIMR	src/main/sdk/GsGetIMR.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+GsPutIMR	src/main/sdk/GsPutIMR.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+InitAlarm_120df8	src/main/sdk/InitAlarm_120df8.c	main	asm-function	sdk	path:sdk	file	ee
+InitExecPS2_120a40	src/main/sdk/InitExecPS2_120a40.c	main	asm-function	sdk	path:sdk	file	ee
+InitSys_120918	src/main/sdk/InitSys_120918.c	main	asm-function	sdk	path:sdk	file	ee
+InitTLB32MB_1200f8	src/main/sdk/InitTLB32MB_1200f8.c	main	asm-function	sdk	path:sdk	file	ee
+InitTLBFunctions_11ff30	src/main/sdk/InitTLBFunctions_11ff30.c	main	asm-function	sdk	path:sdk	file	ee
+InitTLB_1200b8	src/main/sdk/InitTLB_1200b8.c	main	asm-function	sdk	path:sdk	file	ee
+Interrupt2Iop_116240	src/main/sdk/Interrupt2Iop_116240.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+InvalidDCache	src/main/sdk/InvalidDCache.c	main	asm-function	sdk	path:sdk	file	ee
+IopResetCallbackRegisterMaybe_1226d8	src/main/sdk/IopResetCallbackRegisterMaybe_1226d8.c	main	asm-function	sdk	path:sdk	file	ee
+IopResetCallbackUnregisterMaybe_122790	src/main/sdk/IopResetCallbackUnregisterMaybe_122790.c	main	asm-function	sdk	path:sdk	file	ee
+IopResetCallbacksInvokeMaybe_1227e8	src/main/sdk/IopResetCallbacksInvokeMaybe_1227e8.c	main	asm-function	sdk	path:sdk	file	ee
+JoinThread_116550	src/main/sdk/JoinThread_116550.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+KCopyBody_120990	src/main/sdk/KCopyBody_120990.c	main	asm-function	sdk	path:sdk	file	ee
+KCopyBody_120b00	src/main/sdk/KCopyBody_120b00.c	main	asm-function	sdk	path:sdk	file	ee
+KCopyBody_120db0	src/main/sdk/KCopyBody_120db0.c	main	asm-function	sdk	path:sdk	file	ee
+KCopy_11fec8	src/main/sdk/KCopy_11fec8.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+KCopy_120738	src/main/sdk/KCopy_120738.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+KCopy_120980	src/main/sdk/KCopy_120980.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+KCopy_120af0	src/main/sdk/KCopy_120af0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+KCopy_120da0	src/main/sdk/KCopy_120da0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+KSeg0_1167e0	src/main/sdk/KSeg0_1167e0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+KernelAlarmArmTimer3_447560	src/main/sdk/KernelAlarmArmTimer3_447560.c	main	asm-block	sdk	path:sdk	file	ee; instruction lui
+KernelAlarmIntrHandlerMaybe_447588	src/main/sdk/KernelAlarmIntrHandlerMaybe_447588.c	main	asm-function	sdk	path:sdk	file	ee
+KernelExit_120d18	src/main/sdk/KernelExit_120d18.c	main	asm-function	sdk	path:sdk	file	ee
+KernelSetAlarm_447260	src/main/sdk/KernelSetAlarm_447260.c	main	gnu-asm	sdk	path:sdk	function	ee; move into C operand
+KernelTlbMapPageRelated_446470	src/main/sdk/KernelTlbMapPageRelated_446470.c	main	asm-function	sdk	path:sdk	file	ee
+KernelVblankResetRelated_446d00	src/main/sdk/KernelVblankResetRelated_446d00.c	main	asm-function	sdk	path:sdk	file	ee
+LoadExecPS2_120cd0	src/main/sdk/LoadExecPS2_120cd0.c	main	asm-function	sdk	path:sdk	file	ee
+MachineType_1169f0	src/main/sdk/MachineType_1169f0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+McGetInfoCb_12d160	src/main/sdk/McGetInfoCb_12d160.c	main	asm-function	sdk	path:sdk	file	ee
+PSMode_1169e0	src/main/sdk/PSMode_1169e0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+PadInitAfterBindMaybe_12b110	src/main/sdk/PadInitAfterBindMaybe_12b110.c	main	asm-function	sdk	path:sdk	file	ee
+PadSetCmdCallbackMaybe_12c510	src/main/sdk/PadSetCmdCallbackMaybe_12c510.c	main	asm-function	sdk	path:sdk	file	ee
+PadSifDmaSendMaybe_12b298	src/main/sdk/PadSifDmaSendMaybe_12b298.c	main	asm-function	sdk	path:sdk	file	ee
+PollSema	src/main/sdk/PollSema.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+PowerOffCB_129768	src/main/sdk/PowerOffCB_129768.c	main	asm-function	sdk	path:sdk	file	ee
+ProbeTLBEntry_120088	src/main/sdk/ProbeTLBEntry_120088.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+PutTLBEntry_11fff8	src/main/sdk/PutTLBEntry_11fff8.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+QueueInit	src/main/sdk/QueueInit.c	main	asm-function	sdk	path:sdk	file	ee
+QueuePeekReadDone	src/main/sdk/QueuePeekReadDone.c	main	asm-function	sdk	path:sdk	file	ee
+QueuePeekWriteDone	src/main/sdk/QueuePeekWriteDone.c	main	asm-function	sdk	path:sdk	file	ee
+RFU000FullReset_116180	src/main/sdk/RFU000FullReset_116180.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU003_1161b0	src/main/sdk/RFU003_1161b0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU005_1161d0	src/main/sdk/RFU005_1161d0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU008_116200	src/main/sdk/RFU008_116200.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU009_116210	src/main/sdk/RFU009_116210.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU063_116590	src/main/sdk/RFU063_116590.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU073_116630	src/main/sdk/RFU073_116630.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU080CreateEventFlag_1166a0	src/main/sdk/RFU080CreateEventFlag_1166a0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU081DeleteEventFlag_1166b0	src/main/sdk/RFU081DeleteEventFlag_1166b0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU082SetEventFlag_1166c0	src/main/sdk/RFU082SetEventFlag_1166c0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU083iSetEventFlag_1166d0	src/main/sdk/RFU083iSetEventFlag_1166d0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU084ClearEventFlag_1166e0	src/main/sdk/RFU084ClearEventFlag_1166e0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU085iClearEventFlag_1166f0	src/main/sdk/RFU085iClearEventFlag_1166f0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU086WaitEventFlag_116700	src/main/sdk/RFU086WaitEventFlag_116700.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU086_WaitEvnetFlag	src/main/sdk/RFU086_WaitEvnetFlag.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU087PollEventFlag_116710	src/main/sdk/RFU087PollEventFlag_116710.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU088iPollEventFlag_116720	src/main/sdk/RFU088iPollEventFlag_116720.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU089ReferEventFlagStatus_116730	src/main/sdk/RFU089ReferEventFlagStatus_116730.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU090iReferEventFlagStatus_116740	src/main/sdk/RFU090iReferEventFlagStatus_116740.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU091	src/main/sdk/RFU091.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU091_116750	src/main/sdk/RFU091_116750.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU091_2	src/main/sdk/RFU091_2.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU091_3	src/main/sdk/RFU091_3.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU116_SetSyscall	src/main/sdk/RFU116_SetSyscall.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU116_SetSyscall_2	src/main/sdk/RFU116_SetSyscall_2.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU116_SetSyscall_3	src/main/sdk/RFU116_SetSyscall_3.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU116_SetSyscall_4	src/main/sdk/RFU116_SetSyscall_4.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RFU116_SetSyscall_5	src/main/sdk/RFU116_SetSyscall_5.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+ReferSemaStatus_116610	src/main/sdk/ReferSemaStatus_116610.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+ReferThreadStatus	src/main/sdk/ReferThreadStatus.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+ReleaseAlarm_116330	src/main/sdk/ReleaseAlarm_116330.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+ReleaseTimerAlarm_122510	src/main/sdk/ReleaseTimerAlarm_122510.c	main	asm-function	sdk	path:sdk	file	ee
+ReleaseWaitThread_116470	src/main/sdk/ReleaseWaitThread_116470.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RemoveDmacHandler	src/main/sdk/RemoveDmacHandler.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RemoveIntcHandler	src/main/sdk/RemoveIntcHandler.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RemoveSbusIntcHandler_116230	src/main/sdk/RemoveSbusIntcHandler_116230.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+ResetEE_116190	src/main/sdk/ResetEE_116190.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+ResumeThread_116530	src/main/sdk/ResumeThread_116530.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+RotateThreadReadyQueue	src/main/sdk/RotateThreadReadyQueue.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetAlarm_116320	src/main/sdk/SetAlarm_116320.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetCPUTimerHandler_116880	src/main/sdk/SetCPUTimerHandler_116880.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetCPUTimer_116890	src/main/sdk/SetCPUTimer_116890.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetDebugHandler_11fe40	src/main/sdk/SetDebugHandler_11fe40.c	main	asm-function	sdk	path:sdk	file	ee
+SetGsCrt	src/main/sdk/SetGsCrt.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetGsHParam_116680	src/main/sdk/SetGsHParam_116680.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetGsVParam_116690	src/main/sdk/SetGsVParam_116690.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetOsdConfigParam	src/main/sdk/SetOsdConfigParam.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetOsdConfigParam2_1168a0	src/main/sdk/SetOsdConfigParam2_1168a0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetPgifHandler_116900	src/main/sdk/SetPgifHandler_116900.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetSyscall_116920	src/main/sdk/SetSyscall_116920.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetTLBEntry_120028	src/main/sdk/SetTLBEntry_120028.c	main	asm-function	sdk	path:sdk	file	ee
+SetTLBHandler_11fde0	src/main/sdk/SetTLBHandler_11fde0.c	main	asm-function	sdk	path:sdk	file	ee
+SetTimerAlarm_1222f0	src/main/sdk/SetTimerAlarm_1222f0.c	main	asm-function	sdk	path:sdk	file	ee
+SetTimerCount_121cf8	src/main/sdk/SetTimerCount_121cf8.c	main	asm-function	sdk	path:sdk	file	ee
+SetVCommonHandler_116260	src/main/sdk/SetVCommonHandler_116260.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetVInterruptHandler_116270	src/main/sdk/SetVInterruptHandler_116270.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetVSyncFlag	src/main/sdk/SetVSyncFlag.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetVTLBRefillHandler	src/main/sdk/SetVTLBRefillHandler.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetupHeap_116570	src/main/sdk/SetupHeap_116570.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SetupThread_116560	src/main/sdk/SetupThread_116560.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SifCmdIntrHandler_119968	src/main/sdk/SifCmdIntrHandler_119968.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+SifLoadModuleBufferRpc_11ef68	src/main/sdk/SifLoadModuleBufferRpc_11ef68.c	main	asm-function	sdk	path:sdk	file	ee
+SifLoadModuleRpc_11f578	src/main/sdk/SifLoadModuleRpc_11f578.c	main	asm-function	sdk	path:sdk	file	ee
+SignalSema	src/main/sdk/SignalSema.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SleepThread	src/main/sdk/SleepThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+StdioInitSemas_11ac18	src/main/sdk/StdioInitSemas_11ac18.c	main	asm-function	sdk	path:sdk	file	ee
+StopTimerSystemTime_121240	src/main/sdk/StopTimerSystemTime_121240.c	main	asm-function	sdk	path:sdk	file	ee
+SupplementCrt0_1206c8	src/main/sdk/SupplementCrt0_1206c8.c	main	asm-function	sdk	path:sdk	file	ee
+SuspendThread	src/main/sdk/SuspendThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+SyncDCache	src/main/sdk/SyncDCache.c	main	asm-function	sdk	path:sdk	file	ee
+TerminateThread	src/main/sdk/TerminateThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+TimerNopStubRelated_120f38	src/main/sdk/TimerNopStubRelated_120f38.c	main	asm-function	sdk	path:sdk	file	nops
+VSync2_116ac0	src/main/sdk/VSync2_116ac0.c	main	asm-function	sdk	path:sdk	file	ee
+WFilebufOverflow_1053e0	src/main/sdk/WFilebufOverflow_1053e0.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+WaitSema	src/main/sdk/WaitSema.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+WakeupThread	src/main/sdk/WakeupThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_Bfree	src/main/sdk/_Bfree.c	main	asm-function	sdk	path:sdk	file	ee
+_DisableDmac	src/main/sdk/_DisableDmac.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_DisableIntc	src/main/sdk/_DisableIntc.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_EnableDmac	src/main/sdk/_EnableDmac.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_EnableIntc	src/main/sdk/_EnableIntc.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_ExecOSD	src/main/sdk/_ExecOSD.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_Exit	src/main/sdk/_Exit.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_InitTLB	src/main/sdk/_InitTLB.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_LoadExecPS2	src/main/sdk/_LoadExecPS2.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_StartThread	src/main/sdk/_StartThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+__assert	src/main/sdk/__assert.c	main	asm-function	sdk	path:sdk	file	ee
+_change_addr	src/main/sdk/_change_addr.c	main	asm-function	sdk	path:sdk	file	ee
+_iDisableDmac	src/main/sdk/_iDisableDmac.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_iDisableIntc	src/main/sdk/_iDisableIntc.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_iEnableDmac	src/main/sdk/_iEnableDmac.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_iEnableIntc	src/main/sdk/_iEnableIntc.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_iSuspendThread	src/main/sdk/_iSuspendThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_iWakeupThread	src/main/sdk/_iWakeupThread.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+_lf_bind	src/main/sdk/_lf_bind.c	main	asm-function	sdk	path:sdk	file	ee
+_lf_version	src/main/sdk/_lf_version.c	main	asm-function	sdk	path:sdk	file	ee
+_request_bind	src/main/sdk/_request_bind.c	main	asm-function	sdk	path:sdk	file	ee
+_request_call	src/main/sdk/_request_call.c	main	asm-function	sdk	path:sdk	file	ee
+_request_end	src/main/sdk/_request_end.c	main	asm-function	sdk	path:sdk	file	ee
+_request_rdata	src/main/sdk/_request_rdata.c	main	asm-function	sdk	path:sdk	file	ee
+_sceIDC	src/main/sdk/_sceIDC.c	main	asm-function	sdk	path:sdk	file	ee
+_sceRpcFreePacket	src/main/sdk/_sceRpcFreePacket.c	main	asm-function	sdk	path:sdk	file	ee
+_sceRpcGetFPacket	src/main/sdk/_sceRpcGetFPacket.c	main	asm-function	sdk	path:sdk	file	ee
+_sceRpcGetPacket	src/main/sdk/_sceRpcGetPacket.c	main	asm-function	sdk	path:sdk	file	ee
+_sceSDC	src/main/sdk/_sceSDC.c	main	asm-function	sdk	path:sdk	file	ee
+_sceSifLoadElfPart	src/main/sdk/_sceSifLoadElfPart.c	main	asm-function	sdk	path:sdk	file	ee
+_sceSifSendCmd	src/main/sdk/_sceSifSendCmd.c	main	asm-function	sdk	path:sdk	file	ee
+_sceVu0ecossin	src/main/sdk/_sceVu0ecossin.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+_search_svdata	src/main/sdk/_search_svdata.c	main	asm-function	sdk	path:sdk	file	ee
+_set_sreg	src/main/sdk/_set_sreg.c	main	asm-function	sdk	path:sdk	file	ee
+abs	src/main/sdk/abs.c	main	asm-function	sdk	path:sdk	file	ee
+cd_callback	src/main/sdk/cd_callback.c	main	asm-function	sdk	path:sdk	file	ee
+deci2Putchar	src/main/sdk/deci2Putchar.c	main	asm-function	sdk	path:sdk	file	ee
+dpadd	src/main/sdk/dpadd.c	main	asm-function	sdk	path:sdk	file	ee
+dpdiv	src/main/sdk/dpdiv.c	main	asm-function	sdk	path:sdk	file	ee
+dpmul	src/main/sdk/dpmul.c	main	asm-function	sdk	path:sdk	file	ee
+dpsub	src/main/sdk/dpsub.c	main	asm-function	sdk	path:sdk	file	ee
+dptofp	src/main/sdk/dptofp.c	main	asm-function	sdk	path:sdk	file	ee
+dptoli	src/main/sdk/dptoli.c	main	asm-function	sdk	path:sdk	file	ee
+entry	src/main/sdk/entry.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+fptodp	src/main/sdk/fptodp.c	main	asm-function	sdk	path:sdk	file	ee
+fstat	src/main/sdk/fstat.c	main	asm-function	sdk	path:sdk	file	ee
+ftoi	src/main/sdk/ftoi.c	main	asm-function	sdk	path:sdk	file	ee
+iAllocTimerCounter_121888	src/main/sdk/iAllocTimerCounter_121888.c	main	asm-function	sdk	path:sdk	file	ee
+iCancelWakeupThread_116500	src/main/sdk/iCancelWakeupThread_116500.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iChangeThreadPriority_116440	src/main/sdk/iChangeThreadPriority_116440.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iCpuConfig_116860	src/main/sdk/iCpuConfig_116860.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iDisableDmacHandler_1167d0	src/main/sdk/iDisableDmacHandler_1167d0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iDisableDmac_117280	src/main/sdk/iDisableDmac_117280.c	main	asm-function	sdk	path:sdk	file	ee
+iDisableIntcHandler_116790	src/main/sdk/iDisableIntcHandler_116790.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iDisableIntc_117240	src/main/sdk/iDisableIntc_117240.c	main	asm-function	sdk	path:sdk	file	ee
+iEnableDmacHandler_1167b0	src/main/sdk/iEnableDmacHandler_1167b0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iEnableDmac_117260	src/main/sdk/iEnableDmac_117260.c	main	asm-function	sdk	path:sdk	file	ee
+iEnableIntcHandler_116770	src/main/sdk/iEnableIntcHandler_116770.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iEnableIntc_117220	src/main/sdk/iEnableIntc_117220.c	main	asm-function	sdk	path:sdk	file	ee
+iFlushCache_116850	src/main/sdk/iFlushCache_116850.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iFreeTimerCounter_121940	src/main/sdk/iFreeTimerCounter_121940.c	main	asm-function	sdk	path:sdk	file	ee
+iGetCop0_116840	src/main/sdk/iGetCop0_116840.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iGetTLBEntry_120078	src/main/sdk/iGetTLBEntry_120078.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iGsGetIMR_1168d0	src/main/sdk/iGsGetIMR_1168d0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iGsPutIMR_1168f0	src/main/sdk/iGsPutIMR_1168f0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iInvalidDCache	src/main/sdk/iInvalidDCache.c	main	asm-function	sdk	path:sdk	file	ee
+iPollSema	src/main/sdk/iPollSema.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iProbeTLBEntry_120098	src/main/sdk/iProbeTLBEntry_120098.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iPutTLBEntry_120008	src/main/sdk/iPutTLBEntry_120008.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iReferSemaStatus_116620	src/main/sdk/iReferSemaStatus_116620.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iReferThreadStatus_1164b0	src/main/sdk/iReferThreadStatus_1164b0.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iReleaseAlarm_116390	src/main/sdk/iReleaseAlarm_116390.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iReleaseTimerAlarm_1225b8	src/main/sdk/iReleaseTimerAlarm_1225b8.c	main	asm-function	sdk	path:sdk	file	ee
+iReleaseWaitThread_116480	src/main/sdk/iReleaseWaitThread_116480.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iResumeThread_116540	src/main/sdk/iResumeThread_116540.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iRotateThreadReadyQueue_116460	src/main/sdk/iRotateThreadReadyQueue_116460.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iRotateThreadReadyQueue_117500	src/main/sdk/iRotateThreadReadyQueue_117500.c	main	asm-function	sdk	path:sdk	file	ee
+iSetAlarm_116380	src/main/sdk/iSetAlarm_116380.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iSetTLBEntry_120058	src/main/sdk/iSetTLBEntry_120058.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iSetTimerAlarm_122420	src/main/sdk/iSetTimerAlarm_122420.c	main	asm-function	sdk	path:sdk	file	ee
+iSetTimerHandler_121f20	src/main/sdk/iSetTimerHandler_121f20.c	main	asm-function	sdk	path:sdk	file	ee
+iSignalSema	src/main/sdk/iSignalSema.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+iStartTimerCounter_121ae0	src/main/sdk/iStartTimerCounter_121ae0.c	main	asm-function	sdk	path:sdk	file	ee
+iSyncDCache	src/main/sdk/iSyncDCache.c	main	asm-function	sdk	path:sdk	file	ee
+iTerminateThread_116400	src/main/sdk/iTerminateThread_116400.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+isceSifDmaStat_116950	src/main/sdk/isceSifDmaStat_116950.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+isceSifSendCmd	src/main/sdk/isceSifSendCmd.c	main	asm-function	sdk	path:sdk	file	ee
+isceSifSetDChain	src/main/sdk/isceSifSetDChain.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+isceSifSetDma	src/main/sdk/isceSifSetDma.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+kFindAddress_120780	src/main/sdk/kFindAddress_120780.c	main	asm-function	sdk	path:sdk	file	ee
+kTLBException_120300	src/main/sdk/kTLBException_120300.c	main	asm-function	sdk	path:sdk	file	empty
+kputchar	src/main/sdk/kputchar.c	main	asm-function	sdk	path:sdk	file	ee
+kputs_117a90	src/main/sdk/kputs_117a90.c	main	asm-function	sdk	path:sdk	file	ee
+litodp	src/main/sdk/litodp.c	main	asm-function	sdk	path:sdk	file	ee
+mceStorePwd	src/main/sdk/mceStorePwd.c	main	asm-function	sdk	path:sdk	file	ee
+memchr	src/main/sdk/memchr.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+memclr	src/main/sdk/memclr.c	main	asm-function	sdk	path:sdk	file	ee
+memcmp	src/main/sdk/memcmp.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+memcpy	src/main/sdk/memcpy.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+memmove	src/main/sdk/memmove.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+memset	src/main/sdk/memset.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+open	src/main/sdk/open.c	main	asm-function	sdk	path:sdk	file	ee
+print_116930	src/main/sdk/print_116930.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+read	src/main/sdk/read.c	main	asm-function	sdk	path:sdk	file	ee
+requestbind_11a238	src/main/sdk/requestbind_11a238.c	main	asm-function	sdk	path:sdk	file	ee
+requestrdata_119f70	src/main/sdk/requestrdata_119f70.c	main	asm-function	sdk	path:sdk	file	ee
+sbrk	src/main/sdk/sbrk.c	main	asm-function	sdk	path:sdk	file	ee
+sceAddDrv_11d038	src/main/sdk/sceAddDrv_11d038.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdChangeThreadPriority_12ab30	src/main/sdk/sceCdChangeThreadPriority_12ab30.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdDiskReady	src/main/sdk/sceCdDiskReady.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdGetDiskType_12a9d8	src/main/sdk/sceCdGetDiskType_12a9d8.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdGetError_12aa98	src/main/sdk/sceCdGetError_12aa98.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdInitEeCB_1293b0	src/main/sdk/sceCdInitEeCB_1293b0.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdInit_12a008	src/main/sdk/sceCdInit_12a008.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdLayerSearchFile_1297e0	src/main/sdk/sceCdLayerSearchFile_1297e0.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdMmode_12ada0	src/main/sdk/sceCdMmode_12ada0.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdNcmdDiskReady_129c58	src/main/sdk/sceCdNcmdDiskReady_129c58.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdRead_12a728	src/main/sdk/sceCdRead_12a728.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdSearchFile_129ae0	src/main/sdk/sceCdSearchFile_129ae0.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdSeek_12a908	src/main/sdk/sceCdSeek_12a908.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdSetTimeoutMaybe_12abf8	src/main/sdk/sceCdSetTimeoutMaybe_12abf8.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdSync	src/main/sdk/sceCdSync.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdSyncS_129d90	src/main/sdk/sceCdSyncS_129d90.c	main	asm-function	sdk	path:sdk	file	ee
+sceCdTrayReq_12ae98	src/main/sdk/sceCdTrayReq_12ae98.c	main	asm-function	sdk	path:sdk	file	ee
+sceChstat_11d6c8	src/main/sdk/sceChstat_11d6c8.c	main	asm-function	sdk	path:sdk	file	ee
+sceClose_11bbb8	src/main/sdk/sceClose_11bbb8.c	main	asm-function	sdk	path:sdk	file	ee
+sceDclose_11d250	src/main/sdk/sceDclose_11d250.c	main	asm-function	sdk	path:sdk	file	ee
+sceDeci2Close	src/main/sdk/sceDeci2Close.c	main	asm-function	sdk	path:sdk	file	ee
+sceDeci2ExLock_117a40	src/main/sdk/sceDeci2ExLock_117a40.c	main	asm-function	sdk	path:sdk	file	ee
+sceDeci2ExRecv	src/main/sdk/sceDeci2ExRecv.c	main	asm-function	sdk	path:sdk	file	ee
+sceDeci2ExReqSend	src/main/sdk/sceDeci2ExReqSend.c	main	asm-function	sdk	path:sdk	file	ee
+sceDeci2ExSend	src/main/sdk/sceDeci2ExSend.c	main	asm-function	sdk	path:sdk	file	ee
+sceDeci2ExUnLock_117a68	src/main/sdk/sceDeci2ExUnLock_117a68.c	main	asm-function	sdk	path:sdk	file	ee
+sceDeci2Open	src/main/sdk/sceDeci2Open.c	main	asm-function	sdk	path:sdk	file	ee
+sceDeci2ReqSend	src/main/sdk/sceDeci2ReqSend.c	main	asm-function	sdk	path:sdk	file	ee
+sceDevctl_11e1d0	src/main/sdk/sceDevctl_11e1d0.c	main	asm-function	sdk	path:sdk	file	ee
+sceDmaGetChan	src/main/sdk/sceDmaGetChan.c	main	asm-function	sdk	path:sdk	file	ee
+sceDmaGetEnv	src/main/sdk/sceDmaGetEnv.c	main	asm-function	sdk	path:sdk	file	ee
+sceDmaPutEnv	src/main/sdk/sceDmaPutEnv.c	main	asm-function	sdk	path:sdk	file	ee
+sceDmaReset	src/main/sdk/sceDmaReset.c	main	asm-function	sdk	path:sdk	file	ee
+sceDopen_11d188	src/main/sdk/sceDopen_11d188.c	main	asm-function	sdk	path:sdk	file	ee
+sceDread_11d3b8	src/main/sdk/sceDread_11d3b8.c	main	asm-function	sdk	path:sdk	file	ee
+sceFormat_11cdb8	src/main/sdk/sceFormat_11cdb8.c	main	asm-function	sdk	path:sdk	file	ee
+sceFsRcvIntr_11aef0	src/main/sdk/sceFsRcvIntr_11aef0.c	main	asm-function	sdk	path:sdk	file	ee
+sceGetstat_11d510	src/main/sdk/sceGetstat_11d510.c	main	asm-function	sdk	path:sdk	file	ee
+sceGifPkAddGsAD	src/main/sdk/sceGifPkAddGsAD.c	main	asm-function	sdk	path:sdk	file	ee
+sceGifPkCloseGifTag	src/main/sdk/sceGifPkCloseGifTag.c	main	asm-function	sdk	path:sdk	file	ee
+sceGifPkCnt	src/main/sdk/sceGifPkCnt.c	main	asm-function	sdk	path:sdk	file	ee
+sceGifPkEnd	src/main/sdk/sceGifPkEnd.c	main	asm-function	sdk	path:sdk	file	ee
+sceGifPkOpenGifTag	src/main/sdk/sceGifPkOpenGifTag.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+sceGifPkRef	src/main/sdk/sceGifPkRef.c	main	asm-function	sdk	path:sdk	file	ee
+sceGifPkRefLoadImage	src/main/sdk/sceGifPkRefLoadImage.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+sceGifPkReserve	src/main/sdk/sceGifPkReserve.c	main	asm-function	sdk	path:sdk	file	ee
+sceGsExecStoreImage	src/main/sdk/sceGsExecStoreImage.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+sceGsPutDispEnv	src/main/sdk/sceGsPutDispEnv.c	main	asm-function	sdk	path:sdk	file	ee
+sceGsPutDrawEnv	src/main/sdk/sceGsPutDrawEnv.c	main	asm-function	sdk	path:sdk	file	ee
+sceGsResetGraph_108110	src/main/sdk/sceGsResetGraph_108110.c	main	asm-function	sdk	path:sdk	file	ee
+sceGsResetPath	src/main/sdk/sceGsResetPath.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceGsSetDefClear	src/main/sdk/sceGsSetDefClear.c	main	asm-function	sdk	path:sdk	file	ee
+sceGsSetDefDBuff	src/main/sdk/sceGsSetDefDBuff.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+sceGsSetDefDrawEnv	src/main/sdk/sceGsSetDefDrawEnv.c	main	asm-function	sdk	path:sdk	file	ee
+sceGsSetDefStoreImage	src/main/sdk/sceGsSetDefStoreImage.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+sceGsSwapDBuff	src/main/sdk/sceGsSwapDBuff.c	main	asm-function	sdk	path:sdk	file	ee
+sceGsSyncPath_109030	src/main/sdk/sceGsSyncPath_109030.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceGsSyncV	src/main/sdk/sceGsSyncV.c	main	asm-function	sdk	path:sdk	file	ee
+sceGszbufaddr	src/main/sdk/sceGszbufaddr.c	main	asm-function	sdk	path:sdk	file	ee
+sceIoctl2_11c828	src/main/sdk/sceIoctl2_11c828.c	main	asm-function	sdk	path:sdk	file	ee
+sceIoctl_11c4a0	src/main/sdk/sceIoctl_11c4a0.c	main	asm-function	sdk	path:sdk	file	ee
+sceLseek64_11df90	src/main/sdk/sceLseek64_11df90.c	main	asm-function	sdk	path:sdk	file	ee
+sceLseek_11bd30	src/main/sdk/sceLseek_11bd30.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcChdir_12d588	src/main/sdk/sceMcChdir_12d588.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcClose_12cbb8	src/main/sdk/sceMcClose_12cbb8.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcDelete_12d798	src/main/sdk/sceMcDelete_12d798.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcEnd_12c870	src/main/sdk/sceMcEnd_12c870.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcFlush_12d8b8	src/main/sdk/sceMcFlush_12d8b8.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcFormat_12d6c8	src/main/sdk/sceMcFormat_12d6c8.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcGetDir_12d3a8	src/main/sdk/sceMcGetDir_12d3a8.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcGetEntSpace_12dd70	src/main/sdk/sceMcGetEntSpace_12dd70.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcGetInfo_12d1b8	src/main/sdk/sceMcGetInfo_12d1b8.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcGetSlotMax_12c998	src/main/sdk/sceMcGetSlotMax_12c998.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcMkdir	src/main/sdk/sceMcMkdir.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcOpen_12ca58	src/main/sdk/sceMcOpen_12ca58.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcRead_12ce08	src/main/sdk/sceMcRead_12ce08.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcRename_12db48	src/main/sdk/sceMcRename_12db48.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcSeek_12cc78	src/main/sdk/sceMcSeek_12cc78.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcSetFileInfo_12d978	src/main/sdk/sceMcSetFileInfo_12d978.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcUdCheckNewCard_12d338	src/main/sdk/sceMcUdCheckNewCard_12d338.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcUnformat_12dca0	src/main/sdk/sceMcUnformat_12dca0.c	main	asm-function	sdk	path:sdk	file	ee
+sceMcWrite_12cf20	src/main/sdk/sceMcWrite_12cf20.c	main	asm-function	sdk	path:sdk	file	ee
+sceMkdir_11cbe0	src/main/sdk/sceMkdir_11cbe0.c	main	asm-function	sdk	path:sdk	file	ee
+sceMount_11dcf0	src/main/sdk/sceMount_11dcf0.c	main	asm-function	sdk	path:sdk	file	ee
+sceOpen_11b928	src/main/sdk/sceOpen_11b928.c	main	asm-function	sdk	path:sdk	file	ee
+scePadEnd_12b208	src/main/sdk/scePadEnd_12b208.c	main	asm-function	sdk	path:sdk	file	ee
+scePadEnterPressMode	src/main/sdk/scePadEnterPressMode.c	main	asm-function	sdk	path:sdk	file	ee
+scePadExitPressMode	src/main/sdk/scePadExitPressMode.c	main	asm-function	sdk	path:sdk	file	ee
+scePadGetButtonMask	src/main/sdk/scePadGetButtonMask.c	main	asm-function	sdk	path:sdk	file	ee
+scePadGetDmaStr	src/main/sdk/scePadGetDmaStr.c	main	asm-function	sdk	path:sdk	file	ee
+scePadGetFrameCount	src/main/sdk/scePadGetFrameCount.c	main	asm-function	sdk	path:sdk	file	ee
+scePadGetModVersion	src/main/sdk/scePadGetModVersion.c	main	asm-function	sdk	path:sdk	file	ee
+scePadGetPortMax	src/main/sdk/scePadGetPortMax.c	main	asm-function	sdk	path:sdk	file	ee
+scePadGetReqState	src/main/sdk/scePadGetReqState.c	main	asm-function	sdk	path:sdk	file	ee
+scePadGetSlotMax	src/main/sdk/scePadGetSlotMax.c	main	asm-function	sdk	path:sdk	file	ee
+scePadGetState	src/main/sdk/scePadGetState.c	main	asm-function	sdk	path:sdk	file	ee
+scePadInfoAct	src/main/sdk/scePadInfoAct.c	main	asm-function	sdk	path:sdk	file	ee
+scePadInfoComb	src/main/sdk/scePadInfoComb.c	main	asm-function	sdk	path:sdk	file	ee
+scePadInfoMode	src/main/sdk/scePadInfoMode.c	main	asm-function	sdk	path:sdk	file	ee
+scePadInfoPressMode	src/main/sdk/scePadInfoPressMode.c	main	asm-function	sdk	path:sdk	file	ee
+scePadInit	src/main/sdk/scePadInit.c	main	asm-function	sdk	path:sdk	file	ee
+scePadPortClose	src/main/sdk/scePadPortClose.c	main	asm-function	sdk	path:sdk	file	ee
+scePadPortOpen	src/main/sdk/scePadPortOpen.c	main	asm-function	sdk	path:sdk	file	ee
+scePadRead	src/main/sdk/scePadRead.c	main	asm-function	sdk	path:sdk	file	ee
+scePadReqIntToStr	src/main/sdk/scePadReqIntToStr.c	main	asm-function	sdk	path:sdk	file	ee
+scePadSetActAlign	src/main/sdk/scePadSetActAlign.c	main	asm-function	sdk	path:sdk	file	ee
+scePadSetActDirect	src/main/sdk/scePadSetActDirect.c	main	asm-function	sdk	path:sdk	file	ee
+scePadSetButtonInfo	src/main/sdk/scePadSetButtonInfo.c	main	asm-function	sdk	path:sdk	file	ee
+scePadSetMainMode	src/main/sdk/scePadSetMainMode.c	main	asm-function	sdk	path:sdk	file	ee
+scePadSetReqState	src/main/sdk/scePadSetReqState.c	main	asm-function	sdk	path:sdk	file	ee
+scePadSetVrefParam	src/main/sdk/scePadSetVrefParam.c	main	asm-function	sdk	path:sdk	file	ee
+scePadSetWarningLevel	src/main/sdk/scePadSetWarningLevel.c	main	asm-function	sdk	path:sdk	file	ee
+scePadStateIntToStr	src/main/sdk/scePadStateIntToStr.c	main	asm-function	sdk	path:sdk	file	ee
+sceRead_11bf70	src/main/sdk/sceRead_11bf70.c	main	asm-function	sdk	path:sdk	file	ee
+sceReadlink_11e670	src/main/sdk/sceReadlink_11e670.c	main	asm-function	sdk	path:sdk	file	ee
+sceRename_11d918	src/main/sdk/sceRename_11d918.c	main	asm-function	sdk	path:sdk	file	ee
+sceResetttyinit_116a20	src/main/sdk/sceResetttyinit_116a20.c	main	asm-function	sdk	path:sdk	file	ee
+sceSdRemoteCallbackInit_122d70	src/main/sdk/sceSdRemoteCallbackInit_122d70.c	main	asm-function	sdk	path:sdk	file	ee
+sceSdRemoteCallbackQuit_122e70	src/main/sdk/sceSdRemoteCallbackQuit_122e70.c	main	asm-function	sdk	path:sdk	file	ee
+sceSdRemoteInit_122890	src/main/sdk/sceSdRemoteInit_122890.c	main	asm-function	sdk	path:sdk	file	ee
+sceSdTransToIOP_122940	src/main/sdk/sceSdTransToIOP_122940.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifAddCmdHandler	src/main/sdk/sceSifAddCmdHandler.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifAllocIopHeap	src/main/sdk/sceSifAllocIopHeap.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifAllocSysMemory_11e948	src/main/sdk/sceSifAllocSysMemory_11e948.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifBindRpc	src/main/sdk/sceSifBindRpc.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifCallRpc	src/main/sdk/sceSifCallRpc.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifCheckStatRpc	src/main/sdk/sceSifCheckStatRpc.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifDmaStat	src/main/sdk/sceSifDmaStat.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+sceSifExecRequest	src/main/sdk/sceSifExecRequest.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifExitCmd	src/main/sdk/sceSifExitCmd.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifExitRpc	src/main/sdk/sceSifExitRpc.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifFreeIopHeap	src/main/sdk/sceSifFreeIopHeap.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifGetIopAddr	src/main/sdk/sceSifGetIopAddr.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifGetNextRequest	src/main/sdk/sceSifGetNextRequest.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifGetOtherData	src/main/sdk/sceSifGetOtherData.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifGetReg	src/main/sdk/sceSifGetReg.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+sceSifGetSreg	src/main/sdk/sceSifGetSreg.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifInitCmd	src/main/sdk/sceSifInitCmd.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifInitIopHeap	src/main/sdk/sceSifInitIopHeap.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifIsAliveIop	src/main/sdk/sceSifIsAliveIop.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifLoadElf	src/main/sdk/sceSifLoadElf.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifLoadFileReset	src/main/sdk/sceSifLoadFileReset.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifLoadIopHeap	src/main/sdk/sceSifLoadIopHeap.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifLoadModuleBuffer_11f538	src/main/sdk/sceSifLoadModuleBuffer_11f538.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifLoadModule_11f7a0	src/main/sdk/sceSifLoadModule_11f7a0.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifLoadStartModuleBuffer_11f558	src/main/sdk/sceSifLoadStartModuleBuffer_11f558.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifLoadStartModule_11f7c0	src/main/sdk/sceSifLoadStartModule_11f7c0.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifQueryBlockSize_11ed20	src/main/sdk/sceSifQueryBlockSize_11ed20.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifQueryBlockTopAddress_11eca0	src/main/sdk/sceSifQueryBlockTopAddress_11eca0.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifQueryMaxFreeMemSize_11ebc0	src/main/sdk/sceSifQueryMaxFreeMemSize_11ebc0.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifQueryMemSize_11eb50	src/main/sdk/sceSifQueryMemSize_11eb50.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifQueryTotalFreeMemSize_11ec30	src/main/sdk/sceSifQueryTotalFreeMemSize_11ec30.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifRebootIop_11fcd0	src/main/sdk/sceSifRebootIop_11fcd0.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifRegisterRpc	src/main/sdk/sceSifRegisterRpc.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifRemoveCmdHandler	src/main/sdk/sceSifRemoveCmdHandler.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifRemoveRpc	src/main/sdk/sceSifRemoveRpc.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifRemoveRpcQueue	src/main/sdk/sceSifRemoveRpcQueue.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifResetIop	src/main/sdk/sceSifResetIop.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifRpcLoop	src/main/sdk/sceSifRpcLoop.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifSearchModuleByAddress_11f4a8	src/main/sdk/sceSifSearchModuleByAddress_11f4a8.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifSearchModuleByName_11f408	src/main/sdk/sceSifSearchModuleByName_11f408.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifSendCmd	src/main/sdk/sceSifSendCmd.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifSetCmdBuffer	src/main/sdk/sceSifSetCmdBuffer.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifSetDChain	src/main/sdk/sceSifSetDChain.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+sceSifSetDma	src/main/sdk/sceSifSetDma.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+sceSifSetIopAddr	src/main/sdk/sceSifSetIopAddr.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifSetReg	src/main/sdk/sceSifSetReg.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+sceSifSetRpcQueue	src/main/sdk/sceSifSetRpcQueue.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifSetSreg	src/main/sdk/sceSifSetSreg.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifSetSysCmdBuffer	src/main/sdk/sceSifSetSysCmdBuffer.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifStopDma	src/main/sdk/sceSifStopDma.c	main	asm-block	sdk	path:sdk	file	ee; instruction syscall
+sceSifStopModule_11f170	src/main/sdk/sceSifStopModule_11f170.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifSyncIop_11fc80	src/main/sdk/sceSifSyncIop_11fc80.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifUnloadModule_11f378	src/main/sdk/sceSifUnloadModule_11f378.c	main	asm-function	sdk	path:sdk	file	ee
+sceSifWriteBackDCache	src/main/sdk/sceSifWriteBackDCache.c	main	asm-function	sdk	path:sdk	file	ee
+sceSymlink_11e478	src/main/sdk/sceSymlink_11e478.c	main	asm-function	sdk	path:sdk	file	ee
+sceSync_11db40	src/main/sdk/sceSync_11db40.c	main	asm-function	sdk	path:sdk	file	ee
+sceTtyHandler	src/main/sdk/sceTtyHandler.c	main	asm-function	sdk	path:sdk	file	ee
+sceTtyInit	src/main/sdk/sceTtyInit.c	main	asm-function	sdk	path:sdk	file	ee
+sceTtyRead	src/main/sdk/sceTtyRead.c	main	asm-function	sdk	path:sdk	file	ee
+sceTtyWrite	src/main/sdk/sceTtyWrite.c	main	asm-function	sdk	path:sdk	file	ee
+sceVprintfMaybe_119218	src/main/sdk/sceVprintfMaybe_119218.c	main	asm-function	sdk	path:sdk	file	ee
+sceVpu0Reset	src/main/sdk/sceVpu0Reset.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceVu0AddVector	src/main/sdk/sceVu0AddVector.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $5
+sceVu0CameraMatrix	src/main/sdk/sceVu0CameraMatrix.c	main	asm-function	sdk	path:sdk	file	ee
+sceVu0ClampVector	src/main/sdk/sceVu0ClampVector.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $5
+sceVu0ClipAll	src/main/sdk/sceVu0ClipAll.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceVu0ClipScreen	src/main/sdk/sceVu0ClipScreen.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceVu0ClipScreen3	src/main/sdk/sceVu0ClipScreen3.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceVu0CopyMatrix	src/main/sdk/sceVu0CopyMatrix.c	main	asm-block	sdk	path:sdk	file	mmi; reads live EE register $5
+sceVu0CopyVector	src/main/sdk/sceVu0CopyVector.c	main	asm-function	sdk	path:sdk	file	mmi
+sceVu0CopyVectorXYZ	src/main/sdk/sceVu0CopyVectorXYZ.c	main	asm-block	sdk	path:sdk	file	ee; instruction lwc1
+sceVu0DivVector	src/main/sdk/sceVu0DivVector.c	main	asm-function	sdk	path:sdk	file	cop2
+sceVu0DivVectorXYZ	src/main/sdk/sceVu0DivVectorXYZ.c	main	asm-function	sdk	path:sdk	file	cop2
+sceVu0DropShadowMatrix	src/main/sdk/sceVu0DropShadowMatrix.c	main	asm-function	sdk	path:sdk	file	ee
+sceVu0FTOI0Vector	src/main/sdk/sceVu0FTOI0Vector.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $5
+sceVu0FTOI4Vector	src/main/sdk/sceVu0FTOI4Vector.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $5
+sceVu0ITOF0Vector	src/main/sdk/sceVu0ITOF0Vector.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $5
+sceVu0ITOF4Vector	src/main/sdk/sceVu0ITOF4Vector.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $5
+sceVu0InnerProduct	src/main/sdk/sceVu0InnerProduct.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $4
+sceVu0InterVector	src/main/sdk/sceVu0InterVector.c	main	asm-function	sdk	path:sdk	file	cop2
+sceVu0InterVectorXYZ	src/main/sdk/sceVu0InterVectorXYZ.c	main	asm-function	sdk	path:sdk	file	cop2
+sceVu0InversMatrix	src/main/sdk/sceVu0InversMatrix.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $5
+sceVu0LightColorMatrix	src/main/sdk/sceVu0LightColorMatrix.c	main	asm-function	sdk	path:sdk	file	ee
+sceVu0MulMatrix	src/main/sdk/sceVu0MulMatrix.c	main	asm-block	sdk	path:sdk	file	cop2+ee; reads live EE register $5
+sceVu0MulVector	src/main/sdk/sceVu0MulVector.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $5
+sceVu0NormalLightMatrix	src/main/sdk/sceVu0NormalLightMatrix.c	main	asm-function	sdk	path:sdk	file	ee
+sceVu0OuterProduct	src/main/sdk/sceVu0OuterProduct.c	main	asm-function	sdk	path:sdk	file	cop2
+sceVu0RotMatrix	src/main/sdk/sceVu0RotMatrix.c	main	asm-function	sdk	path:sdk	file	ee
+sceVu0RotMatrixX	src/main/sdk/sceVu0RotMatrixX.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceVu0RotMatrixY	src/main/sdk/sceVu0RotMatrixY.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceVu0RotMatrixZ	src/main/sdk/sceVu0RotMatrixZ.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceVu0RotTransPers	src/main/sdk/sceVu0RotTransPers.c	main	asm-block	sdk	path:sdk	file	cop2+ee; reads live EE register $5
+sceVu0RotTransPersN	src/main/sdk/sceVu0RotTransPersN.c	main	asm-function	sdk	path:sdk	file	cop2+ee
+sceVu0ScaleVector	src/main/sdk/sceVu0ScaleVector.c	main	asm-function	sdk	path:sdk	file	cop2
+sceVu0ScaleVectorXYZ	src/main/sdk/sceVu0ScaleVectorXYZ.c	main	asm-function	sdk	path:sdk	file	cop2
+sceVu0SubVector	src/main/sdk/sceVu0SubVector.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $5
+sceVu0TransMatrix	src/main/sdk/sceVu0TransMatrix.c	main	asm-block	sdk	path:sdk	file	cop2; reads live EE register $6
+sceVu0TransposeMatrix	src/main/sdk/sceVu0TransposeMatrix.c	main	asm-function	sdk	path:sdk	file	mmi
+sceVu0ViewScreenMatrix	src/main/sdk/sceVu0ViewScreenMatrix.c	main	asm-function	sdk	path:sdk	file	ee
+sceWrite_11c1e0	src/main/sdk/sceWrite_11c1e0.c	main	asm-function	sdk	path:sdk	file	ee
+serialPutchar	src/main/sdk/serialPutchar.c	main	asm-function	sdk	path:sdk	file	ee
+stat	src/main/sdk/stat.c	main	asm-function	sdk	path:sdk	file	ee
+strcat	src/main/sdk/strcat.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+strcmp	src/main/sdk/strcmp.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+strcpy	src/main/sdk/strcpy.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+strlen	src/main/sdk/strlen.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+strncmp	src/main/sdk/strncmp.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+strncpy	src/main/sdk/strncpy.c	main	asm-function	sdk	path:sdk	file	mmi+ee
+unlink	src/main/sdk/unlink.c	main	asm-function	sdk	path:sdk	file	ee
+write	src/main/sdk/write.c	main	asm-function	sdk	path:sdk	file	ee
+SdrCallbackRpcDispatch_123018	src/main/sound/SdrCallbackRpcDispatch_123018.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DecimalFromLongDoubleMaybe_106830	src/main/str/DecimalFromLongDoubleMaybe_106830.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+StringCopyCtor_107c30	src/main/str/StringCopyCtor_107c30.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+StringEraseAt_1079e0	src/main/str/StringEraseAt_1079e0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+StringEraseRange_107960	src/main/str/StringEraseRange_107960.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+StringFindChar_107550	src/main/str/StringFindChar_107550.c	main	asm-function	library	band:crt0+MSL-runtime	file	ee
+StringInsertChar_107a60	src/main/str/StringInsertChar_107a60.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+StringReplaceFill_1075d0	src/main/str/StringReplaceFill_1075d0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+StringReplace_106f90	src/main/str/StringReplace_106f90.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+StringReserve_107e80	src/main/str/StringReserve_107e80.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+StringResize_106e20	src/main/str/StringResize_106e20.c	main	asm-function	library	band:crt0+MSL-runtime	file	ee
+Strupr_136390	src/main/str/Strupr_136390.c	main	asm-function	sdk	band:sce-sdk	file	ee
+AlarmHandlerDispatch_122290	src/main/sys/AlarmHandlerDispatch_122290.c	main	asm-function	sdk	band:sce-sdk	file	ee
+AlarmPoolInit_122240	src/main/sys/AlarmPoolInit_122240.c	main	asm-function	sdk	band:sce-sdk	file	ee
+AllocTimerCounter_1218f8	src/main/sys/AllocTimerCounter_1218f8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+CdDiskReadyNewMaybe_12a508	src/main/sys/CdDiskReadyNewMaybe_12a508.c	main	asm-function	sdk	band:sce-sdk	file	ee
+ConstructArray_100620	src/main/sys/ConstructArray_100620.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+ConstructNewArray_100710	src/main/sys/ConstructNewArray_100710.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+CrtRootExitThread_100220	src/main/sys/CrtRootExitThread_100220.c	main	asm-function	library	band:crt0+MSL-runtime	file	ee
+DestroyArray_1005b0	src/main/sys/DestroyArray_1005b0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+DisableDmac_117150	src/main/sys/DisableDmac_117150.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DisableIntc_117080	src/main/sys/DisableIntc_117080.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DisableIntr_120660	src/main/sys/DisableIntr_120660.c	main	asm-block	sdk	band:sce-sdk	file	ee; instruction mfc0
+EhCatchTypeCompare_100a60	src/main/sys/EhCatchTypeCompare_100a60.c	main	asm-function	library	band:crt0+MSL-runtime	file	ee
+EhDispatchHandler_1011d0	src/main/sys/EhDispatchHandler_1011d0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EhFindCallSite_102380	src/main/sys/EhFindCallSite_102380.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EhGetCatchRecord_101700	src/main/sys/EhGetCatchRecord_101700.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EhParseHeader_1026c0	src/main/sys/EhParseHeader_1026c0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EhRestoreContextAndJump_102550	src/main/sys/EhRestoreContextAndJump_102550.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EhSkipActions_102070	src/main/sys/EhSkipActions_102070.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EhSkipHeaderVarUInts_102640	src/main/sys/EhSkipHeaderVarUInts_102640.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EhUnexpected_1014d0	src/main/sys/EhUnexpected_1014d0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EhUnwindActions_101860	src/main/sys/EhUnwindActions_101860.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EhUnwindRestoreRegs_102770	src/main/sys/EhUnwindRestoreRegs_102770.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+EnableIntr_1206b0	src/main/sys/EnableIntr_1206b0.c	main	asm-block	sdk	band:sce-sdk	file	ee; instruction mfc0
+EntryPad_100000	src/main/sys/EntryPad_100000.c	main	asm-function	library	band:crt0+MSL-runtime	file	nops
+FioSemaCreate_11b2a8	src/main/sys/FioSemaCreate_11b2a8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+FreeTimerCounter_1219e0	src/main/sys/FreeTimerCounter_1219e0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GetSyscallHandlerMaybe_1207d0	src/main/sys/GetSyscallHandlerMaybe_1207d0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GetTimerBaseTime_121e10	src/main/sys/GetTimerBaseTime_121e10.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GetTimerCount_121ed0	src/main/sys/GetTimerCount_121ed0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GetTimerSystemTime_121808	src/main/sys/GetTimerSystemTime_121808.c	main	asm-function	sdk	band:sce-sdk	file	ee
+GetTimerUsedUnitNum_121a80	src/main/sys/GetTimerUsedUnitNum_121a80.c	main	asm-function	sdk	band:sce-sdk	file	ee
+InitThread_117378	src/main/sys/InitThread_117378.c	main	asm-function	sdk	band:sce-sdk	file	ee
+InitTimer_120f70	src/main/sys/InitTimer_120f70.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IopResetCallbacksInitMaybe_122630	src/main/sys/IopResetCallbacksInitMaybe_122630.c	main	asm-function	sdk	band:sce-sdk	file	ee
+IosBaseInitCtor_102bd0	src/main/sys/IosBaseInitCtor_102bd0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+KernelSetArgvMaybe_120b40	src/main/sys/KernelSetArgvMaybe_120b40.c	main	asm-function	sdk	band:sce-sdk	file	ee
+KernelWriteWordEret_120ed0	src/main/sys/KernelWriteWordEret_120ed0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+OverlayLoadFile_100410	src/main/sys/OverlayLoadFile_100410.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+PadCmdCallbackHandler_12b0c8	src/main/sys/PadCmdCallbackHandler_12b0c8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+PatchIsNeeded_1209d8	src/main/sys/PatchIsNeeded_1209d8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+PtmfScall_100e70	src/main/sys/PtmfScall_100e70.c	main	asm-function	library	band:crt0+MSL-runtime	file	ee
+RunStaticCtors_100df0	src/main/sys/RunStaticCtors_100df0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+SdrCallbackThread_122fa8	src/main/sys/SdrCallbackThread_122fa8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+SetNextComp_1212c0	src/main/sys/SetNextComp_1212c0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+SetTimerHandler_122018	src/main/sys/SetTimerHandler_122018.c	main	asm-function	sdk	band:sce-sdk	file	ee
+StartTimerCounter_121b90	src/main/sys/StartTimerCounter_121b90.c	main	asm-function	sdk	band:sce-sdk	file	ee
+StartTimerSystemTime_1211b0	src/main/sys/StartTimerSystemTime_1211b0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+StopTimerCounter_121ca8	src/main/sys/StopTimerCounter_121ca8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+ThrowException_1025c0	src/main/sys/ThrowException_1025c0.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+Timer2SetCompare_120f60	src/main/sys/Timer2SetCompare_120f60.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Timer2SetCount_120f40	src/main/sys/Timer2SetCount_120f40.c	main	asm-function	sdk	band:sce-sdk	file	ee
+Timer2SetMode_120f50	src/main/sys/Timer2SetMode_120f50.c	main	asm-function	sdk	band:sce-sdk	file	ee
+TimerAlarmInsertSorted_121450	src/main/sys/TimerAlarmInsertSorted_121450.c	main	asm-function	sdk	band:sce-sdk	file	ee
+TimerAlarmIntcHandler_121510	src/main/sys/TimerAlarmIntcHandler_121510.c	main	asm-function	sdk	band:sce-sdk	file	ee
+TimerAlarmUnlink_1214d8	src/main/sys/TimerAlarmUnlink_1214d8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+TimerBusClock2Freq_1221b0	src/main/sys/TimerBusClock2Freq_1221b0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+TimerBusClock2USec_122098	src/main/sys/TimerBusClock2USec_122098.c	main	asm-function	sdk	band:sce-sdk	file	ee
+TimerUSec2BusClock_122140	src/main/sys/TimerUSec2BusClock_122140.c	main	asm-function	sdk	band:sce-sdk	file	ee
+WIosBaseInitCtor_103110	src/main/sys/WIosBaseInitCtor_103110.c	main	asm-function	library	band:crt0+MSL-runtime	file	mmi+ee
+iGetTimerBaseTime_121dc8	src/main/sys/iGetTimerBaseTime_121dc8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+iGetTimerCount_121e60	src/main/sys/iGetTimerCount_121e60.c	main	asm-function	sdk	band:sce-sdk	file	ee
+iGetTimerSystemTime_1217b8	src/main/sys/iGetTimerSystemTime_1217b8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+iGetTimerUsedUnitNum_121a30	src/main/sys/iGetTimerUsedUnitNum_121a30.c	main	asm-function	sdk	band:sce-sdk	file	ee
+iStopTimerCounter_121be0	src/main/sys/iStopTimerCounter_121be0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceCdPoffIntr_129710	src/main/sys/sceCdPoffIntr_129710.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceDeci2Poll_117920	src/main/sys/sceDeci2Poll_117920.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceFsPoffIntr_11b3e0	src/main/sys/sceFsPoffIntr_11b3e0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceGsSyncVCallback_109b18	src/main/sys/sceGsSyncVCallback_109b18.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceMcInit_12c648	src/main/sys/sceMcInit_12c648.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceSdRemote_1229e8	src/main/sys/sceSdRemote_1229e8.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceSifFreeSysMemory_11ea40	src/main/sys/sceSifFreeSysMemory_11ea40.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceSifInitRpc_119b60	src/main/sys/sceSifInitRpc_119b60.c	main	asm-function	sdk	band:sce-sdk	file	ee
+CpuIntrDisabled_117070	src/main/thread/CpuIntrDisabled_117070.c	main	asm-block	sdk	band:sce-sdk	file	ee; instruction mfc0
+DelayThread_117618	src/main/thread/DelayThread_117618.c	main	asm-function	sdk	band:sce-sdk	file	ee
+KernelTopThread_1172a0	src/main/thread/KernelTopThread_1172a0.c	main	asm-function	sdk	band:sce-sdk	file	ee
+StartThread_1176e0	src/main/thread/StartThread_1176e0.c	main	asm-function	sdk	band:sce-sdk	file	mmi+ee
+iSuspendThread_117580	src/main/thread/iSuspendThread_117580.c	main	asm-function	sdk	band:sce-sdk	file	ee
+iWakeupThread_117468	src/main/thread/iWakeupThread_117468.c	main	asm-function	sdk	band:sce-sdk	file	ee
+sceMcSync_12d098	src/main/thread/sceMcSync_12d098.c	main	asm-function	sdk	band:sce-sdk	file	ee
+DecodeVarInt_100f70	src/main/util/DecodeVarInt_100f70.c	main	asm-function	library	band:crt0+MSL-runtime	file	ee
+DecodeVarUInt_100ed0	src/main/util/DecodeVarUInt_100ed0.c	main	asm-function	library	band:crt0+MSL-runtime	file	ee
+AabbContainsPoint_13e130	src/main/vec/AabbContainsPoint_13e130.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+AabbContains_13e090	src/main/vec/AabbContains_13e090.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+AabbCorners_13e190	src/main/vec/AabbCorners_13e190.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+AabbOverlap_13e0e0	src/main/vec/AabbOverlap_13e0e0.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+BBoxUnion_13dea0	src/main/vec/BBoxUnion_13dea0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+BoundsAddPoint_13dee0	src/main/vec/BoundsAddPoint_13dee0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+BoundsFrom4Points_13df00	src/main/vec/BoundsFrom4Points_13df00.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecAddScaled_13bdd0	src/main/vec/VecAddScaled_13bdd0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecDistSqXZ_13d330	src/main/vec/VecDistSqXZ_13d330.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecDistSq_13d360	src/main/vec/VecDistSq_13d360.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecDistanceXZ_13d390	src/main/vec/VecDistanceXZ_13d390.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecDistance_13d3d0	src/main/vec/VecDistance_13d3d0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecFtoi4_13e2e0	src/main/vec/VecFtoi4_13e2e0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecLengthSqXZ_13d410	src/main/vec/VecLengthSqXZ_13d410.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecLengthSq_13d440	src/main/vec/VecLengthSq_13d440.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecLengthXZ_13d470	src/main/vec/VecLengthXZ_13d470.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecMax4_13dfb0	src/main/vec/VecMax4_13dfb0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecMaxMin_13df70	src/main/vec/VecMaxMin_13df70.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecMax_13dfe0	src/main/vec/VecMax_13dfe0.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecMinMax3_13df40	src/main/vec/VecMinMax3_13df40.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecMin_13df90	src/main/vec/VecMin_13df90.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecMulXyz_13bd20	src/main/vec/VecMulXyz_13bd20.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecMul_13bd40	src/main/vec/VecMul_13bd40.c	main	asm-block	sdk	band:sce-sdk	file	cop2; reads live EE register $5
+VecReflectNeg_13dc30	src/main/vec/VecReflectNeg_13dc30.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+VecSetLength_13e000	src/main/vec/VecSetLength_13e000.c	main	asm-function	sdk	band:sce-sdk	file	cop2+ee
+VecSetOnes4_13e170	src/main/vec/VecSetOnes4_13e170.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecSetOnes_13e180	src/main/vec/VecSetOnes_13e180.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+VecSubInPlace_13e050	src/main/vec/VecSubInPlace_13e050.c	main	asm-block	sdk	band:sce-sdk	file	cop2; reads live EE register $4
+VecTriCross_13de70	src/main/vec/VecTriCross_13de70.c	main	asm-function	sdk	band:sce-sdk	file	cop2
+Vu0InnerProduct_13bd60	src/main/vec/Vu0InnerProduct_13bd60.c	main	asm-block	sdk	band:sce-sdk	file	cop2; reads live EE register $4
+Vu0InnerProduct_13d300	src/main/vec/Vu0InnerProduct_13d300.c	main	asm-block	sdk	band:sce-sdk	file	cop2; reads live EE register $4
+factory_entry	src/overlays/factory/_unsorted/factory_entry.c	factory	asm-function	game		file	nops
+insect_entry	src/overlays/insect/_unsorted/insect_entry.c	insect	asm-function	game		file	nops
+insmenu_entry	src/overlays/insmenu/_unsorted/insmenu_entry.c	insmenu	asm-function	game		file	nops
+normal_entry	src/overlays/normal/_unsorted/normal_entry.c	normal	asm-function	game		file	nops
+title_entry	src/overlays/title/_unsorted/title_entry.c	title	asm-function	game		file	nops

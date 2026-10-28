@@ -1,0 +1,12 @@
+# Reference data for tests/movie (docs/MOVIE.md "Tests").
+# Our decoder's frame hashes (rg_mv_frame_hash, FNV-1a 64 over Y,Cb,Cr) at chosen indices and a
+# digest over all frames: digest = (digest ^ h) * 0x100000001b3, from 0xcbf29ce484222325.
+# Generated 2026-10-12 by rg-movie-play --hash, after the whole decoder output had been checked
+# against FFmpeg (all 89 movies, 116,956 frames: same frame count, PSNR >= 61.5 dB, max |diff| 6).
+# Frame count / size / rate / first and last PTS agree with ffprobe.
+# movie	frames	w	h	fps_num	fps_den	first_pts	last_pts	digest	idx:hash...
+00/GAMEOVER	210	512	336	30000	1001	4302	631929	7383f8d07c910e74	0:25dfa5a60738e325	1:25dfa5a60738e325	70:93c3b44f57c3c3bd	105:967ed6d0b815cc54	208:9c95dd38d187e411	209:9c95dd38d187e411
+01/01_11	150	512	336	30	1	9341	456341	3a9bb2b27fe6e702	0:94e3246da6646947	1:ad1fa1425c8ad0cf	50:00856eea4409fcd2	75:7f1ffd345e03ffc1	148:627967a230a8a7b3	149:76c812dbec9c93f3
+00/TITLE01	540	512	448	30	1	4450	1621450	60df0a2655291496	0:0d53b478d2eb2325	1:0d53b478d2eb2325	180:01c784e9011adb4c	270:7963b88fc88361ec	538:0d53b478d2eb2325	539:0d53b478d2eb2325
+13/13_07_1A	454	512	336	30000	1001	7532	1367891	16edfd2954ef0d0f	0:e80a0c78d6d03308	1:2127878f7bfe0079	151:bdb5a02f41edb92a	227:1e2e20b50adae20c	452:25dfa5a60738e325	453:25dfa5a60738e325
+09/09_17C	570	512	336	30000	1001	9569	1718276	5ae26069c3ce34b2	0:60184d2442af9442	1:3633490154ef49c3	190:19fec04ba56c2b52	285:dfad20002a28747d	568:25dfa5a60738e325	569:25dfa5a60738e325

@@ -1,0 +1,11 @@
+/* rgp:protos */
+#include "port/game_protos.h"
+#line 1
+/* rg:datareloc */
+/* Generated: do not edit. */
+#include "types.h"
+
+u8 D_0047E194[4] __attribute__((section(".data$rg0047E194"))) = {
+    @B@0047E194@, @B@0047E195@, @B@0047E196@, @B@0047E197@
+};
+typedef char data2c_sizecheck_0047E194[(sizeof(D_0047E194) == 4) ? 1 : -1];

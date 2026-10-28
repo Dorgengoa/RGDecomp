@@ -1,0 +1,9 @@
+# Game files NOT compiled because a port module provides their symbol
+# (docs/LINK.md "Providers").  Read by tools/gamesrcs.py.  Policy: an SDK
+# function that touches hardware, the kernel or the IOP keeps the port
+# provider; pure C library code may use the game's own C.
+# relpath	symbol	provider	reason
+src/main/sdk/iSetAlarm.c	iSetAlarm	src/sce/kernel (eekernel.c)	SDK kernel call; game C jumps into kernel RAM (func_076160)
+src/main/sdk/sceFsReset.c	sceFsReset	src/sce/sif (fileio.c)	SDK FILEIO; port HLE owns the FILEIO state
+src/main/sdk/atoi.c	atoi	host CRT (libucrt)	unsuffixed libc name: the host CRT binds it (BINDINGS.md); same strtol semantics
+src/main/sdk/KernelReleaseAlarm_4473a0.c	KernelReleaseAlarm_4473a0	src/sce/kernel (eekernel.c ReleaseAlarm) / src/native/threads (rg_nk_irq.c)	kernel-RAM body of the ReleaseAlarm syscall (polls T3_COMP 0xB0001820 + INTC_STAT); no game caller; the port kernel owns alarms (D9 2026-10-25)

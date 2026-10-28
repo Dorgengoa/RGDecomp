@@ -1,0 +1,97 @@
+/* rgp:protos */
+#define RGP_SELF_MenuModelPageCharaLabelLayoutMaybe_359120 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+#pragma opt_common_subs off
+
+/* ---- mechanical m2c draft (lane u31) -------------------------------------
+   Produced by build/u31/gendraft.py from m2c --valid-syntax.  This is a
+   STARTING POINT, not a match: every M2C_* macro below marks something m2c
+   could not type or could not translate.  Replace them as the unit is worked.
+   -------------------------------------------------------------------- */
+typedef rg_u128 u128;
+typedef rg_s128 s128;
+typedef s32 M2C_UNK;
+typedef s8  M2C_UNK8;
+typedef s16 M2C_UNK16;
+typedef s32 M2C_UNK32;
+typedef s64 M2C_UNK64;
+#define M2C_FIELD(expr, type_ptr, offset) (*(type_ptr)((s8 *)(expr) + (offset)))
+#define M2C_BITWISE(type, expr) ((type)(expr))
+#define M2C_LWL(expr) (expr)
+#define M2C_FIRST3BYTES(expr) (expr)
+#define M2C_UNALIGNED32(expr) (expr)
+#define M2C_ERROR(desc) (0)
+#define M2C_TRAP_IF(cond) (0)
+#define M2C_BREAK(x) (0)
+#define M2C_SYNC() (0)
+#define GLUE_F64(a, b) (0.0)
+#define MULT_HI(a, b) (0)
+#define MULTU_HI(a, b) (0)
+#define DMULT_HI(a, b) (0)
+#define DMULTU_HI(a, b) (0)
+#define CLZ(x) (0)
+#define REVERSE_BITS(x) (0)
+#define ROTATE_RIGHT(x, shift) (0)
+#define BSWAP32(x) (0)
+#define BSWAP16(x) (0)
+#define BSWAP16X2(x) (0)
+#define M2C_CARRY 0
+#define M2C_OVERFLOW(a) (0)
+#define M2C_MEMCPY_ALIGNED memcpy
+#define M2C_MEMCPY_UNALIGNED memcpy
+#define M2C_STRUCT_COPY memcpy
+
+/*rgp*/ /* extern */
+/*rgp*/ /* extern */
+
+void MenuModelPageCharaLabelLayoutMaybe_359120(s8 *arg0) {
+    s16 temp_3;
+
+    temp_3 = M2C_FIELD((s8 *)((M2C_FIELD(arg0, u8 *, 0x175) * 2) - (-(s32)arg0)), s16 *, 0xDA);
+    switch (temp_3) {
+    case 0x2AF9:
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24D, 4, 0xC, 0);
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0, 0, 0);
+        UiSetSpriteX_28fcd0(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x78, 1);
+        return;
+    case 0x2AFC:
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24D, 0xA6, 0xA, 0);
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0, 0x36, 0);
+        UiSetSpriteX_28fcd0(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x75, 1);
+        return;
+    case 0x2AFB:
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24D, 0x72, 8, 0);
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0, 0x24, 0);
+        UiSetSpriteX_28fcd0(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x72, 1);
+        return;
+    case 0x2AFD:
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24D, 0xDC, 8, 0);
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0, 0x48, 0);
+        UiSetSpriteX_28fcd0(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x70, 1);
+        return;
+    case 0x2AFA:
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24D, 0x38, 0xA, 0);
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0, 0x12, 0);
+        UiSetSpriteX_28fcd0(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x74, 1);
+        return;
+    case 0x2AFF:
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24D, 0x148, 0x12, 0);
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x4C, 0x12, 0);
+        UiSetSpriteX_28fcd0(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x6D, 1);
+        return;
+    case 0x2AFE:
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24D, 0x114, 0xC, 0);
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x4C, 0, 0);
+        UiSetSpriteX_28fcd0(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x70, 1);
+        return;
+    case 0x2B00:
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24D, 0x17C, 0xA, 0);
+        UiSetSpriteUv_28f970(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x4C, 0x24, 0);
+        UiSetSpriteX_28fcd0(M2C_FIELD(arg0, s32 *, 0x134), 0x24B, 0x80, 1);
+        /* fallthrough */
+    default:
+        return;
+    }
+}

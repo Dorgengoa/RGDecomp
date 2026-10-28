@@ -1,0 +1,92 @@
+#include "types.h"
+
+extern void sceSdRemote_1229e8(void);
+extern void sceSifRemoveRpc(void);
+extern void sceSifRemoveRpcQueue(void);
+extern void TerminateThread(void);
+extern void DeleteThread(void);
+
+asm void sceSdRemoteCallbackQuit_122e70(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0x50;
+    sd         $19, 0x30($29);
+    lui        $19, 0x44;
+    sd         $31, 0x40($29);
+    lw         $2, 0x790C($19);
+    sd         $18, 0x20($29);
+    sd         $17, 0x10($29);
+    bgez       $2, L00122E9C;
+    sd        $16, 0x0($29);
+    b          L00122F8C;
+    addiu     $2, $0, -0x1;
+  L00122E9C:
+    addiu      $4, $0, 0x1;
+    ori        $5, $0, 0x8170;
+    daddu      $6, $0, $0;
+    jal        sceSdRemote_1229e8;
+    daddu     $7, $0, $0;
+    addiu      $17, $0, -0x1;
+    addiu      $4, $0, 0x1;
+    ori        $5, $0, 0x8160;
+    daddu      $6, $0, $0;
+    daddu      $7, $0, $0;
+    daddu      $8, $0, $0;
+    jal        sceSdRemote_1229e8;
+    daddu     $16, $0, $0;
+    addiu      $4, $0, 0x1;
+    ori        $5, $0, 0x8160;
+    addiu      $6, $0, 0x1;
+    daddu      $7, $0, $0;
+    jal        sceSdRemote_1229e8;
+    daddu     $8, $0, $0;
+    addiu      $4, $0, 0x1;
+    jal        sceSdRemote_1229e8;
+    ori       $5, $0, 0xE630;
+    lui        $18, 0x49;
+    lui        $2, 0x44;
+    addiu      $18, $18, -0x1640;
+    lui        $3, 0x44;
+    lui        $6, 0x44;
+    lui        $7, 0x44;
+    lui        $8, 0x44;
+    lui        $9, 0x44;
+    lui        $10, 0x44;
+    lui        $11, 0x44;
+    lui        $12, 0x44;
+    lui        $4, 0x49;
+    sw         $0, 0x78E8($2);
+    addiu      $4, $4, -0x1628;
+    sw         $0, 0x78EC($3);
+    daddu      $5, $18, $0;
+    sw         $0, 0x78F0($6);
+    sw         $0, 0x78F4($7);
+    sw         $0, 0x78F8($8);
+    sw         $0, 0x78FC($9);
+    sw         $0, 0x7900($10);
+    sw         $0, 0x7904($11);
+    jal        sceSifRemoveRpc;
+    sw        $0, 0x7908($12);
+    movz       $16, $17, $2;
+    jal        sceSifRemoveRpcQueue;
+    daddu     $4, $18, $0;
+    lw         $4, 0x790C($19);
+    jal        TerminateThread;
+    movz      $16, $17, $2;
+    slt        $2, $17, $2;
+    lw         $4, 0x790C($19);
+    jal        DeleteThread;
+    movz      $16, $17, $2;
+    slt        $2, $17, $2;
+    sw         $17, 0x790C($19);
+    movn       $17, $16, $2;
+    daddu      $2, $17, $0;
+  L00122F8C:
+    ld         $31, 0x40($29);
+    ld         $19, 0x30($29);
+    ld         $18, 0x20($29);
+    ld         $17, 0x10($29);
+    ld         $16, 0x0($29);
+    jr         $31;
+    addiu     $29, $29, 0x50;
+}

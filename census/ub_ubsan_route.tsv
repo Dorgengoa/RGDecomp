@@ -1,0 +1,95 @@
+kind	sub	file	line	col	hits	first_detail
+bounds	index	game/src/main/chara/CharaRebuildEquipStatsMaybe_3aef80.cpp	675	9	116	's16[7][2]' (aka 'short[7][2]') [7]
+bounds	index	game/src/main/chara/CharaRebuildEquipStatsMaybe_3aef80.cpp	676	9	116	's16[7][2]' (aka 'short[7][2]') [7]
+bounds	index	game/src/main/event/EvScriptCmdPathPointAdd_300f30.c	41	52	20	'u8[48]' (aka 'unsigned char[48]') [116]
+bounds	index	game/src/main/event/EvScriptCmdPathPointAdd_300f30.c	41	63	20	'u8[48]' (aka 'unsigned char[48]') [120]
+bounds	index	game/src/main/event/EvScriptCmdPathPointAdd_300f30.c	41	74	20	'u8[48]' (aka 'unsigned char[48]') [96]
+bounds	index	game/src/main/event/EvScriptCmdPathPointAdd_300f30.c	41	85	20	'u8[48]' (aka 'unsigned char[48]') [100]
+bounds	index	game/src/main/event/EvScriptCmdPathPointAdd_300f30.c	41	96	20	'u8[48]' (aka 'unsigned char[48]') [104]
+bounds	index	game/src/main/event/EvScriptCmdPathPointAdd_300f30.c	41	41	20	'u8[48]' (aka 'unsigned char[48]') [112]
+bounds	index	game/src/main/event/EvScriptCmdPathPointAdd_300f30.c	42	37	20	'u8[48]' (aka 'unsigned char[48]') [84]
+bounds	index	game/src/main/event/EvScriptCmdPathPointAdd_300f30.c	42	48	20	'u8[48]' (aka 'unsigned char[48]') [88]
+bounds	index	game/src/main/event/EvScriptCmdPathPointAdd_300f30.c	42	26	20	'u8[48]' (aka 'unsigned char[48]') [80]
+bounds	index	game/src/main/event/EventStateResetMaybe_26b780.c	43	28	645	's32[8]' (aka 'int[8]') [9]
+bounds	index	game/src/main/sound/GameSceneSoundEnvParseMapIndex_1d15c0.c	75	14	36	'Ent[512]' (aka 'struct Ent[512]') [513]
+bounds	index	game/src/main/sound/SoundPlayEntry_1b8f90.c	63	31	778	'u8[1024]' (aka 'unsigned char[1024]') [1920]
+bounds	index	game/src/main/sound/SoundStreamSlotGetPeakLevel_1bc9e0.c	22	13	2161	's32[2]' (aka 'int[2]') [2]
+bounds	index	game/src/main/sound/SoundStreamSlotPause_1bcb20.c	33	13	22	's32[2]' (aka 'int[2]') [2]
+bounds	index	game/src/main/sound/SoundStreamSlotQueryState_1bd210.c	23	22	16908	's32[2]' (aka 'int[2]') [2]
+bounds	index	game/src/main/sound/SoundStreamSlotQueryState_1bd210.c	34	22	16908	's32[2]' (aka 'int[2]') [2]
+bounds	index	game/src/main/sound/SoundStreamSlotResume_1bcc30.c	33	13	22	's32[2]' (aka 'int[2]') [2]
+bounds	index	game/src/main/sys/TaskTableRestoreOrder_27bed0.c	16	52	999	'u8[1024]' (aka 'unsigned char[1024]') [1040]
+bounds	index	game/src/main/sys/TaskTableRestoreOrder_27bed0.c	17	38	990	'u8[1024]' (aka 'unsigned char[1024]') [1040]
+bounds	index	game/src/main/ui/MapCaptionLoad_33fa90.c	72	41	16	'u8[1024]' (aka 'unsigned char[1024]') [1088]
+bounds	index	game/src/overlays/normal/ui/normal_FieldHudPanelSetRaised_4f5310.c	25	9	1	's16[1]' (aka 'short[1]') [1]
+bounds	index	overrides/src/main/gfx/DrawListEmitBucket_1405a0.c	72	9	43242	'u8 *[1]' (aka 'unsigned char *[1]') [1]
+bounds	index	overrides/src/main/sound/SoundStreamSlotThreadMain_1bc520.c	31	14	32237	's32[2]' (aka 'int[2]') [3]
+float_cast	-	game/src/main/anim/TexAnimeTableApplyMaybe_162f50.c	299	30	58916	ffc00000
+float_cast	-	game/src/main/anim/TexAnimeTableApplyMaybe_162f50.c	302	30	27630	ffc00000
+float_cast	-	game/src/main/gfx/TexAnimeCfgScrollCmd_1622e0.c	26	25	27	7f800000
+float_cast	-	game/src/main/gfx/TexAnimeCfgScrollCmd_1622e0.c	27	25	19	7f800000
+float_cast	-	game/src/main/sound/AudioDecSetInputVolume_1d2b90.c	12	37	2	4f7ffffe
+pointer_overflow	wrap-up	game/src/main/container/VectorU32InsertN_1a4e80.c	40	21	12	07a5145c
+type_mismatch	misaligned	game/src/main/chara/CharaDataMgrInit_1edf40.c	41	17	2	store 's16' (aka 'short') ptr=01b255ca align=4
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	625	30	14175	load 's32' (aka 'int') ptr=06075c14 align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	626	29	10800	member 'Obj' ptr=06075c18 align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	627	65	10800	member 'Obj' ptr=06075c18 align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	628	35	6660	member 'Obj' ptr=06075f8c align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	629	30	6660	member 'Obj' ptr=06075f8c align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	634	34	6660	member 'Obj' ptr=06075f8c align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	635	34	6660	member 'Obj' ptr=06075f8c align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	636	34	6660	member 'Obj' ptr=06075f8c align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	644	34	6660	member 'Obj' ptr=06075f8c align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	645	34	6660	member 'Obj' ptr=06075f8c align=16
+type_mismatch	misaligned	game/src/main/map/MinimapDrawEntry_325720.cpp	646	34	6660	member 'Obj' ptr=06075f8c align=16
+type_mismatch	misaligned	game/src/main/script/VariantCopy_36f5e0.c	43	9	476	store 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantCopy_36f5e0.c	48	13	336	member 'Var' (aka 'struct Var') ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantCopy_36f5e0.c	54	13	140	member 'Var' (aka 'struct Var') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantEqual_36e1e0.c	44	12	98	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99edbc align=8
+type_mismatch	misaligned	game/src/main/script/VariantEqual_36e1e0.c	49	16	98	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99edf4 align=8
+type_mismatch	misaligned	game/src/main/script/VariantEqual_36e1e0.c	54	54	98	load 's32' (aka 'int') ptr=1d99ede4 align=8
+type_mismatch	misaligned	game/src/main/script/VariantEqual_36e1e0.c	54	46	98	load 's32' (aka 'int') ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantEqual_36e1e0.c	59	12	98	store 's32' (aka 'int') ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantEqual_36e1e0.c	60	12	98	member 'struct Var' ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantGetS16_36fcc0.c	35	17	280	load 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGetS16_36fcc0.c	37	20	140	member 'struct Var' ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantGetS16_36fcc0.c	41	20	140	member 'struct Var' ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGetS8_36fe50.c	31	17	420	load 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGetS8_36fe50.c	33	20	420	member 'struct Var' ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreaterEqual_36d7a0.c	44	12	56	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99ed84 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreaterEqual_36d7a0.c	49	16	56	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99edbc align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreaterEqual_36d7a0.c	54	54	56	load 's32' (aka 'int') ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreaterEqual_36d7a0.c	54	46	56	load 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreaterEqual_36d7a0.c	75	12	56	store 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreaterEqual_36d7a0.c	76	12	56	member 'struct Var' ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreater_36dcc0.c	44	12	28	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99ed84 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreater_36dcc0.c	49	16	28	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99edbc align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreater_36dcc0.c	54	46	28	load 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreater_36dcc0.c	54	54	28	load 's32' (aka 'int') ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreater_36dcc0.c	75	12	28	store 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantGreater_36dcc0.c	76	12	28	member 'struct Var' ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLess_36da40.c	44	12	56	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99edbc align=8
+type_mismatch	misaligned	game/src/main/script/VariantLess_36da40.c	49	16	56	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99edf4 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLess_36da40.c	54	46	56	load 's32' (aka 'int') ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantLess_36da40.c	54	54	56	load 's32' (aka 'int') ptr=1d99ede4 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLess_36da40.c	75	12	56	store 's32' (aka 'int') ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantLess_36da40.c	76	12	56	member 'struct Var' ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalAnd_36d230.c	44	12	98	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99ed84 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalAnd_36d230.c	49	16	98	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99edbc align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalAnd_36d230.c	54	54	98	load 's32' (aka 'int') ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalAnd_36d230.c	54	46	98	load 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalAnd_36d230.c	57	12	98	store 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalAnd_36d230.c	58	12	98	member 'struct Var' ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalOr_36cf60.c	44	12	42	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99ed84 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalOr_36cf60.c	49	16	42	load 'void (*)(struct Var *, void *, s32, s32)' (aka 'void (*)(struct Var *, void *, int, int)') ptr=1d99edbc align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalOr_36cf60.c	54	54	42	load 's32' (aka 'int') ptr=1d99edac align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalOr_36cf60.c	54	46	42	load 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalOr_36cf60.c	57	12	42	store 's32' (aka 'int') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantLogicalOr_36cf60.c	58	12	42	member 'struct Var' ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantRecCopy_36ee10.c	21	8	476	store 's32' (aka 'int') ptr=1d99ed84 align=8
+type_mismatch	misaligned	game/src/main/script/VariantRecCopy_36ee10.c	22	8	476	member 'Rec_FUN_0036ee10' (aka 'struct Rec_FUN_0036ee10') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantRecCopy_36ee10.c	23	8	476	member 'Rec_FUN_0036ee10' (aka 'struct Rec_FUN_0036ee10') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantRecCopy_36ee10.c	24	8	476	member 'Rec_FUN_0036ee10' (aka 'struct Rec_FUN_0036ee10') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantRecCopy_36ee10.c	25	8	476	member 'Rec_FUN_0036ee10' (aka 'struct Rec_FUN_0036ee10') ptr=1d99ed74 align=8
+type_mismatch	misaligned	game/src/main/script/VariantRecCopy_36ee10.c	26	8	476	member 'Rec_FUN_0036ee10' (aka 'struct Rec_FUN_0036ee10') ptr=1d99ed74 align=8
+type_mismatch	null	game/src/main/item/InvBroadcastPhase_3c02b0.cpp	97	24	718	load 'void *' ptr=00000000 align=4

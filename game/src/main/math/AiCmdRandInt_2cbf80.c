@@ -1,0 +1,26 @@
+/* rgp:protos */
+#define RGP_SELF_AiCmdRandInt_2cbf80 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+s32 AiCmdRandInt_2cbf80(void *a0, s32 mode)
+{
+    void *q;
+    s32 r1;
+    f32 f;
+
+    if (mode != 2) {
+        return 0;
+    }
+    q = a0;
+    a0 = (u8 *)a0 + 8;
+    r1 = ScriptSlotGetInt_2cc9c0(q);
+    f = (f32)Rand_133710();
+    ScriptSlotStoreIntRef_2cc900(a0, (s32)((f32)r1 * f / 2147483648.0f));
+    return 1;
+}

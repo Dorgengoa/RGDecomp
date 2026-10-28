@@ -1,0 +1,110 @@
+#include "types.h"
+
+extern void CpuIntrDisabled_117070(void);
+extern void DisableIntr_120660(void);
+extern void ReferThreadStatus(void);
+extern void EnableIntr_1206b0(void);
+extern void _StartThread(void);
+
+asm void StartThread_1176e0(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0x70;
+    sd         $18, 0x50($29);
+    sd         $17, 0x40($29);
+    daddu      $18, $5, $0;
+    sd         $31, 0x60($29);
+    daddu      $17, $4, $0;
+    jal        CpuIntrDisabled_117070;
+    sd        $16, 0x30($29);
+    bnez       $2, L00117840;
+    addiu     $2, $0, -0x1;
+    jal        DisableIntr_120660;
+    nop;
+    beqz       $2, L00117750;
+    daddu     $4, $17, $0;
+    jal        ReferThreadStatus;
+    daddu     $5, $29, $0;
+    daddu      $16, $2, $0;
+    bgez       $16, L0011773C;
+    lw        $3, 0x0($29);
+    jal        EnableIntr_1206b0;
+    nop;
+    b          L00117840;
+    daddu     $2, $16, $0;
+  L0011773C:
+    addiu      $2, $0, 0x10;
+    beq        $3, $2, L00117758;
+    lw        $2, 0x8($29);
+    jal        EnableIntr_1206b0;
+    nop;
+  L00117750:
+    b          L00117840;
+    addiu     $2, $0, -0x1;
+  L00117758:
+    lw         $3, 0xC($29);
+    addu       $2, $2, $3;
+    addiu      $2, $2, -0x2A0;
+    sq         $0, 0x0($2);
+    sq         $0, 0x10($2);
+    sq         $0, 0x20($2);
+    sq         $0, 0x30($2);
+    sq         $0, 0x40($2);
+    sq         $0, 0x50($2);
+    sq         $0, 0x60($2);
+    sq         $0, 0x70($2);
+    sq         $0, 0x80($2);
+    sq         $0, 0x90($2);
+    sq         $0, 0xA0($2);
+    sq         $0, 0xB0($2);
+    sq         $0, 0xC0($2);
+    sq         $0, 0xD0($2);
+    sq         $0, 0xE0($2);
+    sq         $0, 0xF0($2);
+    sq         $0, 0x100($2);
+    sq         $0, 0x110($2);
+    sq         $0, 0x120($2);
+    sq         $0, 0x130($2);
+    sq         $0, 0x140($2);
+    sq         $0, 0x150($2);
+    sq         $0, 0x160($2);
+    sq         $0, 0x170($2);
+    sq         $0, 0x180($2);
+    sq         $0, 0x190($2);
+    sq         $0, 0x1A0($2);
+    sq         $0, 0x1B0($2);
+    sq         $0, 0x200($2);
+    sq         $0, 0x210($2);
+    sq         $0, 0x220($2);
+    sq         $0, 0x230($2);
+    sq         $0, 0x240($2);
+    sq         $0, 0x250($2);
+    sq         $0, 0x260($2);
+    sq         $0, 0x270($2);
+    sll        $8, $18, 0;
+    sd         $8, 0x40($2);
+    lw         $8, 0x1C0($2);
+    sd         $8, 0x1C0($2);
+    sd         $0, 0x1C8($2);
+    lw         $8, 0x1D0($2);
+    sd         $8, 0x1D0($2);
+    sd         $0, 0x1D8($2);
+    lw         $8, 0x1E0($2);
+    sd         $8, 0x1E0($2);
+    sd         $0, 0x1E8($2);
+    lw         $8, 0x1F0($2);
+    sd         $8, 0x1F0($2);
+    sd         $0, 0x1F8($2);
+    jal        EnableIntr_1206b0;
+    nop;
+    daddu      $4, $17, $0;
+    jal        _StartThread;
+    daddu     $5, $18, $0;
+  L00117840:
+    ld         $31, 0x60($29);
+    ld         $18, 0x50($29);
+    ld         $17, 0x40($29);
+    ld         $16, 0x30($29);
+    jr         $31;
+    addiu     $29, $29, 0x70;
+}

@@ -1,0 +1,51 @@
+/* rgp:protos */
+#define RGP_SELF_normal_BtlChgMenuCommandCursorMoveCb_500780 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+/* normal 0x00500780 -- re-skins the 0x30/0x33 widgets when the selected index
+ * changes, then positions 0x2B at `index * 0x7D + 0x73`.  The index is held in
+ * a local for the compare and the first call and RE-READ off the object
+ * afterwards -- retail issues a second `lh 0x10($16)`, which is the
+ * recompute-vs-reuse discrimination read off the listing.
+ * `sll 5 / subu / sll 2 / addu` is mwcc strength-reducing `* 0x7D`. */
+
+typedef struct Obj { u8 pad000[0x10]; s16 f010; } Obj;
+
+extern void *D_00484454;          /* gp - 0xD1C */
+extern void *D_0048449C;          /* gp - 0xCD4 */
+extern s16   D_004844DC;          /* gp - 0xC94 */
+extern s16   D_004844E0;          /* gp - 0xC90 */
+extern f32   D_0047D280;          /* gp - 0x7EF0 */
+extern f32   D_0047D278;          /* gp - 0x7EF8 */
+extern u8 normal_D_00527020[];
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+s32 normal_BtlChgMenuCommandCursorMoveCb_500780(Obj *p)
+{
+    s16 n;
+
+    n = p->f010;
+    if (n != normal_BtlChgPageGetMember_505f90(D_00484454)) {
+        normal_BtlChgMenuSetMemberFace_501d40(0x30, n);
+        UiSetWidgetAlpha_2907a0(D_0048449C, 0x30, 0.0f);
+        UiFadeWidgetAlpha_290690(D_0048449C, 0x30, 1.0f, D_0047D280, -1.0f);
+        normal_FieldHudPanelSelectHide_4f4eb0(normal_D_00527020, p->f010);
+        UiSetWidgetAlpha_2907a0(D_0048449C, 0x33, 0.0f);
+        UiFadeWidgetAlpha_290690(D_0048449C, 0x33, 1.0f, D_0047D280, -1.0f);
+        D_004844DC = 0;
+        D_004844E0 = -1;
+    }
+    normal_BtlChgPageSetMember_505fa0(D_00484454, p->f010);
+    UiMoveWidgetUniform_290f50(D_0048449C, 0x2B, normal_BtlChgPageGetMember_505f90(D_00484454) * 0x7D + 0x73, 0xDB, D_0047D278, 0
+
+);
+    return 1;
+}

@@ -1,0 +1,145 @@
+/* rgp:protos */
+#define RGP_SELF_factory_FactoryBeltTileGroupBuildObjs_4ff1e0 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/* factory.bin overlay, 0x004FF1E0 -- allocate the panel's item array and
+ * initialise every element, optionally binding each one to a scene node.
+ * 492 bytes, 124 instructions, 8 conditional branches, 9 calls (br/ins 0.065).
+ *
+ * ★ TWIN of `factory_FactoryPartGroupBuildObjs_4fead0` at ratio 0.944 on the mnemonic sequence --
+ * found by ranking the OPEN population against ITSELF
+ * ([[factory-open-population-similarity.md]]).  The whole difference is the
+ * element STRIDE (0x34 here, 0x40 there), the four extra fields a 0x40 record
+ * has, the setup callee and the two gp float blocks.
+ *
+ * ★ FRAME ORDER IS READ OFF THE LISTING, NOT GUESSED.  mwcc allocates stack
+ * objects DOWNWARD in declaration order, so the object at the HIGHEST offset
+ * is declared FIRST: `col` at 0x80, `name` at 0x70, `pos` at 0x60.  This is the
+ * same rule `factory_FactoryPartsShowNoStockMsgMaybe_4efa60` measured (a 0x34 record at 0xE0 declared
+ * before a 0xAC one at 0x30).
+ *
+ * ★ `cnt * 0x40` is strength-reduced to `sll $2, $16, 6`; the twin's `* 0x34`
+ * comes out as the shift/add chain, which is why the two functions are the
+ * same LENGTH despite the twin's record having four fewer fields to clear.
+ */
+
+typedef struct Node {
+    u8  pad00[0x32];
+    s16 f32;
+} Node;
+
+typedef struct Item {
+    s8    f00;
+    u8    pad01[0x1F];
+    Node *f20;
+    s8    f24;
+    s8    f25;
+    s8    f26;
+    s8    f27;
+    s16   f28;
+    s16   f2A;
+    u8    pad2C[0x4];
+    s16   f30;
+    s16   f32;
+} Item;                                         /* 0x34 */
+
+typedef struct Panel {
+    s32   f00;
+    u8    pad04[0x6];
+    s16   f0A;
+    u8    pad0C[0x4];
+    Item *f10;
+} Panel;
+
+extern f32 D_00480860;                          /* _gp - 0x4910 */
+extern f32 D_00480864;                          /* _gp - 0x490C */
+extern f32 D_00480868;                          /* _gp - 0x4908 */
+extern f32 D_0048086C;                          /* _gp - 0x4904 */
+extern f32 D_00480870;                          /* _gp - 0x4900 */
+extern f32 D_00480874;                          /* _gp - 0x48FC */
+extern f32 D_00480878;                          /* _gp - 0x48F8 */
+extern f32 D_0048087C;                          /* _gp - 0x48F4 */
+extern u8  factory_D_0050CE20[];
+
+/*rgp*/
+/*rgp*/
+extern void  Sprintf_1343b8(Item *it, u8 *name, s32 id, s32 i);
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+void factory_FactoryBeltTileGroupBuildObjs_4ff1e0(Panel *o, s32 a)
+{
+    s32   h;
+    f32   col[4] __attribute__((aligned(16)));
+    s8    name[0x10] __attribute__((aligned(16)));
+    f32   pos[4] __attribute__((aligned(16)));
+    Item *it;
+    s8   *p;
+    u32   n;
+    s32   i;
+    s32   t;
+    s16   cnt;
+
+    factory_FactoryBeltTileGroupClearPool_4ff1d0((void *)o);
+    if (a != 0) {
+        cnt = o->f0A;
+        o->f10 = ConstructNewArray_100710(((s32)MemStackNew_14e1b0(cnt * 0x34 + 0x10, a)), 0, 0, 0x34, cnt);
+    }
+    if (o->f10 != 0) {
+        h = 0;
+        t = MapSlotsFindBlockById_1e49b0(((s32)GetMapMgr_201a90()), 0x2EE0, 0);
+        if (t != 0) {
+            h = MapDataGetModel_1e7810(t);
+        }
+        p = name;
+        n = 0x10;
+        col[0] = D_00480860;
+        col[1] = D_00480864;
+        col[2] = D_00480868;
+        col[3] = D_0048086C;
+        if (p != 0) {
+            do {
+                *p = 0;
+                n--;
+                p++;
+            } while (n != 0);
+        }
+        pos[0] = D_00480870;
+        pos[1] = D_00480874;
+        pos[2] = D_00480878;
+        pos[3] = D_0048087C;
+        it = o->f10;
+        for (i = 0; i < o->f0A; i++, it++) {
+            it->f24 = -1;
+            it->f25 = 0;
+            it->f26 = 0;
+            it->f27 = 0;
+            it->f28 = 0;
+            it->f2A = 0;
+            it->f30 = -1;
+            it->f32 = -1;
+            it->f00 = 0;
+            it->f20 = 0;
+            it->f24 = -1;
+            it->f25 = 0;
+            it->f26 = 0;
+            it->f27 = 0;
+            it->f28 = 0;
+            it->f2A = 0;
+            if (h != 0) {
+                Sprintf_1343b8(it, factory_D_0050CE20, o->f00, i);
+                it->f20 = ((Node *)ObjListInstantiateByName_1890b0(h, o->f00, pos, name, col, a));
+                if (it->f20 != 0) {
+                    ModelObjSetName_195150(it->f20, it);
+                    it->f20->f32 = 0;
+                }
+            }
+        }
+    }
+}

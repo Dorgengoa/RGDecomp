@@ -1,0 +1,31 @@
+/* rgp:protos */
+#define RGP_SELF_EvCmdCastSetClothSimEnabled_244580 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+extern void *gEventContext;
+
+s32 EvCmdCastSetClothSimEnabled_244580(s64 *arg0, s32 arg1)
+{
+    s32 temp_18;
+    s32 temp_17;
+    void *temp_2;
+
+    temp_18 = *(s32 *)((u8 *)gEventContext + 0x0);
+    temp_17 = *(s32 *)((u8 *)gEventContext + 0x4) + 0x60;
+    if (arg1 == 2) {
+        temp_2 = ObjRecGetLiveObject_1c4a90(temp_18, EventCastGetObjId_24c160(temp_17, EventCastFindKeyByName_24bb50(temp_17, ScriptGetCodeAddr_249050((s32)arg0++)), 0));
+        if (temp_2 == NULL) {
+            return 0;
+        }
+        *(s32 *)((u8 *)temp_2 + 0x460) = ScriptGetInt_2490f0((s32)arg0);
+        return 1;
+    }
+    return 0;
+}

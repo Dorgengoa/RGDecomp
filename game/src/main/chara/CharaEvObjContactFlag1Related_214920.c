@@ -1,0 +1,12 @@
+/* rgp:protos */
+#define RGP_SELF_CharaEvObjContactFlag1Related_214920 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+typedef struct P { u8 pad0[0xB5C]; u32 fB5C; s16 fB60; s16 fB62; } P;
+
+s32 CharaEvObjContactFlag1Related_214920(P *p)
+{
+    return p->fB60 >= 0 && p->fB5C != 0 && (p->fB62 & 0x1) != 0;
+}

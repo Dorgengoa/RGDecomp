@@ -1,0 +1,26 @@
+/* rgp:protos */
+#define RGP_SELF_NodeRefListAdd_318d50 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+int NodeRefListAdd_318d50(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5) {
+    u8 sp70[0x50] __attribute__((aligned(16)));
+    f32 t0;
+    f32 t1;
+    f32 t2;
+
+    NodeRefReset_3193d0(sp70);
+    NodeRefSet_319390(sp70, arg1, arg2, arg3, arg4);
+    t2 = *(f32 *)((u8 *)arg5 + 8);
+    t1 = *(f32 *)((u8 *)arg5 + 4);
+    t0 = *(f32 *)((u8 *)arg5 + 0);
+    *(f32 *)(sp70 + 0x28) = t0;
+    *(f32 *)(sp70 + 0x2C) = t1;
+    *(f32 *)(sp70 + 0x30) = t2;
+    return NodeRefListFindOrAdd_318e30(arg0, sp70);
+}

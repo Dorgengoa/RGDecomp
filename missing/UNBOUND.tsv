@@ -1,0 +1,97 @@
+# Symbols rg-game links against a FATAL stub (docs/LINK.md "Unbound symbols").
+# tools/gen_unbound.py turns each row into a function that reports the name and
+# aborts (P1 policy: the first call is a finding, never a silent no-op), or a
+# zero-filled 64-byte data block.  Delete a row once something real defines the
+# symbol (the link then fails on a duplicate).  Classified from the rg-game link
+# of 2026-10-12 (interim snapshot b09ccfa1; names re-mapped to
+# the published decomp 675c07fe, whose data2c spells 7 no-C entries func_<ADDR>).
+# symbol	kind	class	note
+func_0743C8	fn	kernel-ram-code	EE kernel RAM entry called by the SDK kernel patch
+func_076038	fn	kernel-ram-code	EE kernel RAM entry called by the SDK kernel patch
+func_076460	fn	kernel-ram-code	EE kernel RAM entry called by the SDK kernel patch
+D_80074700	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074728	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_8007472C	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074730	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074734	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074738	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_8007473C	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074740	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074744	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074748	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074768	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_8007476C	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074770	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80074778	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_800747B0	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80076700	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80076708	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+D_80076740	data	kernel-ram-data	EE kernel RAM read by the SDK kernel patch (game sdk C)
+DecimalFromLongDoubleMaybe_106830	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+DecimalRoundDigitsMaybe_106b50	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+DecimalRoundDirectionMaybe_106ab0	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+EntryPad_100000	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+FilebufPbackfail_104cb0	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+FilebufSeekoff_104750	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+FilebufUflow_104d80	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+FilebufUnderflow_104eb0	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+Fseek_12fe60	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+IosBaseDtor_102970	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+IstreamVirtualDtorThunk_106800	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+func_0010FDD8	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+func_0010FDE8	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+OstreamVirtualDtorThunk_1067f0	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+Srget_133f30	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+StreambufXsgetn_1039b0	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+StreambufXsputn_103890	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+StringEraseAt_1079e0	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+StringEraseRange_107960	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+StringInsertChar_107a60	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+Ungetc_1364e8	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+WFilebufPbackfail_105830	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+WFilebufSeekoff_105250	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+WFilebufUflow_105900	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+WFilebufUnderflow_105a30	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+WStreambufXsgetn_103d50	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+WStreambufXsputn_103b00	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+WistreamVirtualDtorThunk_106820	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+WostreamVirtualDtorThunk_106810	fn	library-internal	excluded asm library (MSL iostream/string, libmpeg, libc) internal
+FileIoPathCmdRpc_11ca10	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+FilebufOverflow_1048d0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+FioSemaCreate_11b2a8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+InitTLB_1200b8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+IpuSkipBits_10de00	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+func_0011FED8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+func_00120748	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+KCopyBody_120990	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+KCopyBody_120b00	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+KCopyBody_120db0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+KernelExit_120d18	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcChromaAvgHalfHV_10eea0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcChromaAvgHalfH_10ecb0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcChromaAvgHalfV_10eaf0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcChromaAvg_10e960	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcChromaCopy_10e340	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcChromaHalfHV_10e7c0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcChromaHalfH_10e610	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcChromaHalfV_10e490	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcLumaAvgHalfHV_10ed80	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcLumaAvgHalfH_10ebd8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcLumaAvgHalfV_10ea10	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcLumaAvg_10e8c0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcLumaCopy_10e2c8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcLumaHalfHV_10e6c8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcLumaHalfH_10e560	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegMcLumaHalfV_10e3d8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegParseCopyrightExt_110248	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegParsePicDisplayExt_1102e0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegParsePictureCodingExt_10fbf0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegParseQuantMatrixExt_10fae8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegParseSeqDisplayExt_1101b8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegParseSequenceExt_10f9a8	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+MpegReportError_115a90	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+WFilebufOverflow_1053e0	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+_sceRpcGetFPacket	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+_sceSifLoadElfPart	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+kFindAddress_120780	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level
+scePrintf_119288	fn	sdk-internal	excluded asm SDK internal; its callers are SDK C the port replaces at a higher level

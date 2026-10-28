@@ -1,0 +1,30 @@
+file	what	detail
+include/camera_cpp.h	vcall-lane-reorder	Camera::slot20: (f32, const Vec4 *, const Vec4 *) called as (const Vec4 *, const Vec4 *, f32)
+src/main/anim/DynCollisionCmd_1674e0.cpp	ctor-in-polymorphic-class	A
+src/main/anim/DynCollisionCmd_1674e0.cpp	ctor-in-polymorphic-class	B
+src/main/battle/CharaResolveActionHitMaybe_3b28d0.cpp	vcall-lane-reorder	VObj::v2BC: (f32, s32) called as (s32, f32)
+src/main/battle/SkillTriggerEvalMaybe_3e1200.cpp	virtual-macros-expanded	VF,VF10,VF100
+src/main/camera/CameraObjCtor_177430.cpp	ctor-in-polymorphic-class	B177430
+src/main/camera/CameraObjCtor_177430.cpp	ctor-in-polymorphic-class	O177430
+src/main/chara/CharaLearnAbility_3ad460.cpp	virtual-macros-expanded	V1,V4
+src/main/chara/CharaMonCopyResRequest_1f2430.cpp	virtual-macros-expanded	V1,V16,V4
+src/main/chara/CharaPcResNamesQueue_1f17d0.cpp	virtual-macros-expanded	V1,V16,V4
+src/main/chara/CharaPcResRequest_1f1f40.cpp	virtual-macros-expanded	V1,V16,V4
+src/main/chara/CharaPreUpdate_20f3a0.cpp	virtual-macros-expanded	V1,V16,V4
+src/main/chara/CharaRevive_3b1950.cpp	vcall-lane-reorder	VE3B1890::unkC0: (f32, int) called as (int, f32)
+src/main/chara/PartySwapMembers_3c0ad0.cpp	virtual-macros-expanded	V1,V16,V4
+src/main/effect/EffObjStepChannels_1a9b50.cpp	vcall-lane-reorder	VE::v5: (f32, s32) called as (s32, f32)
+src/main/effect/EffectEntryBuildChr_2dc0f0.cpp	fn-made-extern-c	EffectEntryBuildChr_2dc0f0
+src/main/event/EventCastObjStartStopMaybe_24a2b0.cpp	vcall-lane-reorder	Obj::start: (f32, s32) called as (s32, f32)
+src/main/file/SaveHeaderBuild_3e5520.cpp	virtual-macros-expanded	VS
+src/main/map/MapEntryShow_1e0c70.cpp	vcall-lane-reorder	C_001e0c70::v4: (f32, int, int, int) called as (int, int, int, f32)
+src/main/map/TaskStepMap_200d70.cpp	virtual-macros-expanded	V4
+src/main/menu/MenuItemModelDraw_2a7090.cpp	vcall-lane-reorder	C432::v15: (f32, int, int, int) called as (int, int, int, f32)
+src/main/menu/MenuModelPageOpenState_358840.cpp	virtual-macros-expanded	V1,V16,V4
+src/main/obj/SceneObjApplyWind_1c47e0.cpp	vcall-lane-reorder	Rec1C47E0::v11: (f32, void *) called as (void *, f32)
+src/main/script/ScriptFnPartyReviveAll_3d7930.cpp	vcall-lane-reorder	VE7930::act: (f32, s32) called as (s32, f32)
+src/main/sys/SysMsgPostMaybe_1c3560.cpp	fn-made-extern-c	SysMsgPostMaybe_1c3560
+src/overlays/factory/model/factory_ModelCtor_504520.cpp	fn-made-extern-c	factory_ModelCtor_504520
+src/overlays/factory/model/factory_ModelObjBaseCtor_504590.cpp	fn-made-extern-c	factory_ModelObjBaseCtor_504590
+src/overlays/insect/insect/insect_InsectBattleEffectNodeStep_51e0b0.cpp	vcall-lane-reorder	VE::s15: (f32, int, int, int) called as (int, int, int, f32)
+src/overlays/normal/menu/normal_ShopMenuSellQtyPanelLayout_50ecc0.cpp	fn-made-extern-c	normal_ShopMenuSellQtyPanelLayout_50ecc0

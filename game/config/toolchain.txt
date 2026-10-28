@@ -1,0 +1,37 @@
+# Units that are NOT built with plain `mwcc CC_FLAGS` -- read by scripts/hostbuild.py.
+#   <symbol>      <toolchain>  <flags>
+# gcc29 = Sony ee-gcc 2.9-ee-991111-01 (cc1 -G0 -ffunction-sections + Sony as -G0).
+# The two non-mwcc islands (see tools/ee-gcc/island165 in the parent workspace):
+SdRemoteInitMasterVolume_165608    gcc29   -O2     # one TU 0x165608-0x1660D4: 17 functions (16 hosted guests)
+KernelInitSystemConfigMaybe_446b20    gcc29   -O2     # Sony libkernl kernel-resident code (linked at 0x8007xxxx)
+KernelGetOsdConfigParam2_446be0   gcc29   -O2
+KernelExecPS2Maybe_446dd0    gcc29   -O2
+KernelInsertAlarm_447158    gcc29   -O2
+KernelReleaseAlarm_4473a0    gcc29   -O2
+# mwcc with extra CLI flags (no pragma equivalent exists):
+ParticleEmitterSpawnMaybe_1a8ad0    mwcc    -sdatathreshold 16   # local initializer object @N in .sdata = D_0047E1B0
+TextEntryBackspace_434db0    mwcc    -sdatathreshold 16   # local initializer object @N in .sdata = D_00480350
+MapWarpModeUpdate_284060    mwcc    -sdatathreshold 16   # two {0,0,0,1} local initializers in .sdata = D_0047E9E0, D_0047E9F0 (wlx)
+KernelSetAlarm_447260    gcc29   -O2
+CharaUpdateMovement_20a7d0    mwcc    -sdatathreshold 16   # s60m/s78m solo MATCH; built with -sdatathreshold 16 (s79m merge)
+ScreenMarkerDrawAll_31af50    mwcc    -sdatathreshold 16   # s69m MATCH: Vec4 col = *(Vec4 *)D_0047F2B0 (f32[4] in .sdata) struct copy
+ModelDrawOffscreenCompositeMaybe_16aac0    mwcc    -sdatathreshold 16   # s82m MATCH: rgba = *(S4 *)D_0047DF80 struct copy (s32[4] in .sdata)
+FocusFilterDrawMaybe_17c000    mwcc    -sdatathreshold 16   # c17k MATCH: col/dx/dy local initializers in .sdata = D_0047DFA0, B0, C0
+CharaMoveCollideMaybe_234dc0    mwcc    -sdatathreshold 16   # s85m MATCH: N4 q = *(N4 *)D_0047E720 (f32[4] in .sdata) struct copy x2
+CharaActDispatch_20d190    mwcc    -sdatathreshold 16   # s86m MATCH; s32 arr[4] initializer in .sdata
+FuncDataTableDrawFireFlaresMaybe_18eb30    mwcc    -sdatathreshold 16   # s88m MATCH: 13 Vec4 = *(Vec4 *)D_0047E0xx (f32[4] in .sdata) struct copies
+GfxFlipBuffersMaybe_143650    mwcc    -sdatathreshold 16   # s88m MATCH: u64 giftag[2] initializer in .sdata
+SunLightDraw_293410    mwcc    -sdatathreshold 16   # s88m MATCH: 3 local initializers (up/col/kk) in .sdata
+HatenaMarkStep_345540    mwcc    -sdatathreshold 16   # s88m MATCH: 4 Vec4 local initializers in .sdata
+MinimapDrawEntry_325720    mwcc    -sdatathreshold 16   # s79m MATCH: 14 local initializers (@N) in .sdata = D_0047F360..D_0047F420
+InsectBattleMenuFrameNineSliceMaybe_393ac0    mwcc    -sdatathreshold 16   # s88m MATCH: 5 f32[3] local initializers (X/Y/U/V/S) in .sdata = D_0047FD10..D_0047FD50
+CharaCmdGunShoot_228f80    mwcc    -sdatathreshold 16   # s88m MATCH: f32[4] D_0047E6E0 struct-copied into local F4 col (.sdata)
+ItemUseApplyToCharaMaybe_2eeb20    mwcc    -sdatathreshold 16   # s88m MATCH: 2 f32[4] D_0047F000/D_0047F010 struct-copied into block-local V4 col/col2 (.sdata)
+EffectTimedSlotDrawMaybe_2d4950    mwcc    -sdatathreshold 16   # s88m MATCH: f32[4] D_0047EE70 struct-copied into block-local Vec4 v60 (.sdata)
+UiScrollBarSpritesLayoutMaybe_392e60    mwcc    -sdatathreshold 16   # s88m MATCH: 4 static f32[3] + 2 f32[3] local initializers in .sdata = D_0047FDC0..D_0047FE10
+ScriptCmdEffectNearestEnemyId_32cda0    mwcc    -sdatathreshold 16   # s88m MATCH: f32 pos[4] + s32 id[2] + f32 dist[2] block-local initializers in .sdata = D_0047F5C0/D0/D8
+LoadingScreenFrame_3435d0    mwcc    include/mwcc_prime_dp.c   # s88m x36 MATCH (pure C): primer TU compiled first in the same mwcc process (IDE cross-TU state: fptodp uses a0/a1); writes a throwaway mwcc_prime_dp.o
+GuardEffectStepMaybe_2d5260    mwcc    include/mwcc_prime_dp.c   # s88m 2d5y MATCH (pure C): post-inc arg + implicit f64 conv; primer TU first makes fptodp use a0/a1 -> x interferes with a1 -> move a1,v1
+CharaSysOnBattleEnd_3a11f0    mwcc    include/mwcc_prime_dp.c   # s88m 3a1z MATCH (pure C): DoubleToU64_13ab28 = implicit __fixunsdfdi (f64 unk8 -> u64 unk188); primer makes it use a0/a1 -> a1 live from jal 3a1550 -> M5/S2 skip a1
+BoxToCenterExtentsVu0Maybe_14ff40    mwcc    -sdatathreshold 16   # s88m acc7 de-asm: lqc2 vf3 from D_0047DEE0 (f32[4] in .sdata, gp-rel)
+MatMulPointXyz_1cb780    mwcc    -sdatathreshold 16   # s88m acc6 de-asm: f32 v[4] = {x,y,z,1} initializer in .sdata = D_0047E2B0

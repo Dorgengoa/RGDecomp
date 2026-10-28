@@ -1,0 +1,31 @@
+/* rgp:protos */
+#define RGP_SELF_IosBaseInitDtor_102ee0 1
+#define RGP_SELF_StaticInitUnit_46e240 1
+#define RGP_SELF_WIosBaseInitDtor_103420 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+/* Decoded by the pass-11 symbolic executor (build/w1_gen11.py):
+   stores in listing order, return value read off $v0 at the jr,
+   field types by ACCESS WIDTH.  The BUILD arbitrates -- this unit
+   is here because its bytes are retail's bytes. */
+
+extern s32 D_004837F8;
+extern s32 D_00483804;
+extern s32 D_00483808;
+extern s32 D_00483814;
+extern u8 IosBaseInitDtor_102ee0[];
+extern u8 WIosBaseInitDtor_103420[];
+
+void StaticInitUnit_46e240(void)
+{
+    IosBaseInitCtor_102bd0(&D_00483804);
+    RegisterGlobalObject_100dc0(&D_00483804, IosBaseInitDtor_102ee0, &D_004837F8);
+    WIosBaseInitCtor_103110(&D_00483814);
+    RegisterGlobalObject_100dc0(&D_00483814, WIosBaseInitDtor_103420, &D_00483808);
+}

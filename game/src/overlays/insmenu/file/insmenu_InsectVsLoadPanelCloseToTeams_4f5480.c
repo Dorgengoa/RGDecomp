@@ -1,0 +1,49 @@
+/* rgp:protos */
+#define RGP_SELF_insmenu_InsectVsLoadPanelCloseToTeams_4f5480 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/* insmenu 0x004F5480 -- `beqz $5` branches AWAY, so the block is the
+ * FALL-THROUGH and the condition is `!= 0`; $4 is never read.
+ *
+ * ★ The tail guard is `c.le.s $f0, $f1` (f1 = 0.0f) with `bc1fl` branching AWAY
+ * to the epilogue, so the branch is taken when the condition is FALSE, i.e.
+ * when the value is > 0 -- which means the BODY runs on `<= 0.0f`.  ⚠ Not the
+ * recorded `c.le.s + bc1f = > 0.0f` shape: that one is the VALUE-producing
+ * form where the flag is materialised as 0/1.  As a guard the polarity is the
+ * other way round, and the branch KIND is what distinguishes them.
+ *
+ * ★ `D_00484354 = 0;` written BEFORE the call fills that call's delay slot.
+ * The ids do not fit a signed 16-bit immediate, hence `ori`.
+ */
+extern u8 insmenu_D_004FA180[];
+extern u8  D_00484354;      /* gp - 0xE1C */
+extern s16 D_004842E8;      /* gp - 0xE88 */
+extern f32 D_0047D3C8;
+extern f32 D_0047D460;
+extern f32 D_0047D488;
+extern f32 D_0047D49C;
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+
+s32 insmenu_InsectVsLoadPanelCloseToTeams_4f5480(s32 unused, s32 a)
+{
+    if (a != 0) {
+        UiFadeWidgetAlpha_290690(insmenu_D_004FA180, 0x88BA, 0.0f, D_0047D3C8, -1.0f);
+        UiMoveWidgetUniform_290f50(insmenu_D_004FA180, 0x88BA, 0xC8, 0, D_0047D460, 0);
+        UiFadeWidgetAlpha_290690(insmenu_D_004FA180, 0x88BC, 0.0f, D_0047D3C8, -1.0f);
+        UiMoveWidgetUniform_290f50(insmenu_D_004FA180, 0x88C1, -0x12, 0xC, D_0047D488, 0);
+        UiMoveWidgetUniform_290f50(insmenu_D_004FA180, 0x88C0, -0xF, 0xF, D_0047D488, 0);
+        UiFadeWidgetAlpha_290690(insmenu_D_004FA180, 0x88C1, 0.0f, D_0047D49C, -1.0f);
+        UiFadeWidgetAlpha_290690(insmenu_D_004FA180, 0x88C0, 0.0f, D_0047D49C, -1.0f);
+    }
+    if (UiGetWidgetAlpha_290770(insmenu_D_004FA180, 0x88BA) <= 0.0f) {
+        D_00484354 = 0;
+        StateMachineSetState_28ede0(&D_004842E8, 0x88C1, 0);
+    }
+    return 1;
+}

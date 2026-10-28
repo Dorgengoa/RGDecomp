@@ -1,0 +1,1587 @@
+kind	a	b	c	d
+main-alias	D_00527020	0x00527020	normal	src/main/ai/AiCmdFieldHudAllySuggest_2cab80.c,src/main/battle/AttackChainReset_3828b0.c,src/main/battle/AttackChainStartMaybe_382910.c,src/main/battle/AttackChainStep_382270.cpp,src/main/battle/BattleMenuDraw_203e70.c,src/main/battle/BattleMenuStep_203ea0.c,src/main/chara/CharaGetControlStateMaybe_2f5320.c,src/main/event/TargetSlotHide_320960.c,src/main/event/TargetSlotShow_3209a0.c,src/main/menu/FieldHudSetup_2041d0.c,src/main/menu/MenuMainClose_296de0.c,src/main/menu/TaskStepMenuBtlEsc_203d10.c,src/main/sys/FieldHudAllySuggestCancel_203c80.c,src/main/sys/FieldHudAllySuggestHide_203ca0.c,src/main/sys/FieldHudAllySuggestShow_203c90.c,src/main/sys/FieldHudGetSuggestMember_203c20.c,src/main/sys/FieldHudLogClose_203fa0.c,src/main/sys/FieldHudLogOpen_203fb0.c,src/main/sys/FieldHudRelease_203dc0.c,src/main/sys/FieldHudReshowMaybe_202d70.c,src/main/sys/FieldHudWidget7FClose_203f80.c,src/main/sys/FieldHudWidget81Open_204050.c,src/main/sys/FieldHudWidget83Close_203ff0.c,src/main/ui/AttackChainMarkersShow_382c40.cpp,src/main/ui/FieldHudAllySuggestRefreshMaybe_203c70.c,src/main/ui/FieldHudBtlEscGetResult_203cb0.c,src/main/ui/FieldHudBtlEscOpen_203d20.c,src/main/ui/FieldHudEnemyListRefreshMaybe_2040d0.c,src/main/ui/FieldHudFadeIn_203ee0.c,src/main/ui/FieldHudFadeOut_204080.c,src/main/ui/FieldHudHideAll_203e20.c,src/main/ui/FieldHudInitOnce_204120.c,src/main/ui/FieldHudMissionBannerHideMaybe_204100.c,src/main/ui/FieldHudMissionBannerShowMaybe_204110.c,src/main/ui/FieldHudPartyPanelShakeStart_204060.c,src/main/ui/FieldHudRowsSettled_203d30.c,src/main/ui/FieldHudWidget7FOpen_203f90.c,src/main/ui/FieldHudWidget80CarryOpenMaybe_203f70.c,src/main/ui/FieldHudWidget80LiftCloseMaybe_203f50.c,src/main/ui/FieldHudWidget80LiftOpenMaybe_203f60.c,src/main/ui/FieldHudWidget81Close_204040.c,src/main/ui/FieldHudWidget82Close_204020.c,src/main/ui/FieldHudWidget82Open_204030.c,src/main/ui/FieldHudWidget83IsOpen_204000.c,src/main/ui/FieldHudWidget83Open_204010.c,src/main/ui/FieldHudWidget86Close_203fc0.c,src/main/ui/FieldHudWidget86IsOpen_203fd0.c,src/main/ui/FieldHudWidget86Open_203fe0.c
+main-alias	D_005273B8	0x005273B8	normal	src/main/sys/FieldHudGetSuggestMemberPtr_203c60.c,src/main/sys/FieldHudGetSuggestMember_203c20.c
+main-alias	D_00528200	0x00528200	arena-end	src/main/sys/SysCalcFreeHeapMaybe_15e1d0.c
+main-alias	data2c_overlay_load_base	0x004E9E80	arena-base	0x0047D134
+data-slot	factory_FactoryRelated_4ec7e0	0x004EC7E0	factory	static: overlay defines the name
+data-slot	factory_ModelObjBaseInitThunk_504dd0	0x00504DD0	factory	static: overlay defines the name
+data-slot	factory_ModelObjGetFadeAlpha_504de0	0x00504DE0	factory	static: overlay defines the name
+data-slot	factory_MotionEventEffectDestroyThunk_504e20	0x00504E20	factory	static: overlay defines the name
+data-slot	factory_MotionEventEffectFireThunk_504df0	0x00504DF0	factory	static: overlay defines the name
+data-slot	factory_MotionEventEffectStartThunk_504e00	0x00504E00	factory	static: overlay defines the name
+data-slot	factory_MotionEventEffectStopThunk_504e10	0x00504E10	factory	static: overlay defines the name
+data-slot	factory_MotionEventFootSeFireThunk_504e70	0x00504E70	factory	static: overlay defines the name
+data-slot	factory_MotionEventHandlerBeginNop_504e80	0x00504E80	factory	static: overlay defines the name
+data-slot	factory_MotionEventHandlerEndNop_504e90	0x00504E90	factory	static: overlay defines the name
+data-slot	factory_MotionEventHandlerFireNop_504ed0	0x00504ED0	factory	static: overlay defines the name
+data-slot	factory_MotionEventHandlerReleaseNop_504e60	0x00504E60	factory	static: overlay defines the name
+data-slot	factory_MotionEventSeBeginThunk_504eb0	0x00504EB0	factory	static: overlay defines the name
+data-slot	factory_MotionEventSeEndThunk_504ec0	0x00504EC0	factory	static: overlay defines the name
+data-slot	factory_MotionEventSeFireThunk_504ea0	0x00504EA0	factory	static: overlay defines the name
+data-slot	factory_MotionEventTexAnimeBeginThunk_504e40	0x00504E40	factory	static: overlay defines the name
+data-slot	factory_MotionEventTexAnimeEndThunk_504e50	0x00504E50	factory	static: overlay defines the name
+data-slot	factory_MotionEventTexAnimeFireThunk_504e30	0x00504E30	factory	static: overlay defines the name
+data-slot	func_004EC7B0	0x004EC7B0	factory	static: overlay defines the name
+data-slot	func_004EC7C0	0x004EC7C0	factory	static: overlay defines the name
+data-slot	func_004EC7D0	0x004EC7D0	factory	static: overlay defines the name
+data-slot	insect_InsectSeqCmdAbiImpactInit_4ec1e0	0x004EC1E0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdAroundDmgInit_4ebea0	0x004EBEA0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdBackdropInit_4ec140	0x004EC140	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdBtlEndInit_4ec210	0x004EC210	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdBtlInInit_4ec420	0x004EC420	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdCamResetInit_4ebf60	0x004EBF60	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdCheckStateMotInit_4ebee0	0x004EBEE0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdDarkImpactInit_4ebfa0	0x004EBFA0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdDigInit_4ec000	0x004EC000	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdEffectOnInit_4ec0a0	0x004EC0A0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdHeraculesCrashInit_4ebe70	0x004EBE70	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdImpactInit_4ec2b0	0x004EC2B0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdInit_4ec490	0x004EC490	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdJumpInit_4ec030	0x004EC030	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdMot2Init_4ec330	0x004EC330	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdMotInit_4ec3d0	0x004EC3D0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdMoveInit_4ec450	0x004EC450	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdReclimedInit_4ebfd0	0x004EBFD0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdReportStateInit_4ebf20	0x004EBF20	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdResetMotInit_4ec280	0x004EC280	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdRotateInit_4ec060	0x004EC060	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdSetAtkElemInit_4ec1b0	0x004EC1B0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdSnailBomberInit_4ebe40	0x004EBE40	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdSnailThrowInit_4ebe10	0x004EBE10	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdSpiderWebInit_4ebdc0	0x004EBDC0	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdSyakuDrillInit_4ec110	0x004EC110	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdWaitMotInit_4ec240	0x004EC240	insect	static: overlay defines the name
+data-slot	insect_InsectSeqCmdWaitMoveInit_4ec170	0x004EC170	insect	static: overlay defines the name
+data-slot	insect_ModelObjBaseInitThunk_5108e0	0x005108E0	insect	static: overlay defines the name
+data-slot	insect_ModelObjGetFadeAlpha_5108f0	0x005108F0	insect	static: overlay defines the name
+data-slot	insect_MotionEventEffectDestroyThunk_510930	0x00510930	insect	static: overlay defines the name
+data-slot	insect_MotionEventEffectFireThunk_510900	0x00510900	insect	static: overlay defines the name
+data-slot	insect_MotionEventEffectStartThunk_510910	0x00510910	insect	static: overlay defines the name
+data-slot	insect_MotionEventEffectStopThunk_510920	0x00510920	insect	static: overlay defines the name
+data-slot	insect_MotionEventFootSeFireThunk_510980	0x00510980	insect	static: overlay defines the name
+data-slot	insect_MotionEventHandlerBeginNop_510990	0x00510990	insect	static: overlay defines the name
+data-slot	insect_MotionEventHandlerEndNop_5109a0	0x005109A0	insect	static: overlay defines the name
+data-slot	insect_MotionEventHandlerFireNop_5109e0	0x005109E0	insect	static: overlay defines the name
+data-slot	insect_MotionEventHandlerReleaseNop_510970	0x00510970	insect	static: overlay defines the name
+data-slot	insect_MotionEventSeBeginThunk_5109c0	0x005109C0	insect	static: overlay defines the name
+data-slot	insect_MotionEventSeEndThunk_5109d0	0x005109D0	insect	static: overlay defines the name
+data-slot	insect_MotionEventSeFireThunk_5109b0	0x005109B0	insect	static: overlay defines the name
+data-slot	insect_MotionEventTexAnimeBeginThunk_510950	0x00510950	insect	static: overlay defines the name
+data-slot	insect_MotionEventTexAnimeEndThunk_510960	0x00510960	insect	static: overlay defines the name
+data-slot	insect_MotionEventTexAnimeFireThunk_510940	0x00510940	insect	static: overlay defines the name
+data-slot	title_TitleFrameStep_4f0b20	0x004F0B20	title	static: overlay defines the name
+data-slot	title_TitleSessionInit_4f0cb0	0x004F0CB0	title	static: overlay defines the name
+data-slot	title_TitleSessionShutdown_4f0820	0x004F0820	title	static: overlay defines the name
+import-proto	FUN_004efc40	0x004EFC40	agree	factory: void(void *, int, int)
+import	FUN_004efc40	0x004EFC40	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_004E9F00	0x004E9F00	DISAGREE	factory: unsigned char(void); insect: void(void *); insmenu: int(void); normal: void(void *); title: int(void *, void *)
+import	func_004E9F00	0x004E9F00	call	domain=- bound=title,insmenu,normal,factory,insect cands=title,insmenu,normal,factory,insect refs=1
+import-proto	func_004EA000	0x004EA000	DISAGREE	insmenu: void(void); title: int(void *, int)
+import	func_004EA000	0x004EA000	call	domain=- bound=title,insmenu cands=title,insmenu refs=1
+import-proto	func_004EAA80	0x004EAA80	DISAGREE	insect: int(void *, int); insmenu: int(void); title: int(void)
+import	func_004EAA80	0x004EAA80	call	domain=- bound=title,insmenu,insect cands=title,insmenu,insect refs=1
+import-proto	func_004EB220	0x004EB220	DISAGREE	factory: void(void); insmenu: int(void)
+import	func_004EB220	0x004EB220	call	domain=- bound=insmenu,factory cands=insmenu,factory refs=1
+import-proto	func_004EB4B0	0x004EB4B0	DISAGREE	factory: int(void); normal: void(void *)
+import	func_004EB4B0	0x004EB4B0	call	domain=- bound=normal,factory cands=normal,factory refs=1
+import-proto	func_004EBCE0	0x004EBCE0	DISAGREE	factory: int(void); insmenu: void(void)
+import	func_004EBCE0	0x004EBCE0	call	domain=- bound=insmenu,factory cands=insmenu,factory refs=1
+import-proto	func_004EBD10	0x004EBD10	DISAGREE	factory: int(int, int); insect: int(void)
+import	func_004EBD10	0x004EBD10	call	domain=- bound=factory,insect cands=factory,insect refs=1
+import-proto	func_004EC030	0x004EC030	DISAGREE	insect: void(void *); title: int(void)
+import	func_004EC030	0x004EC030	call	domain=- bound=title,insect cands=title,insect refs=1
+import-proto	func_004ED140	0x004ED140	DISAGREE	factory: int(int, int); insect: void(void *, short, short)
+import	func_004ED140	0x004ED140	call	domain=- bound=factory,insect cands=factory,insect refs=1
+import-proto	func_004ED320	0x004ED320	DISAGREE	factory: int(int, int); title: int(void *)
+import	func_004ED320	0x004ED320	call	domain=- bound=title,factory cands=title,factory refs=1
+import-proto	func_004ED990	0x004ED990	DISAGREE	insmenu: int(void); title: int(void *, int, int, int, int)
+import	func_004ED990	0x004ED990	call	domain=- bound=title,insmenu cands=title,insmenu refs=1
+import-proto	func_004ED9E0	0x004ED9E0	DISAGREE	insmenu: int(void *, int); title: int(void *, int, int, int, int)
+import	func_004ED9E0	0x004ED9E0	call	domain=- bound=title,insmenu cands=title,insmenu refs=1
+import-proto	func_004EE070	0x004EE070	DISAGREE	factory: int(int, int); title: int(void)
+import	func_004EE070	0x004EE070	call	domain=- bound=title,factory cands=title,factory refs=1
+import-proto	func_004EE190	0x004EE190	DISAGREE	insect: int(void *, int, void *, void *); insmenu: int(void); title: int(void *)
+import	func_004EE190	0x004EE190	call	domain=- bound=title,insmenu,insect cands=title,insmenu,insect refs=1
+import-proto	func_004EE610	0x004EE610	DISAGREE	insmenu: int(void *, void *, unsigned short); title: int(void)
+import	func_004EE610	0x004EE610	call	domain=- bound=title,insmenu cands=title,insmenu refs=1
+import-proto	func_004EE640	0x004EE640	DISAGREE	factory: int(void); title: int(void *, void *)
+import	func_004EE640	0x004EE640	call	domain=- bound=title,factory cands=title,factory refs=1
+import-proto	func_004EE650	0x004EE650	DISAGREE	factory: int(void); insect: float(void *, int, int)
+import	func_004EE650	0x004EE650	call	domain=- bound=factory,insect cands=factory,insect refs=1
+import-proto	func_004EEA40	0x004EEA40	DISAGREE	factory: int(void); title: int(int, int)
+import	func_004EEA40	0x004EEA40	call	domain=- bound=title,factory cands=title,factory refs=1
+import-proto	func_004EEB90	0x004EEB90	DISAGREE	factory: void(void); title: int(int, int)
+import	func_004EEB90	0x004EEB90	call	domain=- bound=title,factory cands=title,factory refs=1
+import-proto	func_004EF090	0x004EF090	DISAGREE	factory: int(int, int); insmenu: void(void)
+import	func_004EF090	0x004EF090	call	domain=- bound=insmenu,factory cands=insmenu,factory refs=1
+import-proto	func_004EF2B0	0x004EF2B0	DISAGREE	factory: int(int, int); title: void(void)
+import	func_004EF2B0	0x004EF2B0	call	domain=- bound=title,factory cands=title,factory refs=1
+import-proto	func_004EF3C0	0x004EF3C0	DISAGREE	factory: int(int, int); title: void *(void *)
+import	func_004EF3C0	0x004EF3C0	call	domain=- bound=title,factory cands=title,factory refs=1
+import-proto	func_004EF5E0	0x004EF5E0	DISAGREE	factory: int(void *, int); insect: int(void *, void *, void *, void *, int, int)
+import	func_004EF5E0	0x004EF5E0	call	domain=- bound=factory,insect cands=factory,insect refs=1
+import-proto	func_004EFC10	0x004EFC10	DISAGREE	insect: int(void *); title: int(int, int)
+import	func_004EFC10	0x004EFC10	call	domain=- bound=title,insect cands=title,insect refs=1
+import-proto	func_004F4260	0x004F4260	DISAGREE	insect: int(void *, int, int, int, int, int, int, int); insmenu: int(void)
+import	func_004F4260	0x004F4260	call	domain=- bound=insmenu,insect cands=insmenu,insect refs=1
+import-proto	func_004FD2D0	0x004FD2D0	DISAGREE	factory: void(void *, int, int); normal: int(void *, int)
+import	func_004FD2D0	0x004FD2D0	call	domain=- bound=normal,factory cands=normal,factory refs=1
+import-proto	func_00502970	0x00502970	DISAGREE	factory: int(int, int, int, void *, int, int); normal: int(void *, int)
+import	func_00502970	0x00502970	call	domain=- bound=normal,factory cands=normal,factory refs=1
+import-proto	func_00507490	0x00507490	DISAGREE	insect: void(void *); normal: int(void *, int)
+import	func_00507490	0x00507490	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_0050D540	0x0050D540	DISAGREE	insect: int(void *, int); normal: int(int, int)
+import	func_0050D540	0x0050D540	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_0050F960	0x0050F960	DISAGREE	insect: void(void *); normal: int(void *, int)
+import	func_0050F960	0x0050F960	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_0050FFB0	0x0050FFB0	DISAGREE	insect: int(void *, void *, int); normal: int(void *, int)
+import	func_0050FFB0	0x0050FFB0	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_00522310	0x00522310	DISAGREE	insect: signed char(void *, void *, void *, void *, void *, void *); normal: int(void *, int)
+import	func_00522310	0x00522310	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_00523330	0x00523330	DISAGREE	insect: void *(void *); normal: int(void *, int)
+import	func_00523330	0x00523330	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_005236F0	0x005236F0	agree	insect: int(void *); normal: int(void *)
+import	func_005236F0	0x005236F0	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_005237E0	0x005237E0	DISAGREE	insect: int(void *); normal: int(void *, int)
+import	func_005237E0	0x005237E0	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_4EB6C0	0x004EB6C0	agree	normal: void(void *)
+import	func_4EB6C0	0x004EB6C0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4EC0E0	0x004EC0E0	DISAGREE	factory: int(void); insect: void(void *)
+import	func_4EC0E0	0x004EC0E0	call	domain=- bound=factory,insect cands=factory,insect refs=2
+import-proto	func_4EC3E0	0x004EC3E0	agree	factory: unsigned char(void)
+import	func_4EC3E0	0x004EC3E0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_4EC3F0	0x004EC3F0	agree	factory: void(void)
+import	func_4EC3F0	0x004EC3F0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_4EC430	0x004EC430	agree	factory: void(void)
+import	func_4EC430	0x004EC430	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_4EC470	0x004EC470	agree	factory: void(void)
+import	func_4EC470	0x004EC470	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_4EC4E0	0x004EC4E0	agree	factory: void(void)
+import	func_4EC4E0	0x004EC4E0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_4EC5E0	0x004EC5E0	agree	factory: void(void)
+import	func_4EC5E0	0x004EC5E0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_4EC910	0x004EC910	DISAGREE	normal: void(void *); title: int(void)
+import	func_4EC910	0x004EC910	call	domain=- bound=title,normal cands=title,normal refs=1
+import-proto	func_4EC980	0x004EC980	DISAGREE	insmenu: int(void *, int); normal: void(void *)
+import	func_4EC980	0x004EC980	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=1
+import-proto	func_4EC990	0x004EC990	DISAGREE	insmenu: int(void *, int); normal: void(void *)
+import	func_4EC990	0x004EC990	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=1
+import-proto	func_4EE5C0	0x004EE5C0	agree	normal: void(void *, void *)
+import	func_4EE5C0	0x004EE5C0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4EE600	0x004EE600	agree	normal: void(void *, void *)
+import	func_4EE600	0x004EE600	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4EEC90	0x004EEC90	agree	normal: int(void *)
+import	func_4EEC90	0x004EEC90	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4EFB10	0x004EFB10	agree	normal: void(void *, int)
+import	func_4EFB10	0x004EFB10	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4EFC50	0x004EFC50	DISAGREE	insect: void *(void *, int); normal: int(void *, void *)
+import	func_4EFC50	0x004EFC50	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_4F0530	0x004F0530	DISAGREE	insect: int(void *, int); insmenu: void(void)
+import	func_4F0530	0x004F0530	call	domain=- bound=insmenu,insect cands=insmenu,insect refs=3
+import-proto	func_4F08A0	0x004F08A0	agree	normal: void(void *)
+import	func_4F08A0	0x004F08A0	call	domain=- bound=normal cands=normal refs=2
+import-proto	func_4F09B0	0x004F09B0	agree	normal: void(void *)
+import	func_4F09B0	0x004F09B0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F0A20	0x004F0A20	agree	normal: short(void *)
+import	func_4F0A20	0x004F0A20	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F0CF0	0x004F0CF0	agree	normal: int(void *)
+import	func_4F0CF0	0x004F0CF0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F0F60	0x004F0F60	agree	insect: void(void *)
+import	func_4F0F60	0x004F0F60	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_4F1030	0x004F1030	agree	normal: int(void *, signed char)
+import	func_4F1030	0x004F1030	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F11D0	0x004F11D0	DISAGREE	insmenu: void(void); normal: void(void *, float, float)
+import	func_4F11D0	0x004F11D0	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=2
+import-proto	func_4F1260	0x004F1260	agree	normal: void(void *, int)
+import	func_4F1260	0x004F1260	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F12D0	0x004F12D0	agree	normal: void(void *, void *)
+import	func_4F12D0	0x004F12D0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F14E0	0x004F14E0	agree	insect: void(void *)
+import	func_4F14E0	0x004F14E0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_4F1940	0x004F1940	agree	normal: void(void *)
+import	func_4F1940	0x004F1940	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F19E0	0x004F19E0	agree	normal: void(void *)
+import	func_4F19E0	0x004F19E0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F1A80	0x004F1A80	agree	normal: void(void *, unsigned char)
+import	func_4F1A80	0x004F1A80	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F1D40	0x004F1D40	agree	normal: void(void *)
+import	func_4F1D40	0x004F1D40	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F2100	0x004F2100	DISAGREE	factory: void(void *, void *, void *, void *, void *); insect: void(void *)
+import	func_4F2100	0x004F2100	call	domain=- bound=factory,insect cands=factory,insect refs=1
+import-proto	func_4F2350	0x004F2350	DISAGREE	insmenu: void(void); normal: void(void *)
+import	func_4F2350	0x004F2350	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=1
+import-proto	func_4F23E0	0x004F23E0	DISAGREE	insmenu: int(void); normal: void(void *, short)
+import	func_4F23E0	0x004F23E0	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=1
+import-proto	func_4F2A20	0x004F2A20	agree	normal: void(void *, void *)
+import	func_4F2A20	0x004F2A20	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F2A90	0x004F2A90	agree	normal: void(void *)
+import	func_4F2A90	0x004F2A90	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F2D40	0x004F2D40	agree	normal: void(void)
+import	func_4F2D40	0x004F2D40	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F2F90	0x004F2F90	agree	insmenu: void(void)
+import	func_4F2F90	0x004F2F90	call	domain=- bound=insmenu cands=insmenu refs=1
+import-proto	func_4F3030	0x004F3030	agree	insmenu: void(void)
+import	func_4F3030	0x004F3030	call	domain=- bound=insmenu cands=insmenu refs=1
+import-proto	func_4F30A0	0x004F30A0	agree	insmenu: void(void)
+import	func_4F30A0	0x004F30A0	call	domain=- bound=insmenu cands=insmenu refs=1
+import-proto	func_4F3120	0x004F3120	agree	insmenu: void(void)
+import	func_4F3120	0x004F3120	call	domain=- bound=insmenu cands=insmenu refs=1
+import-proto	func_4F3240	0x004F3240	agree	insmenu: int(void)
+import	func_4F3240	0x004F3240	call	domain=- bound=insmenu cands=insmenu refs=1
+import-proto	func_4F3250	0x004F3250	agree	insmenu: int(void)
+import	func_4F3250	0x004F3250	call	domain=- bound=insmenu cands=insmenu refs=1
+import-proto	func_4F32F0	0x004F32F0	agree	insmenu: int(void)
+import	func_4F32F0	0x004F32F0	call	domain=- bound=insmenu cands=insmenu refs=1
+import-proto	func_4F3300	0x004F3300	agree	insmenu: int(void)
+import	func_4F3300	0x004F3300	call	domain=- bound=insmenu cands=insmenu refs=1
+import-proto	func_4F3320	0x004F3320	DISAGREE	insect: void(void *, void *); insmenu: int(void)
+import	func_4F3320	0x004F3320	call	domain=- bound=insmenu,insect cands=insmenu,insect refs=6
+import-proto	func_4F3330	0x004F3330	agree	insmenu: int(void)
+import	func_4F3330	0x004F3330	call	domain=- bound=insmenu cands=insmenu refs=1
+import-proto	func_4F3390	0x004F3390	agree	insect: void(void *)
+import	func_4F3390	0x004F3390	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_4F45F0	0x004F45F0	agree	insect: int(void *)
+import	func_4F45F0	0x004F45F0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_4F4600	0x004F4600	DISAGREE	insect: int(void *); normal: void(void *)
+import	func_4F4600	0x004F4600	call	domain=- bound=normal,insect cands=normal,insect refs=1
+import-proto	func_4F4770	0x004F4770	agree	insect: int(void *)
+import	func_4F4770	0x004F4770	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_4F4790	0x004F4790	agree	normal: void(void *)
+import	func_4F4790	0x004F4790	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F4B30	0x004F4B30	agree	normal: void(void *, void *)
+import	func_4F4B30	0x004F4B30	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F50E0	0x004F50E0	agree	normal: void(void *)
+import	func_4F50E0	0x004F50E0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F53D0	0x004F53D0	agree	normal: int(void *)
+import	func_4F53D0	0x004F53D0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F54E0	0x004F54E0	agree	normal: void(void *)
+import	func_4F54E0	0x004F54E0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F56D0	0x004F56D0	agree	normal: void(void *)
+import	func_4F56D0	0x004F56D0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F5FC0	0x004F5FC0	agree	insect: void(void *, int)
+import	func_4F5FC0	0x004F5FC0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_4F68D0	0x004F68D0	DISAGREE	insmenu: void(void *, int, int); normal: void(void *, void *, int)
+import	func_4F68D0	0x004F68D0	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=1
+import-proto	func_4F6A00	0x004F6A00	agree	normal: void(void *)
+import	func_4F6A00	0x004F6A00	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F6AB0	0x004F6AB0	agree	normal: void(void *)
+import	func_4F6AB0	0x004F6AB0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F6B30	0x004F6B30	agree	normal: void(void *)
+import	func_4F6B30	0x004F6B30	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F6B90	0x004F6B90	DISAGREE	insmenu: void(void *, void *); normal: void(void *)
+import	func_4F6B90	0x004F6B90	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=1
+import-proto	func_4F6BF0	0x004F6BF0	DISAGREE	insmenu: void(short); normal: void(void *, int)
+import	func_4F6BF0	0x004F6BF0	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=1
+import-proto	func_4F6ED0	0x004F6ED0	DISAGREE	insmenu: int(void *); normal: void(void *)
+import	func_4F6ED0	0x004F6ED0	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=3
+import-proto	func_4F6F00	0x004F6F00	agree	normal: void(void *)
+import	func_4F6F00	0x004F6F00	call	domain=- bound=normal cands=normal refs=2
+import-proto	func_4F6F50	0x004F6F50	agree	normal: void(void *)
+import	func_4F6F50	0x004F6F50	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F7180	0x004F7180	agree	normal: void(void *)
+import	func_4F7180	0x004F7180	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F71A0	0x004F71A0	agree	normal: void(void *, void *)
+import	func_4F71A0	0x004F71A0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F79E0	0x004F79E0	agree	normal: void(void *)
+import	func_4F79E0	0x004F79E0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F7A00	0x004F7A00	agree	normal: void(void *)
+import	func_4F7A00	0x004F7A00	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F7D00	0x004F7D00	agree	normal: void(void *)
+import	func_4F7D00	0x004F7D00	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F88B0	0x004F88B0	agree	normal: void(void *)
+import	func_4F88B0	0x004F88B0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F8D10	0x004F8D10	agree	normal: void(void *)
+import	func_4F8D10	0x004F8D10	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9440	0x004F9440	DISAGREE	insmenu: void *(void *); normal: void(void *)
+import	func_4F9440	0x004F9440	call	domain=- bound=insmenu,normal cands=insmenu,normal refs=1
+import-proto	func_4F9490	0x004F9490	agree	normal: unsigned short(void *)
+import	func_4F9490	0x004F9490	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F94B0	0x004F94B0	agree	normal: void(void *)
+import	func_4F94B0	0x004F94B0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9540	0x004F9540	agree	normal: void(void *)
+import	func_4F9540	0x004F9540	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9590	0x004F9590	agree	normal: unsigned short(void *)
+import	func_4F9590	0x004F9590	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F95B0	0x004F95B0	agree	normal: void(void *)
+import	func_4F95B0	0x004F95B0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9670	0x004F9670	agree	normal: void(void *, int)
+import	func_4F9670	0x004F9670	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F96D0	0x004F96D0	agree	normal: void(void *)
+import	func_4F96D0	0x004F96D0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F97B0	0x004F97B0	agree	normal: void(void *)
+import	func_4F97B0	0x004F97B0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9840	0x004F9840	agree	normal: void(void *)
+import	func_4F9840	0x004F9840	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9890	0x004F9890	agree	normal: void(void *)
+import	func_4F9890	0x004F9890	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9920	0x004F9920	agree	normal: void(void *)
+import	func_4F9920	0x004F9920	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9970	0x004F9970	agree	normal: void(void *)
+import	func_4F9970	0x004F9970	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9A90	0x004F9A90	agree	normal: void(void *)
+import	func_4F9A90	0x004F9A90	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9AE0	0x004F9AE0	agree	normal: void(void *, int)
+import	func_4F9AE0	0x004F9AE0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9D40	0x004F9D40	agree	normal: short(void)
+import	func_4F9D40	0x004F9D40	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9D50	0x004F9D50	agree	normal: int(void)
+import	func_4F9D50	0x004F9D50	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9D60	0x004F9D60	agree	normal: void(void *)
+import	func_4F9D60	0x004F9D60	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9D70	0x004F9D70	agree	normal: void(void)
+import	func_4F9D70	0x004F9D70	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9F60	0x004F9F60	agree	normal: int(void)
+import	func_4F9F60	0x004F9F60	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9F80	0x004F9F80	agree	normal: void(void)
+import	func_4F9F80	0x004F9F80	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4F9FB0	0x004F9FB0	agree	normal: void(unsigned char, unsigned char)
+import	func_4F9FB0	0x004F9FB0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4FA3C0	0x004FA3C0	agree	normal: void(int, unsigned char)
+import	func_4FA3C0	0x004FA3C0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_4FAAC0	0x004FAAC0	agree	normal: void(void *)
+import	func_4FAAC0	0x004FAAC0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_503050	0x00503050	agree	factory: int(void *, void *, int)
+import	func_503050	0x00503050	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_5032D0	0x005032D0	agree	factory: int(void *, void *, int)
+import	func_5032D0	0x005032D0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_503910	0x00503910	agree	factory: void(void *, int)
+import	func_503910	0x00503910	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_503CD0	0x00503CD0	agree	factory: void(int, int, short)
+import	func_503CD0	0x00503CD0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_503D00	0x00503D00	agree	factory: void(void *, int, int)
+import	func_503D00	0x00503D00	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_503D30	0x00503D30	agree	factory: void(void *)
+import	func_503D30	0x00503D30	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_503FF0	0x00503FF0	agree	normal: void(void)
+import	func_503FF0	0x00503FF0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5041A0	0x005041A0	agree	factory: void(void *, void *, int, int, int)
+import	func_5041A0	0x005041A0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_504600	0x00504600	agree	factory: void(void *)
+import	func_504600	0x00504600	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_504840	0x00504840	agree	factory: int(void *)
+import	func_504840	0x00504840	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_504850	0x00504850	agree	factory: void(void *)
+import	func_504850	0x00504850	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_5048E0	0x005048E0	agree	factory: void(void *)
+import	func_5048E0	0x005048E0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_5049B0	0x005049B0	agree	factory: void(void *)
+import	func_5049B0	0x005049B0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_5050C0	0x005050C0	agree	factory: void(void *)
+import	func_5050C0	0x005050C0	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_505D60	0x00505D60	agree	factory: int(void)
+import	func_505D60	0x00505D60	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_5069E0	0x005069E0	DISAGREE	factory: void(void *); normal: float(void *)
+import	func_5069E0	0x005069E0	call	domain=- bound=normal,factory cands=normal,factory refs=1
+import-proto	func_506B70	0x00506B70	agree	normal: int(void *, int)
+import	func_506B70	0x00506B70	call	domain=- bound=normal cands=normal refs=2
+import-proto	func_506BC0	0x00506BC0	agree	normal: int(void *)
+import	func_506BC0	0x00506BC0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_506C10	0x00506C10	agree	normal: int(void *)
+import	func_506C10	0x00506C10	call	domain=- bound=normal cands=normal refs=2
+import-proto	func_506D50	0x00506D50	agree	normal: void(void *, float, float)
+import	func_506D50	0x00506D50	call	domain=- bound=normal cands=normal refs=2
+import-proto	func_506D70	0x00506D70	agree	normal: int(void *)
+import	func_506D70	0x00506D70	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_506D80	0x00506D80	agree	normal: int(void *)
+import	func_506D80	0x00506D80	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_506DC0	0x00506DC0	agree	normal: int(void *, void *)
+import	func_506DC0	0x00506DC0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_506EF0	0x00506EF0	agree	normal: int(void *)
+import	func_506EF0	0x00506EF0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_506FC0	0x00506FC0	agree	normal: void(void)
+import	func_506FC0	0x00506FC0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_507170	0x00507170	agree	normal: int(void)
+import	func_507170	0x00507170	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_507400	0x00507400	agree	normal: int(void)
+import	func_507400	0x00507400	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_509040	0x00509040	agree	normal: int(int, int)
+import	func_509040	0x00509040	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_50A270	0x0050A270	agree	insect: void(void *)
+import	func_50A270	0x0050A270	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50A460	0x0050A460	agree	insect: void(void *)
+import	func_50A460	0x0050A460	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50A520	0x0050A520	agree	insect: void(void)
+import	func_50A520	0x0050A520	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50A530	0x0050A530	agree	insect: void(void *)
+import	func_50A530	0x0050A530	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50A5F0	0x0050A5F0	agree	insect: void(void *)
+import	func_50A5F0	0x0050A5F0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50A630	0x0050A630	agree	normal: void(void)
+import	func_50A630	0x0050A630	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_50A6A0	0x0050A6A0	agree	normal: void(void)
+import	func_50A6A0	0x0050A6A0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_50A6F0	0x0050A6F0	agree	normal: void(void)
+import	func_50A6F0	0x0050A6F0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_50A710	0x0050A710	agree	factory: void(void *)
+import	func_50A710	0x0050A710	call	domain=- bound=factory cands=factory refs=1
+import-proto	func_50A810	0x0050A810	agree	insect: void(void *)
+import	func_50A810	0x0050A810	call	domain=- bound=insect cands=insect refs=2
+import-proto	func_50A9F0	0x0050A9F0	agree	insect: void(void *)
+import	func_50A9F0	0x0050A9F0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50AB00	0x0050AB00	agree	normal: int(void)
+import	func_50AB00	0x0050AB00	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_50AB10	0x0050AB10	agree	normal: int(void)
+import	func_50AB10	0x0050AB10	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_50AB40	0x0050AB40	agree	normal: int(void)
+import	func_50AB40	0x0050AB40	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_50AB50	0x0050AB50	agree	normal: void(void)
+import	func_50AB50	0x0050AB50	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_50B5E0	0x0050B5E0	agree	insect: void(void *)
+import	func_50B5E0	0x0050B5E0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50B630	0x0050B630	agree	insect: void(void *)
+import	func_50B630	0x0050B630	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50B6C0	0x0050B6C0	agree	insect: void(void *)
+import	func_50B6C0	0x0050B6C0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50B8D0	0x0050B8D0	agree	insect: void(void *)
+import	func_50B8D0	0x0050B8D0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50C100	0x0050C100	agree	insect: void(void *)
+import	func_50C100	0x0050C100	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50C4B0	0x0050C4B0	agree	insect: void(void *)
+import	func_50C4B0	0x0050C4B0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50D6A0	0x0050D6A0	agree	insect: int(void *, int)
+import	func_50D6A0	0x0050D6A0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50D7A0	0x0050D7A0	agree	insect: void(void *, int, int, int)
+import	func_50D7A0	0x0050D7A0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50D8C0	0x0050D8C0	agree	insect: void(void *, int, int, int)
+import	func_50D8C0	0x0050D8C0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50DA40	0x0050DA40	agree	insect: int(void *, int)
+import	func_50DA40	0x0050DA40	call	domain=- bound=insect cands=insect refs=4
+import-proto	func_50DA90	0x0050DA90	agree	insect: void(void *, int)
+import	func_50DA90	0x0050DA90	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50DAD0	0x0050DAD0	agree	insect: void(void *, int)
+import	func_50DAD0	0x0050DAD0	call	domain=- bound=insect cands=insect refs=2
+import-proto	func_50DF90	0x0050DF90	agree	insect: void *(void *, int)
+import	func_50DF90	0x0050DF90	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50E110	0x0050E110	agree	insect: int(void *, int)
+import	func_50E110	0x0050E110	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50E250	0x0050E250	agree	insect: void(void *)
+import	func_50E250	0x0050E250	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50E260	0x0050E260	agree	insect: void(void *)
+import	func_50E260	0x0050E260	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50E2B0	0x0050E2B0	agree	insect: void(void *)
+import	func_50E2B0	0x0050E2B0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50E310	0x0050E310	agree	insect: void(void *)
+import	func_50E310	0x0050E310	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50E370	0x0050E370	agree	insect: void(void *)
+import	func_50E370	0x0050E370	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50E5D0	0x0050E5D0	agree	insect: void(void *, int, int)
+import	func_50E5D0	0x0050E5D0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50E5E0	0x0050E5E0	agree	insect: void(void *)
+import	func_50E5E0	0x0050E5E0	call	domain=- bound=insect cands=insect refs=2
+import-proto	func_50E640	0x0050E640	agree	insect: void(void *)
+import	func_50E640	0x0050E640	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_50E810	0x0050E810	agree	insect: void(void *)
+import	func_50E810	0x0050E810	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_5104F0	0x005104F0	agree	insect: void(int)
+import	func_5104F0	0x005104F0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_511010	0x00511010	agree	normal: int(void)
+import	func_511010	0x00511010	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5110C0	0x005110C0	agree	normal: int(void)
+import	func_5110C0	0x005110C0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_511100	0x00511100	agree	normal: int(void)
+import	func_511100	0x00511100	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5115C0	0x005115C0	agree	normal: int(void)
+import	func_5115C0	0x005115C0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_511660	0x00511660	agree	normal: void(void *)
+import	func_511660	0x00511660	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_511690	0x00511690	agree	normal: int(void)
+import	func_511690	0x00511690	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5116F0	0x005116F0	agree	normal: int(void *)
+import	func_5116F0	0x005116F0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_511CF0	0x00511CF0	agree	insect: void *(void *, int, int)
+import	func_511CF0	0x00511CF0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_511EB0	0x00511EB0	agree	insect: void(void *, void *)
+import	func_511EB0	0x00511EB0	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_516290	0x00516290	agree	normal: void(void)
+import	func_516290	0x00516290	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5163A0	0x005163A0	agree	normal: void(void)
+import	func_5163A0	0x005163A0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5165C0	0x005165C0	agree	normal: void(void)
+import	func_5165C0	0x005165C0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_516A50	0x00516A50	agree	normal: int(void)
+import	func_516A50	0x00516A50	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_516A60	0x00516A60	agree	normal: int(void)
+import	func_516A60	0x00516A60	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_516A90	0x00516A90	agree	normal: int(void)
+import	func_516A90	0x00516A90	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_516AA0	0x00516AA0	agree	normal: void(void)
+import	func_516AA0	0x00516AA0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_517CF0	0x00517CF0	agree	normal: int(void)
+import	func_517CF0	0x00517CF0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_518620	0x00518620	agree	normal: void(void *)
+import	func_518620	0x00518620	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_520800	0x00520800	agree	normal: int(void *)
+import	func_520800	0x00520800	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_521160	0x00521160	agree	normal: void(void)
+import	func_521160	0x00521160	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5211C0	0x005211C0	agree	normal: void(void)
+import	func_5211C0	0x005211C0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5211F0	0x005211F0	agree	normal: void(void)
+import	func_5211F0	0x005211F0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_521290	0x00521290	agree	normal: int(void)
+import	func_521290	0x00521290	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5212A0	0x005212A0	agree	normal: int(void)
+import	func_5212A0	0x005212A0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5212B0	0x005212B0	agree	normal: void(void)
+import	func_5212B0	0x005212B0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5219B0	0x005219B0	agree	normal: int(void)
+import	func_5219B0	0x005219B0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5219C0	0x005219C0	agree	normal: void(void *)
+import	func_5219C0	0x005219C0	call	domain=- bound=normal cands=normal refs=2
+import-proto	func_522C90	0x00522C90	agree	insect: void *(void *)
+import	func_522C90	0x00522C90	call	domain=- bound=insect cands=insect refs=1
+import-proto	func_522EB0	0x00522EB0	agree	normal: void(void)
+import	func_522EB0	0x00522EB0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_522F80	0x00522F80	agree	normal: void(void)
+import	func_522F80	0x00522F80	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_522FD0	0x00522FD0	agree	normal: void(void)
+import	func_522FD0	0x00522FD0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_523260	0x00523260	agree	normal: int(void)
+import	func_523260	0x00523260	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_523270	0x00523270	agree	normal: int(void)
+import	func_523270	0x00523270	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_523280	0x00523280	agree	normal: void(void)
+import	func_523280	0x00523280	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_524270	0x00524270	agree	normal: void(void)
+import	func_524270	0x00524270	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5242D0	0x005242D0	agree	normal: void(void)
+import	func_5242D0	0x005242D0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_524320	0x00524320	agree	normal: void(void)
+import	func_524320	0x00524320	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_524590	0x00524590	agree	normal: int(void)
+import	func_524590	0x00524590	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5245A0	0x005245A0	agree	normal: int(void)
+import	func_5245A0	0x005245A0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_5245B0	0x005245B0	agree	normal: void(void)
+import	func_5245B0	0x005245B0	call	domain=- bound=normal cands=normal refs=1
+import-proto	func_524CE0	0x00524CE0	agree	normal: void(void *)
+import	func_524CE0	0x00524CE0	call	domain=- bound=normal cands=normal refs=1
+ctor	title	0x004F1700	title_sinit_004F1700	16 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	title	0x004F1760	title_sinit_004F1760	23 insns, calls ConstructArray_100620,IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,SysMsgInit_1c69e0,WIosBaseInitCtor_103110
+ctor	title	0x004F17E0	title_sinit_004F17E0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	title	0x004F1830	title_sinit_004F1830	20 insns, calls IosBaseInitCtor_102bd0,MemStackCtor_14e030,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insmenu	0x004FA080	insmenu_sinit_004FA080	18 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insmenu	0x004FA0E0	insmenu_sinit_004FA0E0	16 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,SysMsgInit_1c69e0,WIosBaseInitCtor_103110
+ctor	normal	0x00526980	normal_sinit_00526980	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x005269D0	normal_sinit_005269D0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526A20	normal_sinit_00526A20	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526A70	normal_sinit_00526A70	16 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,UiSelFrameReset_28db70,WIosBaseInitCtor_103110
+ctor	normal	0x00526AD0	normal_sinit_00526AD0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526B20	normal_sinit_00526B20	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526B70	normal_sinit_00526B70	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526BC0	normal_sinit_00526BC0	18 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526C20	normal_sinit_00526C20	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526C70	normal_sinit_00526C70	16 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,UiSelFrameReset_28db70,WIosBaseInitCtor_103110
+ctor	normal	0x00526CD0	normal_sinit_00526CD0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526D20	normal_sinit_00526D20	19 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,ScreenFadeBlockInit_178490,WIosBaseInitCtor_103110
+ctor	normal	0x00526D90	normal_sinit_00526D90	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526DE0	normal_sinit_00526DE0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526E30	normal_sinit_00526E30	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	normal	0x00526E80	normal_sinit_00526E80	28 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,UiSelFrameReset_28db70,WIosBaseInitCtor_103110
+ctor	normal	0x00526F10	normal_sinit_00526F10	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050D880	factory_sinit_0050D880	19 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050D8E0	factory_sinit_0050D8E0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050D930	factory_sinit_0050D930	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050D980	factory_sinit_0050D980	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050D9D0	factory_sinit_0050D9D0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DA20	factory_sinit_0050DA20	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DA70	factory_sinit_0050DA70	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DAC0	factory_sinit_0050DAC0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DB10	factory_sinit_0050DB10	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DB60	factory_sinit_0050DB60	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DBB0	factory_sinit_0050DBB0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DC00	factory_sinit_0050DC00	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DC50	factory_sinit_0050DC50	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DCA0	factory_sinit_0050DCA0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DCF0	factory_sinit_0050DCF0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DD40	factory_sinit_0050DD40	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DD90	factory_sinit_0050DD90	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DDE0	factory_sinit_0050DDE0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DE30	factory_sinit_0050DE30	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050DE80	factory_sinit_0050DE80	1650 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110,factory_FactoryBeltTileGroupCtor_4ff450,factory_FactoryFloorDefCtorMaybe_4ff6d0,factory_FactoryPartDefPathCtor_4ff960,factory_FactoryPartGroupCtor_4fee90
+ctor	factory	0x0050FBB0	factory_sinit_0050FBB0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	factory	0x0050FC00	factory_sinit_0050FC00	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525800	insect_sinit_00525800	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525850	insect_sinit_00525850	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x005258A0	insect_sinit_005258A0	16 insns, calls IosBaseInitCtor_102bd0,MemStackCtor_14e030,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525900	insect_sinit_00525900	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525950	insect_sinit_00525950	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x005259A0	insect_sinit_005259A0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x005259F0	insect_sinit_005259F0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525A40	insect_sinit_00525A40	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525A90	insect_sinit_00525A90	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525AE0	insect_sinit_00525AE0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525B30	insect_sinit_00525B30	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525B80	insect_sinit_00525B80	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525BD0	insect_sinit_00525BD0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525C20	insect_sinit_00525C20	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525C70	insect_sinit_00525C70	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525CC0	insect_sinit_00525CC0	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+ctor	insect	0x00525D10	insect_sinit_00525D10	14 insns, calls IosBaseInitCtor_102bd0,RegisterGlobalObject_100dc0,WIosBaseInitCtor_103110
+unbound-ref	title	0x004F1600	title_FUN_004ef990	no host definition; retail word 0x004EF990 kept
+unbound-ref	title	0x004F1604	title_FUN_004ef9c0	no host definition; retail word 0x004EF9C0 kept
+unbound-ref	title	0x004F1608	title_FUN_004ef9ec	no host definition; retail word 0x004EF9EC kept
+unbound-ref	title	0x004F160C	title_FUN_004efa14	no host definition; retail word 0x004EFA14 kept
+unbound-ref	title	0x004F1610	title_FUN_004efa40	no host definition; retail word 0x004EFA40 kept
+unbound-ref	title	0x004F1614	title_FUN_004efa6c	no host definition; retail word 0x004EFA6C kept
+unbound-ref	title	0x004F1618	title_FUN_004efa98	no host definition; retail word 0x004EFA98 kept
+unbound-ref	title	0x004F161C	title_FUN_004efac8	no host definition; retail word 0x004EFAC8 kept
+unbound-ref	title	0x004F1620	title_FUN_004efaf8	no host definition; retail word 0x004EFAF8 kept
+unbound-ref	title	0x004F1624	title_FUN_004efb24	no host definition; retail word 0x004EFB24 kept
+raw-reloc	insmenu	0x004F9A58	0x004EE1A0	insmenu_InsectVsStateAdvance_4ee1a0
+raw-reloc	insmenu	0x004F9A6C	0x004EE190	insmenu_InsectVsStateIdle_4ee190
+raw-reloc	insmenu	0x004F9A80	0x004EE160	insmenu_InsectVsBootFinish_4ee160
+raw-reloc	insmenu	0x004F9A94	0x004EE130	insmenu_InsectVsStateAdvance_4ee130
+raw-reloc	insmenu	0x004F9AA8	0x004EDEB0	insmenu_InsectVsTopMenuStep_4edeb0
+raw-reloc	insmenu	0x004F9AAC	0x004EDEA0	insmenu_InsectVsTopCursorBobCb_4edea0
+raw-reloc	insmenu	0x004F9AB0	0x004EDE90	insmenu_InsectVsTopCursorMoveCb_4ede90
+raw-reloc	insmenu	0x004F9ABC	0x004EDC50	insmenu_InsectVsRegisterMenuStep_4edc50
+raw-reloc	insmenu	0x004F9AC0	0x004EDC40	insmenu_InsectVsRegisterCursorBobCb_4edc40
+raw-reloc	insmenu	0x004F9AC4	0x004EDC30	insmenu_InsectVsRegisterCursorMoveCb_4edc30
+raw-reloc	insmenu	0x004F9AD0	0x004EDC20	insmenu_InsectVsStateNop_4edc20
+raw-reloc	insmenu	0x004F9AE4	0x004EDBF0	insmenu_InsectVsStateAdvance_4edbf0
+raw-reloc	insmenu	0x004F9AF8	0x004EDA00	insmenu_InsectVsTwoPlayerMenuStep_4eda00
+raw-reloc	insmenu	0x004F9AFC	0x004ED9F0	insmenu_InsectVsTwoPlayerCursorBobCb_4ed9f0
+raw-reloc	insmenu	0x004F9B00	0x004ED9E0	insmenu_InsectVsTwoPlayerCursorMoveCb_4ed9e0
+raw-reloc	insmenu	0x004F9B0C	0x004ED9D0	insmenu_InsectVsStateNop_4ed9d0
+raw-reloc	insmenu	0x004F9B20	0x004ED990	insmenu_InsectVsStateWaitFade_4ed990
+raw-reloc	insmenu	0x004F9B34	0x004ED950	insmenu_InsectVsStateWaitFade_4ed950
+raw-reloc	insmenu	0x004F9B48	0x004ED910	insmenu_InsectVsStateWaitFade_4ed910
+raw-reloc	insmenu	0x004F9B5C	0x004ED900	insmenu_InsectVsStateIdle_4ed900
+raw-reloc	insmenu	0x004F9B70	0x004ED8A0	insmenu_InsectVsStateReturnToTop_4ed8a0
+raw-reloc	insmenu	0x004F9B84	0x004ED850	insmenu_InsectVsPwBattleEnter_4ed850
+raw-reloc	insmenu	0x004F9B98	0x004ED660	insmenu_InsectVsPwBattleMenuStep_4ed660
+raw-reloc	insmenu	0x004F9B9C	0x004ED650	insmenu_InsectVsPwBattleCursorBobCb_4ed650
+raw-reloc	insmenu	0x004F9BA0	0x004ED640	insmenu_InsectVsPwBattleCursorMoveCb_4ed640
+raw-reloc	insmenu	0x004F9BAC	0x004ED5F0	insmenu_InsectVsStateWaitFade_4ed5f0
+raw-reloc	insmenu	0x004F9BC0	0x004ED5A0	insmenu_InsectVsStateWaitFade_4ed5a0
+raw-reloc	insmenu	0x004F9BD4	0x004ED550	insmenu_InsectVsStateWaitFade_4ed550
+raw-reloc	insmenu	0x004F9BE8	0x004ED540	insmenu_InsectVsStateIdle_4ed540
+raw-reloc	insmenu	0x004F9BFC	0x004ED4E0	insmenu_InsectVsStateReturnToTop_4ed4e0
+raw-reloc	insmenu	0x004F9C10	0x004ED450	insmenu_InsectVsWatchEnter_4ed450
+raw-reloc	insmenu	0x004F9C24	0x004ED260	insmenu_InsectVsWatchMenuStep_4ed260
+raw-reloc	insmenu	0x004F9C28	0x004ED250	insmenu_InsectVsWatchCursorBobCb_4ed250
+raw-reloc	insmenu	0x004F9C2C	0x004ED240	insmenu_InsectVsWatchCursorMoveCb_4ed240
+raw-reloc	insmenu	0x004F9C38	0x004ED200	insmenu_InsectVsStateWaitFade_4ed200
+raw-reloc	insmenu	0x004F9C4C	0x004ED1B0	insmenu_InsectVsStateWaitFade_4ed1b0
+raw-reloc	insmenu	0x004F9C60	0x004ED160	insmenu_InsectVsStateWaitFade_4ed160
+raw-reloc	insmenu	0x004F9C74	0x004ED150	insmenu_InsectVsStateIdle_4ed150
+raw-reloc	insmenu	0x004F9C88	0x004ED0F0	insmenu_InsectVsStateReturnToTop_4ed0f0
+raw-reloc	insmenu	0x004F9C9C	0x004ED0A0	insmenu_InsectVsRegPwEnter_4ed0a0
+raw-reloc	insmenu	0x004F9CB0	0x004ECE80	insmenu_InsectVsRegPwMenuStep_4ece80
+raw-reloc	insmenu	0x004F9CB4	0x004ECE70	insmenu_InsectVsRegPwCursorBobCb_4ece70
+raw-reloc	insmenu	0x004F9CB8	0x004ECE60	insmenu_InsectVsRegPwCursorMoveCb_4ece60
+raw-reloc	insmenu	0x004F9CC4	0x004ECE20	insmenu_InsectVsStateWaitFade_4ece20
+raw-reloc	insmenu	0x004F9CD8	0x004ECD10	insmenu_InsectVsRegPwInputStep_4ecd10
+raw-reloc	insmenu	0x004F9CEC	0x004ECCD0	insmenu_InsectVsStateWaitFade_4eccd0
+raw-reloc	insmenu	0x004F9D00	0x004ECCA0	insmenu_InsectVsStateWaitSubscreen_4ecca0
+raw-reloc	insmenu	0x004F9D14	0x004ECBE0	insmenu_InsectVsRegPwAskAgainStep_4ecbe0
+raw-reloc	insmenu	0x004F9D28	0x004ECBD0	insmenu_InsectVsStateNop_4ecbd0
+raw-reloc	insmenu	0x004F9D3C	0x004ECBA0	insmenu_InsectVsStateAdvance_4ecba0
+raw-reloc	insmenu	0x004F9D50	0x004EC9A0	insmenu_InsectVsRegSaveMenuStep_4ec9a0
+raw-reloc	insmenu	0x004F9D54	0x004EC990	insmenu_InsectVsRegSaveCursorBobCb_4ec990
+raw-reloc	insmenu	0x004F9D58	0x004EC980	insmenu_InsectVsRegSaveCursorMoveCb_4ec980
+raw-reloc	insmenu	0x004F9D64	0x004EC940	insmenu_InsectVsStateWaitFade_4ec940
+raw-reloc	insmenu	0x004F9D78	0x004EC900	insmenu_InsectVsStateWaitFade_4ec900
+raw-reloc	insmenu	0x004F9D8C	0x004EC8C0	insmenu_InsectVsStateWaitFade_4ec8c0
+raw-reloc	insmenu	0x004F9DA0	0x004EC880	insmenu_InsectVsStateWaitFade_4ec880
+raw-reloc	insmenu	0x004F9DB4	0x004EC840	insmenu_InsectVsStateWaitFade_4ec840
+raw-reloc	insmenu	0x004F9DC8	0x004EC780	insmenu_InsectVsRegSaveAskAgainStep_4ec780
+raw-reloc	insmenu	0x004F9DDC	0x004EC770	insmenu_InsectVsStateNop_4ec770
+raw-reloc	insmenu	0x004F9DF0	0x004EC740	insmenu_InsectVsStateAdvance_4ec740
+raw-reloc	insmenu	0x004F9E04	0x004EC560	insmenu_InsectVsRegViewMenuStep_4ec560
+raw-reloc	insmenu	0x004F9E08	0x004EC550	insmenu_InsectVsRegViewCursorBobCb_4ec550
+raw-reloc	insmenu	0x004F9E0C	0x004EC540	insmenu_InsectVsRegViewCursorMoveCb_4ec540
+raw-reloc	insmenu	0x004F9E18	0x004EC500	insmenu_InsectVsStateWaitFade_4ec500
+raw-reloc	insmenu	0x004F9E2C	0x004EC4C0	insmenu_InsectVsStateWaitFade_4ec4c0
+raw-reloc	insmenu	0x004F9E40	0x004EC4B0	insmenu_InsectVsStateNop_4ec4b0
+raw-reloc	insmenu	0x004F9E54	0x004EC480	insmenu_InsectVsStateAdvance_4ec480
+raw-reloc	insmenu	0x004F9E68	0x004EC2A0	insmenu_InsectVsRegDeleteMenuStep_4ec2a0
+raw-reloc	insmenu	0x004F9E6C	0x004EC290	insmenu_InsectVsRegDeleteCursorBobCb_4ec290
+raw-reloc	insmenu	0x004F9E70	0x004EC280	insmenu_InsectVsRegDeleteCursorMoveCb_4ec280
+raw-reloc	insmenu	0x004F9E7C	0x004EC240	insmenu_InsectVsStateWaitFade_4ec240
+raw-reloc	insmenu	0x004F9E90	0x004EC200	insmenu_InsectVsStateWaitFade_4ec200
+raw-reloc	insmenu	0x004F9EA4	0x004EC1C0	insmenu_InsectVsStateWaitFade_4ec1c0
+raw-reloc	insmenu	0x004F9EB8	0x004EC1B0	insmenu_InsectVsStateNop_4ec1b0
+raw-reloc	insmenu	0x004F9ECC	0x004EC180	insmenu_InsectVsStateAdvance_4ec180
+raw-reloc	insmenu	0x004F9EE0	0x004EC150	insmenu_InsectVsStateAdvance_4ec150
+raw-reloc	insmenu	0x004F9EF4	0x004EC140	insmenu_InsectVsStateIdle_4ec140
+raw-text-word	insmenu	0x004F9FB0	0x004EA7F8	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FB4	0x004EA67C	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FB8	0x004EA67C	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FBC	0x004EA6D4	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FC0	0x004EA704	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FC4	0x004EA738	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FC8	0x004EA768	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FD0	0x004EF8BC	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FD4	0x004EF8C4	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FD8	0x004EF8CC	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FDC	0x004EF8D4	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FE0	0x004EF8DC	inside own text but not a function entry; kept raw
+raw-text-word	insmenu	0x004F9FE4	0x004EF8E4	inside own text but not a function entry; kept raw
+raw-ptr-candidate	normal	0x00524E28	0x00460028	equals D_00460028; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00524FD4	0x00480000	equals D_00480000; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525134	0x00480000	equals D_00480000; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525270	0x00190000	equals FuncDataTableUpdateTimeWindow_190000; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525334	0x00100000	equals EntryPad_100000; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525370	0x00100000	equals EntryPad_100000; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525390	0x00100000	equals EntryPad_100000; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x005253D4	0x00100000	equals EntryPad_100000; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x005254F0	0x00100000	equals EntryPad_100000; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x005256B8	0x00200050	equals SpotGetMatrixByIdMaybe_200050; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x005257C4	0x00480000	equals D_00480000; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525804	0x00480030	equals D_00480030; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-reloc	normal	0x00525C84	0x00514BB0	normal_TransMenuTopCursorMoveCb_514bb0
+raw-reloc	normal	0x00525C8C	0x00514A30	normal_TransMenuTopCursorBobCb_514a30
+raw-reloc	normal	0x00525C94	0x00519750	normal_TransSavePortMoveCb_519750
+raw-reloc	normal	0x00525C9C	0x00519830	normal_TransSavePortConfirmCb_519830
+raw-reloc	normal	0x00525CA4	0x005197A0	normal_TransSavePortCancelCb_5197a0
+raw-reloc	normal	0x00525CAC	0x00519900	normal_TransSavePortEnterCb_519900
+raw-reloc	normal	0x00525CB4	0x005198B0	normal_TransSavePortTickCb_5198b0
+raw-reloc	normal	0x00525CBC	0x00519710	normal_TransSaveCardScanEnterCb_519710
+raw-reloc	normal	0x00525CC4	0x005194F0	normal_TransSaveCardScanTickCb_5194f0
+raw-reloc	normal	0x00525CCC	0x00519DD0	normal_TransSaveSlotMoveCb_519dd0
+raw-reloc	normal	0x00525CD4	0x00519D50	normal_TransSaveSlotListEnterCb_519d50
+raw-reloc	normal	0x00525CDC	0x00519990	normal_TransSaveSlotListTickCb_519990
+raw-reloc	normal	0x00525CE4	0x00519490	normal_TransSaveNewFileEnterCb_519490
+raw-reloc	normal	0x00525CEC	0x00519020	normal_TransSaveNewFileTickCb_519020
+raw-reloc	normal	0x00525CF4	0x00519010	normal_TransSaveWriteEnterCb_519010
+raw-reloc	normal	0x00525CFC	0x00518C60	normal_TransSaveWriteTickCb_518c60
+raw-reloc	normal	0x00525D04	0x00518B80	normal_TransSaveQuitMoveCb_518b80
+raw-reloc	normal	0x00525D0C	0x00518AE0	normal_TransSaveQuitConfirmCb_518ae0
+raw-reloc	normal	0x00525D14	0x00518A90	normal_TransSaveQuitCancelCb_518a90
+raw-reloc	normal	0x00525D1C	0x00518C00	normal_TransSaveQuitEnterCb_518c00
+raw-reloc	normal	0x00525D24	0x00518BC0	normal_TransSaveQuitTickCb_518bc0
+raw-reloc	normal	0x00525D2C	0x0051B980	normal_TransWarpListCursorMoveCb_51b980
+raw-reloc	normal	0x00525D34	0x0051BBE0	normal_TransWarpListCursorBobCb_51bbe0
+raw-reloc	normal	0x00525D3C	0x0051F210	normal_TransHunterBountyListCursorMoveCb_51f210
+raw-reloc	normal	0x00525D44	0x0051F2B0	normal_TransHunterBountyListCursorBobCb_51f2b0
+raw-reloc	normal	0x00525D4C	0x0051DAD0	normal_TransHunterRankListCursorMoveCb_51dad0
+raw-reloc	normal	0x00525D54	0x0051DB80	normal_TransHunterRankListCursorBobCb_51db80
+raw-reloc	normal	0x00525D5C	0x0051DAC0	func_0051DAC0
+raw-ptr-candidate	normal	0x00525D64	0x0037F5C0	equals TransMenuItemCellFocusCb_37f5c0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525D6C	0x0037F6D0	equals MenuGridCursorBobCb_37f6d0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525D74	0x0037F260	equals TransMenuItemTabCycleCb_37f260; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525D7C	0x0037E710	equals TransMenuItemCmdRowHighlightCb_37e710; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525D84	0x0037E740	equals MenuGridCursorBobCb_37e740; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525D8C	0x0037CD60	equals TransMenuItemQuantityValueCbMaybe_37cd60; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525D94	0x0037CDA0	equals TransMenuItemUvScrollStateRelated_37cda0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525D9C	0x0037BFC0	equals TransMenuItemCmdWindowLayoutMaybe_37bfc0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525DA4	0x0037C070	equals MenuGridCursorBobCb_37c070; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EA4	0x0037FF00	equals TransMenuItemGridOpenState_37ff00; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EAC	0x0037FB00	equals TransMenuItemGridSelectState_37fb00; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EB4	0x0037F870	equals TransMenuItemGridCloseState_37f870; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EBC	0x0037EE90	equals TransMenuItemCommandOpenState_37ee90; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EC4	0x0037E880	equals TransMenuItemCommandSelectState_37e880; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525ECC	0x0037E7E0	equals TransMenuItemCommandCloseState_37e7e0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525ED4	0x0037BE30	equals TransMenuItemMsgPopupState_37be30; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EDC	0x0037E280	equals TransMenuItemCmdDispatchState_37e280; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EE4	0x0037D070	equals TransMenuItemQuantityOpenState_37d070; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EEC	0x0037CE70	equals TransMenuItemQuantitySelectState_37ce70; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EF4	0x0037CDD0	equals TransMenuItemQuantityCloseState_37cdd0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525EFC	0x0037D530	equals TransMenuItemDiscardCheckState_37d530; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F04	0x0037D2B0	equals TransMenuItemDiscardConfirmState_37d2b0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F0C	0x0037D260	equals TransMenuItemDiscardCloseState_37d260; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F14	0x0037D1A0	equals TransMenuItemMoveCheckState_37d1a0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F1C	0x0037D150	equals TransMenuItemMoveStartState_37d150; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F24	0x0037D120	equals TransMenuItemCommandCloseGoto_37d120; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F2C	0x0037C300	equals TransMenuItemCmdPopupOpenState_37c300; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F34	0x0037C170	equals TransMenuItemCmdPopupSelectState_37c170; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F3C	0x0037C100	equals TransMenuItemCmdPopupCloseState_37c100; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F44	0x0037C900	equals TransMenuItemPartyWaitState_37c900; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F4C	0x0037C510	equals TransMenuItemPartyListShowState_37c510; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F54	0x0037C4A0	equals TransMenuItemPartyListCloseState_37c4a0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F5C	0x0037E0E0	equals TransMenuItemCellPickAnimState_37e0e0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F64	0x0037DFE0	equals TransMenuItemMoveTargetState_37dfe0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F6C	0x0037DF80	equals TransMenuItemMoveEndState_37df80; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F74	0x0037D850	equals TransMenuItemMoveState_37d850; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F7C	0x0037CB10	equals TransMenuItemInfoPanelOpenState_37cb10; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F84	0x0037CAB0	equals TransMenuItemInfoWaitState_37cab0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F8C	0x0037C970	equals TransMenuItemInfoCloseState_37c970; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F94	0x0037D7B0	equals TransMenuItemTransferCheckState_37d7b0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525F9C	0x0037D700	equals TransMenuItemTransferState_37d700; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-ptr-candidate	normal	0x00525FA4	0x0037D6C0	equals TransMenuItemTransferDoneState_37d6c0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-text-word	normal	0x0052619C	0x0050002A	inside own text but not a function entry; kept raw
+raw-ptr-candidate	normal	0x005262C0	0x0048002C	equals D_0048002C; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-text-word	normal	0x005264E0	0x0050A0D8	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005264E4	0x00509EC8	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005264E8	0x00509F24	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005264EC	0x00509FAC	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005264F0	0x0050A034	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005264F4	0x0050A07C	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005264F8	0x0050A0A8	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005266F0	0x00515938	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005266F4	0x00515590	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005266F8	0x005155E8	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x005266FC	0x00515674	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x00526700	0x00515704	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x00526704	0x00515878	inside own text but not a function entry; kept raw
+raw-text-word	normal	0x00526708	0x005158E8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B504	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B50C	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B564	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B56C	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B5C4	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B5CC	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B624	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B62C	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B684	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B68C	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B6E4	0x00500042	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050B6EC	0x00500042	inside own text but not a function entry; kept raw
+raw-reloc	factory	0x0050C050	0x0050CFA8	factory_D_0050CFA8
+raw-reloc	factory	0x0050C054	0x0050CFB8	factory_D_0050CFB8
+raw-reloc	factory	0x0050C058	0x0050CFC8	factory_D_0050CFC8
+raw-reloc	factory	0x0050C05C	0x0050CFD8	factory_D_0050CFD8
+raw-reloc	factory	0x0050C060	0x0050CFE8	factory_D_0050CFE8
+raw-reloc	factory	0x0050C070	0x0050CFA8	factory_D_0050CFA8
+raw-reloc	factory	0x0050C074	0x0050CFB8	factory_D_0050CFB8
+raw-reloc	factory	0x0050C078	0x0050CFC8	factory_D_0050CFC8
+raw-reloc	factory	0x0050C07C	0x0050CFD8	factory_D_0050CFD8
+raw-reloc	factory	0x0050C080	0x0050CFE8	factory_D_0050CFE8
+raw-reloc	factory	0x0050C120	0x0050D018	factory_D_0050D018
+raw-reloc	factory	0x0050C124	0x0050D028	factory_D_0050D028
+raw-reloc	factory	0x0050C128	0x0050D038	factory_D_0050D038
+raw-reloc	factory	0x0050C12C	0x0050D048	factory_D_0050D048
+raw-reloc	factory	0x0050C130	0x0050D058	factory_D_0050D058
+raw-reloc	factory	0x0050C510	0x0050D288	factory_D_0050D288
+raw-reloc	factory	0x0050C514	0x0050D298	factory_D_0050D298
+raw-reloc	factory	0x0050C518	0x0050D2A8	factory_D_0050D2A8
+raw-reloc	factory	0x0050C51C	0x0050D258	factory_D_0050D258
+raw-reloc	factory	0x0050C520	0x0050D268	factory_D_0050D268
+raw-reloc	factory	0x0050C590	0x0050D2C8	factory_D_0050D2C8
+raw-reloc	factory	0x0050C594	0x0050D2D8	factory_D_0050D2D8
+raw-reloc	factory	0x0050C598	0x0050D2E8	factory_D_0050D2E8
+raw-reloc	factory	0x0050C59C	0x0050D2F8	factory_D_0050D2F8
+raw-reloc	factory	0x0050C5B0	0x0050D2C8	factory_D_0050D2C8
+raw-reloc	factory	0x0050C5B4	0x0050D2D8	factory_D_0050D2D8
+raw-reloc	factory	0x0050C5B8	0x0050D2E8	factory_D_0050D2E8
+raw-reloc	factory	0x0050C5BC	0x0050D2F8	factory_D_0050D2F8
+raw-reloc	factory	0x0050C5D0	0x0050D2C8	factory_D_0050D2C8
+raw-reloc	factory	0x0050C5D4	0x0050D320	factory_D_0050D320
+raw-reloc	factory	0x0050C5D8	0x0050D338	factory_D_0050D338
+raw-reloc	factory	0x0050C5DC	0x0050D2F8	factory_D_0050D2F8
+raw-reloc	factory	0x0050C5E0	0x0050D320	factory_D_0050D320
+raw-reloc	factory	0x0050C5E4	0x0050D348	factory_D_0050D348
+raw-reloc	factory	0x0050C6F0	0x0050D368	factory_D_0050D368
+raw-reloc	factory	0x0050C6F4	0x0050D378	factory_D_0050D378
+raw-reloc	factory	0x0050C6F8	0x0050D388	factory_D_0050D388
+raw-reloc	factory	0x0050C6FC	0x0050D398	factory_D_0050D398
+raw-reloc	factory	0x0050C710	0x0050D368	factory_D_0050D368
+raw-reloc	factory	0x0050C714	0x0050D378	factory_D_0050D378
+raw-reloc	factory	0x0050C718	0x0050D388	factory_D_0050D388
+raw-reloc	factory	0x0050C71C	0x0050D398	factory_D_0050D398
+raw-reloc	factory	0x0050C730	0x0050D368	factory_D_0050D368
+raw-reloc	factory	0x0050C734	0x0050D320	factory_D_0050D320
+raw-reloc	factory	0x0050C738	0x0050D3B8	factory_D_0050D3B8
+raw-reloc	factory	0x0050C73C	0x0050D398	factory_D_0050D398
+raw-reloc	factory	0x0050C740	0x0050D320	factory_D_0050D320
+raw-reloc	factory	0x0050C744	0x0050D3C8	factory_D_0050D3C8
+raw-reloc	factory	0x0050C870	0x0050D3E8	factory_D_0050D3E8
+raw-reloc	factory	0x0050C874	0x0050D3F8	factory_D_0050D3F8
+raw-reloc	factory	0x0050C878	0x0050D408	factory_D_0050D408
+raw-reloc	factory	0x0050C87C	0x0050D418	factory_D_0050D418
+raw-reloc	factory	0x0050C880	0x0050D428	factory_D_0050D428
+raw-reloc	factory	0x0050C884	0x0050D438	factory_D_0050D438
+raw-reloc	factory	0x0050C890	0x0050D3E8	factory_D_0050D3E8
+raw-reloc	factory	0x0050C894	0x0050D3F8	factory_D_0050D3F8
+raw-reloc	factory	0x0050C898	0x0050D408	factory_D_0050D408
+raw-reloc	factory	0x0050C89C	0x0050D418	factory_D_0050D418
+raw-reloc	factory	0x0050C8A0	0x0050D428	factory_D_0050D428
+raw-reloc	factory	0x0050C8A4	0x0050D438	factory_D_0050D438
+raw-reloc	factory	0x0050C8B0	0x0050D3E8	factory_D_0050D3E8
+raw-reloc	factory	0x0050C8B4	0x0050D320	factory_D_0050D320
+raw-reloc	factory	0x0050C8B8	0x0050D338	factory_D_0050D338
+raw-reloc	factory	0x0050C8BC	0x0050D418	factory_D_0050D418
+raw-reloc	factory	0x0050C8C0	0x0050D320	factory_D_0050D320
+raw-reloc	factory	0x0050C8C4	0x0050D348	factory_D_0050D348
+raw-reloc	factory	0x0050C8C8	0x0050D428	factory_D_0050D428
+raw-reloc	factory	0x0050C8CC	0x0050D320	factory_D_0050D320
+raw-reloc	factory	0x0050C8D0	0x0050D3B8	factory_D_0050D3B8
+raw-reloc	factory	0x0050C8D4	0x0050D438	factory_D_0050D438
+raw-reloc	factory	0x0050C8D8	0x0050D320	factory_D_0050D320
+raw-reloc	factory	0x0050C8DC	0x0050D3C8	factory_D_0050D3C8
+raw-text-word	factory	0x0050CA10	0x004EB8C8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA14	0x004EB8EC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA18	0x004EB908	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA1C	0x004EB92C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA20	0x004EB948	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA24	0x004EB964	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA28	0x004EB980	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA2C	0x004EB9C4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA30	0x004EB9E0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA40	0x004EB598	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA44	0x004EB6EC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA48	0x004EB740	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA4C	0x004EB7DC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA50	0x004EB85C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA54	0x004EBA24	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA58	0x004EBAEC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA5C	0x004EBB5C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA60	0x004EBBA4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA64	0x004EBC14	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CA68	0x004EBC50	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAC0	0x004EFA28	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAC4	0x004EFA38	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAC8	0x004EFA40	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CACC	0x004EFA30	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAD0	0x004EFA18	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAD4	0x004EFA20	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAE0	0x004EFBAC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAE4	0x004EFBB4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAE8	0x004EFBBC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAEC	0x004EFBC4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAF0	0x004EFBCC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAF4	0x004EFBD4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAF8	0x004EFBDC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CAFC	0x004EFBE4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB00	0x004EFBEC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB04	0x004EFBF4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB08	0x004EFBFC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB0C	0x004EFC04	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB10	0x004EFC0C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB14	0x004EFC14	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB18	0x004EFC1C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB1C	0x004EFC24	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB60	0x004F4038	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB64	0x004F4048	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB68	0x004F4050	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB6C	0x004F4040	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB70	0x004F4028	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB74	0x004F4030	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB80	0x004F40E0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB84	0x004F40F0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB88	0x004F40F8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB8C	0x004F40E8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB90	0x004F40C8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB94	0x004F40D0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB98	0x004F40D8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CB9C	0x004F4118	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBA0	0x004F4118	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBA4	0x004F4118	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBA8	0x004F4100	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBAC	0x004F4108	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBB0	0x004F4110	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBB4	0x004F4098	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBB8	0x004F40A0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBBC	0x004F40B0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBC0	0x004F40B8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBC4	0x004F40C0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CBC8	0x004F40A8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC10	0x004F626C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC14	0x004F61F4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC18	0x004F6200	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC1C	0x004F6210	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC20	0x004F6220	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC24	0x004F6230	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC28	0x004F6240	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC2C	0x004F6250	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC30	0x004F6260	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC40	0x004F67F0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC44	0x004F6818	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC48	0x004F6840	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC4C	0x004F6868	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC50	0x004F6890	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC54	0x004F68B8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC58	0x004F68E0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC5C	0x004F6908	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC60	0x004F6930	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC64	0x004F6958	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC68	0x004F69F8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC6C	0x004F6980	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC70	0x004F69A8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC74	0x004F69D0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC80	0x004F63A4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC84	0x004F65D0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC88	0x004F667C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC8C	0x004F6728	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC90	0x004F67C0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CC94	0x004F6A74	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCA0	0x004F74BC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCA4	0x004F7140	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCA8	0x004F7280	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCAC	0x004F7340	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCB0	0x004F73C8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCB4	0x004F73E0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCB8	0x004F73C8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCBC	0x004F7474	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCC0	0x004F74A8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCC4	0x004F73C8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCD0	0x004F7FE8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCD4	0x004F82D4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCD8	0x004F85FC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCDC	0x004F86A8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCE0	0x004F8CD8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCE4	0x004F8D78	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCE8	0x004F8998	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCF0	0x004FB170	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCF4	0x004FB248	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCF8	0x004FB2C4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CCFC	0x004FB340	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD00	0x004FB340	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD04	0x004FB3AC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD08	0x004FB340	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD0C	0x004FB3AC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD10	0x004FB3AC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD14	0x004FB340	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD20	0x004FB5D8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD24	0x004FB5E0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD28	0x004FB670	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD2C	0x004FB700	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD30	0x004FB700	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD34	0x004FB700	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD38	0x004FB700	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD3C	0x004FB700	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD40	0x004FB7A4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD44	0x004FB7D0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD50	0x004FB884	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD54	0x004FB894	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD58	0x004FB8DC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD5C	0x004FB8EC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD60	0x004FB934	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD64	0x004FBA90	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD68	0x004FB988	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD6C	0x004FBA90	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD70	0x004FBA90	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD74	0x004FB9D8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD80	0x004FC528	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD84	0x004FC538	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD88	0x004FC540	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD8C	0x004FC530	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD90	0x004FC518	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CD94	0x004FC520	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDA0	0x004FC5D0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDA4	0x004FC5E0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDA8	0x004FC5E8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDAC	0x004FC5D8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDB0	0x004FC5B8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDB4	0x004FC5C0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDB8	0x004FC5C8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDBC	0x004FC608	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDC0	0x004FC608	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDC4	0x004FC608	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDC8	0x004FC5F0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDCC	0x004FC5F8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDD0	0x004FC600	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDD4	0x004FC588	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDD8	0x004FC590	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDDC	0x004FC5A0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDE0	0x004FC5A8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDE4	0x004FC5B0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CDE8	0x004FC598	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CE00	0x004FE04C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CE04	0x004FE05C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CE08	0x004FE06C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CE0C	0x004FE07C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CE10	0x004FE08C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CE14	0x004FE09C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CE18	0x004FE0AC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CEA0	0x00505670	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CEA4	0x005058A0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CEA8	0x005058A0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CEAC	0x005058A0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CEB0	0x00505494	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CEB4	0x00505494	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CEB8	0x00505670	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CEBC	0x00505670	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050CEC0	0x00505670	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D670	0x0050642C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D674	0x005064A8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D678	0x005063EC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D67C	0x00506468	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D680	0x0050631C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D684	0x0050635C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D688	0x005066F8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D68C	0x005066F8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D690	0x005066F8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D694	0x005066F8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D698	0x005064E8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D69C	0x005064E8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6A0	0x005064E8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6A4	0x005066F8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6A8	0x005066F8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6AC	0x005063A0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6B0	0x005063A0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6B4	0x005063A0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6C0	0x005095D4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6C4	0x00509818	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6C8	0x00509818	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6CC	0x00509818	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6D0	0x00509490	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6D4	0x00509490	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6D8	0x005095D4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6DC	0x005095D4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6E0	0x005095D4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6F0	0x0050935C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6F4	0x00509460	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6F8	0x00509460	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D6FC	0x00509458	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D700	0x0050866C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D704	0x00509034	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D708	0x005088C4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D70C	0x00509034	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D710	0x00508B44	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D720	0x0050723C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D724	0x00508344	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D728	0x005083E0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D72C	0x0050842C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D730	0x005084C0	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D734	0x005084E4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D738	0x00508508	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D73C	0x00508534	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D740	0x005085B8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D744	0x005085B8	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D748	0x00508598	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D750	0x00506C48	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D754	0x00506D8C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D758	0x00506D8C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D75C	0x00506D8C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D760	0x00506C48	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D764	0x00506C48	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D768	0x00506C48	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D76C	0x00506C48	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D770	0x00506C48	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D780	0x00506B44	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D784	0x00506B44	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D788	0x00506B44	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D78C	0x00506B44	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D790	0x00506B40	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D794	0x00506B40	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D798	0x00506B44	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D79C	0x00506B44	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7A0	0x00506B44	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7C0	0x0050B378	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7C4	0x0050B41C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7C8	0x0050B41C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7CC	0x0050B41C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7D0	0x0050B340	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7D4	0x0050B340	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7D8	0x0050B378	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7DC	0x0050B378	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7E0	0x0050B378	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7F0	0x0050ABBC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7F4	0x0050B310	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7F8	0x0050B310	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D7FC	0x0050B28C	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D800	0x0050A7D4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D804	0x0050A7D4	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D808	0x0050ABBC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D80C	0x0050ABBC	inside own text but not a function entry; kept raw
+raw-text-word	factory	0x0050D810	0x0050ABBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524900	0x004EC864	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524904	0x004EC91C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524908	0x004ECE40	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052490C	0x004ECBB8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524910	0x004ECC34	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524914	0x004ECD88	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524920	0x004EF0B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524924	0x004EF088	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524928	0x004EF088	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052492C	0x004EF0B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524930	0x004EEEB4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524934	0x004EEF5C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524938	0x004EED00	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052493C	0x004EED90	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524940	0x004EF088	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524944	0x004EF088	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524948	0x004EF0B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052494C	0x004EF0B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524950	0x004EF0B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524954	0x004EED00	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524958	0x004EF0B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052495C	0x004EF0B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524960	0x004EECB8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524970	0x004EF580	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524974	0x004EF49C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524978	0x004EF49C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052497C	0x004EF580	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524980	0x004EF49C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524984	0x004EF49C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524988	0x004EF2FC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052498C	0x004EF35C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524990	0x004EF49C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524994	0x004EF35C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524998	0x004EF580	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052499C	0x004EF580	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005249A0	0x004EF580	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005249A4	0x004EF2FC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BB0	0x004F0FBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BB4	0x004F0FC8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BB8	0x004F116C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BBC	0x004F11E8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BC0	0x004F11FC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BC4	0x004F1330	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BD0	0x004F2F54	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BD4	0x004F23B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BD8	0x004F2484	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BDC	0x004F24B8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BE0	0x004F2828	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BE4	0x004F2A74	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BE8	0x004F2B48	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BEC	0x004F2B74	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BF0	0x004F2754	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BF4	0x004F2F74	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BF8	0x004F2574	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524BFC	0x004F2A90	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C00	0x004F2AE8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C04	0x004F2658	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C08	0x004F2BB4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C0C	0x004F2BEC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C10	0x004F2C3C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C14	0x004F2CB4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C18	0x004F2DE8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C40	0x004F6E3C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C44	0x004F6EE0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C48	0x004F6EF0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C4C	0x004F6F04	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C50	0x004F6F18	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C54	0x004F6F38	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C58	0x004F6F50	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524C5C	0x004F6F70	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524DD0	0x005023D8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524DD4	0x005021DC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524DD8	0x00502234	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524DDC	0x00502274	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524DE0	0x0050229C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524DE4	0x005023C8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524DE8	0x005023D0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E00	0x005028BC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E04	0x00502540	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E08	0x005028BC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E0C	0x00502580	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E10	0x00502650	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E14	0x00502694	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E18	0x005027B0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E1C	0x0050270C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E20	0x00502750	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E24	0x0050288C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E28	0x005028A8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E30	0x00502C0C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E34	0x00502A70	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E38	0x00502AD8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E3C	0x00502C0C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E40	0x00502B18	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E44	0x00502B4C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E48	0x00502BC4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E50	0x00502ED0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E54	0x00502CC0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E58	0x00502CD8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E5C	0x00502D88	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E60	0x00502DBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E64	0x00502EA0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E68	0x00502ED0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E6C	0x00502ED0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E80	0x00504EB0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E84	0x00505118	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E88	0x00504F14	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E8C	0x00504F90	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E90	0x00504FE8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E94	0x00505024	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E98	0x00505060	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524E9C	0x00505104	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EA0	0x00505EBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EA4	0x00505BAC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EA8	0x00505C34	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EAC	0x00505C88	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EB0	0x00505CAC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EB4	0x00505DBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EB8	0x00505E18	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524ED0	0x00509E90	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524ED4	0x00509EE8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524ED8	0x00509F54	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EDC	0x00509FC4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EE0	0x0050A0B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EE4	0x00509FEC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EE8	0x0050A01C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EEC	0x0050A0A0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EF0	0x0050A85C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EF4	0x0050A900	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EF8	0x0050A910	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524EFC	0x0050A920	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F00	0x0050A930	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F04	0x0050A940	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F08	0x0050A950	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F0C	0x0050A960	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F10	0x0050A970	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F14	0x0050A9C4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F18	0x0050A9D4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F1C	0x0050A9DC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F20	0x0050A9DC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F24	0x0050A98C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F28	0x0050A9A0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F2C	0x0050A9B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F30	0x0050A9DC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F60	0x0050B57C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F64	0x0050AA5C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F68	0x0050AC20	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F6C	0x0050B03C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F70	0x0050B398	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F74	0x0050B57C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F78	0x0050B57C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F7C	0x0050B57C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F80	0x0050B540	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F84	0x0050B57C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F90	0x0050B8B8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F94	0x0050B8B8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F98	0x0050B700	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524F9C	0x0050B710	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FA0	0x0050B720	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FA4	0x0050B730	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FA8	0x0050B740	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FAC	0x0050B750	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FB0	0x0050B760	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FB4	0x0050B770	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FB8	0x0050B780	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FBC	0x0050B790	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FC0	0x0050B7A0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FC4	0x0050B7B0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FC8	0x0050B7C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FCC	0x0050B7D0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FD0	0x0050B7E0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FD4	0x0050B7F0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FD8	0x0050B800	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FDC	0x0050B810	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FE0	0x0050B8B8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FE4	0x0050B820	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FE8	0x0050B830	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FEC	0x0050B840	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FF0	0x0050B850	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FF4	0x0050B860	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FF8	0x0050B870	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00524FFC	0x0050B880	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525000	0x0050B890	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525004	0x0050B8A0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525008	0x0050B8B0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525010	0x0050B934	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525014	0x0050B9DC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525018	0x0050B9EC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052501C	0x0050BA6C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525020	0x0050BACC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525024	0x0050BADC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525028	0x0050BAEC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052502C	0x0050BAFC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525030	0x0050BB0C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525034	0x0050BB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525038	0x0050BB2C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052503C	0x0050BB3C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525040	0x0050BB4C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525044	0x0050BB5C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525048	0x0050BB6C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052504C	0x0050BB7C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525050	0x0050BB8C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525054	0x0050BB9C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525058	0x0050BBAC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052505C	0x0050BBBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525060	0x0050BBCC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525064	0x0050BBDC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525068	0x0050BBEC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052506C	0x0050BBFC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525070	0x0050BC0C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525074	0x0050BC1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525078	0x0050BC2C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052507C	0x0050BC3C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525080	0x0050BC4C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525084	0x0050BC5C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525088	0x0050BC6C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052508C	0x0050BC80	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525090	0x0050BC90	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525094	0x0050BCA0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525098	0x0050BCB0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052509C	0x0050BCC0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005250A0	0x0050BCD0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005250A4	0x0050BCE0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005250A8	0x0050BCF0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005250AC	0x0050BD00	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525210	0x00512188	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525214	0x00512198	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525218	0x005121B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052521C	0x005121C4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525220	0x005121E0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525224	0x005121F8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525228	0x00512214	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052522C	0x00512230	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525230	0x0051224C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005252F0	0x00517268	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005252F4	0x005173A8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005252F8	0x00517590	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005252FC	0x00517470	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525300	0x005174BC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525304	0x00517520	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525310	0x00517F74	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525314	0x005180C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525318	0x00518400	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052531C	0x00518478	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525320	0x005184CC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525324	0x005185B0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525328	0x00518540	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525370	0x0051A6C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525374	0x005199A0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525378	0x00519A3C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052537C	0x00519B38	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525380	0x0051A6C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525384	0x00519CCC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525388	0x00519CF0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052538C	0x00519E34	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525390	0x0051A2FC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525394	0x0051A32C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525398	0x0051A6C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052539C	0x0051A6C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253A0	0x0051A6C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253A4	0x0051A6C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253B0	0x0051989C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253B4	0x005198A4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253B8	0x0051A6CC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253BC	0x0051AA70	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253C0	0x0051ABB0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253C4	0x0051AC04	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253C8	0x0051AC98	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253CC	0x0051AA78	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253D0	0x0051AACC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005253D4	0x0051AB3C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525420	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525424	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525428	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052542C	0x0051D748	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525430	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525434	0x0051D748	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525438	0x0051D6E8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052543C	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525440	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525444	0x0051D8FC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525448	0x0051D748	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052544C	0x0051D764	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525450	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525454	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525458	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052545C	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525460	0x0051D798	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525464	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525468	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052546C	0x0051D648	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525470	0x0051DA44	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525480	0x0051DB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525484	0x0051DB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525488	0x0051DB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052548C	0x0051DB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525490	0x0051DB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525494	0x0051DB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525498	0x0051DB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052549C	0x0051DB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254A0	0x0051DB1C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254B0	0x0051DE00	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254B4	0x0051DE08	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254B8	0x0051DE44	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254BC	0x0051DE80	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254C0	0x0051DE20	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254C4	0x0051DE5C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254C8	0x0051DF84	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254CC	0x0051DE20	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254D0	0x0051DE20	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254D4	0x0051DEB4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254D8	0x0051DF3C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254DC	0x0051DF3C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254E0	0x0051DE28	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254E4	0x0051DF80	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254E8	0x0051DF80	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254EC	0x0051DF80	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254F0	0x0051DEF8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254F4	0x0051DF80	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254F8	0x0051DF84	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005254FC	0x0051DF84	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525500	0x0051DF84	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525510	0x0051DDBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525514	0x0051DDBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525518	0x0051DDBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052551C	0x0051DDBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525520	0x0051DDBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525524	0x0051DDBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525528	0x0051DDBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052552C	0x0051DDBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525530	0x0051DDBC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525640	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525644	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525648	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052564C	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525650	0x0051F300	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525654	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525658	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052565C	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525660	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525664	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525668	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052566C	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525670	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525674	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525678	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052567C	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525680	0x0051F480	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525690	0x00521DD8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525694	0x00521D9C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525698	0x00521D9C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052569C	0x00521DB8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256A0	0x00521DB8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256A4	0x00521DD4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256A8	0x00521DD4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256B0	0x005213C4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256B4	0x00521388	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256B8	0x00521388	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256BC	0x005213A4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256C0	0x005213A4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256C4	0x005213C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256C8	0x005213C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256D0	0x00520C2C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256D4	0x00520C48	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256D8	0x00520C64	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256DC	0x00520C80	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256E0	0x00520C9C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256E4	0x00520CB8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256E8	0x00520CD4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256F0	0x00521B88	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256F4	0x0051F618	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256F8	0x0051F688	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005256FC	0x0051F7B4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525700	0x0051F7C8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525704	0x0051F9F0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525708	0x0051FCE0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052570C	0x00520098	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525710	0x00520714	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525714	0x00521ED4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525718	0x00520D44	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052571C	0x00521984	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525720	0x005217C0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525724	0x0052155C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525728	0x0052133C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052572C	0x0052103C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525730	0x00520D64	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525734	0x00520A30	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525738	0x00520A68	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052573C	0x00520BA0	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525740	0x0051FACC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525744	0x00521BA8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525748	0x00521ED4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525750	0x0052239C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525754	0x0052239C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525758	0x0052239C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052575C	0x0052239C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525760	0x0052239C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525764	0x0052239C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525768	0x005223A4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052576C	0x005223A4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525770	0x005223AC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525774	0x005223D8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525778	0x00522418	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052577C	0x005223A4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525780	0x005223A4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525784	0x005223AC	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525788	0x005223A4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x0052578C	0x00522404	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x00525790	0x00522410	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005257A0	0x00522B4C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005257A4	0x00522AD4	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005257A8	0x00522AE8	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005257AC	0x00522B4C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005257B0	0x00522B0C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005257B4	0x00522B4C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005257B8	0x00522B4C	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005257BC	0x00522B40	inside own text but not a function entry; kept raw
+raw-text-word	insect	0x005257C0	0x00522B4C	inside own text but not a function entry; kept raw

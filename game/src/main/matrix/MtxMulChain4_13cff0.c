@@ -1,0 +1,76 @@
+#include "types.h"
+
+asm void MtxMulChain4_13cff0(void)
+{
+    .set noreorder;
+    lqc2       $vf1, 0x0($5);
+    lqc2       $vf2, 0x10($5);
+    lqc2       $vf3, 0x20($5);
+    lqc2       $vf4, 0x30($5);
+    lqc2       $vf5, 0x0($6);
+    lqc2       $vf6, 0x10($6);
+    lqc2       $vf7, 0x20($6);
+    lqc2       $vf8, 0x30($6);
+    lqc2       $vf9, 0x0($7);
+    lqc2       $vf10, 0x10($7);
+    lqc2       $vf11, 0x20($7);
+    lqc2       $vf12, 0x30($7);
+    lqc2       $vf13, 0x0($8);
+    lqc2       $vf14, 0x10($8);
+    lqc2       $vf15, 0x20($8);
+    lqc2       $vf16, 0x30($8);
+    vmulax.xyzw $ACC, $vf1, $vf5x;
+    vmadday.xyzw $ACC, $vf2, $vf5y;
+    vmaddaz.xyzw $ACC, $vf3, $vf5z;
+    vmaddw.xyzw $vf20, $vf4, $vf5w;
+    vmulax.xyzw $ACC, $vf1, $vf6x;
+    vmadday.xyzw $ACC, $vf2, $vf6y;
+    vmaddaz.xyzw $ACC, $vf3, $vf6z;
+    vmaddw.xyzw $vf21, $vf4, $vf6w;
+    vmulax.xyzw $ACC, $vf1, $vf7x;
+    vmadday.xyzw $ACC, $vf2, $vf7y;
+    vmaddaz.xyzw $ACC, $vf3, $vf7z;
+    vmaddw.xyzw $vf22, $vf4, $vf7w;
+    vmulax.xyzw $ACC, $vf1, $vf8x;
+    vmadday.xyzw $ACC, $vf2, $vf8y;
+    vmaddaz.xyzw $ACC, $vf3, $vf8z;
+    vmaddw.xyzw $vf23, $vf4, $vf8w;
+    vmulax.xyzw $ACC, $vf20, $vf9x;
+    vmadday.xyzw $ACC, $vf21, $vf9y;
+    vmaddaz.xyzw $ACC, $vf22, $vf9z;
+    vmaddw.xyzw $vf24, $vf23, $vf9w;
+    vmulax.xyzw $ACC, $vf20, $vf10x;
+    vmadday.xyzw $ACC, $vf21, $vf10y;
+    vmaddaz.xyzw $ACC, $vf22, $vf10z;
+    vmaddw.xyzw $vf25, $vf23, $vf10w;
+    vmulax.xyzw $ACC, $vf20, $vf11x;
+    vmadday.xyzw $ACC, $vf21, $vf11y;
+    vmaddaz.xyzw $ACC, $vf22, $vf11z;
+    vmaddw.xyzw $vf26, $vf23, $vf11w;
+    vmulax.xyzw $ACC, $vf20, $vf12x;
+    vmadday.xyzw $ACC, $vf21, $vf12y;
+    vmaddaz.xyzw $ACC, $vf22, $vf12z;
+    vmaddw.xyzw $vf27, $vf23, $vf12w;
+    vmulax.xyzw $ACC, $vf24, $vf13x;
+    vmadday.xyzw $ACC, $vf25, $vf13y;
+    vmaddaz.xyzw $ACC, $vf26, $vf13z;
+    vmaddw.xyzw $vf20, $vf27, $vf13w;
+    vmulax.xyzw $ACC, $vf24, $vf14x;
+    vmadday.xyzw $ACC, $vf25, $vf14y;
+    vmaddaz.xyzw $ACC, $vf26, $vf14z;
+    vmaddw.xyzw $vf21, $vf27, $vf14w;
+    vmulax.xyzw $ACC, $vf24, $vf15x;
+    vmadday.xyzw $ACC, $vf25, $vf15y;
+    vmaddaz.xyzw $ACC, $vf26, $vf15z;
+    vmaddw.xyzw $vf22, $vf27, $vf15w;
+    vmulax.xyzw $ACC, $vf24, $vf16x;
+    vmadday.xyzw $ACC, $vf25, $vf16y;
+    vmaddaz.xyzw $ACC, $vf26, $vf16z;
+    vmaddw.xyzw $vf23, $vf27, $vf16w;
+    sqc2       $vf20, 0x0($4);
+    sqc2       $vf21, 0x10($4);
+    sqc2       $vf22, 0x20($4);
+    jr         $31;
+    sqc2      $vf23, 0x30($4);
+}
+

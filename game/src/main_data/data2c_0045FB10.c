@@ -1,0 +1,9 @@
+/* rgp:protos */
+#include "port/game_protos.h"
+#line 1
+/* rg:datareloc */
+/* Generated: do not edit. */
+#include "types.h"
+
+char D_0045FB10[32] __attribute__((section(".data$rg0045FB10"), aligned(16))) = @S@0045FB10@32@;
+typedef char data2c_sizecheck_0045FB10[(sizeof(D_0045FB10) == 32) ? 1 : -1];

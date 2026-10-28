@@ -1,0 +1,5 @@
+# determinism run: CROSS (SE colour + rumble), START, a d-pad press
+30 90 CROSS
+120 START
+200 260 RIGHT
+400 430 CROSS+SQUARE

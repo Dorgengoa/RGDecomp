@@ -1,0 +1,29 @@
+/* rgp:protos */
+#define RGP_SELF_EffectEntryKillByIdx_2ddf90 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/* Head of a 7-member clone group (76 B each).  Bounds-checked dispatch into a
+   0x30-entry table of 224-byte records; retail strength-reduces the stride to
+   `sll 3 / subu / sll 5` = (i*8 - i)*32.  Both guards share ONE `return 1`,
+   which is what puts the second compare in a GPR and duplicates the `$2 = 1`
+   into the `bltzl` delay slot (session 24 lever 1). */
+
+typedef struct Idx {
+    u8  pad000[0x8];
+    s32 m8;
+} Idx;
+
+/*rgp*/
+
+s32 EffectEntryKillByIdx_2ddf90(void *base, Idx *p, int rgp_a2, int rgp_a3)
+{
+    s32 i = p->m8;
+
+    if (i < 0 || i >= 0x30) {
+        return 1;
+    }
+    EffectEntryReleaseNodeById_2da4c0((u8 *)base + i * 224, (void *)p, (int)rgp_a2, (int)rgp_a3);
+    return 0;
+}

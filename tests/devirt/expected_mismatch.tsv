@@ -1,0 +1,4 @@
+# Units whose devirt retail cross-check disagrees for a reason that is NOT a slot/layout error.
+# file<TAB>reason   (tools/devirt_verify.py reads this; keep it short)
+src/main/obj/HandleRegistryInsert_314f80.cpp	clang folds Handle::operator= on a just-tested null handle: the f6c(-1) release path is dead after inlining (mwcc kept it); benign
+src/main/chara/CharaDeserialize_3a9c50.cpp	-O2 (docs/UB-AUDIT.md): the 10-slot loop is unrolled (sites 308..470:1C) and its first vptr load folds to base+0x308 (0:18); same slots, same calls; benign

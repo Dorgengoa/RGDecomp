@@ -1,0 +1,113 @@
+#include "types.h"
+
+extern void sceVu0OuterProduct(void);
+
+asm void PointInTriangle_13d720(void)
+{
+    .set noreorder;
+    addiu      $29, $29, -0xB0;
+    sd         $31, 0x10($29);
+    sq         $16, 0x0($29);
+    daddu      $16, $8, $0;
+    addiu      $8, $29, 0xA0;
+    lqc2       $vf4, 0x0($4);
+    lqc2       $vf5, 0x0($5);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($8);
+    addiu      $2, $29, 0x90;
+    lqc2       $vf4, 0x0($4);
+    lqc2       $vf5, 0x0($6);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($2);
+    addiu      $2, $29, 0x80;
+    lqc2       $vf4, 0x0($4);
+    lqc2       $vf5, 0x0($7);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($2);
+    addiu      $3, $29, 0x70;
+    lqc2       $vf4, 0x0($6);
+    lqc2       $vf5, 0x0($5);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($3);
+    addiu      $2, $29, 0x60;
+    lqc2       $vf4, 0x0($7);
+    lqc2       $vf5, 0x0($6);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($2);
+    addiu      $2, $29, 0x50;
+    lqc2       $vf4, 0x0($5);
+    lqc2       $vf5, 0x0($7);
+    vsub.xyzw  $vf6, $vf4, $vf5;
+    sqc2       $vf6, 0x0($2);
+    daddu      $5, $3, $0;
+    daddu      $6, $8, $0;
+    jal        sceVu0OuterProduct;
+    addiu     $4, $29, 0x40;
+    addiu      $4, $29, 0x30;
+    addiu      $5, $29, 0x60;
+    jal        sceVu0OuterProduct;
+    addiu     $6, $29, 0x90;
+    addiu      $4, $29, 0x20;
+    addiu      $5, $29, 0x50;
+    jal        sceVu0OuterProduct;
+    addiu     $6, $29, 0x80;
+    addiu      $2, $29, 0x40;
+    lqc2       $vf4, 0x0($2);
+    lqc2       $vf5, 0x0($16);
+    vmul.xyz   $vf5, $vf4, $vf5;
+    vaddy.x    $vf5, $vf5, $vf5y;
+    vaddz.x    $vf5, $vf5, $vf5z;
+    qmfc2.ni   $2, $vf5;
+    mtc1       $2, $f3;
+    addiu      $2, $29, 0x30;
+    lqc2       $vf4, 0x0($2);
+    lqc2       $vf5, 0x0($16);
+    vmul.xyz   $vf5, $vf4, $vf5;
+    vaddy.x    $vf5, $vf5, $vf5y;
+    vaddz.x    $vf5, $vf5, $vf5z;
+    qmfc2.ni   $2, $vf5;
+    mtc1       $2, $f2;
+    addiu      $2, $29, 0x20;
+    lqc2       $vf4, 0x0($2);
+    lqc2       $vf5, 0x0($16);
+    vmul.xyz   $vf5, $vf4, $vf5;
+    vaddy.x    $vf5, $vf5, $vf5y;
+    vaddz.x    $vf5, $vf5, $vf5z;
+    qmfc2.ni   $2, $vf5;
+    mtc1       $2, $f1;
+    mtc1       $0, $f0;
+    nop;
+    c.lt.s     $f3, $f0;
+    bc1t       L0013D86C;
+    nop;
+    c.lt.s     $f2, $f0;
+    bc1t       L0013D86C;
+    nop;
+    c.lt.s     $f1, $f0;
+    bc1t       L0013D86C;
+    nop;
+    b          L0013D8A4;
+    addiu     $2, $0, 0x1;
+  L0013D86C:
+    mtc1       $0, $f0;
+    nop;
+    c.le.s     $f3, $f0;
+    bc1fl      L0013D8A4;
+    daddu     $2, $0, $0;
+    c.le.s     $f2, $f0;
+    bc1f       L0013D8A0;
+    nop;
+    c.le.s     $f1, $f0;
+    bc1f       L0013D8A0;
+    nop;
+    b          L0013D8A4;
+    addiu     $2, $0, 0x1;
+  L0013D8A0:
+    daddu      $2, $0, $0;
+  L0013D8A4:
+    ld         $31, 0x10($29);
+    lq         $16, 0x0($29);
+    jr         $31;
+    addiu     $29, $29, 0xB0;
+}
+
