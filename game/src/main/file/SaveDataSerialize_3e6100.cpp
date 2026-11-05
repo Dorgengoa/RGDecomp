@@ -50,7 +50,7 @@ typedef struct Self {
 } Self;
 
 extern "C" {
-extern s32 D_004658F0[0x400];
+extern s32 D_004658F0[2];
 extern s32 D_004658F8[0x400];
 void SaveDataClearError_3e6350(void *);
 void SaveDataSetError_3e6340(Self *, s32, s32, s32);

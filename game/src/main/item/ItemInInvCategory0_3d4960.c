@@ -13,7 +13,7 @@ typedef struct Rec {
     s16 f06;
 } Rec;
 
-extern s32 D_00465A08[4];
+extern s32 D_00465A08[2];
 extern s32 D_00465A10[4];
 
 u8 ItemInInvCategory0_3d4960(Rec *r)

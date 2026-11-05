@@ -49,7 +49,7 @@ s32 MenuGetMode_2a4e30(A2a3d90 *);
 V2a3d90 *InvFindByInvId_3c87d0(s32, s32, s32);
 s32 InvMakeIdFromCategory_3c88b0(s32, s32, s32, s32, s32);
 s32 ItemHasCountFlag_3d44e0(V2a3d90 *);
-extern s32 D_004659F0[4];
+extern s32 D_004659F0[2];
 extern s32 D_004659F8[4];
 }
 

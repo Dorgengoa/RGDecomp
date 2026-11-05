@@ -24,7 +24,7 @@ void *memset(void *, s32, u32);
 
 extern u8 D_00451060[];
 extern u8 D_004510A0[];
-extern u8 D_00461498[0x400];
+extern u8 D_00461498[8];
 extern u8 D_004614A0[0x400];
 extern s32 D_00481BBC;
 extern s32 D_00482360;

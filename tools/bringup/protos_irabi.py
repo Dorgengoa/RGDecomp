@@ -235,6 +235,11 @@ class IRCache:
         for c in json.load(open(Path(build) / "compile_commands.json")):
             self.cmds[N(c["file"]).lower()] = (c["command"], c["directory"])
         self.game = Path(game).resolve()
+        # the tree prefixes as compile_commands keys spell them (lower-case, '/'): taken from
+        # this script's tree and --game, not a fixed "/port/" spelling, so a build from a
+        # source copy (tools/playtest/srcrecover.py --materialize) finds its commands too
+        self.k_game = N(str(self.game)).lower().rstrip("/") + "/"
+        self.k_ovr = N(str((PORT / "overrides").resolve())).lower().rstrip("/") + "/"
         self.cache = Path(cache).resolve()
         self.cache.mkdir(parents=True, exist_ok=True)
 
@@ -256,9 +261,10 @@ class IRCache:
         key = N(str(src.resolve())).lower()
         if key not in self.cmds:
             # fall back to a sibling's command with the file swapped
-            twin = key.replace("/port/overrides/", "/port/game/")   # an override made after
-            sib = twin if twin in self.cmds else next(                # the build's configure
-                (k for k in self.cmds if k.endswith(src.suffix) and "/port/game/src/" in k), None)
+            twin = (self.k_game + key[len(self.k_ovr):]            # an override made after
+                    if key.startswith(self.k_ovr) else key)          # the build's configure
+            sib = twin if twin in self.cmds else next(
+                (k for k in self.cmds if k.endswith(src.suffix) and k.startswith(self.k_game + "src/")), None)
             if sib is None:
                 return None
             cmd, cwd = self.cmds[sib]
@@ -555,8 +561,9 @@ def image_of(path):
 def audit_all(a):
     """Every direct call in every compiled unit vs its callee's definition."""
     irc = IRCache(a.build, a.game, a.cache)
-    srcs = sorted({k for k in irc.cmds if any(t in k for t in ("/port/game/src/", "/port/overrides/src/",
-                                                                 "/port/missing/src/"))})
+    roots = (irc.k_game + "src/", irc.k_ovr + "src/",
+             N(str((PORT / "missing" / "src").resolve())).lower() + "/")
+    srcs = sorted({k for k in irc.cmds if k.startswith(roots)})
     print(f"protos_irabi --all: {len(srcs)} units", flush=True)
     done = [0]
 

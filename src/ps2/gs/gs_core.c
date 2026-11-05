@@ -322,8 +322,10 @@ uint64_t gs_read_priv(gs_state *gs, uint32_t ee_addr)
     return gs->preg[i];
 }
 
+uint32_t gs__vsyncs;   /* (investigation counter: gs_raster.c RG_GS_DRAWLOG) */
 void gs_vsync(gs_state *gs)
 {
+    gs__vsyncs++;
     if (gs->rec) gs->rec(gs->rec_user, GS_REC_VSYNC, 0, 0, NULL, 0);
     if (gs->preg[2] & 1) gs->csr_field ^= 1u; /* SMODE2.INT */
     else gs->csr_field = 0;

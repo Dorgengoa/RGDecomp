@@ -10,14 +10,14 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern s32 D_0049D45C[0x40];
-extern s32 D_0049D4E0[0x40];
-extern s32 D_0049D4E4[0x40];
-extern s32 D_0049D4E8[0x40];
-extern s32 D_0049D4F0[0x40];
-extern s32 D_0049D4F4[0x40];
-extern s32 D_0049D4F8[0x40];
-extern s32 D_0049D4FC[0x40];
+extern s32 D_0049D45C[8];
+extern s32 D_0049D4E0[1];
+extern s32 D_0049D4E4[1];
+extern s32 D_0049D4E8[1];
+extern s32 D_0049D4F0[1];
+extern s32 D_0049D4F4[1];
+extern s32 D_0049D4F8[1];
+extern s32 D_0049D4FC[1];
 extern s32 D_0049D500[0x40];
 
 s32 ParamScriptSeStartCmd_1af8d0(s32 pad0, s32 arg1)

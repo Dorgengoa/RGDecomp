@@ -10,10 +10,10 @@ engine, and native file, controller, memory-card and movie services.
 content: no art, sound, music, movies, text or game data, and no bytes taken from the
 game's executable. The first-run setup reads everything it needs from your own disc image.
 
-- **Play it:** download `release/RogueGalaxyPC-1028a-win32.zip` and follow
+- **Play it:** download `release/RogueGalaxyPC-1105a-win32.zip` and follow
   [QUICKSTART.md](QUICKSTART.md). In short: unzip it, put your `.iso` in the folder, run
   `Setup.exe` once, then run `rg-game.exe`.
-- **Build:** 1028a (2026-10-28).
+- **Build:** 1105a (2026-11-05).
 
 ## Current state
 
@@ -28,8 +28,9 @@ that led there.
   every chapter, maps, battles, game over, the shop, the Factory and Insectron.
 - Play-testers have played from the start through the early boss fights. **A complete
   playthrough has not been confirmed yet.** Later chapters are covered by the automated save tests only.
-- Windows 10 or 11, 64-bit, with a Direct3D 11 or Vulkan graphics card. The executable is
-  32-bit; a 64-bit build and Linux are planned.
+- Windows 10 or 11, 64-bit, with a Direct3D 11 or Vulkan graphics card. The executable in
+  the download is 32-bit. A 64-bit Windows build and Linux builds exist and run the same
+  automated routes, but are not in the download yet.
 
 ## Features added over the original
 
@@ -39,10 +40,17 @@ that led there.
 - Internal resolution 1x to 8x, or matched to the window.
 - Widescreen: 4:3, 16:9, 16:10, 21:9 or automatic, with a widened view, HUD and menus
   anchored to the screen edges, and movies kept at their own aspect ratio.
+- Exclusive fullscreen with a resolution and refresh-rate picker; monitors listed by name.
 - Anti-aliasing (FXAA, 2x to 4x supersampling), texture filtering (original, bilinear,
-  nearest), sharpening, CRT / scanline filter, brightness and gamma.
-- Frame rate: original, 30, 60, 120, 144 or uncapped, with optional interpolation for
-  smoother motion above 30 fps (off by default).
+  nearest), anisotropic filtering up to 16x, sharpening, CRT / scanline filter, brightness
+  and gamma.
+- Bloom, depth of field and motion blur: original, enhanced or off.
+- Frame rate: original, 30, 60, 120, 144, 165, 240, the display's rate or uncapped, with
+  optional interpolation for smoother motion above 30 fps (off by default).
+- HD texture packs: dump the game's textures as PNG and draw replacements (PNG / DDS, any
+  size) from `textures\SCUS-97490
+eplacements`; file names follow PCSX2's texture-pack
+  naming (off by default).
 - Direct3D 11 (default) or Vulkan.
 - FPS counter.
 
@@ -61,8 +69,16 @@ that led there.
 - Output device selection, switching live, and falling back when a headset is unplugged.
 - Keep playing or mute when the window loses focus.
 
+**Accessibility and gameplay options**
+- UI and subtitle scale (75 to 150 %), camera shake (0 to 100 %), reduced flashing.
+- Colour-blind modes for markers told apart by colour alone.
+- Text speed (original, fast, instant) and battle speed-up (1.5x to 3x); off by default.
+
 **Saves and loading**
-- Memory-card saves as files in `saves\`, written crash-safe, with automatic backups.
+- Memory-card saves as files in `saves\`, written crash-safe, with automatic backups; the
+  saves folder and the number of backups can be set.
+- Save manager in the settings menu: list saves and name them.
+- Import saves from a PCSX2 memory card (the card file is only read).
 - No disc loading delays.
 
 **Settings menu**
@@ -73,17 +89,14 @@ that led there.
 ## Known issues
 
 - No complete playthrough has been confirmed yet (see above).
-- Fixes not yet confirmed by a player: platforms made by the monography shot in an
-  early boss fight vanished at once (fixed in this build); menus and tutorials changing
-  the aspect ratio; hitches where audio and video stop together; stripes in shadows at
-  some internal resolutions.
+- Fixes not yet confirmed by a player: the Item Storage crash at the transporter; Monsha's
+  head and tail tip; floors culled while on screen; interpolated frames out of sync;
+  subtitles snapping from the left at wide aspect ratios; Exchange Points showing "Qu";
+  extra bold outlines on faces; the inventory selection frame; menu sides at 16:9 / 21:9.
 - Saving can cause a short slowdown and an audio hiccup.
 - Closing a shop runs at about 15 fps for half a second.
-- The anisotropic filtering setting has no effect yet.
-- Exclusive fullscreen has no resolution or refresh-rate picker; the monitor setting
-  shows a number, not the monitor's name.
-- The bloom, depth-of-field and motion-blur toggles, draw distance and shadow resolution
-  in the menu are placeholders.
+- "Enhanced" depth of field and motion blur currently look the same as "Original".
+- The shadow-resolution setting in the menu is a placeholder.
 - Movie audio runs at the disc's 48,048 Hz clock; long movies may drift very slightly.
 - Windows SmartScreen warns about the unsigned executables (choose "More info", then
   "Run anyway").
@@ -93,17 +106,12 @@ that led there.
 ## Planned
 
 - A confirmed full playthrough, with automated runs covering every chapter.
-- Display: exclusive-mode resolution and refresh picker, monitor names, more frame-rate
-  caps (165, 240, match display), a save-folder setting.
-- Saves: import of PCSX2 memory-card saves from the menu.
-- Graphics: anisotropic filtering, toggles for bloom, depth of field, motion blur and
-  flashing effects.
-- Accessibility: reduced camera shake, subtitle and UI scale, colour-blind-friendly
-  markers.
-- Gameplay options (off by default): text speed, battle speed-up.
-- A 64-bit build, Linux and macOS.
-- Later: HD texture packs and modding support; optional ray-traced shadows and ambient
-  occlusion.
+- The 64-bit Windows build and Linux in the download; later macOS.
+- Optional ray tracing (Vulkan, 64-bit build): sun shadows, ambient occlusion, reflections
+  and light from the art's lamps, screens and flames. Working in development builds, not
+  in this download yet.
+- Shadow resolution; enhanced depth of field and motion blur.
+- Modding support beyond texture packs.
 
 ## How the download avoids shipping game content
 
@@ -144,50 +152,51 @@ owners. This project is not affiliated with or endorsed by them.
 Third-party libraries keep their own licenses: see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and `THIRD_PARTY_LICENSES.txt`. No
 GPL-licensed code is used.
+## Building from source
 
-## Working on the port
-
-This branch also holds the port's full source, so others can build and change it.
+This branch also holds the port's source, so others can build and change it.
 
 | Path | Contents |
 | --- | --- |
 | `game/` | The game's decompiled C, as the port compiles it: generated by `tools/ingest.py` from a snapshot of the matching decompilation, with the port's transform stages applied. Never edited by hand. Its data tables hold placeholders (below). |
-| `pregen/` | Build inputs normally generated from the private decomp snapshot: the overlay registry (`overlay-gen/`, used when the snapshot is absent) and `DATAFILL.tsv` (the files that hold data placeholders) |
 | `overrides/` | Hand-ported replacements for single `game/` files, each recording the hash of the file it replaces |
 | `src/` | The PC side: native renderer (D3D11 / Vulkan), audio, file system, threads, pad, saves, settings, host shell (SDL3), the Sony SDK surface the game calls, `rg-extract` / `Setup.exe` |
 | `include/`, `cmake/`, `CMakeLists.txt` | Port headers and the build |
-| `tools/` | Ingest and transform stages, censuses, test fixtures and gates, packaging |
-| `tests/`, `probes/`, `census/`, `missing/` | Unit tests, design experiments, census outputs, stand-ins for functions the snapshot calls but does not define |
-| `docs/` | Design notes and bring-up history; start with `docs/PORT-OVERVIEW.md`, `PLAN.md` and `docs/TOOLCHAIN.md` |
+| `pregen/` | Build inputs normally generated from the decomp snapshot: the overlay registry and `DATAFILL.tsv` (the files that hold data placeholders) |
+| `missing/` | Stand-ins for functions the snapshot calls but does not define |
+| `tests/` | Unit tests (`ctest`) |
+| `third_party/` | Vendored single-header libraries (see THIRD_PARTY_NOTICES.md) |
+| `tools/` | The build script, the data fill, the ingest stages and the scripts the tests run |
 
-### Workspace layout
+### Requirements (Windows)
 
-Scripts take paths relative to the repository root (run them from there) or to its parent
-folder, the workspace:
+Put these in a `tools` folder next to the repository (or point `RG_TOOLS` at it; `LLVM_ROOT`
+overrides the LLVM folder):
 
 ```
 workspace/
   port/        this repository
-  tools/       llvm, ninja, cmake-3.31.7-windows-x86_64, dl/SDL3-3.4.18.tar.gz (docs/TOOLCHAIN.md)
-  work/        optional: loose retail files some research tools read
-  RGDecomp/    optional: the matching decompilation (tools/ingest.py)
+  tools/
+    llvm/                              LLVM/Clang 23 (official Windows release, extracted)
+    ninja/ninja.exe                    Ninja 1.13
+    cmake-3.31.7-windows-x86_64/       CMake 3.31 (portable zip)
+    dxc/bin/x64/dxc.exe                DirectX Shader Compiler with SPIR-V (python tools/native/fetch_dxc.py)
+    dl/SDL3-3.4.18.tar.gz              optional: SDL3 source for offline builds (else downloaded)
 ```
 
-`RG_TOOLS` overrides the tools folder and `LLVM_ROOT` the LLVM install.
+Also needed: Visual Studio 2019 Build Tools (x86 C runtime and Windows SDK) and Python 3.10+.
 
 ### First build
 
-1. Extract your disc: build or download `Setup.exe` / `rg-extract`, then
+1. Extract your disc with `Setup.exe` from the release zip, or with `rg-extract`:
    `rg-extract "Rogue Galaxy (USA).iso" -o data` in the repository root.
-2. Fill the game data from it: `python tools/gamedata_fill.py --data data`. The published
-   `game/` and `overrides/` hold placeholders instead of the game's data values; this puts
-   them back from your own disc and checks every file's SHA-256. In a git checkout it marks
-   the filled files skip-worktree: they now hold game data, so never commit them.
-3. Build: `powershell -ExecutionPolicy Bypass -File tools\build.ps1` (i686, clang + Ninja,
-   Visual Studio 2019 Build Tools for the Windows SDK and C runtime), or the play-test
-   recipe `python tools/playtest/build_playtest.py --tag dev --steps check,configure,build`.
+2. Fill in the game data: `python tools/gamedata_fill.py --data data`. The published `game/`
+   and `overrides/` hold placeholders instead of the game's data values; this puts them back
+   from your own disc and checks every file's SHA-256. In a git checkout it marks the filled
+   files skip-worktree: they now hold game data, so never commit them.
+3. Build: `powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Game` (i686, Clang +
+   Ninja; the same options as the release build).
 4. Run `build\i686-windows\rg-game.exe --data data`.
 
-The research and gate scripts under `tools/` were written for the original workspace and
-some expect files that are not part of this repository (PCSX2 traces, save-state
-fixtures); their docstrings say what they read.
+Run the unit tests with `ctest --test-dir build\i686-windows`. Some tests need files that are
+not part of this repository (save-state fixtures, traces) and skip or fail without them.

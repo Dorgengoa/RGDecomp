@@ -1,4 +1,4 @@
-/* rg-override: replaces game/src/main/file/CdDatArchivesInit_182e70.c sha256 59a25f8eb1a9bb673c019475c1e3211ef03d75071d438744abaf69decd22f5a2
+/* rg-override: replaces game/src/main/file/CdDatArchivesInit_182e70.c sha256 48397947a5d2e0656bed7af03636cc63e05824fbd342b3683a4cd697872c36d4
  * why: native files (docs/NATIVE-FS.md, PLAN.md D9): no disc to wait for or query.  The
  *      dual-layer flag stays 1, as on the retail disc, so the game keeps choosing the
  *      disc-row file names (DATA0_* / DATA1_*) itself; layer1_start (stored, never used)
@@ -9,7 +9,7 @@
 #line 1
 #include "types.h"
 
-extern s8 D_00459770[0x10];
+extern s8 D_00459770[8];
 extern s8 D_00459778[0x10];
 extern s32 D_004811B8;
 extern s32 D_004811CC;

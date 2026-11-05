@@ -21,14 +21,17 @@ unchanged by construction):
   vthunk   protos rule def-vthunk-naked: the naked i686 forwarder
            `movl 4(%esp),%eax; movl V(%eax),%eax; jmp *S(%eax)` -> the Win64
            form `movl V(%rcx),%eax; movl S(%rax),%eax; jmp *%rax` (this = rcx;
-           vptr and slot are 4-byte words)
+           vptr and slot are 4-byte words); the register is spelled RG_X64_THIS
+           (port/x64.h: %rcx on Win64, %rdi on SysV Linux), one tree for both
   dalign   data-layer arrays keep their i686 alignment (x86-64 clang 16-aligns
            arrays >= 16 bytes; the layer is laid out back to back: datalayout.py)
   xalign   extern data declarations of game code: aligned(1) (x86-64 clang assumes
            16-byte alignment for extern objects >= 16 bytes; retail addresses are not)
-  narrowabi caller declarations whose 1/2-byte integer argument or 32-bit return
-           disagrees with the definition (i686 extends small integers, Win64 does
-           not: tools/x64/narrowabi.py)
+  narrowabi call-ABI mismatches between a caller's declaration and the definition
+           (i686 extends small integers and passes every argument in a 4-byte word,
+           Win64 does neither): runs LAST, over the whole tree as the other stages
+           left it (tools/x64/narrowabi.py derive_apply; census = narrowabi.py
+           --root <out>)
   (also vcmwiden, libc below)
 """
 from __future__ import annotations
@@ -57,14 +60,12 @@ VTHUNK = re.compile(
     r' "jmp \*(?P<s>-?(?:0x)?[0-9A-Fa-f]+)\(%eax\)"\);')
 
 _STAGE: ptr32.Ptr32Stage | None = None
-_DEFS: dict = {}
 
 
-def _init(state, defs=None):
-    global _STAGE, _DEFS
+def _init(state):
+    global _STAGE
     _STAGE = ptr32.Ptr32Stage()
     _STAGE.glob, _STAGE.hdr_fn_members = state
-    _DEFS = defs or {}
 
 
 def vthunk(text: str) -> tuple[str, int]:
@@ -73,7 +74,8 @@ def vthunk(text: str) -> tuple[str, int]:
     def sub(m):
         nonlocal n
         n += 1
-        return ('__asm__ volatile("movl ' + m.group("v") + '(%rcx), %eax\\n\\t" "movl '
+        # `this` by ABI: RG_X64_THIS (port/x64.h) = "%rcx" on Win64, "%rdi" on SysV Linux
+        return ('__asm__ volatile("movl ' + m.group("v") + '(" RG_X64_THIS "), %eax\\n\\t" "movl '
                 + m.group("s") + '(%rax), %eax\\n\\t" "jmp *%rax");')
     return VTHUNK.sub(sub, text), n
 
@@ -285,9 +287,11 @@ def work(item):
         st = _STAGE
         st.rows = []
         st.stats = Counter()
+        st.errors = []
         text, n = st.rewrite(f"{tree}/{rel}", text)
         cnt.update({"ptr32-" + k: v for k, v in st.stats.items()})
         rows = st.rows
+        probs += [f"ptr32: {x}" for x in st.errors]   # e.g. ptrarr-fn-rejected
         text, n = vthunk(text)
         cnt["vthunk"] += n
         text, n = libc(text)
@@ -296,9 +300,6 @@ def work(item):
         cnt["vcmwiden"] += n
         text, n = xalign(text)
         cnt["xalign"] += n
-        if rel.endswith((".c", ".cpp")) and _DEFS:
-            text, n, _ = narrowabi.rewrite(text, _DEFS, rel.endswith(".cpp"))
-            cnt["narrowabi"] += n
         if "movl 4(%esp)" in text:
             probs.append(f"{tree}/{rel}: i686 asm left (movl 4(%esp))")
     return tree, rel, text.encode("utf-8", "surrogateescape"), dict(cnt), probs, rows
@@ -343,25 +344,37 @@ def main() -> int:
     st = ptr32.Ptr32Stage()
     st.prepare_headers(hdr)
     items = collect(a)
-    # narrowabi: every game definition's signature (caller declarations are matched
-    # against it; tools/x64/narrowabi.py)
-    defs = narrowabi.definitions(src for _t, rel, src in items if rel.endswith((".c", ".cpp")))
     tot = Counter()
     probs: list[str] = []
     rows: list[str] = []
     written = 0
     keep: set[Path] = set()
-    with mp.Pool(a.jobs, initializer=_init, initargs=((st.glob, st.hdr_fn_members), defs)) as pool:
+    results = {}
+    with mp.Pool(a.jobs, initializer=_init, initargs=((st.glob, st.hdr_fn_members),)) as pool:
         for tree, rel, data, cnt, p, r in pool.imap_unordered(work, items, chunksize=64):
             tot.update(cnt)
             probs += p
             rows += r
-            dst = out / tree / rel
-            keep.add(dst)
-            if not dst.exists() or dst.read_bytes() != data:
-                dst.parent.mkdir(parents=True, exist_ok=True)
-                dst.write_bytes(data)
-                written += 1
+            results[out / tree / rel] = data
+    # narrowabi: the whole tree at once (definitions, typedefs and record sizes as the
+    # other stages left them; tools/x64/narrowabi.py derive_apply)
+    texts = {dst: data.decode("utf-8", "surrogateescape") for dst, data in results.items()
+             if dst.suffix in SRC_EXT and not is_data(dst.relative_to(out).as_posix().split("/", 1)[1])}
+    inc = sorted({d for dst in texts for d in dst.parents if d.name == "include"},
+                 key=lambda d: (d != out / "game" / "include", str(d)))
+    t1 = time.time()
+    new, n, _rows = narrowabi.derive_apply(texts, inc, root=out)
+    tot["narrowabi"] += n
+    tot["narrowabi-files"] += len(new)
+    for dst, text in new.items():
+        results[dst] = text.encode("utf-8", "surrogateescape")
+    print(f"narrowabi: {n} edits in {len(new)} files, {time.time() - t1:.0f} s")
+    for dst, data in results.items():
+        keep.add(dst)
+        if not dst.exists() or dst.read_bytes() != data:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(data)
+            written += 1
     rows.sort()
     tsv = ("tree/relpath\tline\trule\ttext\n" + "\n".join(rows) + "\n").encode()
     pt = out / "game" / "PTR32.tsv"

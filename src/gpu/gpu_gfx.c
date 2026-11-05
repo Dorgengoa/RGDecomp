@@ -50,6 +50,11 @@ void gpu_gfx_from_settings(gpu_gfx *g, const struct rg_settings *s)
                                                   "graphics.motion_blur" };
     for (int i = 0; i < GPU_FX_COUNT; i++)
         if (has(s, fx[i])) g->enh.fx[i] = rg_settings_get_enum(s, fx[i]);
+    if (has(s, "graphics.texture_dump")) g->enh.tex_dump = rg_settings_get_bool(s, "graphics.texture_dump");
+    if (g->enh.tex_dump && has(s, "graphics.texture_dump_movies") && rg_settings_get_bool(s, "graphics.texture_dump_movies"))
+        g->enh.tex_dump = 2;   /* (movie frames dumped too) */
+    if (has(s, "graphics.texture_replace")) g->enh.tex_replace = rg_settings_get_bool(s, "graphics.texture_replace");
+    if (has(s, "accessibility.flashing")) g->enh.flash = rg_settings_get_enum(s, "accessibility.flashing");
     if (has(s, "graphics.gamma")) g->post.gamma = (float)rg_settings_get_float(s, "graphics.gamma");
     if (has(s, "graphics.brightness"))
         g->post.brightness = (float)rg_settings_get_float(s, "graphics.brightness");

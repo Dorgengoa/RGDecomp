@@ -43,6 +43,12 @@ list(APPEND RG_NONLY_DROP rg_ps2_dmac rg_ps2_vif rg_ps2_vu)
 if(TARGET rg_gpu)
   list(APPEND RG_NONLY_DROP rg_gpu rg_ps2_gs)
 endif()
+# Linux with the native device on Vulkan (src/native/render RG_LINUX_NATIVE_DEVICE, docs/LINUX.md
+# "Windowed build"): no rg_gpu, the GS model goes the same way
+get_property(_rg_nonly_nd GLOBAL PROPERTY RG_NATIVE_DEVICE)
+if(_rg_nonly_nd AND NOT TARGET rg_gpu)
+  list(APPEND RG_NONLY_DROP rg_ps2_gs)
+endif()
 # VU0 (docs/NATIVE-CPU.md section 9): libvu0 as plain C lanes + the microprogram and the
 # shared contexts (rg_native_vu0) in place of the libvu0 transcription on the VU register
 # struct; RG_VU0_MODE=model keeps the model on purpose
@@ -200,6 +206,10 @@ function(_rg_nonly_item item out)
           target_include_directories(${v} PUBLIC ${drop_inc})
         endif()
         target_compile_definitions(${v} PRIVATE RG_NATIVE_ONLY=1)
+        get_target_property(nd ${item} RG_NONLY_DEFINITIONS)   # clone-only definitions (Linux RG_HAVE_GPU)
+        if(nd)
+          target_compile_definitions(${v} PRIVATE ${nd})
+        endif()
         if(rg_ps2_gs IN_LIST RG_NONLY_DROP)
           target_compile_definitions(${v} PRIVATE RG_NATIVE_GS=1)   # no GS model: the native state block (nr_gs.h)
         endif()

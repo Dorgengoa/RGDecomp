@@ -84,6 +84,12 @@ if(RG_LINUX_SYSROOT)
   # No pkg-config for the target: keep SDL from picking up host .pc files.
   set(ENV{PKG_CONFIG_LIBDIR} "${RG_LINUX_SYSROOT}/usr/lib/i386-linux-gnu/pkgconfig:${RG_LINUX_SYSROOT}/usr/share/pkgconfig")
   set(ENV{PKG_CONFIG_SYSROOT_DIR} "${RG_LINUX_SYSROOT}")
+  # tools/linux/sysroot.py --set gui leaves out the unversioned dev links of the X11 / ALSA
+  # libraries (no symlinks on Windows; a copy named libX11.so would make SDL3 dlopen
+  # "libX11.so" instead of the soname): find them by their soname files.  No effect on
+  # libraries that have a .so (libc, libm, libstdc++ are found as before).  CMakeGenericSystem
+  # resets the suffixes after this file, so they are set after every project() call.
+  set(CMAKE_PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/linux-sysroot-find.cmake")
 else()
   # Native multilib: let pkg-config find the i386 .pc files (SDL3's X11 /
   # Wayland / ALSA / PulseAudio probes), not the x86-64 ones.

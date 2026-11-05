@@ -20,11 +20,11 @@
    family's "case 0 shares default"). */
 
 /*rgp*/
-extern s32 D_00465A00[3];
+extern s32 D_00465A00[2];
 extern s32 D_00465A08[3];
-extern s32 D_00465A30[3];
+extern s32 D_00465A30[2];
 extern s32 D_00465A38[3];
-extern s32 D_00465B28[3];
+extern s32 D_00465B28[2];
 extern s32 D_00465B30[3];
 
 s32 InvIdGetMajorIndex_3d55f0(s32 p0)

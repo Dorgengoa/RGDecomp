@@ -8,6 +8,7 @@
 /*rgp*/
 extern s16 D_00450DD0[0x400];
 extern s16 D_00450DD2[0x400];
+#define D_00450DD2 (*(__typeof__(D_00450DD2) *)((u8 *)&D_00450DD0 + 0x2))   /* rg-interior */
 
 s32 MenuItemCmdSetRowHighlight_2a1800(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s16 arg4)
 {

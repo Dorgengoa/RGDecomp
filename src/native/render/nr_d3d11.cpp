@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "gpu_internal.h"
+#include "nr_texrep.h"
 
 #if NR_EXACT
 #include "VS_main.h"
@@ -51,6 +52,7 @@
 #include "CS_xfer.h"
 #include "VS_quad.h"
 #include "PS_load_color.h"
+#include "CS_load_phase.h"
 #include "PS_load_depth.h"
 #include "PS_copy_depth.h"
 #include "PS_display.h"
@@ -64,11 +66,16 @@
 #include "PS_sharpen.h"
 #include "PS_final.h"
 #include "VS_nr.h"
+#include "GS_nr.h"
 #include "VS_im.h"
 #include "PS_nr.h"
 #include "PS_nr_z.h"
+#include "PS_nr_zd.h"
+#include "PS_nr_zdp.h"
 #include "PS_nr_c.h"
 #include "PS_nr_cz.h"
+#include "PS_nr_cu.h"
+#include "PS_nr_czu.h"
 
 #define REL(x) do { if (x) { (x)->Release(); (x) = NULL; } } while (0)
 
@@ -86,6 +93,12 @@ struct Target {
                                        depth (zrov), R32_FLOAT: the ordered depth view */
     ID3D11Texture2D *snap;          /* colour snapshot for shader blending */
     ID3D11ShaderResourceView *snap_srv;
+    /* depth (zrov layout): a D32_FLOAT twin for native draws that test depth in the output
+     * merger (docs/NATIVE-RENDER.md "Throughput (2026-10-30)"); zst 0 twin stale, 1 both the
+     * same, 2 the twin newer (copied back before anything else reads the target) */
+    ID3D11Texture2D *ztex;
+    ID3D11DepthStencilView *zdsv;
+    int zst;
 };
 
 static const uint32_t MAX_VERTS = 65536 + 64;
@@ -122,6 +135,7 @@ public:
     ID3D11VertexShader *vs_main = NULL, *vs_quad = NULL;
     ID3D11PixelShader *ps_main = NULL, *ps_load_color = NULL, *ps_load_depth = NULL,
                       *ps_copy_depth = NULL, *ps_display = NULL;
+    ID3D11ComputeShader *cs_load_phase = NULL;
     ID3D11ComputeShader *cs_wb_color = NULL, *cs_wb_depth = NULL, *cs_decode = NULL, *cs_merge = NULL;
     ID3D11ComputeShader *cs_clut = NULL;            /* GPU-side CLUT loads (CS_clut) */
     ID3D11ComputeShader *cs_l2l_read = NULL, *cs_l2l_write = NULL;   /* local->local copies (mem_copy) */
@@ -198,14 +212,145 @@ public:
     double p_ms[64] = {}, p_px[64] = {};
     uint64_t p_n[64] = {};
     enum { PC_DECODE = 32, PC_WB, PC_LOAD, PC_DISPLAY, PC_SNAP, PC_NR, PC_N };
+    /* $RG_GPU_PROFILE=2 (docs/NATIVE-RENDER.md "Throughput"): no timestamp around each draw
+     * (a timestamp per draw serializes the GPU and measured ~0.01 ms per draw whatever its
+     * size); one at each display(), "frame" = GPU time from one display's start to the next
+     * (includes idle when the GPU waits for work) */
+    int prof_mode = 0;
+    /* $RG_GPU_PROFILE=4 (prof_tag, docs/NATIVE-RENDER.md "Interpolation at 5x"): a timestamp at
+     * each tag; the GPU time between two tags counts for the first one's category (idle included),
+     * bytes = whole-target / rectangle copy and clear traffic queued in the segment */
+    size_t tag_q = (size_t)-1;
+    int tag_cat = 0;
+    double tag_bytes = 0;
+    enum { TAG_MAX = 4096 };   /* GPT_N .. TAG_MAX: detail keys (prof_get) */
+    double t_ms[TAG_MAX] = {}, t_mb[TAG_MAX] = {};
+    uint64_t t_n[TAG_MAX] = {};
+    bool prof_get(int cat, double *ms, double *n) override
+    {
+        if (prof_mode != 4 || cat < 0 || cat >= TAG_MAX) return false;
+        tag_collect();
+        *ms = t_ms[cat];
+        *n = (double)t_n[cat];
+        return true;
+    }
+    struct TEv { int cat; size_t q0, q1; double b; };
+    std::vector<TEv> tev;
+    void prof_tag(int cat) override
+    {
+        if (prof_mode != 4 || cat == tag_cat || cat < 0 || cat >= TAG_MAX) return;
+        size_t q = pts();
+        if (q == (size_t)-1) return;
+        if (tag_q != (size_t)-1) tev.push_back(TEv{ tag_cat, tag_q, q, tag_bytes });
+        tag_q = q;
+        tag_cat = cat;
+        tag_bytes = 0;
+        if (pq_next > 8192) {
+            tag_collect();
+            tag_q = pts();
+        }
+    }
+    void tag_collect()
+    {
+        if (!pq_active) return;
+        ctx->End(pq_dis);
+        pq_active = false;
+        D3D11_QUERY_DATA_TIMESTAMP_DISJOINT dj;
+        while (ctx->GetData(pq_dis, &dj, sizeof dj, 0) == S_FALSE) {}
+        if (!dj.Disjoint && dj.Frequency)
+            for (const TEv &e : tev) {
+                UINT64 a = 0, b = 0;
+                while (ctx->GetData(pq[e.q0], &a, sizeof a, 0) == S_FALSE) {}
+                while (ctx->GetData(pq[e.q1], &b, sizeof b, 0) == S_FALSE) {}
+                if (b >= a) {
+                    t_ms[e.cat] += (double)(b - a) * 1000.0 / (double)dj.Frequency;
+                    t_n[e.cat]++;
+                    t_mb[e.cat] += e.b / 1048576.0;
+                }
+            }
+        tev.clear();
+        pq_next = 0;
+        tag_q = (size_t)-1;
+    }
+    void tag_print()
+    {
+        static const char *nm[GPT_N] = { "game (outside passes)", "pass: save targets", "pass: pre-images put", "pass: target create/destroy",
+                                          "pass: clears", "pass: loads put", "pass: target copies", "pass: reinterpretations",
+                                          "pass: mesh draws", "pass: immediate draws", "pass: restore", "compose after a pass",
+                                          "compose (no pass)" };
+        tag_collect();
+        double tot = 0;
+        for (int c = 0; c < GPT_N; c++) tot += t_ms[c];
+        fprintf(stderr, "gpu segments (RG_GPU_PROFILE=4: GPU ms between tags, idle included; MB = copy / clear traffic):\n");
+        for (int c = 0; c < GPT_N; c++)
+            if (t_n[c])
+                fprintf(stderr, "  %-30s %8llu segs %10.1f ms %5.1f%% %10.1f MB\n", nm[c], (unsigned long long)t_n[c], t_ms[c],
+                        tot > 0 ? 100.0 * t_ms[c] / tot : 0.0, t_mb[c]);
+        fprintf(stderr, "  total %.1f ms\n", tot);
+    }
+    /* $RG_GPU_PROFILE=3: one timestamp pair around each run of consecutive native draws (no
+     * other work between them): their GPU time without a timestamp per draw */
+    size_t nrun_q0 = (size_t)-1;
+    uint64_t nrun_draws = 0;
+    struct FrQ { ID3D11Query *dj = NULL, *t0 = NULL, *t1 = NULL; bool open = false, pending = false; } frq[4];
+    int fr_cur = 0;
+    std::vector<float> fr_ms;
+    uint64_t fr_disjoint = 0;
+    void fr_take(FrQ &q)
+    {
+        if (!q.pending) return;
+        q.pending = false;
+        D3D11_QUERY_DATA_TIMESTAMP_DISJOINT dj;
+        UINT64 a = 0, b = 0;
+        while (ctx->GetData(q.dj, &dj, sizeof dj, 0) == S_FALSE) {}
+        while (ctx->GetData(q.t0, &a, sizeof a, 0) == S_FALSE) {}
+        while (ctx->GetData(q.t1, &b, sizeof b, 0) == S_FALSE) {}
+        if (dj.Disjoint || !dj.Frequency || b < a) { fr_disjoint++; return; }
+        fr_ms.push_back((float)((double)(b - a) * 1000.0 / (double)dj.Frequency));
+    }
+    /* display boundary: close the open interval, open the next (results read 3 displays later) */
+    void fr_mark()
+    {
+        FrQ &c = frq[fr_cur];
+        if (c.open) { ctx->End(c.t1); ctx->End(c.dj); c.open = false; c.pending = true; }
+        fr_cur = (fr_cur + 1) & 3;
+        FrQ &n = frq[fr_cur];
+        fr_take(n);
+        if (!n.dj) {
+            D3D11_QUERY_DESC qd = { D3D11_QUERY_TIMESTAMP_DISJOINT, 0 }, qt = { D3D11_QUERY_TIMESTAMP, 0 };
+            if (FAILED(dev->CreateQuery(&qd, &n.dj)) || FAILED(dev->CreateQuery(&qt, &n.t0)) ||
+                FAILED(dev->CreateQuery(&qt, &n.t1)))
+                return;
+        }
+        ctx->Begin(n.dj);
+        ctx->End(n.t0);
+        n.open = true;
+    }
+    void fr_print()
+    {
+        for (FrQ &q : frq) fr_take(q);
+        if (fr_ms.empty()) return;
+        std::vector<float> v = fr_ms;
+        std::sort(v.begin(), v.end());
+        double s = 0;
+        for (float x : v) s += x;
+        fprintf(stderr, "gpu frames (RG_GPU_PROFILE=2: GPU time from one display to the next, idle included): %zu intervals, "
+                "mean %.3f ms, p50 %.3f, p90 %.3f, p99 %.3f, max %.3f (%llu disjoint)\n", v.size(), s / (double)v.size(),
+                v[v.size() / 2], v[v.size() * 9 / 10], v[v.size() * 99 / 100], v.back(), (unsigned long long)fr_disjoint);
+        for (FrQ &q : frq) { REL(q.dj); REL(q.t0); REL(q.t1); }
+    }
+    /* native draw kinds (printed at exit with RG_GPU_PROFILE): colour+depth ordered views,
+     * colour ordered view, depth ordered view, output merger only */
+    uint64_t n_nd_kind[4] = {}, n_nd_im = 0, n_nd_mesh = 0;
     size_t disp_q0 = (size_t)-1;   /* display(): compose + copy, ended in readback */
     void disp_end(double px)
     {
         if (disp_q0 != (size_t)-1) pev_add(PC_DISPLAY, disp_q0, px);
         disp_q0 = (size_t)-1;
     }
-    size_t pts()
+    size_t pts(bool frame = false)
     {
+        if (prof_mode == 2 && !frame) return (size_t)-1;
         if (!pq_active) { ctx->Begin(pq_dis); pq_active = true; }
         if (pq_next == pq.size()) {
             D3D11_QUERY_DESC qd = { D3D11_QUERY_TIMESTAMP, 0 };
@@ -258,12 +403,25 @@ public:
                          c & 4 ? " decoded" : "", c & 8 ? " exact" : "", c & 16 ? " tex" : " flat");
             else
                 snprintf(nm, sizeof nm, "%s", c == PC_DECODE ? "decode" : c == PC_WB ? "write-back"
-                         : c == PC_LOAD ? "load" : c == PC_DISPLAY ? "display+copy" : c == PC_NR ? "native model draws" : "snapshot");
+                         : c == PC_LOAD ? "load" : c == PC_DISPLAY ? "display+copy" : c == PC_NR ? (prof_mode == 3 ? "native draw runs (Mpx = draws / 1e6)" : "native model draws") : "snapshot");
             fprintf(stderr, "  %-36s %8llu calls %10.1f ms %5.1f%% %8.3f ms/call %10.1f Mpx\n", nm,
                     (unsigned long long)p_n[c], p_ms[c], tot > 0 ? 100.0 * p_ms[c] / tot : 0.0,
                     p_ms[c] / (double)p_n[c], p_px[c] / 1e6);
         }
         fprintf(stderr, "  total %.1f ms\n", tot);
+    }
+    void nd_print()
+    {
+        if (!n_nd_mesh && !n_nd_im) return;
+        fprintf(stderr, "native draws (d3d11): %llu meshes, %llu immediate; colour+depth ROV %llu, colour ROV %llu, depth ROV %llu, "
+                "output merger %llu (depth twin %llu; twin copies in %llu, out %llu; state cache: %llu vertex rebinds skipped; targets allocated %llu, from the pool %llu; colour-ROV draws right after one %llu, same texture and scissor %llu, same constants %llu, merged %llu; through plain views %llu; target RTV <-> colour view switches %llu)\n",
+                (unsigned long long)n_nd_mesh, (unsigned long long)n_nd_im,
+                (unsigned long long)n_nd_kind[0], (unsigned long long)n_nd_kind[1], (unsigned long long)n_nd_kind[2],
+                (unsigned long long)n_nd_kind[3], (unsigned long long)n_nd_zdsv, (unsigned long long)n_z_in,
+                (unsigned long long)n_z_out, (unsigned long long)n_nb_skips, (unsigned long long)n_rt_alloc,
+                (unsigned long long)n_rt_pool_hits, (unsigned long long)n_crov_follow, (unsigned long long)n_crov_same, (unsigned long long)n_crov_cbsame, (unsigned long long)n_crov_merged, (unsigned long long)n_cplain, (unsigned long long)n_om_uav_switch);
+        if (n_reint_cs) fprintf(stderr, "native device: reinterpretation phases by compute %llu\n", (unsigned long long)n_reint_cs);
+        if (n_nd_clip) fprintf(stderr, "native draws (d3d11): meshes through the VU clipper (GS_nr) %llu\n", (unsigned long long)n_nd_clip);
     }
     struct LagSlot { ID3D11Texture2D *st = NULL; int w = 0, h = 0; bool pending = false; } lagq[2];
     int lag_cur = 0;
@@ -283,7 +441,7 @@ public:
         destroying = true;
         for (size_t i = 0; i < targets.size(); i++) rt_destroy((int)i);
         rt_pool_free();
-        REL(vs_main); REL(vs_quad); REL(ps_main); REL(ps_rov); REL(ps_main_f); REL(ps_rov_f); REL(ps_main_z); REL(ps_rov_z); REL(ps_main_fz); REL(ps_rov_fz); REL(ps_load_depth_rt); for (int i = 0; i < 4; i++) REL(ps_xn[i >> 1][i & 1]); REL(ps_load_color); REL(ps_load_depth);
+        REL(vs_main); REL(vs_quad); REL(ps_main); REL(ps_rov); REL(ps_main_f); REL(ps_rov_f); REL(ps_main_z); REL(ps_rov_z); REL(ps_main_fz); REL(ps_rov_fz); REL(ps_load_depth_rt); for (int i = 0; i < 4; i++) REL(ps_xn[i >> 1][i & 1]); REL(ps_load_color); REL(ps_load_depth); REL(cs_load_phase);
         REL(ps_copy_depth); REL(ps_display); REL(cs_wb_color); REL(cs_wb_depth); REL(cs_merge); REL(merge_srv); REL(merge_buf);
         REL(cs_clut); REL(clut_uav); REL(clut_stage); REL(cs_l2l_read); REL(cs_l2l_write); REL(l2l_uav); REL(l2l_buf); REL(cs_xfer); REL(xdesc_srv); REL(xdesc_buf);
         REL(cs_decode); REL(cb_dec);
@@ -302,7 +460,10 @@ public:
         for (int i = 0; i < 2; i++) REL(lagq[i].st);
         for (int i = 0; i < 2; i++) free_share(shs[i]);
         nr_release();
-        if (prof && ctx) prof_print();
+        if ((prof_mode == 1 || prof_mode == 3) && ctx) prof_print();
+        if (prof_mode == 2 && ctx) fr_print();
+        if (prof_mode == 4 && ctx && pq_dis) tag_print();
+        nd_print();
         for (ID3D11Query *q : pq) q->Release();
         REL(pq_dis);
         if (ctx) { ctx->ClearState(); ctx->Flush(); }
@@ -320,7 +481,9 @@ public:
         lag = cfg->readback_lag != 0;
         {
             const char *pe = getenv("RG_GPU_PROFILE");
-            prof = pe && pe[0] == '1';
+            prof = pe && (pe[0] == '1' || pe[0] == '2' || pe[0] == '3');
+            prof_mode = prof ? pe[0] - '0' : 0;
+            if (pe && pe[0] == '4') prof_mode = 4;   /* (prof stays false: only the tags) */
         }
         D3D_FEATURE_LEVEL fl[] = { D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0 };
         D3D_FEATURE_LEVEL got;
@@ -429,6 +592,7 @@ public:
             CHK(dev->CreateSamplerState(&sm, &smp_lin), "sampler");
         }
         CHK(dev->CreateComputeShader(g_CS_wb_color, sizeof g_CS_wb_color, NULL, &cs_wb_color), "CS_wb_color");
+        CHK(dev->CreateComputeShader(g_CS_load_phase, sizeof g_CS_load_phase, NULL, &cs_load_phase), "CS_load_phase");
         CHK(dev->CreateComputeShader(g_CS_wb_depth, sizeof g_CS_wb_depth, NULL, &cs_wb_depth), "CS_wb_depth");
         CHK(dev->CreateComputeShader(g_CS_merge, sizeof g_CS_merge, NULL, &cs_merge), "CS_merge");
         CHK(dev->CreateComputeShader(g_CS_clut, sizeof g_CS_clut, NULL, &cs_clut), "CS_clut");
@@ -572,7 +736,7 @@ public:
             d.DepthFunc = D3D11_COMPARISON_ALWAYS;
             CHK(dev->CreateDepthStencilState(&d, &ds_load), "depth load state");
         }
-        if (prof) {
+        if (prof || prof_mode == 4) {
             D3D11_QUERY_DESC qd = { D3D11_QUERY_TIMESTAMP_DISJOINT, 0 };
             if (FAILED(dev->CreateQuery(&qd, &pq_dis))) prof = false;
         }
@@ -625,21 +789,26 @@ public:
     }
 
     /* --------------------------------------------------------- targets */
+    bool mk_noclear = false;
     bool make_target(Target &t, int depth, int w, int h)
     {
         for (size_t i = 0; i < rt_pool.size(); i++) {
             Target &p = rt_pool[i];
             if (p.depth != depth || p.w != w || p.h != h) continue;
             t = p;
+            rt_pool_bytes -= rt_bytes(p);
             rt_pool.erase(rt_pool.begin() + (long)i);
             t.used = 1;
+            t.zst = 0;
             n_rt_pool_hits++;
+            if (mk_noclear) return true;   /* (rt_clone: overwritten whole at once) */
             if (t.dsv) ctx->ClearDepthStencilView(t.dsv, D3D11_CLEAR_DEPTH, 0.0f, 0);
             else if (t.rtv) { float z[4] = { 0, 0, 0, 0 }; ctx->ClearRenderTargetView(t.rtv, z); }
             return true;
         }
         memset(&t, 0, sizeof t);
         t.used = 1; t.depth = depth; t.w = w; t.h = h;
+        n_rt_alloc++;
         D3D11_TEXTURE2D_DESC td = {};
         td.Width = (UINT)(w * scale);
         td.Height = (UINT)(h * scale);
@@ -709,7 +878,15 @@ public:
 
     void free_target(Target &t)
     {
+#if defined(_WIN64)
+        if (t.tex) rg_x64_trim_note(dev, ctx, (size_t)rt_bytes(t)); REL(t.rtv); REL(t.dsv); REL(t.srv); REL(t.uav); REL(t.tex); REL(t.snap_srv); REL(t.snap);   /* gpu_internal.h */
+#else
+#line 880
         REL(t.rtv); REL(t.dsv); REL(t.srv); REL(t.uav); REL(t.tex); REL(t.snap_srv); REL(t.snap);
+#endif
+#line 881
+        REL(t.zdsv); REL(t.ztex);
+        t.zst = 0;
         t.used = 0;
     }
 
@@ -719,6 +896,7 @@ public:
         while (i < targets.size() && targets[i].used) i++;
         if (i == targets.size()) targets.push_back(Target());
         if (!make_target(targets[i], depth, w, h)) { free_target(targets[i]); return -1; }
+        if (!mk_noclear) tag_bytes += (double)rt_bytes1(targets[i]);   /* (the clear) */
         return (int)i;
     }
 
@@ -730,6 +908,8 @@ public:
         float z[4] = { 0, 0, 0, 0 };
         if (t.dsv) ctx->ClearDepthStencilView(t.dsv, D3D11_CLEAR_DEPTH, 0.0f, 0);
         else if (t.rtv) ctx->ClearRenderTargetView(t.rtv, z);
+        if (t.zdsv) { ctx->ClearDepthStencilView(t.zdsv, D3D11_CLEAR_DEPTH, 0.0f, 0); t.zst = 1; }
+        tag_bytes += (double)rt_bytes1(t) * (t.zdsv ? 2 : 1);
     }
 
     /* destroyed targets are kept for reuse (the game's work buffers come and
@@ -737,18 +917,42 @@ public:
      * steady cost in the effect passes); $RG_GPU_RT_POOL=0 turns it off */
     std::vector<Target> rt_pool;
     int rt_pool_on = -1;
+    int64_t rt_pool_cap = -1, rt_pool_bytes = 0;
+    int64_t rt_bytes1(const Target &t) const { return (int64_t)t.w * scale * t.h * scale * 4; }
+    int64_t rt_bytes(const Target &t) const
+    {
+        int64_t b = (int64_t)t.w * scale * t.h * scale * 4;
+        return b * (t.ztex ? 2 : 1) + (t.snap ? b : 0);
+    }
     void rt_pool_free()
     {
         for (Target &t : rt_pool) free_target(t);
         rt_pool.clear();
+        rt_pool_bytes = 0;
     }
     void rt_destroy(int id) override
     {
         if (id < 0 || (size_t)id >= targets.size() || !targets[id].used) return;
         unbind_all();
         if (rt_pool_on < 0) { const char *e = getenv("RG_GPU_RT_POOL"); rt_pool_on = !(e && e[0] == '0'); }
+#if defined(_WIN64)
+        if (rg_x64_va_tight(0) && !rt_pool.empty()) rt_pool_free(); if (rt_pool_on && targets[id].tex && !destroying && !rg_x64_va_tight(0)) {
+#else
+#line 931
         if (rt_pool_on && targets[id].tex && !destroying) {
-            if (rt_pool.size() >= 24) { free_target(rt_pool.front()); rt_pool.erase(rt_pool.begin()); }
+#endif
+#line 932
+            /* bounded by bytes (interpolated presentation clones and restores targets every pass:
+             * 24 entries missed ~6 times a field at x3, each a CreateTexture2D of up to 12 MB);
+             * $RG_GPU_RT_POOL_MB, default 512 */
+            if (rt_pool_cap < 0) { const char *e = getenv("RG_GPU_RT_POOL_MB"); rt_pool_cap = (e ? atoll(e) : 512) << 20; }
+            int64_t add = rt_bytes(targets[id]);
+            while (!rt_pool.empty() && (rt_pool_bytes + add > rt_pool_cap || rt_pool.size() >= 256)) {
+                rt_pool_bytes -= rt_bytes(rt_pool.front());
+                free_target(rt_pool.front());
+                rt_pool.erase(rt_pool.begin());
+            }
+            rt_pool_bytes += add;
             rt_pool.push_back(targets[id]);
             memset(&targets[id], 0, sizeof targets[id]);
             return;
@@ -781,6 +985,7 @@ public:
 
     void unbind_all()
     {
+        nb_forget();
         ID3D11ShaderResourceView *nul[7] = {};
         ctx->PSSetShaderResources(0, 7, nul);
         ctx->CSSetShaderResources(0, 4, nul);
@@ -817,6 +1022,7 @@ public:
         Target n;
         if (!make_target(n, o.depth, w, h)) { free_target(n); return; }
         unbind_all();
+        zsync(o);
         int cw = (o.w < w ? o.w : w) * scale, ch = (o.h < h ? o.h : h) * scale;
         if (!o.depth || zrov_ok) {
             D3D11_BOX b = { 0, 0, 0, (UINT)cw, (UINT)ch, 1 };
@@ -844,6 +1050,8 @@ public:
     {
         Target &t = targets[id];
         unbind_all();
+        zsync(t);
+        zwrote(t);
         uint32_t u[8][4] = {};
         u[0][0] = bp; u[0][1] = bw; u[0][2] = (uint32_t)psm; u[0][3] = (uint32_t)scale;
         util_cb(u);
@@ -880,6 +1088,7 @@ public:
     {
         Target &t = targets[id];
         unbind_all();
+        zsync(t);
         uint32_t u[8][4] = {};
         u[0][0] = bp; u[0][1] = bw; u[0][2] = (uint32_t)psm; u[0][3] = (uint32_t)scale;
         u[1][0] = (uint32_t)r.x0; u[1][1] = (uint32_t)r.y0;
@@ -901,6 +1110,8 @@ public:
         ctx->CSSetShader(NULL, NULL, 0);
     }
 
+    int reint_cs = -1;
+    uint64_t n_reint_cs = 0;
     bool rt_reinterpret(int dst, uint32_t dbp, uint32_t dbw, int dpsm, const GpuRect &dr, int src, uint32_t sbp, uint32_t sbw,
                         int spsm, const GpuRect &sr) override
     {
@@ -934,6 +1145,7 @@ public:
             }
         }
         unbind_all();
+        if (reint_cs < 0) { const char *e = getenv("RG_NR_REINT_CS"); reint_cs = !(e && e[0] == '0'); }   /* (0: the pixel-shader loads, control) */
         /* bytes the source does not cover (CT24's high byte, pixels outside sr) as local memory has them */
         ctx->CopyResource(scr, mem);
         for (int py = 0; py < scale; py++)
@@ -954,6 +1166,23 @@ public:
                 uint32_t v[8][4] = {};
                 v[0][0] = dbp; v[0][1] = dbw; v[0][2] = (uint32_t)dpsm; v[0][3] = (uint32_t)scale;
                 v[1][0] = (uint32_t)px; v[1][1] = (uint32_t)py; v[1][2] = 1;
+                if (reint_cs && d.uav && cs_load_phase) {
+                    /* one thread per native pixel of dr (CS_load_phase) instead of a pixel shader
+                     * over all of dr at the internal resolution discarding all phases but one */
+                    v[1][2] = 0;
+                    v[2][0] = (uint32_t)dr.x0; v[2][1] = (uint32_t)dr.y0;
+                    v[2][2] = (uint32_t)(dr.x1 - dr.x0); v[2][3] = (uint32_t)(dr.y1 - dr.y0);
+                    util_cb(v);
+                    ctx->CSSetConstantBuffers(0, 1, &cb_util);
+                    ctx->CSSetShaderResources(0, 1, &scr_srv);
+                    ctx->CSSetUnorderedAccessViews(0, 1, &d.uav, NULL);
+                    ctx->CSSetShader(cs_load_phase, NULL, 0);
+                    ctx->Dispatch((UINT)(dr.x1 - dr.x0 + 7) / 8, (UINT)(dr.y1 - dr.y0 + 7) / 8, 1);
+                    unbind_all();
+                    ctx->CSSetShader(NULL, NULL, 0);
+                    n_reint_cs++;
+                    continue;
+                }
                 util_cb(v);
                 ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
                 ctx->IASetInputLayout(NULL);
@@ -984,8 +1213,12 @@ public:
             dy < 0 || dx + (sr.x1 - sr.x0) > d.w || dy + (sr.y1 - sr.y0) > d.h)
             return false;
         unbind_all();
+        zsync(s);
+        zsync(d);
+        zwrote(d);
         D3D11_BOX b = { (UINT)(sr.x0 * scale), (UINT)(sr.y0 * scale), 0, (UINT)(sr.x1 * scale), (UINT)(sr.y1 * scale), 1 };
         ctx->CopySubresourceRegion(d.tex, 0, (UINT)(dx * scale), (UINT)(dy * scale), 0, s.tex, 0, &b);
+        tag_bytes += 8.0 * (double)(sr.x1 - sr.x0) * (sr.y1 - sr.y0) * scale * scale;
         return true;
     }
 
@@ -1174,6 +1407,8 @@ public:
         Target &ct = targets[g.color_rt];
         Target *zt = g.depth_rt >= 0 ? &targets[g.depth_rt] : NULL;
         const bool rov = g.rov && rov_ok && ct.uav;
+        if (zt) { zsync(*zt); zwrote(*zt); }
+        if (g.tex_rt >= 0) zsync(targets[g.tex_rt]);
         /* both snapshots hold the pre-draw contents, so they share one
          * texture (blending reads the box, texturing the texel rect).
          * Copies need nothing unbound. */
@@ -1340,7 +1575,114 @@ public:
      * blend and cull state, a hardware-sampled decoded texture. */
     bool nr_ok = false;
     ID3D11VertexShader *vs_nr = NULL, *vs_im = NULL;
-    ID3D11PixelShader *ps_nr = NULL, *ps_nr_z = NULL, *ps_nr_c = NULL, *ps_nr_cz = NULL;
+    ID3D11GeometryShader *gs_nr = NULL;   /* the VU clipper (nr_draw.hlsl GS_nr) */
+    ID3D11PixelShader *ps_nr = NULL, *ps_nr_z = NULL, *ps_nr_c = NULL, *ps_nr_cz = NULL, *ps_nr_zd = NULL;
+    /* colour-view draws whose primitives cover disjoint pixels: the same back end through plain
+     * (unordered) views, no interlock ($RG_NR_CPLAIN, default 0 until gated) */
+    ID3D11PixelShader *ps_nr_cu = NULL, *ps_nr_czu = NULL;
+    int cplain_on = -1;
+    uint64_t n_cplain = 0, n_om_uav_switch = 0;
+    ID3D11Texture2D *nb_last_rtv_tex = NULL, *nb_last_uav_tex = NULL;
+    std::vector<float> dj_box;
+    /* do the draw's primitives cover disjoint pixels?  Two triangles with the same bounding box
+     * are one sprite (they share the diagonal, which the rasterizer gives to one of them); units
+     * whose boxes are separated (sprites: may touch, the right / bottom edge is exclusive;
+     * triangles: a gap) cannot share a pixel centre.  Coordinates are the GS window units the
+     * vertex shader maps linearly. */
+    bool im_disjoint(const GpuImVtx *v, uint32_t n)
+    {
+        uint32_t nt = n / 3;
+        if (nt < 2) return true;
+        if (nt > 1024) return false;
+        dj_box.clear();
+        for (uint32_t t = 0; t < nt; t++) {
+            const GpuImVtx *p = v + t * 3;
+            float x0 = p[0].x, x1 = p[0].x, y0 = p[0].y, y1 = p[0].y;
+            for (int j = 1; j < 3; j++) {
+                x0 = p[j].x < x0 ? p[j].x : x0; x1 = p[j].x > x1 ? p[j].x : x1;
+                y0 = p[j].y < y0 ? p[j].y : y0; y1 = p[j].y > y1 ? p[j].y : y1;
+            }
+            /* a corner triangle: its vertices are 3 distinct corners of its box; miss = the 4th */
+            int seen = 0, miss = -1;
+            for (int j = 0; j < 3; j++) {
+                bool cx = p[j].x == x0 || p[j].x == x1, cy = p[j].y == y0 || p[j].y == y1;
+                if (!cx || !cy) { seen = -1; break; }
+                seen |= 1 << ((p[j].x == x1 ? 1 : 0) | (p[j].y == y1 ? 2 : 0));
+            }
+            if (seen > 0 && x1 > x0 && y1 > y0 && __builtin_popcount((unsigned)seen) == 3)
+                for (int c = 0; c < 4; c++) if (!(seen & (1 << c))) miss = c;
+            size_t k = dj_box.size();
+            if (k && miss >= 0 && dj_box[k - 1] == (float)(10 + (miss ^ 3)) && dj_box[k - 6] == x0 &&
+                dj_box[k - 5] == x1 && dj_box[k - 4] == y0 && dj_box[k - 3] == y1) {
+                dj_box[k - 1] = 2.0f;   /* the other half of a sprite (the opposite corner missing) */
+                continue;
+            }
+            dj_box.push_back(x0); dj_box.push_back(x1); dj_box.push_back(y0); dj_box.push_back(y1);
+            dj_box.push_back(0.0f);
+            dj_box.push_back(miss >= 0 ? (float)(10 + miss) : 1.0f);
+        }
+        size_t nu = dj_box.size() / 6;
+        for (size_t a = 0; a < nu; a++) {
+            const float *A = &dj_box[a * 6];
+            for (size_t b = a + 1; b < nu; b++) {
+                const float *B = &dj_box[b * 6];
+                bool sep = (A[5] == 2.0f && B[5] == 2.0f)
+                               ? (A[1] <= B[0] || B[1] <= A[0] || A[3] <= B[2] || B[3] <= A[2])
+                               : (A[1] < B[0] || B[1] < A[0] || A[3] < B[2] || B[3] < A[2]);
+                if (!sep) return false;
+            }
+        }
+        return true;
+    }
+    /* $RG_NR_ZDSV=0: native draws test depth through the depth target's ordered view (the old
+     * path; a barrier between consecutive draws, no early depth test) */
+    bool zdsv_on = false;
+    uint64_t n_nd_clip = 0;   /* meshes drawn with GS_nr */
+    uint64_t n_nd_zdsv = 0, n_z_in = 0, n_z_out = 0, n_rt_alloc = 0, n_crov_follow = 0, n_crov_same = 0;
+    bool nb_last_crov = false, nb_cb_same = false;
+    uint64_t n_crov_cbsame = 0;
+    ID3D11ShaderResourceView *nb_last_srv = NULL;
+    D3D11_RECT nb_last_sc = {};
+    /* the twin of depth target t, current (created / copied from the target when stale) */
+    ID3D11DepthStencilView *zt_dsv(Target &t)
+    {
+        if (!t.ztex) {
+            D3D11_TEXTURE2D_DESC td = {};
+            td.Width = (UINT)(t.w * scale);
+            td.Height = (UINT)(t.h * scale);
+            td.MipLevels = 1;
+            td.ArraySize = 1;
+            td.SampleDesc.Count = 1;
+            td.Usage = D3D11_USAGE_DEFAULT;
+            td.Format = DXGI_FORMAT_R32_TYPELESS;
+            td.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+            if (FAILED(dev->CreateTexture2D(&td, NULL, &t.ztex))) return NULL;
+            D3D11_DEPTH_STENCIL_VIEW_DESC dd = {};
+            dd.Format = DXGI_FORMAT_D32_FLOAT;
+            dd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+            if (FAILED(dev->CreateDepthStencilView(t.ztex, &dd, &t.zdsv))) { REL(t.ztex); return NULL; }
+            t.zst = 0;
+        }
+        if (t.zst == 0) {
+            ctx->CopyResource(t.ztex, t.tex);
+            t.zst = 1;
+            n_z_in++;
+            tag_bytes += 2.0 * (double)rt_bytes1(t);
+        }
+        return t.zdsv;
+    }
+    /* target t about to be read (or partly written) by anything but a twin draw */
+    void zsync(Target &t)
+    {
+        if (t.zst == 2 && t.ztex) {
+            ctx->CopyResource(t.tex, t.ztex);
+            n_z_out++;
+            tag_bytes += 2.0 * (double)rt_bytes1(t);
+        }
+        if (t.zst == 2) t.zst = 1;
+    }
+    /* ... and written: the twin is stale */
+    void zwrote(Target &t) { t.zst = 0; }
     ID3D11InputLayout *layout_nr = NULL, *layout_im = NULL;
     /* immediate primitives (gpu_nr_im_submit): a dynamic vertex ring, no depth bias */
     ID3D11Buffer *im_vb = NULL;
@@ -1348,7 +1690,10 @@ public:
     ID3D11RasterizerState *rs_im = NULL;
     ID3D11Buffer *cb_nr = NULL, *cb_nr_bones = NULL;
     ID3D11RasterizerState *rs_nr[3] = {};
+    ID3D11RasterizerState *rs_nrzd[3] = {};   /* depth-twin draws (RG_NR_ZD_BIAS, measurement) */
     ID3D11SamplerState *smp_nr[2][2][2] = {};
+    /* graphics.anisotropic: [log2(degree) - 1][clamp u][clamp v] (GpuNrDraw.aniso 2..16) */
+    ID3D11SamplerState *smp_nr_an[4][2][2] = {};
     struct NrMeshBuf { ID3D11Buffer *vb = NULL, *ib = NULL; uint32_t nidx = 0; uint64_t used = 0; };
     std::unordered_map<uint32_t, NrMeshBuf> nr_mesh;
     uint64_t nr_clock = 0;
@@ -1362,6 +1707,119 @@ public:
     std::vector<NrTex> nr_tex;
     std::unordered_map<uint64_t, uint32_t> nr_map;
     size_t nr_tex_bytes = 0, nr_tex_budget = 0;
+    /* HD texture replacements (GpuNrDraw.rep, docs/TEXTURES.md): uploaded once per NrRepImg id with
+     * its mip chain, least recently used evicted past $RG_TEXREP_GPU_MB; sampled with mip-enabled
+     * copies of the native samplers */
+    /* staged uploads: at most nr_texrep_upload_budget() bytes per frame (rows of the mip levels in
+     * order); the replacement is drawn once every level is up, the decoded texture until then */
+    struct RepTex { ID3D11Texture2D *tex = NULL; ID3D11ShaderResourceView *srv = NULL; size_t bytes = 0; uint64_t used = 0;
+                    int lvl = 0, row = 0; };
+    std::unordered_map<uint64_t, RepTex> nr_rep;
+    size_t nr_rep_bytes = 0, nr_rep_budget = 0;
+    size_t rep_up_bytes = 0;   /* uploaded this frame */
+    double rep_up_ms = 0;
+    uint32_t rep_frame = 0;    /* (nr_texrep_frame: the field the counts are for) */
+    NrTex nr_rep_tex = {};   /* (what nr_tex_get returns for a replacement: its view) */
+    ID3D11SamplerState *smp_rep[2][2][2] = {}, *smp_rep_an[4][2][2] = {};
+    void rep_frame_end()
+    {
+        if (rep_up_bytes) nr_texrep_upload(rep_up_ms, rep_up_bytes);
+        rep_up_bytes = 0;
+        rep_up_ms = 0;
+    }
+    void nr_rep_clear() override
+    {
+        for (auto &kv : nr_rep) { REL(kv.second.srv); REL(kv.second.tex); }
+        nr_rep.clear();
+        nr_rep_bytes = 0;
+    }
+    NrTex *nr_rep_get(const NrRepImg *im)
+    {
+        if (!nr_texrep_valid(im)) return NULL;   /* (a freed one: replayed draw after release / eviction) */
+        if (nr_texrep_frame() != rep_frame) { rep_frame_end(); rep_frame = nr_texrep_frame(); }   /* (a new field: a new budget) */
+        auto it = nr_rep.find(im->id);
+        if (it == nr_rep.end()) {
+            if (!im->px || im->levels < 1) return NULL;
+            if (!nr_rep_budget) {
+                const char *mb = getenv("RG_TEXREP_GPU_MB");
+                nr_rep_budget = (size_t)(mb ? atol(mb) : (sizeof(void *) >= 8 ? 2048 : 512)) << 20;
+            }
+            while (nr_rep_bytes + im->bytes > nr_rep_budget && !nr_rep.empty()) {
+                auto o = nr_rep.begin();
+                for (auto j = nr_rep.begin(); j != nr_rep.end(); ++j) if (j->second.used < o->second.used) o = j;
+                REL(o->second.srv); REL(o->second.tex);
+                nr_rep_bytes -= o->second.bytes;
+                nr_rep.erase(o);
+            }
+            size_t ub = nr_texrep_upload_budget();
+            if (ub && rep_up_bytes >= ub) return NULL;   /* (this frame's uploads are done: the next frame) */
+            auto t0 = std::chrono::steady_clock::now();
+            D3D11_TEXTURE2D_DESC td = {};
+            td.Width = (UINT)im->w; td.Height = (UINT)im->h;
+            td.MipLevels = (UINT)im->levels; td.ArraySize = 1; td.SampleDesc.Count = 1;
+            td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            td.Usage = ub ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE;
+            td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            D3D11_SUBRESOURCE_DATA sd[NR_REP_MAX_LEVELS] = {};
+            for (int l = 0; l < im->levels; l++) { sd[l].pSysMem = im->px + im->off[l]; sd[l].SysMemPitch = (UINT)im->lw[l] * 4u; }
+            RepTex t;
+            if (FAILED(dev->CreateTexture2D(&td, ub ? NULL : sd, &t.tex)) || FAILED(dev->CreateShaderResourceView(t.tex, NULL, &t.srv))) {
+                REL(t.srv); REL(t.tex);
+                return NULL;
+            }
+            if (!ub) { t.lvl = im->levels; rep_up_bytes += im->bytes; }   /* (whole: the hdtex behaviour) */
+            rep_up_ms += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+            t.bytes = im->bytes;
+            nr_rep_bytes += t.bytes;
+            it = nr_rep.emplace(im->id, t).first;
+            if (!smp_rep[0][0][0]) {
+                for (int i = 0; i < 8; i++) {
+                    D3D11_SAMPLER_DESC sm = {};
+                    sm.Filter = (i >> 2) ? D3D11_FILTER_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+                    sm.AddressU = ((i >> 1) & 1) ? D3D11_TEXTURE_ADDRESS_CLAMP : D3D11_TEXTURE_ADDRESS_WRAP;
+                    sm.AddressV = (i & 1) ? D3D11_TEXTURE_ADDRESS_CLAMP : D3D11_TEXTURE_ADDRESS_WRAP;
+                    sm.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+                    sm.MaxLOD = D3D11_FLOAT32_MAX;
+                    dev->CreateSamplerState(&sm, &smp_rep[i >> 2][(i >> 1) & 1][i & 1]);
+                }
+                for (int i = 0; i < 16; i++) {
+                    D3D11_SAMPLER_DESC sm = {};
+                    sm.Filter = D3D11_FILTER_ANISOTROPIC;
+                    sm.MaxAnisotropy = 2u << (i >> 2);
+                    sm.AddressU = ((i >> 1) & 1) ? D3D11_TEXTURE_ADDRESS_CLAMP : D3D11_TEXTURE_ADDRESS_WRAP;
+                    sm.AddressV = (i & 1) ? D3D11_TEXTURE_ADDRESS_CLAMP : D3D11_TEXTURE_ADDRESS_WRAP;
+                    sm.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+                    sm.MaxLOD = D3D11_FLOAT32_MAX;
+                    dev->CreateSamplerState(&sm, &smp_rep_an[i >> 2][(i >> 1) & 1][i & 1]);
+                }
+            }
+        }
+        RepTex &rt = it->second;
+        if (rt.lvl < im->levels) {
+            size_t ub = nr_texrep_upload_budget();
+            if (ub && rep_up_bytes >= ub) return NULL;
+            auto t0 = std::chrono::steady_clock::now();
+            while (rt.lvl < im->levels && !(ub && rep_up_bytes >= ub)) {
+                int lw = im->lw[rt.lvl], lh = im->lh[rt.lvl], rows = lh - rt.row;
+                size_t left = ub ? ub - rep_up_bytes : (size_t)-1, rb = (size_t)lw * 4u;
+                if ((size_t)rows * rb > left) rows = (int)(left / rb) > 0 ? (int)(left / rb) : 1;
+                D3D11_BOX bx = { 0, (UINT)rt.row, 0, (UINT)lw, (UINT)(rt.row + rows), 1 };
+                ctx->UpdateSubresource(rt.tex, D3D11CalcSubresource((UINT)rt.lvl, 0, (UINT)im->levels), &bx,
+                                       im->px + im->off[rt.lvl] + (size_t)rt.row * lw, (UINT)rb, 0);
+                rep_up_bytes += (size_t)rows * rb;
+                rt.row += rows;
+                if (rt.row >= lh) { rt.lvl++; rt.row = 0; }
+            }
+            rep_up_ms += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+            if (rt.lvl < im->levels) return NULL;   /* (the decoded texture until every level is up) */
+        }
+        it->second.used = ++nr_clock;
+        nr_rep_tex.tex = it->second.tex;
+        nr_rep_tex.srv = it->second.srv;
+        nr_rep_tex.tw = im->w;
+        nr_rep_tex.th = im->h;
+        return &nr_rep_tex;
+    }
     static uint64_t nr_hash(const uint32_t *key, const GpuRect &rc)
     {
         uint64_t h = 1469598103934665603ull;
@@ -1384,10 +1842,22 @@ public:
     bool nr_init()
     {
         if (FAILED(dev->CreateVertexShader(g_VS_nr, sizeof g_VS_nr, NULL, &vs_nr))) return false;
+        if (FAILED(dev->CreateGeometryShader(g_GS_nr, sizeof g_GS_nr, NULL, &gs_nr))) return false;
         if (FAILED(dev->CreatePixelShader(g_PS_nr, sizeof g_PS_nr, NULL, &ps_nr))) return false;
         if (zrov_ok && FAILED(dev->CreatePixelShader(g_PS_nr_z, sizeof g_PS_nr_z, NULL, &ps_nr_z))) return false;
+        {
+            const char *e = getenv("RG_NR_ZDSV");
+            const char *pl = getenv("RG_NR_ZD_PLAIN");   /* measurement: SV_Depth, no early test */
+            zdsv_on = zrov_ok && !(e && e[0] == '0') &&
+                      SUCCEEDED(pl && pl[0] == '1' ? dev->CreatePixelShader(g_PS_nr_zdp, sizeof g_PS_nr_zdp, NULL, &ps_nr_zd)
+                                                   : dev->CreatePixelShader(g_PS_nr_zd, sizeof g_PS_nr_zd, NULL, &ps_nr_zd));
+        }
         if (rov_ok && FAILED(dev->CreatePixelShader(g_PS_nr_c, sizeof g_PS_nr_c, NULL, &ps_nr_c))) return false;
         if (rov_ok && zrov_ok && FAILED(dev->CreatePixelShader(g_PS_nr_cz, sizeof g_PS_nr_cz, NULL, &ps_nr_cz))) return false;
+        if (rov_ok) {
+            dev->CreatePixelShader(g_PS_nr_cu, sizeof g_PS_nr_cu, NULL, &ps_nr_cu);
+            if (zrov_ok) dev->CreatePixelShader(g_PS_nr_czu, sizeof g_PS_nr_czu, NULL, &ps_nr_czu);
+        }
         D3D11_INPUT_ELEMENT_DESC ie[] = {
             { "POSITION", 0, DXGI_FORMAT_R16G16B16A16_SINT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
             { "NORMAL", 0, DXGI_FORMAT_R8G8B8A8_SINT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -1421,7 +1891,7 @@ public:
         bd.Usage = D3D11_USAGE_DYNAMIC;
         bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-        bd.ByteWidth = 24 * 16;           /* NrCB: 24 rows */
+        bd.ByteWidth = 26 * 16;           /* NrCB: 26 rows */
         if (FAILED(dev->CreateBuffer(&bd, NULL, &cb_nr))) return false;
         bd.ByteWidth = 256 * 16;          /* NrBones: the bone rows 768..1023 (skinned meshes) */
         if (FAILED(dev->CreateBuffer(&bd, NULL, &cb_nr_bones))) return false;
@@ -1441,6 +1911,11 @@ public:
                 rd.DepthBias = zb ? atoi(zb) : -2;
             }
             if (FAILED(dev->CreateRasterizerState(&rd, &rs_nr[c]))) return false;
+            {
+                const char *zb = getenv("RG_NR_ZD_BIAS");
+                if (zb) rd.DepthBias = atoi(zb);
+            }
+            if (FAILED(dev->CreateRasterizerState(&rd, &rs_nrzd[c]))) return false;
         }
         for (int l = 0; l < 2; l++)
             for (int u = 0; u < 2; u++)
@@ -1453,22 +1928,40 @@ public:
                     sm.MaxLOD = 0.0f;
                     if (FAILED(dev->CreateSamplerState(&sm, &smp_nr[l][u][v]))) return false;
                 }
+        for (int a = 0; a < 4; a++)
+            for (int u = 0; u < 2; u++)
+                for (int v = 0; v < 2; v++) {
+                    D3D11_SAMPLER_DESC sm = {};
+                    sm.Filter = D3D11_FILTER_ANISOTROPIC;
+                    sm.MaxAnisotropy = 2u << a;
+                    sm.AddressU = u ? D3D11_TEXTURE_ADDRESS_CLAMP : D3D11_TEXTURE_ADDRESS_WRAP;
+                    sm.AddressV = v ? D3D11_TEXTURE_ADDRESS_CLAMP : D3D11_TEXTURE_ADDRESS_WRAP;
+                    sm.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+                    sm.MaxLOD = 0.0f;
+                    if (FAILED(dev->CreateSamplerState(&sm, &smp_nr_an[a][u][v]))) return false;
+                }
         return true;
     }
 
     void nr_release()
     {
-        REL(vs_nr); REL(ps_nr); REL(ps_nr_z); REL(ps_nr_c); REL(ps_nr_cz); REL(layout_nr); REL(cb_nr); REL(cb_nr_bones);
+        REL(vs_nr); REL(gs_nr); REL(ps_nr); REL(ps_nr_z); REL(ps_nr_zd); REL(ps_nr_cu); REL(ps_nr_czu); REL(ps_nr_c); REL(ps_nr_cz); REL(layout_nr); REL(cb_nr); REL(cb_nr_bones);
         REL(vs_im); REL(layout_im); REL(im_vb); REL(rs_im);
         im_vb_bytes = im_vb_off = 0;
-        for (int c = 0; c < 3; c++) REL(rs_nr[c]);
+        for (int c = 0; c < 3; c++) { REL(rs_nr[c]); REL(rs_nrzd[c]); }
         for (int i = 0; i < 8; i++) REL(smp_nr[i >> 2][(i >> 1) & 1][i & 1]);
+        for (int i = 0; i < 16; i++) REL(smp_nr_an[i >> 2][(i >> 1) & 1][i & 1]);
         for (auto &e : nr_mesh) { REL(e.second.vb); REL(e.second.ib); }
         nr_mesh.clear();
         for (NrTex &t : nr_tex) { REL(t.srv); REL(t.uav); REL(t.tex); }
         nr_tex.clear();
         nr_map.clear();
         nr_tex_bytes = 0;
+        for (auto &e : nr_rep) { REL(e.second.srv); REL(e.second.tex); }
+        nr_rep.clear();
+        nr_rep_bytes = 0;
+        for (int i = 0; i < 8; i++) REL(smp_rep[i >> 2][(i >> 1) & 1][i & 1]);
+        for (int i = 0; i < 16; i++) REL(smp_rep_an[i >> 2][(i >> 1) & 1][i & 1]);
         for (auto &e : nr_bs) REL(e.second);
         nr_bs.clear();
     }
@@ -1558,10 +2051,27 @@ public:
     {
         if (src < 0 || (size_t)src >= targets.size() || !targets[src].used) return -1;
         int depth = targets[src].depth, w = targets[src].w, h = targets[src].h;
+        mk_noclear = true;
         int id = rt_create(depth, w, h);   /* (may grow `targets`) */
+        mk_noclear = false;
         if (id < 0) return -1;
         unbind_all();
+        zsync(targets[src]);
         ctx->CopyResource(targets[id].tex, targets[src].tex);
+        tag_bytes += 2.0 * (double)rt_bytes1(targets[src]);
+        return id;
+    }
+    int rt_clone_rect(int src, const GpuRect &r) override
+    {
+        if (src < 0 || (size_t)src >= targets.size() || !targets[src].used) return -1;
+        const Target &s0 = targets[src];
+        if ((s0.depth && !zrov_ok) || r.x0 < 0 || r.y0 < 0 || r.x1 > s0.w || r.y1 > s0.h || r.x1 <= r.x0 || r.y1 <= r.y0) return -1;
+        int depth = s0.depth;
+        mk_noclear = true;
+        int id = rt_create(depth, r.x1 - r.x0, r.y1 - r.y0);   /* (may grow `targets`) */
+        mk_noclear = false;
+        if (id < 0) return -1;
+        if (!rt_copy(id, 0, 0, src, r)) { rt_destroy(id); return -1; }
         return id;
     }
     bool rt_put(int dst, int src) override
@@ -1572,13 +2082,19 @@ public:
         const Target &d = targets[dst], &s = targets[src];
         if (d.depth != s.depth || d.w != s.w || d.h != s.h) return false;
         unbind_all();
+        zsync(targets[src]);
+        zwrote(targets[dst]);
         ctx->CopyResource(d.tex, s.tex);
+        tag_bytes += 2.0 * (double)rt_bytes1(s);
         return true;
     }
 
     /* the decoded level-0 texture (CS_decode into RGBA8 viewed as R32_UINT) */
     NrTex *nr_tex_get(const GpuNrDraw &g)
     {
+        if (g.rep) {
+            if (NrTex *t = nr_rep_get(g.rep)) return t;   /* (else the decoded texture) */
+        }
         const GpuRect &rc = g.dec_rect;
         nr_clock++;
         uint64_t hk = nr_hash(g.dec_key, rc);
@@ -1611,7 +2127,13 @@ public:
             nr_tex.reserve(NR_TEX_MAX);
         }
         size_t need = (size_t)w * h * 4;
+#if defined(_WIN64)
+        if (nr_tex.size() < NR_TEX_MAX && nr_tex_bytes + need <= nr_tex_budget && (nr_tex.empty() || !rg_x64_va_tight(need))) {
+#else
+#line 1996
         if (nr_tex.size() < NR_TEX_MAX && nr_tex_bytes + need <= nr_tex_budget) {
+#endif
+#line 1997
             nr_tex.push_back(NrTex());
             e = &nr_tex.back();
             memset(e, 0, sizeof *e);
@@ -1626,7 +2148,13 @@ public:
             e = (same && (nr_clock - same->used) * 4 >= (nr_clock - any->used) * 3) ? same : any;
             if (e->valid) nr_map.erase(e->h);
             if (e->tw != w || e->th != h) {
+#if defined(_WIN64)
+                if (e->tex) { nr_tex_bytes -= (size_t)e->tw * e->th * 4; rg_x64_trim_note(dev, ctx, (size_t)e->tw * e->th * 4); }
+#else
+#line 2011
                 if (e->tex) nr_tex_bytes -= (size_t)e->tw * e->th * 4;
+#endif
+#line 2012
                 REL(e->srv); REL(e->uav); REL(e->tex);
                 e->tw = e->th = 0;
             }
@@ -1742,14 +2270,80 @@ public:
         QueryPerformanceCounter(&c);
         return (double)c.QuadPart / nrt_freq;
     }
+    /* ---- nr_draw's bound state (docs/NATIVE-RENDER.md "Throughput (2026-10-30)") ----
+     * Consecutive native draws set only what changed (the draw path used to unbind and rebind
+     * everything around every draw); unbind_all(), which every other path starts with, forgets
+     * it.  An output-merger change rebinds the texture (the runtime silently unbinds a shader
+     * view of a resource bound as an output), a decode (compute view of the decoded texture) too. */
+    struct NrBound {
+        bool live = false;
+        ID3D11InputLayout *il = NULL;
+        ID3D11Buffer *vb = NULL, *ib = NULL;
+        UINT stride = 0, off = 0;
+        ID3D11VertexShader *vs = NULL;
+        ID3D11PixelShader *ps = NULL;
+        int ncb = 0;
+        ID3D11RasterizerState *rs = NULL;
+        int vpw = -1, vph = -1;
+        D3D11_RECT sc = { -1, -1, -1, -1 };
+        ID3D11RenderTargetView *rtv = NULL;
+        ID3D11DepthStencilView *dsv = NULL;
+        ID3D11UnorderedAccessView *u2 = NULL, *u3 = NULL;
+        ID3D11ShaderResourceView *srv = NULL;
+        ID3D11SamplerState *smp = NULL;
+        ID3D11BlendState *bs = NULL;
+        ID3D11DepthStencilState *ds = NULL;
+    } nb;
+    /* the constants last uploaded (a DISCARD map only when they change) */
+    float nb_cb[26][4];
+    bool nb_cb_ok = false;
+    uint32_t nb_bones[256 * 4];
+    bool nb_bones_ok = false;
+    bool nb_srv_stale = false;
+    /* $RG_NR_STATECACHE=0: the old unbind / rebind around every draw (control) */
+    int nb_on = -1;
+    uint64_t n_nb_skips = 0;
+    /* the colour-ROV draw being merged (RG_NR_CROVMERGE): vertices [pend_start, + pend_n) from
+     * the bound offset, ending at byte pend_end of the ring; drawn before any state change */
+    int crov_merge = -1;
+    uint32_t pend_n = 0, pend_start = 0, pend_end = 0;
+    uint64_t n_crov_merged = 0;
+    void pend_flush()
+    {
+        if (!pend_n) return;
+        ctx->Draw(pend_n, pend_start);
+        pend_n = 0;
+    }
+    void nb_forget()
+    {
+        pend_flush();
+        if (nrun_q0 != (size_t)-1) {
+            pev_add(PC_NR, nrun_q0, (double)nrun_draws);
+            nrun_q0 = (size_t)-1;
+        }
+        if (!nb.live) return;
+        ID3D11Buffer *nulcb[2] = {};
+        ctx->VSSetConstantBuffers(0, 2, nulcb);
+        ctx->PSSetConstantBuffers(0, 1, nulcb);
+        float bf[4] = { 0, 0, 0, 0 };
+        ctx->OMSetBlendState(NULL, bf, 0xFFFFFFFFu);
+        ctx->OMSetDepthStencilState(NULL, 0);
+        nb = NrBound();
+    }
+
     bool nr_draw(const GpuNrDraw &g) override
     {
         if (!nr_ok) return false;
         if (nrt_on < 0) { const char *e = getenv("RG_NR_CPUTIME"); nrt_on = e && atoi(e) != 0; }
+        if (nb_on < 0) { const char *e = getenv("RG_NR_STATECACHE"); nb_on = !(e && e[0] == '0'); }
         double nt0 = nrt_on ? nrt_now() : 0, nt1 = 0, nt2 = 0, nt3 = 0;
         Target &ct = targets[g.color_rt];
         Target *zt = g.depth_rt >= 0 ? &targets[g.depth_rt] : NULL;
-        const bool zr = zt && !zt->dsv;            /* depth in an ordered view (zrov) */
+        const bool zv = zt && !zt->dsv;              /* a depth target in the ordered-view layout */
+        /* depth through its ordered view: with colour in one (crov), or without the
+         * depth-stencil twin (RG_NR_ZDSV=0); else the twin's fixed-function test and write */
+        const bool zr = zv && (g.crov || !zdsv_on);
+        const bool zd = zv && !zr;
         if (zr && (!ps_nr_z || !zt->uav)) return false;
         if (g.crov && (!g.im || !ct.uav || (zr ? !ps_nr_cz : (!ps_nr_c || zt)))) return false;
         const gpu_nr_draw *d = g.d;
@@ -1762,7 +2356,25 @@ public:
         }
         ID3D11BlendState *bst = nr_blend(g.abe, g.alpha_abcd, g.cmask);
         if (!bst) return false;
-        unbind_all();
+        if (!nb_on) unbind_all();
+        /* consecutive colour-ROV immediate draws with nothing changed between them share one
+         * draw call (RG_NR_CROVMERGE): the barrier D3D11 puts between draws on a UAV goes, the
+         * ordered view keeps primitive order inside the draw.  A candidate: no ALPHA-swap runs,
+         * no live target sampled, its texture already decoded, no depth twin to copy back */
+        if (crov_merge < 0) { const char *e = getenv("RG_NR_CROVMERGE"); crov_merge = e ? atoi(e) != 0 : 0; }
+        if (cplain_on < 0) { const char *e = getenv("RG_NR_CPLAIN"); cplain_on = e ? atoi(e) != 0 : 0; }
+        const bool cplain = cplain_on && g.crov && g.im && (zr ? ps_nr_czu : ps_nr_cu) && im_disjoint(g.im, g.nim);
+        if (cplain) n_cplain++;
+        const bool mc = !cplain && crov_merge && nb_on && g.crov && g.im && g.nruns <= 0 &&
+                        (g.tex_rt < 0 || (!g.tex_snap && g.tex_rt != g.color_rt && g.tex_rt != g.depth_rt && targets[g.tex_rt].zst != 2));
+        auto S = [&]() { if (pend_n) pend_flush(); };
+        if (pend_n && !(mc && (!zt || zt->zst != 2) &&
+                        (!g.tme || g.tex_rt >= 0 || nr_find(g.dec_key, g.dec_rect, nr_hash(g.dec_key, g.dec_rect)))))
+            pend_flush();
+        if (!nb.live) nb = NrBound();
+        if (prof_mode == 3 && nrun_q0 == (size_t)-1) { nrun_q0 = pts(); nrun_draws = 0; }
+        nrun_draws++;
+        const bool force = !nb.live;
         NrTex *tx = NULL;
         /* a live colour target sampled directly (immediate primitives): the
          * target itself, or a copy of the texels read when it is drawn into */
@@ -1772,6 +2384,7 @@ public:
                 snapshot_rect(ct, g.tex_rect);
                 tsrv = ct.snap_srv;
             } else {
+                zsync(targets[g.tex_rt]);
                 tsrv = targets[g.tex_rt].srv;
             }
             if (!tsrv) return false;
@@ -1779,91 +2392,194 @@ public:
             size_t q0 = prof ? pts() : 0;
             uint64_t nd0 = n_nr_tex;
             tx = nr_tex_get(g);
+            if (n_nr_tex != nd0) nb_srv_stale = true;   /* the decode's compute view unbound it */
             if (prof && n_nr_tex != nd0)
                 pev_add(PC_DECODE, q0, (double)(g.dec_rect.x1 - g.dec_rect.x0) * (g.dec_rect.y1 - g.dec_rect.y0));
             if (!tx) return false;
         }
+        ID3D11DepthStencilView *zdv = NULL;
+        if (zd) {
+            zdv = zt_dsv(*zt);
+            if (!zdv) return false;
+        } else if (zr) {
+            zsync(*zt);
+        }
         if (nrt_on) nt1 = nrt_now();
+        uint32_t vstart = 0;   /* the first vertex, from the bound offset */
         if (!g.im) {
             UINT stride = 28, off = 0;
-            ctx->IASetVertexBuffers(0, 1, &mb->vb, &stride, &off);
-            ctx->IASetIndexBuffer(mb->ib, DXGI_FORMAT_R32_UINT, 0);
-            ctx->IASetInputLayout(layout_nr);
+            if (force || nb.vb != mb->vb || nb.stride != stride || nb.off != off) {
+                S();
+                ctx->IASetVertexBuffers(0, 1, &mb->vb, &stride, &off);
+                nb.vb = mb->vb; nb.stride = stride; nb.off = off;
+            } else n_nb_skips++;
+            if (force || nb.ib != mb->ib) { S(); ctx->IASetIndexBuffer(mb->ib, DXGI_FORMAT_R32_UINT, 0); nb.ib = mb->ib; }
+            if (force || nb.il != layout_nr) { S(); ctx->IASetInputLayout(layout_nr); nb.il = layout_nr; }
         } else {
             /* immediate vertices into the dynamic ring (NO_OVERWRITE, DISCARD at the wrap) */
             uint32_t bytes = g.nim * (uint32_t)sizeof(GpuImVtx);
             if (bytes > im_vb_bytes) {
                 REL(im_vb);
-                uint32_t nb = im_vb_bytes ? im_vb_bytes : (1u << 20);
-                while (nb < bytes) nb *= 2;
+                uint32_t nbt = im_vb_bytes ? im_vb_bytes : (1u << 20);
+                while (nbt < bytes) nbt *= 2;
                 D3D11_BUFFER_DESC bd = {};
                 bd.Usage = D3D11_USAGE_DYNAMIC;
                 bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
                 bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-                bd.ByteWidth = nb;
+                bd.ByteWidth = nbt;
+                nb.vb = NULL;
                 if (FAILED(dev->CreateBuffer(&bd, NULL, &im_vb))) { im_vb_bytes = 0; return false; }
-                im_vb_bytes = nb;
-                im_vb_off = nb;     /* the first map discards */
+                im_vb_bytes = nbt;
+                im_vb_off = nbt;     /* the first map discards */
             }
             D3D11_MAPPED_SUBRESOURCE ms;
-            D3D11_MAP mode = D3D11_MAP_WRITE_NO_OVERWRITE;
-            if (im_vb_off + bytes > im_vb_bytes) { mode = D3D11_MAP_WRITE_DISCARD; im_vb_off = 0; }
-            if (FAILED(ctx->Map(im_vb, 0, mode, 0, &ms))) return false;
-            memcpy((uint8_t *)ms.pData + im_vb_off, g.im, bytes);
-            ctx->Unmap(im_vb, 0);
-            UINT stride = (UINT)sizeof(GpuImVtx), off = im_vb_off;
-            im_vb_off += (bytes + 255u) & ~255u;
-            ctx->IASetVertexBuffers(0, 1, &im_vb, &stride, &off);
-            ctx->IASetInputLayout(layout_im);
+            UINT stride = (UINT)sizeof(GpuImVtx), off;
+            if (pend_n && pend_end + bytes <= im_vb_bytes) {
+                /* after the pending draw's vertices, the binding unchanged */
+                if (FAILED(ctx->Map(im_vb, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &ms))) return false;
+                memcpy((uint8_t *)ms.pData + pend_end, g.im, bytes);
+                ctx->Unmap(im_vb, 0);
+                off = nb.off;
+                vstart = (pend_end - nb.off) / stride;
+                pend_end += bytes;
+                uint32_t e = (pend_end + 255u) & ~255u;
+                if (e > im_vb_off) im_vb_off = e;
+            } else {
+                S();
+                D3D11_MAP mode = D3D11_MAP_WRITE_NO_OVERWRITE;
+                if (im_vb_off + bytes > im_vb_bytes) { mode = D3D11_MAP_WRITE_DISCARD; im_vb_off = 0; }
+                if (FAILED(ctx->Map(im_vb, 0, mode, 0, &ms))) return false;
+                memcpy((uint8_t *)ms.pData + im_vb_off, g.im, bytes);
+                ctx->Unmap(im_vb, 0);
+                off = im_vb_off;
+                im_vb_off += (bytes + 255u) & ~255u;
+            }
+            if (force || nb.vb != im_vb || nb.stride != stride || nb.off != off) {
+                ctx->IASetVertexBuffers(0, 1, &im_vb, &stride, &off);
+                nb.vb = im_vb; nb.stride = stride; nb.off = off;
+            }
+            if (force || nb.il != layout_im) { S(); ctx->IASetInputLayout(layout_im); nb.il = layout_im; }
         }
-        ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        if (force) ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         {
-            D3D11_MAPPED_SUBRESOURCE ms;
-            if (FAILED(ctx->Map(cb_nr, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms))) return false;
-            {
-                float (*all)[4] = (float (*)[4])ms.pData;
-                uint32_t zc = (uint32_t)(zt ? g.zfunc : GZ_OFF) | (zt && g.zwrite ? 16u : 0u);
-                memcpy(all, g.cb, sizeof g.cb);
-                memcpy(&all[23][3], &zc, 4);
+            float all[26][4];
+            uint32_t zc = (uint32_t)(zt ? g.zfunc : GZ_OFF) | (zt && g.zwrite ? 16u : 0u);
+            static int zsub = -1;
+            if (zsub < 0) { const char *e = getenv("RG_NR_ZD_SUB"); zsub = !(e && e[0] == '0'); }
+            if (zd && !zsub) zc |= 32u;
+            memcpy(all, g.cb, sizeof g.cb);
+            memcpy(&all[23][3], &zc, 4);
+            nb_cb_same = nb_cb_ok && !memcmp(all, nb_cb, sizeof all);
+            if (!nb_cb_ok || !nb_on || memcmp(all, nb_cb, sizeof all)) {
+                S();
+                D3D11_MAPPED_SUBRESOURCE ms;
+                if (FAILED(ctx->Map(cb_nr, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms))) return false;
+                memcpy(ms.pData, all, sizeof all);
+                ctx->Unmap(cb_nr, 0);
+                memcpy(nb_cb, all, sizeof all);
+                nb_cb_ok = true;
             }
-            ctx->Unmap(cb_nr, 0);
-            if (d->nbones_rows && !g.im) {
+            if (d->nbones_rows && !g.im && (!nb_bones_ok || !nb_on || memcmp(d->bones, nb_bones, sizeof d->bones))) {
+                S();
+                D3D11_MAPPED_SUBRESOURCE ms;
                 if (FAILED(ctx->Map(cb_nr_bones, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms))) return false;
                 memcpy(ms.pData, d->bones, sizeof d->bones);
                 ctx->Unmap(cb_nr_bones, 0);
+                memcpy(nb_bones, d->bones, sizeof d->bones);
+                nb_bones_ok = true;
             }
         }
         if (nrt_on) nt2 = nrt_now();
-        ctx->VSSetShader(g.im ? vs_im : vs_nr, NULL, 0);
         {
-            ID3D11Buffer *cbs[2] = { cb_nr, cb_nr_bones };
-            ctx->VSSetConstantBuffers(0, d->nbones_rows && !g.im ? 2 : 1, cbs);
+            ID3D11VertexShader *vs = g.im ? vs_im : vs_nr;
+            if (force || nb.vs != vs) { S(); ctx->VSSetShader(vs, NULL, 0); nb.vs = vs; }
+            int ncb = d->nbones_rows && !g.im ? 2 : 1;
+            if (force || nb.ncb < ncb) {
+                S();
+                ID3D11Buffer *cbs[2] = { cb_nr, cb_nr_bones };
+                ctx->VSSetConstantBuffers(0, ncb, cbs);
+                if (force) ctx->PSSetConstantBuffers(0, 1, &cb_nr);
+                nb.ncb = ncb;
+            }
+            ID3D11PixelShader *ps = g.crov ? (zr ? (cplain ? ps_nr_czu : ps_nr_cz) : (cplain ? ps_nr_cu : ps_nr_c))
+                                   : zr ? ps_nr_z : zd ? ps_nr_zd : ps_nr;
+            if (force || nb.ps != ps) { S(); ctx->PSSetShader(ps, NULL, 0); nb.ps = ps; }
+            ID3D11RasterizerState *r = g.im ? rs_im : (zd ? rs_nrzd : rs_nr)[g.cull >= 0 && g.cull <= 2 ? g.cull : 0];
+            if (force || nb.rs != r) { S(); ctx->RSSetState(r); nb.rs = r; }
         }
-        ctx->PSSetShader(g.crov ? (zr ? ps_nr_cz : ps_nr_c) : zr ? ps_nr_z : ps_nr, NULL, 0);
-        ctx->PSSetConstantBuffers(0, 1, &cb_nr);
-        ctx->RSSetState(g.im ? rs_im : rs_nr[g.cull >= 0 && g.cull <= 2 ? g.cull : 0]);
-        set_viewport(g.vp_w * scale, g.vp_h * scale);
-        set_scissor(g.scissor);
-        ID3D11RenderTargetView *rtv = ct.rtv;
-        if (g.crov) {
-            /* no render target: depth (u2, zrov) and colour (u3) through ordered views */
-            ID3D11UnorderedAccessView *uv[2] = { zr ? zt->uav : NULL, ct.uav };
-            ctx->OMSetRenderTargetsAndUnorderedAccessViews(0, NULL, NULL, 2, 2, uv, NULL);
-        } else if (zr) ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv, NULL, 2, 1, &zt->uav, NULL);
-        else ctx->OMSetRenderTargets(1, &rtv, zt ? zt->dsv : NULL);
-        if (tsrv) {
-            ctx->PSSetShaderResources(0, 1, &tsrv);
-            ID3D11SamplerState *sm = smp_nr[g.lin ? 1 : 0][1][1];
-            ctx->PSSetSamplers(0, 1, &sm);
-        } else if (tx) {
-            ctx->PSSetShaderResources(0, 1, &tx->srv);
-            ID3D11SamplerState *sm = smp_nr[g.lin ? 1 : 0][g.clamp_u ? 1 : 0][g.clamp_v ? 1 : 0];
-            ctx->PSSetSamplers(0, 1, &sm);
+        {
+            int vw = g.vp_w * scale, vh = g.vp_h * scale;
+            if (force || nb.vpw != vw || nb.vph != vh) { S(); set_viewport(vw, vh); nb.vpw = vw; nb.vph = vh; }
+            D3D11_RECT rc = { g.scissor.x0 * scale, g.scissor.y0 * scale, g.scissor.x1 * scale, g.scissor.y1 * scale };
+            if (force || memcmp(&rc, &nb.sc, sizeof rc)) { S(); ctx->RSSetScissorRects(1, &rc); nb.sc = rc; }
+        }
+        {
+            /* outputs: colour RTV (u3: colour ordered view instead), depth DSV (the twin) or u2
+             * (depth ordered view) */
+            ID3D11RenderTargetView *rtv = g.crov ? NULL : ct.rtv;
+            ID3D11DepthStencilView *dsv = zd ? zdv : (zt && !zv ? zt->dsv : NULL);
+            ID3D11UnorderedAccessView *u2 = zr ? zt->uav : NULL, *u3 = g.crov ? ct.uav : NULL;
+            if (force || rtv != nb.rtv || dsv != nb.dsv || u2 != nb.u2 || u3 != nb.u3) {
+                S();
+                ID3D11UnorderedAccessView *uv[2] = { u2, u3 };
+                /* a target switching between output-merger and ordered-view use (counted) */
+                if ((u3 && nb_last_rtv_tex == ct.tex) || (rtv && nb_last_uav_tex == ct.tex)) n_om_uav_switch++;
+                if (rtv) { nb_last_rtv_tex = ct.tex; nb_last_uav_tex = NULL; }
+                if (u3) { nb_last_uav_tex = ct.tex; nb_last_rtv_tex = NULL; }
+                ctx->OMSetRenderTargetsAndUnorderedAccessViews(rtv ? 1 : 0, rtv ? &rtv : NULL, dsv, 2, 2, uv, NULL);
+                nb.rtv = rtv; nb.dsv = dsv; nb.u2 = u2; nb.u3 = u3;
+                nb_srv_stale = true;
+            }
+        }
+        {
+            ID3D11ShaderResourceView *srv = tsrv ? tsrv : tx ? tx->srv : NULL;
+            if (srv && (force || nb_srv_stale || srv != nb.srv)) {
+                S();
+                ctx->PSSetShaderResources(0, 1, &srv);
+                nb.srv = srv;
+                nb_srv_stale = false;
+            }
+            if (srv) {
+                ID3D11SamplerState *sm = tsrv ? smp_nr[g.lin ? 1 : 0][1][1]
+                                              : smp_nr[g.lin ? 1 : 0][g.clamp_u ? 1 : 0][g.clamp_v ? 1 : 0];
+                if (!tsrv && g.aniso > 1) {
+                    int a = g.aniso >= 16 ? 3 : g.aniso >= 8 ? 2 : g.aniso >= 4 ? 1 : 0;
+                    sm = smp_nr_an[a][g.clamp_u ? 1 : 0][g.clamp_v ? 1 : 0];
+                }
+                if (!tsrv && tx == &nr_rep_tex) {
+                    /* an HD replacement: its mip chain */
+                    int a = g.aniso >= 16 ? 3 : g.aniso >= 8 ? 2 : g.aniso >= 4 ? 1 : 0;
+                    sm = g.aniso > 1 ? smp_rep_an[a][g.clamp_u ? 1 : 0][g.clamp_v ? 1 : 0]
+                                     : smp_rep[g.lin ? 1 : 0][g.clamp_u ? 1 : 0][g.clamp_v ? 1 : 0];
+                }
+                if (force || nb.smp != sm) { S(); ctx->PSSetSamplers(0, 1, &sm); nb.smp = sm; }
+            }
         }
         float bf[4] = { 0, 0, 0, 0 };
-        ctx->OMSetBlendState(bst, bf, 0xFFFFFFFFu);
-        ctx->OMSetDepthStencilState(ds[zt && !zr ? g.zfunc : GZ_OFF][zt && !zr && g.zwrite ? 1 : 0], 0);
-        size_t q0 = prof ? pts() : 0;
+        if (force || nb.bs != bst) { S(); ctx->OMSetBlendState(bst, bf, 0xFFFFFFFFu); nb.bs = bst; }
+        {
+            const bool ff = zt && !zr;   /* fixed-function depth (a DSV: the twin or a plain target) */
+            ID3D11DepthStencilState *dss = ds[ff ? g.zfunc : GZ_OFF][ff && g.zwrite ? 1 : 0];
+            if (force || nb.ds != dss) { S(); ctx->OMSetDepthStencilState(dss, 0); nb.ds = dss; }
+        }
+        nb.live = true;
+        size_t q0 = prof_mode == 1 ? pts() : 0;
+        n_nd_kind[g.crov ? (zr ? 0 : 1) : zr ? 2 : 3]++;
+        {
+            /* colour-ROV draws right after another one (a barrier between them): with the same
+             * texture / sampler / scissor they could share one draw call */
+            ID3D11ShaderResourceView *srv = tsrv ? tsrv : tx ? tx->srv : NULL;
+            if (g.crov && !force && nb_last_crov) {
+                n_crov_follow++;
+                if (srv == nb_last_srv && !memcmp(&nb.sc, &nb_last_sc, sizeof nb.sc)) n_crov_same++;
+                if (nb_cb_same) n_crov_cbsame++;
+            }
+            nb_last_crov = g.crov != 0;
+            nb_last_srv = srv;
+            nb_last_sc = nb.sc;
+        }
+        if (zd) n_nd_zdsv++;
+        if (g.im) n_nd_im++; else n_nd_mesh++;
         static int dbg_stats = -1, dbg_n;
         if (dbg_stats < 0) { const char *e = getenv("RG_NR_STATS"); dbg_stats = e ? atoi(e) : 0; }
         static long dbg_skip = -1, dbg_seen;
@@ -1878,12 +2594,26 @@ public:
                 uint32_t e = g.runs[2 * i], sw = g.runs[2 * i + 1];
                 if (e > g.nim) e = g.nim;
                 if (e <= at) continue;
-                if ((int)sw != cur && bsw) { ctx->OMSetBlendState(sw ? bsw : bst, bf, 0xFFFFFFFFu); cur = (int)sw; }
+                if ((int)sw != cur && bsw) {
+                    ID3D11BlendState *b = sw ? bsw : bst;
+                    ctx->OMSetBlendState(b, bf, 0xFFFFFFFFu);
+                    nb.bs = b;
+                    cur = (int)sw;
+                }
                 ctx->Draw(e - at, at);
                 at = e;
             }
+        } else if (g.im && mc && pend_n && vstart == pend_start + pend_n) {
+            pend_n += g.nim;     /* merged into the pending draw */
+            n_crov_merged++;
+        } else if (g.im && mc) {
+            S();
+            pend_start = vstart;
+            pend_n = g.nim;
+            pend_end = nb.off + (vstart + g.nim) * (uint32_t)sizeof(GpuImVtx);
         } else if (g.im) {
-            ctx->Draw(g.nim, 0);
+            S();
+            ctx->Draw(g.nim, vstart);
         } else if (dbg_stats && dbg_seen++ >= dbg_skip && dbg_n < 4000) {
             /* debugging: pipeline statistics of each native draw (stalls) */
             D3D11_QUERY_DESC qd = { D3D11_QUERY_PIPELINE_STATISTICS, 0 };
@@ -1904,16 +2634,25 @@ public:
                 q->Release();
                 dbg_n++;
             }
+        } else if (g.cb[25][2] != 0.0f && gs_nr) {
+            /* a mesh with the VU clipper: GS_nr cuts the triangles it would (unbound after:
+             * every other draw of the context runs without a geometry shader) */
+            ctx->GSSetShader(gs_nr, NULL, 0);
+            ctx->GSSetConstantBuffers(0, 1, &cb_nr);
+            ctx->DrawIndexed(mb->nidx, 0, 0);
+            ctx->GSSetShader(NULL, NULL, 0);
+            n_nd_clip++;
         } else {
             ctx->DrawIndexed(mb->nidx, 0, 0);
         }
-        if (prof) pev_add(PC_NR, q0, (double)(g.scissor.x1 - g.scissor.x0) * (g.scissor.y1 - g.scissor.y0) * scale * scale);
+        /* depth written: the twin is newer (zd), or the ordered view (zr: the twin is stale) */
+        if (zt && g.zwrite && g.zfunc != GZ_OFF) {
+            if (zd) zt->zst = 2;
+            else if (zr) zt->zst = 0;
+        }
+        if (prof_mode == 1) pev_add(PC_NR, q0, (double)(g.scissor.x1 - g.scissor.x0) * (g.scissor.y1 - g.scissor.y0) * scale * scale);
         if (nrt_on) nt3 = nrt_now();
-        unbind_all();
-        ID3D11Buffer *nulcb[1] = {};
-        ctx->VSSetConstantBuffers(0, 1, nulcb);
-        ctx->OMSetBlendState(NULL, bf, 0xFFFFFFFFu);
-        ctx->OMSetDepthStencilState(NULL, 0);
+        if (!nb_on) unbind_all();
         if (nrt_on) {
             double nt4 = nrt_now();
             nrt_acc[0] += nt1 - nt0; nrt_acc[1] += nt2 - nt1; nrt_acc[2] += nt3 - nt2; nrt_acc[3] += nt4 - nt3;
@@ -1925,7 +2664,7 @@ public:
         return true;
     }
 
-    void kick() override { ctx->Flush(); }
+    void kick() override { pend_flush(); ctx->Flush(); }
 
     /* $RG_GPU_SNAP_FLUSH=1: flush after every early copy (the old behaviour) */
     const bool snap_flush = getenv("RG_GPU_SNAP_FLUSH") && getenv("RG_GPU_SNAP_FLUSH")[0] == '1';
@@ -2225,10 +2964,11 @@ public:
 
     int display(const GpuDisplay &d, uint32_t *out) override
     {
-        disp_q0 = prof ? pts() : (size_t)-1;
+        if (prof_mode == 2) fr_mark();
+        disp_q0 = prof_mode == 1 ? pts() : (size_t)-1;
         if (!compose(d)) return -1;
         int rc = readback(disp_staging, disp_tex, disp_w, disp_h, out);
-        if (prof && pq_next > 1024) prof_collect();
+        if ((prof_mode == 1 || prof_mode == 3) && pq_next > 1024) prof_collect();
         return rc;
     }
 

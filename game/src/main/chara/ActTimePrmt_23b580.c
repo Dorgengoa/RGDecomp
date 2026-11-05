@@ -8,7 +8,7 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_0044BB40[0x400];
+extern u8 D_0044BB40[0x260];
 extern u8 D_0044BDA0[0x400];
 extern u8 *D_00481ED0;
 extern s32 D_00481ED4;

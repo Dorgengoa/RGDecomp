@@ -89,8 +89,11 @@ typedef struct nr_rec {
     int has_bb;
     int vu_bbox;             /* the VIF tap must merge bb into VU memory (the composite runs emulated) */
     nr_qw bb_lo, bb_hi;
+    float lxs;               /* nr_set_frame_xscale at record time (line strands on a wide frame) */
 } nr_rec;
 static nr_rec *g_rec;
+static float g_frame_xs = 1.0f;   /* EE: nr_set_frame_xscale */
+void nr_set_frame_xscale(float xs) { g_frame_xs = xs > 0.0f && xs < 1.0f ? xs : 1.0f; }
 static uint32_t g_next = 1;
 static int g_attached;       /* the VIF tap and the GS handler are both in place */
 
@@ -409,12 +412,55 @@ void nr_frame_begin(uint32_t ctx)
     (void)ctx;
     g_frame_no++;
     nr_game_mem_frame();   /* walkers' readable-region cache (nr_mem.h) */
+    {
+        /* the game heap never moves or shrinks: readable without region queries */
+        extern void *rg_crt0_end_of_heap(void);
+        extern uint32_t rg_crt0_heap_size(void);
+        static int heap_noted;
+        uint8_t *e = (uint8_t *)rg_crt0_end_of_heap();
+        if (!heap_noted && e) {
+            heap_noted = 1;
+            nr_game_mem_stable((uintptr_t)e - rg_crt0_heap_size(), (uintptr_t)e);
+        }
+    }
     nr_ip_frame_begin(g_frame_no);   /* interpolated presentation: a log boundary (when on) */
 #ifdef RG_HAVE_GPU   /* no GPU backend (Linux, docs/LINUX.md): no filter log */
     gpu_nr_filtlog_frame(g_frame_no);
 #endif
 }
-uint32_t nr_frame_no(void) { return g_frame_no; }   /* record2: the material's PRMODE TME bit (qw87.x bit 4), -1 unknown */
+uint32_t nr_frame_no(void) { return g_frame_no; }
+/* ray tracing (docs/RAYTRACING.md "Light model", RT2): the key light of the drawn map areas'
+ * light sets, handed over by MapAreasDrawLit_1e1830 (override) for each area it draws, before
+ * the area's draws.  set = the light set (+0x30 four direction rows, +0x70 four colours, +0x180
+ * the ambient; LightStateWritePacket_1484a0 transposes the directions into VU qw30-32).  The
+ * first area of a frame wins (the area the frame starts with); light 0 is the sun
+ * (TimeOfDayBlendLightSet_18cb10 writes it), unless it is much weaker than another light (an
+ * interior's lamps): then the strongest.  Read only; nothing goes back to game memory. */
+static float g_rt_area[3][4];
+static uint32_t g_rt_area_frame;
+void nr_rt_area_light(int32_t area, const float *set)
+{
+    int i, k, best = 0;
+    float lum[4], lmax = 0.0f;
+    if (!set || (area != 0 && g_rt_area_frame == g_frame_no)) return;
+    for (i = 0; i < 4; i++) {
+        const float *c = set + 28 + 4 * i, *d = set + 12 + 4 * i;
+        float dl = d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
+        lum[i] = dl > 1e-6f ? 0.299f * c[0] + 0.587f * c[1] + 0.114f * c[2] : 0.0f;
+        if (lum[i] > lmax) { lmax = lum[i]; best = i; }
+    }
+    if (lum[0] >= 0.5f * lmax) best = 0;
+    for (k = 0; k < 3; k++) {
+        g_rt_area[0][k] = set[12 + 4 * best + k];
+        g_rt_area[1][k] = set[28 + 4 * best + k];
+        g_rt_area[2][k] = set[96 + k];
+    }
+    g_rt_area[0][3] = (float)best;
+    g_rt_area[1][3] = lmax;
+    g_rt_area[2][3] = 0.0f;
+    g_rt_area_frame = g_frame_no;
+}
+   /* record2: the material's PRMODE TME bit (qw87.x bit 4), -1 unknown */
 static int g_dbg_info;
 
 static int err_slot(int e) { return e < 0 && e > -11 ? -e : 11; }
@@ -565,6 +611,7 @@ static int rigid_box(const nr_mesh *m, const nr_qw *c, float box[4])
 }
 
 static void clip_note(nr_rec *r, uint32_t ctx);
+static void clip_note_emu(int variant, uint32_t ctx);
 /* A textured mesh with a batch that unpacks no UVs (the VU program reads whatever an earlier
  * batch left in VU memory there: not reproducible) is drawn natively with UV 0 (one mesh on
  * the route, 5,149 draws to field 23,260; frames identical with and without it at 28 fields
@@ -585,7 +632,7 @@ uint32_t nr_model_record2(uint32_t mesh_pkt, int variant, const uint32_t *src)
             g_st.meshes++;
             g_st.fallback_const++;
             census_note(src, variant, 0);
-            clip_note(NULL, src[0]);
+            clip_note_emu(variant, src[0]);
             return 0;
         }
     }
@@ -616,7 +663,7 @@ uint32_t nr_model_record2(uint32_t mesh_pkt, int variant, const uint32_t *src)
         r->has_bb = 0;
         r->vu_bbox = 1;
     } else {
-        clip_note(NULL, src[0]);
+        clip_note_emu(variant, src[0]);
     }
     return id;
 }
@@ -713,6 +760,7 @@ uint32_t nr_model_record(uint32_t mesh_pkt, int variant)
     r->tapped = 0;
     r->has_box = 0;
     r->frame = g_frame_no;
+    r->lxs = g_frame_xs;
     g_st.recorded++;
     return id;
 }
@@ -1130,7 +1178,7 @@ static struct {
 } g_cl = { 1, { { 0x4B800000u, 0x4B800000u, 0x4B800000u, 0x4B800000u } },
            { { 0xCB800000u, 0xCB800000u, 0xCB800000u, 0xCB800000u } }, { 0 }, 0 };
 static struct {
-    uint64_t resets, sprites_native, sprites_vu, strips, unknown_emu, unknown_ovf, vu_merges, empty;
+    uint64_t resets, sprites_native, sprites_vu, strips, unknown_emu, unknown_ovf, vu_merges, empty, emu_noz;
     uint64_t chk_runs, chk_strips, chk_bad, chk_extra, chk_missing, chk_wdiff;
     int printed;
 } g_cs;
@@ -1188,6 +1236,21 @@ static void clip_note(nr_rec *r, uint32_t ctx)
         g_cs.unknown_emu++;
         clip_unknown();
     }
+}
+
+/* record time: a mesh that stays on the VU program.  Only the Z-scale output pieces store
+ * into qw98/99 (clip_note), so a known variant without NRV_ZSCALE (e.g. the line-strand
+ * program of an empty whisker mesh, variant 0x201, "no vertices") leaves the range known;
+ * making it unknown sent the composite to the VU program, which a native-only build does
+ * not have: Monsha's head and tail tip vanished (docs/NATIVE-RENDER.md "Offscreen
+ * composite", 2026-10-31).  An unknown variant (< 0) stays conservative. */
+static void clip_note_emu(int variant, uint32_t ctx)
+{
+    if (variant >= 0 && !(variant & NRV_ZSCALE)) {
+        if (ctx && *(const int32_t *)(uintptr_t)(ctx + 0x3CCCu) != 0 && g_cl.known) g_cs.emu_noz++;
+        return;
+    }
+    clip_note(NULL, ctx);
 }
 
 /* check mode: the sprites the VU program must kick, in DMA order */
@@ -1479,10 +1542,59 @@ void nr_runtime_attach_vif(struct vif_state *vif1, struct vu_state *vu1)
 /* ---- GS thread: the draw ---------------------------------------------------- */
 static gpu_nr_draw g_draw;      /* GS thread only */
 static int g_fault;             /* RG_NR_FAULT (test controls only) */
-static int g_dbg, g_dbgn;         /* RG_NR_DEBUG */
+static int g_dbg, g_dbgn, g_dbgmax = 400;   /* RG_NR_DEBUG, RG_NR_DEBUG_MAX (lines, default 400) */
 static int g_cullmode = 1;      /* RG_NR_CULL: 1 as the program, 0 off, -1 inverted (checks) */
 static int g_nobox;             /* RG_NR_NOBOX=1: coherence rectangle = scissor (check) */
 static int g_noswap;            /* RG_NR_NOSWAP=1: shadow faces change ALPHA (one batch per run of faces) */
+
+/* The VU clipper's near plane as a GS Z (docs/NATIVE-RENDER.md "Near-plane clip (2026-10-31)").
+ * The clipper (0x2620) and the guard-band output pieces test the vertex in the clip space of
+ * qw72-75 (P2 = qw8-11 x view x object) with CLIPW: |z| <= w.  The screen matrix qw68-71 is
+ * the camera's viewport (qw12-15, columns) times the same P2, whose Z column is (0, 0, sz, tz)
+ * and W column (0, 0, 0, 1): GS Z = sz * z/w + tz, so the plane z = +-w is GS Z = tz +- sz,
+ * the nearer one the larger Z.  0: not that form (no near clip beyond the hardware's). */
+static int g_nearclip = -1;     /* RG_NR_NEARCLIP=0: off (the hardware's clip only; control) */
+static float nr_near_z(const nr_qw *c)
+{
+    float sz = c[14].f[2], tz = c[15].f[2];
+    if (g_nearclip < 0) { const char *e = getenv("RG_NR_NEARCLIP"); g_nearclip = !(e && e[0] == '0'); }
+    if (!g_nearclip) return 0.0f;
+    if (c[12].f[2] != 0.0f || c[13].f[2] != 0.0f || c[12].f[3] != 0.0f || c[13].f[3] != 0.0f ||
+        c[14].f[3] != 0.0f || c[15].f[3] != 1.0f || !(sz != 0.0f) || !(fabsf(tz) < 1e12f))
+        return 0.0f;
+    return tz + fabsf(sz);
+}
+
+/* The VU clipper's clip space for GS_nr (nr_draw.hlsl; docs/NATIVE-RENDER.md "VU clipper
+ * (2026-10-31)"): meshes with the clipper on (qw81.x bit 1) get rows 24-25 mapping the
+ * homogeneous GS screen position (qw68-71 x p = viewport qw12-15 x clip) back to the clipper's
+ * clip space qw72-75 with the guard scale qw105.xy (0.999) on x and y: (gx / vx, -gx tx / vx, gy / vy,
+ * -gy ty / vy), (1 / sz, -tz / sz, 1, 0).  Rows zero (no clipper emulation) when the clipper is
+ * off, the viewport is not that diagonal form, or RG_NR_CLIPEMU=0 (control). */
+static int g_clipemu = -1;
+static void nr_clip_cb(const nr_qw *c, gpu_nr_draw *g)
+{
+    float vx = c[12].f[0], vy = c[13].f[1], sz = c[14].f[2], tx = c[15].f[0], ty = c[15].f[1], tz = c[15].f[2];
+    /* (the head piece 0x436CB0 writes qw105 = (0.999, 0.999, qw16.zw) when the clipper is on:
+     * LOI 0x3F7FBE77; the scanned constants do not hold it) */
+    const union { uint32_t u; float f; } g999 = { 0x3F7FBE77u };
+    float gx = g999.f, gy = g999.f;
+    if (g_clipemu < 0) { const char *e = getenv("RG_NR_CLIPEMU"); g_clipemu = !(e && e[0] == '0'); }
+    if (!g_clipemu || !(c[NRQ_FLAGS].u[0] & 2u)) return;
+    if (c[12].f[1] != 0.0f || c[12].f[2] != 0.0f || c[12].f[3] != 0.0f || c[13].f[0] != 0.0f || c[13].f[2] != 0.0f ||
+        c[13].f[3] != 0.0f || c[14].f[0] != 0.0f || c[14].f[1] != 0.0f || c[14].f[3] != 0.0f || c[15].f[3] != 1.0f)
+        return;
+    if (!(fabsf(vx) > 1e-12f) || !(fabsf(vy) > 1e-12f) || !(fabsf(sz) > 1e-12f) || !(gx > 0.0f) || !(gy > 0.0f) ||
+        !(fabsf(tx) < 1e12f) || !(fabsf(ty) < 1e12f) || !(fabsf(tz) < 1e12f) || !(gx < 1e12f) || !(gy < 1e12f))
+        return;
+    g->cb[24][0] = gx / vx;
+    g->cb[24][1] = -gx * tx / vx;
+    g->cb[24][2] = gy / vy;
+    g->cb[24][3] = -gy * ty / vy;
+    g->cb[25][0] = 1.0f / sz;
+    g->cb[25][1] = -tz / sz;
+    g->cb[25][2] = 1.0f;
+}
 
 static void build_cb_cv(const nr_qw *c, int v, gpu_nr_draw *g)
 {
@@ -1508,6 +1620,7 @@ static void build_cb_cv(const nr_qw *c, int v, gpu_nr_draw *g)
     memcpy(g->cb[9], c[NRQ_FOG].f, 16);
     g->cb[10][0] = c[NRQ_MAT].f[2];
     g->cb[10][1] = c[NRQ_ZMAX].f[1];
+    g->cb[10][3] = nr_near_z(c);
     /* environment map: view(24..26).xy x object rotation (64..66) */
     if (v & NRV_ENVMAP) {
         float e[3][2];
@@ -1541,6 +1654,7 @@ static void build_cb_cv(const nr_qw *c, int v, gpu_nr_draw *g)
             for (j = 0; j < 4; j++) g->cb[17 + k][j] = c[NRQ_LIGHTCOL + k].f[j] * c[NRQ_COLMUL].f[j];
         g->cb[21][3] *= c[NRQ_FLAGS].f[3];
     }
+    nr_clip_cb(c, g);
     {
         uint32_t vv = (uint32_t)v;
         memcpy(&g->cb[22][0], &vv, 4);
@@ -1549,18 +1663,39 @@ static void build_cb_cv(const nr_qw *c, int v, gpu_nr_draw *g)
     /* deliberate faults for the verification controls (RG_NR_FAULT, docs
      * "Verification"): 1 UV scale halved, 2 colour x 0.6, 3 everything 2 pixels
      * to the right */
+    {
+        /* ray tracing (docs/RAYTRACING.md): world placement and light 0, read by the Vulkan
+         * backend only with graphics.raytracing on (nothing else reads these rows) */
+        for (k = 0; k < 4; k++) memcpy(g->rt[k], c[60 + k].f, 16);
+        for (k = 0; k < 3; k++) g->rt[4][k] = c[30 + k].f[0];
+        g->rt[4][3] = 0.0f;
+        memcpy(g->rt[5], c[NRQ_LIGHTCOL].f, 16);
+        memcpy(g->rt[6], c[NRQ_LIGHTCOL + 4].f, 16);
+        memcpy(g->rt[7], c[NRQ_CAMPOS].f, 16);
+        /* rows 8-10: the drawn area's key light (nr_rt_area_light), row 8 w = 1 when it was handed
+         * over in the last 8 frames (else 0: the renderer falls back to the lit draws' light 0) */
+        memcpy(g->rt[8], g_rt_area, sizeof g_rt_area);
+        g->rt[8][3] = g_rt_area_frame && (uint32_t)(g_frame_no - g_rt_area_frame) <= 8u ? 1.0f : 0.0f;
+        memset(g->rt[11], 0, 16);
+        g->rt_ok = GPU_NR_RT_MAGIC;
+        g->rt_frame = 0;
+    }
     if (g_fault == 1) { g->cb[6][0] *= 0.5f; g->cb[6][1] *= 0.5f; }
     else if (g_fault == 2) { for (k = 0; k < 3; k++) g->cb[7][k] *= 0.6f; }
     else if (g_fault == 3) { for (k = 0; k < 4; k++) g->cb[k][0] += 2.0f * g->cb[k][3]; }   /* screen x + 2 */
 }
-static void build_cb(const nr_rec *r, gpu_nr_draw *g) { build_cb_cv(r->c, r->variant, g); }
+static void build_cb(const nr_rec *r, gpu_nr_draw *g)
+{
+    build_cb_cv(r->c, r->variant, g);
+    g->rt_frame = r->frame;   /* ray tracing: the TLAS epoch (docs/RAYTRACING.md) */
+}
 
 /* the shadow program's GS output, generated natively: per face the register
  * packet (A+D writes and a PACKED RGBAQ, parsed from VU qw35 / qw38 as the
  * program kicks them), PRIM 5 + PRMODE qw87.x, and the fan's vertices with
  * the GS's XYZF2 rules (ADC: no drawing kick) */
 static shbuf g_dsh;
-static uint64_t g_sh_faces, g_sh_tris, g_sh_bad;
+static uint64_t g_sh_faces, g_sh_tris, g_sh_bad, g_sh_rtsup;   /* (rt4) g_sh_rtsup: shadow-volume records not drawn for the ray-traced ones */
 /* one register packet of the shadow program (VU qw35 / qw38) as GS writes */
 typedef struct shregs { int n; uint32_t reg[8]; uint64_t val[8]; } shregs;
 static int shadow_regs(const nr_qw *c, uint32_t q, uint64_t rgbaq_q, shregs *o)
@@ -1651,10 +1786,12 @@ static void gen_reg(gpu_renderer *gr, gpu_gs *gs, uint32_t reg, uint64_t val)
 static void draw_shadow_im(const nr_rec *r, gpu_renderer *gr, gpu_gs *gs, int nf)
 {
     int i, k, sw = 0;
+    const int rtsup = gpu_nr_rt_chars_shadow(gr);   /* (rt4: ray-traced character shadows replace these; registers kept) */
     gs_vertex v[4];
     uint64_t batch_alpha = gs->reg[GS_ALPHA_1];
     g_gen_n = 0;
     g_gen_anysw = 0;
+    if (rtsup) g_sh_rtsup++;
     gs->reg[GS_PRIM] = 5;
     gs->reg[GS_PRMODE] = r->c[NRQ_MAT].u[0];
     for (i = 0; i < nf; i++) {
@@ -1689,8 +1826,8 @@ static void draw_shadow_im(const nr_rec *r, gpu_renderer *gr, gpu_gs *gs, int nf
             v[k].a = (uint8_t)(rgbaq >> 24);
             { uint32_t qb = (uint32_t)(rgbaq >> 32); memcpy(&v[k].q, &qb, 4); }
         }
-        if (!((uint32_t)f->w[2] & 0x8000)) { gs_vertex t[3] = { v[0], v[1], v[2] }; gen_prim_sw(gr, gs, t, GS_PRIM_TRIANGLE, sw); g_sh_tris++; }
-        if (!((uint32_t)f->w[3] & 0x8000)) { gs_vertex t[3] = { v[0], v[2], v[3] }; gen_prim_sw(gr, gs, t, GS_PRIM_TRIANGLE, sw); g_sh_tris++; }
+        if (!((uint32_t)f->w[2] & 0x8000) && !rtsup) { gs_vertex t[3] = { v[0], v[1], v[2] }; gen_prim_sw(gr, gs, t, GS_PRIM_TRIANGLE, sw); g_sh_tris++; }
+        if (!((uint32_t)f->w[3] & 0x8000) && !rtsup) { gs_vertex t[3] = { v[0], v[2], v[3] }; gen_prim_sw(gr, gs, t, GS_PRIM_TRIANGLE, sw); g_sh_tris++; }
         g_sh_faces++;
         gs->reg[GS_FOG] = (uint64_t)v[3].f << 56;
     }
@@ -1708,6 +1845,8 @@ static void draw_shadow(const nr_rec *r, gpu_renderer *gr, gpu_gs *gs)
     int have_alpha = 0;
     if (nf <= 0) { g_st.drawn++; return; }
     if (genim_on()) { draw_shadow_im(r, gr, gs, nf); return; }
+    const int rtsup = gpu_nr_rt_chars_shadow(gr);   /* (rt4: ray-traced character shadows replace these; registers kept) */
+    if (rtsup) g_sh_rtsup++;
     gpu_nr_prims_begin(gr);
     gs->reg[GS_PRIM] = 5;
     gs->reg[GS_PRMODE] = r->c[NRQ_MAT].u[0];
@@ -1743,8 +1882,8 @@ static void draw_shadow(const nr_rec *r, gpu_renderer *gr, gpu_gs *gs)
             { uint32_t qb = (uint32_t)(rgbaq >> 32); memcpy(&v[k].q, &qb, 4); }
         }
         /* fan: v2 kicks (v0 v1 v2), v3 kicks (v0 v2 v3); ADC = no kick */
-        if (!((uint32_t)f->w[2] & 0x8000)) { gs_vertex t[3] = { v[0], v[1], v[2] }; gs_draw_kick(gs, t, 3, GS_PRIM_TRIFAN); g_sh_tris++; }
-        if (!((uint32_t)f->w[3] & 0x8000)) { gs_vertex t[3] = { v[0], v[2], v[3] }; gs_draw_kick(gs, t, 3, GS_PRIM_TRIFAN); g_sh_tris++; }
+        if (!((uint32_t)f->w[2] & 0x8000) && !rtsup) { gs_vertex t[3] = { v[0], v[1], v[2] }; gs_draw_kick(gs, t, 3, GS_PRIM_TRIFAN); g_sh_tris++; }
+        if (!((uint32_t)f->w[3] & 0x8000) && !rtsup) { gs_vertex t[3] = { v[0], v[2], v[3] }; gs_draw_kick(gs, t, 3, GS_PRIM_TRIFAN); g_sh_tris++; }
         gs->reg[GS_FOG] = (uint64_t)v[3].f << 56;
         g_sh_faces++;
     }
@@ -1958,10 +2097,24 @@ static void frame_replay(gpu_renderer *gr, const nr_frame *f)
  * (v0 v1, v2 v3, v4 v5, v6 v7); ADC records kick nothing */
 static lnbuf g_dlb;
 static uint64_t g_ln_recs, g_ln_lines;
+/* Outlines on a wide canvas (docs/NATIVE-RENDER.md): the WIDE frame is drawn 512 wide and
+ * stretched by 1 / xs to the canvas, so the strands' +-hw x offsets and the lines' one-pixel
+ * x thickness came out 1 / xs times as wide as they are high (at 16:9: the vertical edges of
+ * faces 1.33x as thick as the horizontal ones; 1.56x on the play-test 2560x1440 canvas).
+ * At an internal scale > 1 both are narrowed by xs; at scale 1 the GS's pixel grid stays
+ * (a narrower line would drop pixels).  RG_NR_LINE_XS=0: off. */
+static float line_xs(const nr_rec *r, gpu_renderer *gr)
+{
+    static int on = -1;
+    if (on < 0) { const char *e = getenv("RG_NR_LINE_XS"); on = !(e && e[0] == '0'); }
+    if (!on || r->lxs >= 1.0f || gpu_get_scale(gr) <= 1) return 1.0f;
+    return r->lxs;
+}
 static void draw_lines(const nr_rec *r, gpu_renderer *gr, gpu_gs *gs)
 {
     uint32_t b;
     int any = 0;
+    float lxs = line_xs(r, gr);
     for (b = 0; b < r->mesh->nbatch; b++) {
         int four, nr = line_records(r, b, &g_dlb, &four), i, k;
         if (nr <= 0) continue;
@@ -1971,6 +2124,7 @@ static void draw_lines(const nr_rec *r, gpu_renderer *gr, gpu_gs *gs)
             gs->reg[GS_PRIM] = 1;
             gs->reg[GS_PRMODE] = r->c[NRQ_MAT].u[0];
             g_gen_n = 0;
+            gpu_set_im_line_xs(gr, lxs);   /* (gen_prim flushes full runs too) */
             for (i = 0; i < nr; i++) {
                 const nr_lnrec *e = &g_dlb.rec[i];
                 uint64_t rgbaq = 16u | (16u << 8) | (16u << 16) | ((uint64_t)e->alpha << 24) | (gs->reg[GS_RGBAQ] & 0xFFFFFFFF00000000ull);
@@ -1987,9 +2141,19 @@ static void draw_lines(const nr_rec *r, gpu_renderer *gr, gpu_gs *gs)
                     v[k].r = 16; v[k].g = 16; v[k].b = 16; v[k].a = (uint8_t)e->alpha;
                     { uint32_t qb = (uint32_t)(rgbaq >> 32); memcpy(&v[k].q, &qb, 4); }
                 }
+                if (lxs < 1.0f) {
+                    /* v0 / v2 = a +- (hw, 0), v1 / v3 = b +- (hw, 0): hw x lxs about a and b */
+                    for (k = 0; k < 2; k++) {
+                        int32_t c2 = e->x[k] + e->x[k + 2];   /* 2 x the endpoint (12.4) */
+                        int32_t d = (int32_t)lrintf((float)(e->x[k] - e->x[k + 2]) * 0.5f * lxs);
+                        v[k].x = (uint16_t)((c2 >> 1) + d);
+                        v[k + 2].x = (uint16_t)((c2 >> 1) - d);
+                    }
+                }
                 for (k = 0; k < 8; k += 2) { gen_prim(gr, gs, &v[k], GS_PRIM_LINE); g_ln_lines++; }
             }
             gen_flush(gr, gs);
+            gpu_set_im_line_xs(gr, 1.0f);
             gs->reg[GS_FOG] = (uint64_t)(uint8_t)((uint32_t)g_dlb.rec[nr - 1].adc >> 4) << 56;
             continue;
         }
@@ -2090,7 +2254,7 @@ static void gs_marker(void *user, gpu_renderer *gr, gpu_gs *gs, uint64_t value)
     g_draw.has_box = r->has_box && !g_nobox;
     memcpy(g_draw.box, r->box, sizeof g_draw.box);
     g_draw.cull_sign = r->c[NRQ_HAND].f[2] * ((r->c[NRQ_MAT].u[1] & 0x1000) ? -1.0f : 1.0f) * (g_cullmode < 0 ? -1.0f : 1.0f);
-    if (g_dbg && (m->skipwrite || g_dbg > 1) && g_dbgn < 400) {
+    if (g_dbg && (m->skipwrite || g_dbg > 1) && g_dbgn < g_dbgmax) {
         /* RG_NR_DEBUG=1: the screen extent of skipping-write meshes (2: all
          * meshes) from the native math on the CPU, and the GS state */
         float x0 = 1e30f, y0 = 1e30f, x1 = -1e30f, y1 = -1e30f, z0 = 1e30f, z1 = -1e30f;
@@ -2115,6 +2279,15 @@ static void gs_marker(void *user, gpu_renderer *gr, gpu_gs *gs, uint64_t value)
                 (unsigned long long)gs->reg[GS_FRAME_1], (unsigned long long)gs->reg[GS_ZBUF_1],
                 (unsigned long long)gs->reg[GS_TEST_1], (unsigned long long)gs->reg[GS_ALPHA_1],
                 (unsigned long long)gs->reg[GS_PRMODE], (unsigned long long)gs->reg[GS_XYOFFSET_1]);
+        if (g_dbg > 2) {
+            /* RG_NR_DEBUG=3: the camera's viewport columns qw12-15 (z, w), the clip
+             * flags qw81.x, the guard band qw105 and the near-plane Z of the draw (R[10].w) */
+            const nr_qw *c = r->c;
+            fprintf(stderr, "nr cam %u: vp z %g %g %g %g w %g %g %g %g | 81.x %08X | 105 %g %g %g %g | 1.y %g | znear %g\n", id,
+                    c[12].f[2], c[13].f[2], c[14].f[2], c[15].f[2], c[12].f[3], c[13].f[3], c[14].f[3], c[15].f[3],
+                    c[NRQ_FLAGS].u[0], c[105].f[0], c[105].f[1], c[105].f[2], c[105].f[3], c[NRQ_ZMAX].f[1],
+                    g_draw.cb[10][3]);
+        }
     }
     gpu_ip_set_mesh(id);   /* (interpolated presentation: the recorder tags the draw) */
     if (gpu_nr_submit(gr, &g_draw) < 0) g_st.gpu_fail++;
@@ -2144,6 +2317,87 @@ void nr_runtime_gpu_config(struct gpu_config *gc)
  * its early copy of the depth target (deterministic: exactly the bytes the
  * VIF1 FIFO path delivers), no DMA, no VIF1, no FIFO. */
 static uint64_t g_store_n;
+#if defined(RG_HAVE_GPU) && NR_ONLY
+/* Probe reads off the EE's wait (docs/NATIVE-RENDER.md "Interpolation throughput (2026-10-30)",
+ * "Probe drain"): with probe lag in force (real-time play: gpu_config.probe_lag) a small depth read
+ * (the lens flare's 8x8 probes) is queued to the GS worker, which makes it at its place in the GS
+ * stream into a result slot (gpu_mem_read with probe lag: the previous probe group's copy, no GPU
+ * wait), and the EE is answered at once with the result of the previous read of the same rectangle
+ * (one probe group of the EE's own sequence earlier; waiting only if the worker has not reached
+ * that one yet: a frame behind).  The answer is a function of the GS stream (deterministic); the
+ * EE never drains the worker for a probe, so the worker's presents keep their slots.  The first
+ * read of a rectangle (and one whose earlier result was recycled) is served at once as before
+ * (drain).  Tests, traces and save states run without probe lag: exact reads, unchanged.
+ * $RG_PROBE_ASYNC=0: off (control). */
+#define PROBE_SLOTS 64u
+#define PROBE_BYTES 1024
+typedef struct probe_req { uint32_t seq; int bytes; gs_mem_rect rc; } probe_req;
+static struct {
+    uint8_t buf[PROBE_SLOTS][PROBE_BYTES];
+    volatile uint32_t done[PROBE_SLOTS];   /* (worker) the seq whose result the slot holds */
+    int rc[PROBE_SLOTS];
+} g_pr;
+typedef struct probe_key { gs_mem_rect rc; int bytes; uint32_t seq; uint64_t mark; } probe_key;
+static probe_key g_pk[32];
+static int g_npk;
+static uint32_t g_pseq;
+static uint64_t g_probe_async, g_probe_first, g_probe_waited;
+static void w_probe(void *user, const void *data)
+{
+    probe_req q;
+    uint32_t k;
+    (void)user;
+    memcpy(&q, data, sizeof q);
+    k = q.seq % PROBE_SLOTS;
+    g_pr.rc[k] = gpu_mem_read(g_store_gr, &q.rc, g_pr.buf[k], (uint32_t)q.bytes);
+    __atomic_store_n(&g_pr.done[k], q.seq, __ATOMIC_RELEASE);
+}
+static int probe_async(const gs_mem_rect *rc, void *dst, int bytes, int fifo_bytes)
+{
+    static int on = -1;
+    probe_req q;
+    probe_key *e = NULL;
+    int i, r;
+    if (on < 0) { const char *x = getenv("RG_PROBE_ASYNC"); on = !(x && x[0] == '0'); }
+    if (!on || !g_store_gr || !gpu_probe_lag_on(g_store_gr) || fifo_bytes > PROBE_BYTES || !nr_q_on()) return -1;
+    if ((rc->psm & 0x30) != 0x30 || rc->w > 16 || rc->h > 16) return -1;   /* (the probe lag's own test) */
+    for (i = 0; i < g_npk; i++)
+        if (!memcmp(&g_pk[i].rc, rc, sizeof *rc) && g_pk[i].bytes == fifo_bytes) { e = &g_pk[i]; break; }
+    if (!e) {
+        if (g_npk >= (int)(sizeof g_pk / sizeof g_pk[0])) return -1;
+        e = &g_pk[g_npk++];
+        memset(e, 0, sizeof *e);
+        e->rc = *rc;
+        e->bytes = fifo_bytes;
+    }
+    q.seq = ++g_pseq;
+    q.bytes = fifo_bytes;
+    q.rc = *rc;
+    nr_q_call(w_probe, NULL, &q, sizeof q);
+    if (!e->seq || g_pseq - e->seq >= PROBE_SLOTS) {
+        /* first read of this rectangle (or its last result recycled): this read's own result */
+        e->seq = q.seq;
+        e->mark = nr_q_mark();
+        nr_q_wait_mark(e->mark);
+        g_probe_first++;
+    } else {
+        uint32_t k = e->seq % PROBE_SLOTS;
+        if (__atomic_load_n(&g_pr.done[k], __ATOMIC_ACQUIRE) != e->seq) { nr_q_wait_mark(e->mark); g_probe_waited++; }
+        memcpy(dst, g_pr.buf[k], (size_t)bytes);
+        r = g_pr.rc[k] != 0 ? -2 : 0;
+        e->seq = q.seq;
+        e->mark = nr_q_mark();
+        g_probe_async++;
+        return r == 0 ? 0 : 1;   /* (1: the read failed then: the caller's -1) */
+    }
+    {
+        uint32_t k = e->seq % PROBE_SLOTS;
+        if (g_pr.rc[k] != 0) return 1;
+        memcpy(dst, g_pr.buf[k], (size_t)bytes);
+        return 0;
+    }
+}
+#endif
 #ifdef RG_HAVE_GPU
 static int native_store(uint64_t bitblt, uint64_t trxpos, uint64_t trxreg, void *dst, int bytes, int fifo_bytes)
 {
@@ -2170,6 +2424,11 @@ static int native_store(uint64_t bitblt, uint64_t trxpos, uint64_t trxreg, void 
         rc.w = (uint32_t)(trxreg & 0xFFF);
         rc.h = (uint32_t)((trxreg >> 32) & 0xFFF);
         nr_ip_settle();   /* (an interpolated image in the device: the exact frame first) */
+        {
+            int r = probe_async(&rc, dst, bytes, fifo_bytes);
+            if (r == 0) { g_store_n++; return 0; }
+            if (r > 0) return -1;
+        }
         nr_q_drain();
         if (gpu_mem_read(g_store_gr, &rc, buf, (uint32_t)fifo_bytes) != 0) return -1;
     }
@@ -2223,6 +2482,8 @@ void nr_runtime_attach_gpu(struct gpu_renderer *r)
         g_fault = f ? atoi(f) : 0;
         f = getenv("RG_NR_DEBUG");
         g_dbg = f ? atoi(f) : 0;
+        f = getenv("RG_NR_DEBUG_MAX");
+        if (f) g_dbgmax = atoi(f);
         f = getenv("RG_NR_CULL");
         if (f) g_cullmode = atoi(f);
         f = getenv("RG_NR_NOBOX");
@@ -2280,6 +2541,11 @@ void nr_runtime_stats(FILE *f)
 #ifdef RG_HAVE_GPU
     if (g_store_n) fprintf(f, "native render: local->host reads served natively (no VIF1/FIFO) %llu\n",(unsigned long long)g_store_n);
 #endif
+#if defined(RG_HAVE_GPU) && NR_ONLY
+    if (g_probe_async || g_probe_first)
+        fprintf(f, "native render: probe reads off the EE's wait %llu (first of a rectangle %llu, waited for the worker %llu)\n",
+                (unsigned long long)g_probe_async, (unsigned long long)g_probe_first, (unsigned long long)g_probe_waited);
+#endif
     fprintf(f, "native render: meshes %llu recorded %llu (fallback: variant %llu mesh %llu off %llu); "
                "tapped %llu (stale %llu); drawn %llu (not filled %llu, stale %llu, gpu fail %llu); "
                "mesh cache: lookups %llu decodes %llu rehash %llu bad %llu, %.1f MB hashed\n",
@@ -2327,11 +2593,11 @@ void nr_runtime_stats(FILE *f)
     }
     if (g_cs.resets || g_cs.sprites_native || g_cs.sprites_vu)
         fprintf(f, "native render composite (%s): clip ranges %llu, sprites native %llu (%llu strips, %llu empty) / VU program %llu; "
-                   "ranges made unknown by an emulated mesh %llu (overflow %llu); bbox merges in the VIF tap %llu\n",
+                   "ranges made unknown by an emulated mesh %llu (overflow %llu; left known by emulated meshes without a Z-scale piece %llu); bbox merges in the VIF tap %llu\n",
                 comp_mode() == NRCP_NATIVE ? "native" : comp_mode() == NRCP_CHECK ? "check" : "off",
                 (unsigned long long)g_cs.resets, (unsigned long long)g_cs.sprites_native, (unsigned long long)g_cs.strips,
                 (unsigned long long)g_cs.empty, (unsigned long long)g_cs.sprites_vu, (unsigned long long)g_cs.unknown_emu,
-                (unsigned long long)g_cs.unknown_ovf, (unsigned long long)g_cs.vu_merges);
+                (unsigned long long)g_cs.unknown_ovf, (unsigned long long)g_cs.emu_noz, (unsigned long long)g_cs.vu_merges);
     if (comp_mode() == NRCP_CHECK && nr_mode() == NR_NATIVE)
         fprintf(f, "native render composite check: VU program runs %llu, sprites %llu compared (X/Y/UV/ADC bits different %llu, "
                    "Z or W words different %llu), unexpected %llu, missing %llu: %s\n",
@@ -2354,8 +2620,8 @@ void nr_runtime_stats(FILE *f)
         fprintf(f, "native render line strands: records %llu, lines %llu\n", (unsigned long long)g_ln_recs,
                 (unsigned long long)g_ln_lines);
     if (g_sh_faces || g_sh_bad)
-        fprintf(f, "native render shadow volumes: faces %llu, triangles %llu, register packets not covered %llu\n",
-                (unsigned long long)g_sh_faces, (unsigned long long)g_sh_tris, (unsigned long long)g_sh_bad);
+        fprintf(f, "native render shadow volumes: faces %llu, triangles %llu, register packets not covered %llu; records left to the ray-traced shadows %llu\n",
+                (unsigned long long)g_sh_faces, (unsigned long long)g_sh_tris, (unsigned long long)g_sh_bad, (unsigned long long)g_sh_rtsup);
 #endif
     if (nr_mode() == NR_VERIFY && g_vl.meshes)
         fprintf(f, "native render verify lines: meshes %llu, batches %llu, records %llu (exact %llu, different %llu), unmatched packets %llu: %s\n",

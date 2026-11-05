@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern f32 D_00465D38[4];
-extern u8 D_004E9770[0x400];
+extern u8 D_004E9770[0x90];
 extern u8 D_004E9800[0x400];
 
 s32 SkillGetCharaStateMaybe_3e0df0(s32 arg0)

@@ -87,6 +87,7 @@ static int w_on;
 static uint64_t g_wticks;    /* the phase the worker's input belongs to (w_tick) */
 static int g_dirty;          /* the device holds an in-between image (a pass ran since the last restore) */
 static int g_pass;           /* 0, 1 interpolated, 2 exact */
+static int g_in_image;       /* the last GS input was IMAGE data (a transfer may be open: no worker present) */
 static ip_log *g_pl, *g_pp;  /* the pass's log and the one before it */
 static float g_alpha;
 
@@ -95,7 +96,7 @@ static struct {
     uint64_t logs, voided, overflow;
     uint64_t items, full, cam, exact, unmatched, zscale, skin, lines, shadow, overlap, cut_logs, jumped;
     uint64_t ims, ims_static;
-    uint64_t passes, pass_skip_nolog, pass_skip_noprev, pass_skip_cut, pass_skip_alpha1, pass_stale;
+    uint64_t passes, pass_skip_nolog, pass_skip_noprev, pass_skip_cut, pass_skip_alpha1, pass_stale, pass_prev_pair, pass_held;
     uint64_t restores, exacts, gs_mismatch, notfound;
     uint64_t drawn_full, drawn_cam, drawn_exact;
     double pass_ms, restore_ms, exact_ms;
@@ -184,6 +185,7 @@ void nr_ip_w_rec(uint32_t id)
     ip_log *L;
     if (!w_on) return;
     restore_if_dirty();
+    g_in_image = 0;
     L = log_at(0);
     if (!L) return;
     if (!L->have_T1) { L->T1 = g_wticks; L->have_T1 = 1; }
@@ -203,6 +205,7 @@ void nr_ip_w_image(const void *qw, uint32_t nqw)
     (void)nqw;
     if (!w_on) return;
     restore_if_dirty();
+    g_in_image = 1;
 }
 
 void nr_ip_w_reset(void)
@@ -979,6 +982,47 @@ static void trace_row(int code, double tau, const ip_log *L, const ip_log *P, do
     fputc('\n', g_trace);
 }
 
+static nr_ip_wlast g_wl;   /* the last request's outcome (nr_ip_w_last) */
+static double g_last_S = -1e300;   /* the newest content time shown (never shown older again) */
+static int g_nopass_rt;            /* nr_ip_w_nopass: requests show the newest frame, no pass */
+void nr_ip_w_nopass(int on) { g_nopass_rt = on; }
+static void wl_set(int code, const ip_log *L, const ip_log *P, double a, double vis, double iv)
+{
+    g_wl.code = code;
+    g_wl.frame = L ? L->frame : 0u;
+    g_wl.prev = P ? P->frame : 0u;
+    g_wl.alpha = a;
+    g_wl.S = L ? (code == 0 ? vis - iv + a * iv : vis) : NAN;
+    if (L && g_wl.S > g_last_S) g_last_S = g_wl.S;
+}
+void nr_ip_w_last(nr_ip_wlast *out) { *out = g_wl; }
+/* the display interval of the pair (log_at(b), log_at(b + 1)): vis = when log b's image reached the
+ * display (the first work of the log after it; else its own), iv = one game-frame interval */
+static void pair_time(int b, double *vis, double *iv)
+{
+    ip_log *L = log_at(b), *P = log_at(b + 1), *N = b ? log_at(b - 1) : NULL;
+    if (N && N->have_T1 && L->have_T1) { *vis = (double)N->T1; *iv = (double)N->T1 - (double)L->T1; }
+    else if (L->have_T1 && P->have_T1) { *vis = (double)L->T1; *iv = (double)L->T1 - (double)P->T1; }
+    else { *vis = (double)L->T; *iv = (double)L->T - (double)P->T; }
+    if (*iv < 1.0) *iv = 1.0;
+    if (*iv > 4.0) *iv = 4.0;
+}
+/* Adaptive display delay (docs/NATIVE-RENDER.md "Present sync (2026-10-31)"; $RG_INTERP_ADAPT=0:
+ * off, the control).  The pass shows content time tau - d.  d follows how late the GS worker
+ * gets the next frame's display copy (late = tau - vis - iv while the shown log is still the
+ * newest: past the end of its interval, the in-between image would hold): a peak that decays
+ * (AD_DECAY phases per phase) plus a margin, approached at a bounded rate (the content runs at
+ * 1 - AD_UP .. 1 + AD_DOWN of real speed while d moves), so a worker that trails the game (a
+ * GPU-bound pass, 2560x1440: 79 % of the presents held at alpha 1) shows every present in
+ * between two frames instead of holding the newest and jumping.  When tau - d falls before the
+ * shown log's interval the pass takes the previous pair (one more log replayed). */
+#define AD_MARGIN 0.25
+#define AD_DECAY 0.02
+#define AD_UP 0.15
+#define AD_DOWN 0.03
+#define AD_MAX 3.0
+static int g_adapt = -1;
+static double g_ad_d, g_ad_peak, g_ad_tau;
 static void w_pass(void *user, const void *data)
 {
     const w_req *q = (const w_req *)data;
@@ -1002,7 +1046,7 @@ static void w_pass(void *user, const void *data)
         f = gpu_ip_flows(nr_gs_device(), sl, n);
         if (f != 0) { L = c; back = i; }
     }
-    if (!L) { g_st.pass_skip_nolog++; if (q->mode == 1) { dbg_skip("no log", q->tau); trace_row(1, q->tau, NULL, NULL, 0, 0, 0); } restore_if_dirty(); return; }
+    if (!L) { g_st.pass_skip_nolog++; wl_set(1, NULL, NULL, 0, 0, 0); if (q->mode == 1) { dbg_skip("no log", q->tau); trace_row(1, q->tau, NULL, NULL, 0, 0, 0); } restore_if_dirty(); return; }
     if (q->mode == 2) {
         /* the exact replay of the shown frame (check): an equal display = the retained frame
          * reproduces the original */
@@ -1013,17 +1057,43 @@ static void w_pass(void *user, const void *data)
         return;
     }
     P = log_at(back + 1);
-    if (!P || !P->nit) { g_st.pass_skip_noprev++; dbg_skip("no previous", q->tau); trace_row(2, q->tau, L, NULL, 0, 0, 0); restore_if_dirty(); return; }
+    if (!P || !P->nit) { g_st.pass_skip_noprev++; wl_set(2, L, NULL, 1.0, L->have_T1 ? (double)L->T1 : (double)L->T, 1.0); dbg_skip("no previous", q->tau); trace_row(2, q->tau, L, NULL, 0, 0, 0); restore_if_dirty(); return; }
     /* alpha: the display has shown L since the device last changed it from P's image to L's: the
      * first work of the log after L when L's image reached the display at the next frame's start
      * (back > 0), else L's own; one game-frame interval (the same step one log earlier) */
-    N = back ? log_at(back - 1) : NULL;
-    if (N && N->have_T1 && L->have_T1) { vis = (double)N->T1; iv = (double)N->T1 - (double)L->T1; }
-    else if (L->have_T1 && P->have_T1) { vis = (double)L->T1; iv = (double)L->T1 - (double)P->T1; }
-    else { vis = (double)L->T; iv = (double)L->T - (double)P->T; }
-    if (iv < 1.0) iv = 1.0;
-    if (iv > 4.0) iv = 4.0;
+    (void)N;
+    pair_time(back, &vis, &iv);
     a = (q->tau - vis) / iv;
+    if (g_adapt < 0) { const char *e = getenv("RG_INTERP_ADAPT"); g_adapt = !(e && e[0] == '0'); }
+    if (g_adapt && g_lead <= 0.0f && q->mode == 1) {
+        double late = q->tau - vis - iv, dt = q->tau - g_ad_tau, target;
+        if (!(dt > 0.0) || dt > 4.0) dt = 0.0;   /* (first request, or the clock was re-anchored) */
+        g_ad_tau = q->tau;
+        g_ad_peak -= dt * AD_DECAY;
+        if (late > g_ad_peak) g_ad_peak = late;
+        target = g_ad_peak + AD_MARGIN;
+        if (target < 0.0) target = 0.0;
+        if (target > AD_MAX) target = AD_MAX;
+        if (g_ad_d < target) { g_ad_d += dt * AD_UP; if (g_ad_d > target) g_ad_d = target; }
+        else { g_ad_d -= dt * AD_DOWN; if (g_ad_d < target) g_ad_d = target; }
+        a = (q->tau - g_ad_d - vis) / iv;
+        if (a < 0.0 && back + 2 < NLOG) {
+            /* before the shown log's interval: the previous pair (its later image is L's) */
+            ip_log *P2 = log_at(back + 2);
+            if (P2 && P2->nit) {
+                double v2, i2;
+                pair_time(back + 1, &v2, &i2);
+                L = P;
+                P = P2;
+                back++;
+                vis = v2;
+                iv = i2;
+                a = (q->tau - g_ad_d - vis) / iv;
+                g_st.pass_prev_pair++;
+                if (a > 0.998) a = 0.998;   /* (alpha 1 of this pair = the image the device does not hold) */
+            }
+        }
+    }
     if (!(a > 0.0)) a = 0.0;
     if (g_lead > 0.0f) {
         /* lead: x game frames ahead (extrapolated past L up to 1 + x); a frame that comes late
@@ -1043,14 +1113,31 @@ static void w_pass(void *user, const void *data)
         if (force >= 0.0) a = force > 0.998 && g_lead <= 0.0f ? 0.998 : force;
     }
     match_logs(L, P);
-    if (L->cut) { g_st.pass_skip_cut++; dbg_skip("cut", q->tau); trace_row(3, q->tau, L, P, a, vis, iv); restore_if_dirty(); return; }
-    if (a >= 0.999 && a <= 1.001) { g_st.pass_skip_alpha1++; dbg_skip("alpha 1", q->tau); trace_row(4, q->tau, L, P, a, vis, iv); restore_if_dirty(); return; }
+    if (L->cut) { g_st.pass_skip_cut++; wl_set(3, L, P, 1.0, vis, iv); dbg_skip("cut", q->tau); trace_row(3, q->tau, L, P, a, vis, iv); restore_if_dirty(); return; }
+    {
+        static int nopass = -1;   /* $RG_INTERP_NOPASS=1 (measurement): no pass, every request shows the newest frame */
+        if (nopass < 0) { const char *e = getenv("RG_INTERP_NOPASS"); nopass = e && e[0] == '1'; }
+        if (nopass || g_nopass_rt) a = 1.0;
+        else if (q->mode == 1 && a < 0.999 && !(getenv("RG_INTERP_ALPHA") && *getenv("RG_INTERP_ALPHA"))) {
+            /* never older content than a present already showed (the adaptive delay growing, the
+             * pass budget's newest-frame presents before interpolation resumes): hold it until
+             * the time catches up, then go on from there */
+            double S = vis - iv + a * iv;
+            if (S < g_last_S) {
+                a = (g_last_S - vis + iv) / iv;
+                if (a > 1.0) a = 1.0;
+                g_st.pass_held++;
+            }
+        }
+    }
+    if (a >= 0.999 && a <= 1.001) { g_st.pass_skip_alpha1++; wl_set(4, L, P, a, vis, iv); dbg_skip("alpha 1", q->tau); trace_row(4, q->tau, L, P, a, vis, iv); restore_if_dirty(); return; }
     {
         double t0 = now_ms();
         int rc = run_pass(L, P, (float)a, 1, back);
         g_st.pass_ms += now_ms() - t0;
         g_st.passes++;
         trace_row(0, q->tau, L, P, a, vis, iv);
+        wl_set(0, L, P, a, vis, iv);
         {
             if (dbg_want()) {
                 fprintf(stderr, "interp pass: tau %.3f alpha %.3f vis %.1f iv %.1f back %d rc %d;", q->tau, a, vis, iv, back, rc);
@@ -1062,6 +1149,26 @@ static void w_pass(void *user, const void *data)
             }
         }
     }
+}
+
+/* the worker's own present (nr_interp.h nr_ip_w_present): the pass for host time tau now */
+int nr_ip_w_present(double tau)
+{
+    w_req q;
+    if (!w_on || !nr_gs_device()) return 0;
+    memset(&q, 0, sizeof q);
+    q.tau = tau;
+    q.mode = 1;
+    w_pass(NULL, &q);
+    return g_dirty;
+}
+void nr_ip_w_settle(void) { if (w_on) restore_if_dirty(); }
+int nr_ip_w_ready(void)
+{
+    /* (also inside a host->local transfer: its data is buffered by nr_gs and reaches local memory
+     * only, which a pass neither reads nor writes) */
+    (void)g_in_image;
+    return w_on && g_newest >= 0;
 }
 
 static void w_tick(void *user, const void *data)
@@ -1215,6 +1322,9 @@ void nr_ip_stats(FILE *f)
             (unsigned long long)g_st.pass_stale, (unsigned long long)g_st.drawn_full, (unsigned long long)g_st.drawn_cam,
             (unsigned long long)g_st.drawn_exact, (unsigned long long)g_st.notfound,
             (unsigned long long)g_aff_slerp, (unsigned long long)g_aff_lerp);
+    if (g_adapt > 0)
+        fprintf(f, "interp: adaptive delay %.2f phases at exit (peak %.2f), passes on the previous pair %llu, held not to go back %llu\n", g_ad_d, g_ad_peak,
+                (unsigned long long)g_st.pass_prev_pair, (unsigned long long)g_st.pass_held);
     gpu_ip_stats(nr_gs_device(), f);
     if (g_census) fflush(g_census);
     if (g_trace) fflush(g_trace);
@@ -1234,6 +1344,11 @@ void nr_ip_w_rec(uint32_t id) { (void)id; }
 void nr_ip_w_image(const void *qw, uint32_t nqw) { (void)qw; (void)nqw; }
 void nr_ip_w_reset(void) {}
 int nr_ip_pass(void) { return 0; }
+int nr_ip_w_present(double tau) { (void)tau; return 0; }
+void nr_ip_w_nopass(int on) { (void)on; }
+void nr_ip_w_last(nr_ip_wlast *out) { memset(out, 0, sizeof *out); out->code = 1; out->S = NAN; }
+void nr_ip_w_settle(void) {}
+int nr_ip_w_ready(void) { return 0; }
 void nr_ip_note(uint32_t id, const void *mesh, int variant, uint32_t ctx, uint64_t frame_reg, int has_box,
                 const float box[4], const void *c, const void *bones, uint32_t bones_hi)
 {

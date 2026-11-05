@@ -5,7 +5,7 @@
  * the ctype table quirks of str*casecmp/toupper) newlib's is reproduced. */
 #include "crt.h"
 /* x64 (docs/X64-PLAN.md): size parameters from the game are 32-bit values */
-#if defined(_WIN64)
+#if defined(__x86_64__)
 #define RG_GSIZE(x) ((x) = (size_t)(uint32_t)(x))
 #else
 #define RG_GSIZE(x) ((void)0)
@@ -56,7 +56,7 @@ int Fflush_12f590(void *fp)
     return fflush(stderr);
 }
 
-#if defined(_WIN64)
+#if defined(__x86_64__)
 /* x64 (docs/X64-PLAN.md section 0.7): the game's variadic arguments are retail's 32-bit
  * words.  A pointer it passes for %s is often an s32 (`(s32)rec->name`,
  * SaveHeaderBuild_3e5520) whose 8-byte vararg slot has undefined upper bits, so the host
@@ -166,7 +166,7 @@ int Fprintf_12f9a0(void *fp, const char *fmt, ...)
     int n;
     (void)fp;
     va_start(ap, fmt);
-#if defined(_WIN64)
+#if defined(__x86_64__)
     {
         static char buf[4096];
         n = rg_gvformat(buf, sizeof buf, fmt, ap);
@@ -179,7 +179,7 @@ int Fprintf_12f9a0(void *fp, const char *fmt, ...)
     return n;
 }
 
-#if defined(_WIN64)
+#if defined(__x86_64__)
 int Vprintf_138e68(const char *fmt, va_list ap)
 {
     static char buf[4096];
@@ -196,7 +196,7 @@ int Sprintf_1343b8(char *buf, const char *fmt, ...)
     va_list ap;
     int n;
     va_start(ap, fmt);
-#if defined(_WIN64)
+#if defined(__x86_64__)
     n = rg_gvformat(buf, (size_t)1 << 20, fmt, ap); /* unbounded like vsprintf */
 #else
     n = vsprintf(buf, fmt, ap);
@@ -385,8 +385,27 @@ uint64_t rg_crt_rand_next = 1;   /* not static: tools/parity reads it (rg-game.m
 
 void Srand_1336f8(unsigned seed) { rand_next = seed; }
 
+/* Draw-path isolation (lane randdraw 2026-11-01, docs/WIDESCREEN.md "Draw-path random
+ * numbers"): while rg_crt_rand_private > 0 (set by the port around the drawing of an object
+ * that only the port's wider culling draws, never at a retail-visible setting) the numbers
+ * come from a second stream of the same generator, so drawing more than retail does not
+ * move the game's own sequence.  rg_crt_rand_hook (RG_RAND_LOG, rg_randlog.c) sees every
+ * call with its return address; rg_crt_rand_calls / _priv_calls count them. */
+int rg_crt_rand_private;
+uint64_t rg_crt_rand_priv_next = 0x2545F4914F6CDD1Dull;
+uint64_t rg_crt_rand_calls, rg_crt_rand_priv_calls;
+void (*rg_crt_rand_hook)(void *ret, int priv);
+
 int Rand_133710(void)
 {
+    if (rg_crt_rand_hook)
+        rg_crt_rand_hook(__builtin_return_address(0), rg_crt_rand_private > 0);
+    if (rg_crt_rand_private > 0) {
+        rg_crt_rand_priv_calls++;
+        rg_crt_rand_priv_next = rg_crt_rand_priv_next * 6364136223846793005ull + 1;
+        return (int)((rg_crt_rand_priv_next >> 32) & 0x7FFFFFFF);
+    }
+    rg_crt_rand_calls++;
     rand_next = rand_next * 6364136223846793005ull + 1;
     return (int)((rand_next >> 32) & 0x7FFFFFFF);
 }

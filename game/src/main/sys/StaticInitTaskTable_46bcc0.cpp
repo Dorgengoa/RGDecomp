@@ -7,6 +7,7 @@ extern s32 D_004821A4,D_00482198,D_004821B4,D_004821A8;
 extern u8 D_004D8AA0[],D_004713E0[];
 extern u8 D_004DAE60[0x100];
 extern void *D_004DAE8C[0x100];
+#define D_004DAE8C (*(__typeof__(D_004DAE8C) *)((u8 *)&D_004DAE60 + 0x2C))   /* rg-interior */
 void RegisterGlobalObject_100dc0(void *,void *,void *);
 void IosBaseInitCtor_102bd0(void *), WIosBaseInitCtor_103110(void *);
 void IosBaseInitDtor_102ee0(),WIosBaseInitDtor_103420(),DebugTaskItemCtor_288440();

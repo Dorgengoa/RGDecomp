@@ -34,6 +34,8 @@ extern "C" {
 const uint8_t *nr_game_ptr(uint32_t a, uint32_t bytes);
 /* forget the cached readable regions (nr_frame_begin: memory may have been freed) */
 void nr_game_mem_frame(void);
+/* [lo, hi) stays committed and readable for the whole run (the game heap): no region query */
+void nr_game_mem_stable(uintptr_t lo, uintptr_t hi);
 
 /* poison mode: 0 off, 1 report, 2 abort on the first poisoned read */
 int nr_poison_mode(void);

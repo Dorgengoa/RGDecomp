@@ -38,9 +38,9 @@ Obj *InvFindByInvId_3c87d0(Ctx *, s32, s32);
 s32 ItemGetStackLimit_3d4480(Obj *);
 s32 ItemHasCountFlag_3d44e0(Obj *);
 s32 InvGetCategoryOfId_3d56f0(s32);
-extern s32 D_00465A08[4];
+extern s32 D_00465A08[2];
 extern s32 D_00465A10[4];
-extern s32 D_00465A38[4];
+extern s32 D_00465A38[2];
 extern s32 D_00465A40[4];
 }
 

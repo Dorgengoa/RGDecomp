@@ -20,7 +20,7 @@ typedef struct {
 /*rgp*/
 /*rgp*/
 extern void strcpy(s8 *dst, void *src);
-extern u8 D_0045CA18[0x400];
+extern u8 D_0045CA18[8];
 extern u8 D_0045CA20[0x400];
 extern f32 D_0047DB00;
 

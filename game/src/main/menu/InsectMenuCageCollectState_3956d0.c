@@ -50,7 +50,7 @@ extern s32 D_004834F0;
 extern s32 D_00483530;
 extern s32 D_00483534;
 extern u8 D_004B2570[0x400];
-extern u8 D_004E95C0[0x400];
+extern u8 D_004E95C0[8];
 extern u8 D_004E95E0[0x400];
 
 s32 InsectMenuCageCollectState_3956d0(s32 arg0, s32 arg1)

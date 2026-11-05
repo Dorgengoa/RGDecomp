@@ -36,6 +36,21 @@ float4 PS_load_color(float4 pos : SV_Position) : SV_Target0
     return (float4)c / 255.0;
 }
 
+// one sub-sample phase of a reinterpretation (docs/NATIVE-RENDER.md "Interpolation at 5x"): the
+// pixels PS_load_color with U[1].z = 1 keeps, written through the target's R32_UINT view by one
+// thread per native pixel (the pixel shader ran over the whole rectangle at the internal
+// resolution and discarded all but 1 / scale^2 of it); the same values (RGBA8 UNORM of c / 255)
+// U[0] = (bp, bw, psm, scale), U[1] = (phase x, phase y, 0, 0), U[2] = (x0, y0, w, h) native
+RWTexture2D<uint> g_phase_out : register(u0);
+[numthreads(8, 8, 1)]
+void CS_load_phase(uint3 t : SV_DispatchThreadID)
+{
+    if (t.x >= U[2].z || t.y >= U[2].w) return;
+    uint x = U[2].x + t.x, y = U[2].y + t.y;
+    uint4 c = from_stored(U[0].z, gs_read_pixel(U[0].z, U[0].x, U[0].y, x, y)) & 255;
+    g_phase_out[uint2(x * U[0].w + U[1].x, y * U[0].w + U[1].y)] = c.r | (c.g << 8) | (c.b << 16) | (c.a << 24);
+}
+
 // GS_DEPTH_RT: into an R32_FLOAT render target (depth targets held as ordered
 // views, docs/PERF-3D.md), the same value
 #ifdef GS_DEPTH_RT

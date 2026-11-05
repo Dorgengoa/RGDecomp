@@ -42,6 +42,13 @@ endif()
 if(TARGET rg_gpu)
   target_link_libraries(rg_runtime PUBLIC rg_gpu)
   target_compile_definitions(rg_runtime PRIVATE RG_HAVE_GPU=1)
+else()
+  # Linux: the native-only device on Vulkan (src/native/render RG_LINUX_NATIVE_DEVICE): the GPU
+  # paths only in the native-only clone (cmake/native_only.cmake RG_NONLY_DEFINITIONS)
+  get_property(_rg_nd GLOBAL PROPERTY RG_NATIVE_DEVICE)
+  if(_rg_nd)
+    set_property(TARGET rg_runtime PROPERTY RG_NONLY_DEFINITIONS RG_HAVE_GPU=1)
+  endif()
 endif()
 # native audio engine (docs/NATIVE-AUDIO.md): RG_AUDIO=native|hle|compare
 target_compile_definitions(rg_runtime PRIVATE RG_HAVE_NATIVE_AUDIO=1)

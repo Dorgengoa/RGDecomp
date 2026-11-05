@@ -10,7 +10,7 @@ typedef struct { f32 x, y, z, w; } V4;
 /*rgp*/
 /*rgp*/
 
-extern u8 D_00451E40[0x400];
+extern u8 D_00451E40[0x20];
 extern u8 D_00451E60[0x400];
 extern V4 D_0047F0E0 __attribute__((section(".sdata")));
 extern V4 D_0047F0F0 __attribute__((section(".sdata")));

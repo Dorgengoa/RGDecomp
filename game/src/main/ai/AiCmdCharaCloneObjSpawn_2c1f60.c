@@ -8,7 +8,7 @@
 /*rgp*/
 /*rgp*/
 
-extern s32 D_004DB920[0x100];
+extern s32 D_004DB920[1];
 extern s32 D_004DB928[0x100];
 
 s32 AiCmdCharaCloneObjSpawn_2c1f60(s64 *arg0)

@@ -57,19 +57,32 @@ extern u8 D_00460AE0[];
 extern u8 D_00460C48[];
 extern f32 D_0047D1FC;
 extern u8 D_004D7E00[0x40];
-extern s16 D_004D7E02[0x10];
-extern s16 D_004D7E04[0x10];
-extern s16 D_004D7E06[0x10];
-extern s16 D_004D7E08[0x10];
-extern s16 D_004D7E0A[0x10];
-extern f32 D_004D7E0C[0x10];
-extern f32 D_004D7E10[0x10];
-extern f32 D_004D7E14[0x10];
-extern f32 D_004D7E18[0x10];
-extern s32 D_004D7E1C[0x10];
-extern s32 D_004D7E20[0x10];
-extern s32 D_004D7E24[0x10];
+extern s16 D_004D7E02[1];
+#define D_004D7E02 (*(__typeof__(D_004D7E02) *)((u8 *)&D_004D7E00 + 0x2))   /* rg-interior */
+extern s16 D_004D7E04[1];
+#define D_004D7E04 (*(__typeof__(D_004D7E04) *)((u8 *)&D_004D7E00 + 0x4))   /* rg-interior */
+extern s16 D_004D7E06[1];
+#define D_004D7E06 (*(__typeof__(D_004D7E06) *)((u8 *)&D_004D7E00 + 0x6))   /* rg-interior */
+extern s16 D_004D7E08[1];
+#define D_004D7E08 (*(__typeof__(D_004D7E08) *)((u8 *)&D_004D7E00 + 0x8))   /* rg-interior */
+extern s16 D_004D7E0A[1];
+#define D_004D7E0A (*(__typeof__(D_004D7E0A) *)((u8 *)&D_004D7E00 + 0xA))   /* rg-interior */
+extern f32 D_004D7E0C[1];
+#define D_004D7E0C (*(__typeof__(D_004D7E0C) *)((u8 *)&D_004D7E00 + 0xC))   /* rg-interior */
+extern f32 D_004D7E10[1];
+#define D_004D7E10 (*(__typeof__(D_004D7E10) *)((u8 *)&D_004D7E00 + 0x10))   /* rg-interior */
+extern f32 D_004D7E14[1];
+#define D_004D7E14 (*(__typeof__(D_004D7E14) *)((u8 *)&D_004D7E00 + 0x14))   /* rg-interior */
+extern f32 D_004D7E18[1];
+#define D_004D7E18 (*(__typeof__(D_004D7E18) *)((u8 *)&D_004D7E00 + 0x18))   /* rg-interior */
+extern s32 D_004D7E1C[1];
+#define D_004D7E1C (*(__typeof__(D_004D7E1C) *)((u8 *)&D_004D7E00 + 0x1C))   /* rg-interior */
+extern s32 D_004D7E20[1];
+#define D_004D7E20 (*(__typeof__(D_004D7E20) *)((u8 *)&D_004D7E00 + 0x20))   /* rg-interior */
+extern s32 D_004D7E24[1];
+#define D_004D7E24 (*(__typeof__(D_004D7E24) *)((u8 *)&D_004D7E00 + 0x24))   /* rg-interior */
 extern s32 D_004D7E28[0x10];
+#define D_004D7E28 (*(__typeof__(D_004D7E28) *)((u8 *)&D_004D7E00 + 0x28))   /* rg-interior */
 
 s32 TransporterMenuModeUpdate_27cc20(void) {
     s32 self;

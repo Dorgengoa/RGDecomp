@@ -12,9 +12,9 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern s32 D_004659F0[0x10];
+extern s32 D_004659F0[2];
 extern s32 D_004659F8[0x10];
-extern s32 D_00465B18[0x10];
+extern s32 D_00465B18[2];
 extern s32 D_00465B20[0x10];
 
 typedef struct A2a4860 { u8 pad0[0x14]; s32 unk14; } A2a4860;

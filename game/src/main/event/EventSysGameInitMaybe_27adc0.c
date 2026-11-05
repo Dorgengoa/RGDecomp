@@ -26,8 +26,8 @@ extern s8 D_00482178;
 extern s8 D_0048217C;
 extern s8 D_00482184;
 extern s8 D_00482188;
-extern u8 D_004D77B0[0x400];
-extern u8 D_004D7810[0x400];
+extern u8 D_004D77B0[0x60];
+extern u8 D_004D7810[0x18];
 extern u8 D_004D7830[0x400];
 
 void EventSysGameInitMaybe_27adc0(u8 *arg0, s32 arg1) {

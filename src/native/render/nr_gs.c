@@ -12,6 +12,8 @@
 #include "nr_gsmem.h"
 #include "nr_im.h"
 #include "nr_interp.h"
+#include "rg_texpatch.h"
+#include <stdio.h>
 
 #define BITS(v, lo, n) ((uint32_t)(((uint64_t)(v) >> (lo)) & ((1ull << (n)) - 1ull)))
 
@@ -73,11 +75,75 @@ static void xfer_rect_dst(const nr_gs *gs, gs_mem_rect *r)
     r->h = BITS(g, 32, 12);
 }
 
+/* $RG_TEXPATCH_DRAWLOG=1 (diagnostic, active texture patches only): a line when a patch target's
+ * pixels start / stop being used by TEX0 (by field, ~ rg_texpatch_updates): which screens draw a
+ * marker texture (docs/ACCESSIBILITY.md; lane fpsgate 2026-11-01) */
+#define TP_DL_MAX 32
+static struct { uint32_t bp; int psm, have; unsigned last, first; } g_tp_dl[TP_DL_MAX];
+static int tp_drawlog_on(void)
+{
+    static int on = -1;
+    if (on < 0) { const char *e = getenv("RG_TEXPATCH_DRAWLOG"); on = e && *e && *e != '0'; }
+    return on;
+}
+static void tp_drawlog_tex0(uint64_t t)
+{
+    uint32_t tbp = BITS(t, 0, 14);
+    int psm = (int)BITS(t, 20, 6);
+    unsigned f = rg_texpatch_updates();
+    for (int i = 0; i < TP_DL_MAX && i < rg_tp_ntargets; i++) {
+        if (!g_tp_dl[i].have || g_tp_dl[i].bp != tbp || g_tp_dl[i].psm != psm) continue;
+        if (!g_tp_dl[i].last || f > g_tp_dl[i].last + 4) {
+            if (g_tp_dl[i].last)
+                fprintf(stderr, "TEXPATCH draw %s fields~%u-%u\n", rg_tp_targets[i].name, g_tp_dl[i].first, g_tp_dl[i].last);
+            g_tp_dl[i].first = f;
+            fprintf(stderr, "TEXPATCH draw %s from field~%u\n", rg_tp_targets[i].name, f);
+        }
+        g_tp_dl[i].last = f;
+    }
+}
+
+/* every host->local transfer goes to the device through here: texture patches (button prompts
+ * baked into game textures, colour-blind marker palettes: src/settings/rg_texpatch.h) may hand
+ * replacement bytes of the same size; inactive (the Original preset) it returns NULL at once.
+ * $RG_TEXPATCH_XLOG=path: each distinct transfer once (bytes, PSM, rectangle, FNV-1a 64), the
+ * runtime side of tools/p6/texcensus.py (which textures reach the GS) */
+static void xfer_write(const gs_mem_rect *rc, const uint8_t *d, uint32_t npx)
+{
+    uint32_t bytes = (uint32_t)(((uint64_t)npx * (uint32_t)nr_psm_bpp(rc->psm) + 7) / 8);
+    static int xlog = -1;
+    static FILE *xf;
+    if (xlog < 0) {
+        const char *e = getenv("RG_TEXPATCH_XLOG");
+        xlog = e && *e && (xf = fopen(e, "w")) != NULL;
+    }
+    static unsigned xlogged;
+    if (xlog && xlogged < 40000u && bytes != 1024u) {   /* (CLUTs: tens of thousands per run) */
+        static uint64_t seen[1 << 16];
+        uint64_t h = rg_tp_fnv64(d, bytes) | 1u;
+        uint32_t k = (uint32_t)(h >> 48);
+        while (seen[k] && seen[k] != h) k = (k + 1) & 0xFFFF;
+        if (!seen[k]) {
+            seen[k] = h;
+            xlogged++;
+            fprintf(xf, "%u %d %u %u %u %u %016llx\n", bytes, rc->psm, rc->bp, rc->bw, rc->w, rc->h,
+                    (unsigned long long)rg_tp_fnv64(d, bytes));
+            fflush(xf);
+        }
+    }
+    const uint8_t *r = rg_texpatch_xfer(d, bytes);
+    if (tp_drawlog_on()) {
+        int ti = rg_texpatch_last_match();
+        if (ti >= 0 && ti < TP_DL_MAX) { g_tp_dl[ti].bp = rc->bp; g_tp_dl[ti].psm = rc->psm; g_tp_dl[ti].have = 1; }
+    }
+    gpu_mem_xfer(g_gr, rc, r ? r : d, npx);
+}
+
 /* the transfer in progress ends (complete, or abandoned by a new TRXDIR / a reset): what
  * arrived is written */
 static void xfer_end(nr_gs *gs)
 {
-    if (gs->xfer_dir == 0 && gs->xfer_px && g_gr) gpu_mem_xfer(g_gr, &gs->xfer_rc, g_xbuf, gs->xfer_px);
+    if (gs->xfer_dir == 0 && gs->xfer_px && g_gr) xfer_write(&gs->xfer_rc, g_xbuf, gs->xfer_px);
     if (gs->xfer_dir == 0 && gs->xfer_px) {
         gs->stats.xfers++;
         gs->stats.xfer_bytes += g_xlen;
@@ -124,7 +190,7 @@ static void xfer_data(nr_gs *gs, const uint8_t *d, uint32_t n)
         /* the whole transfer in one run (most of them): written from the data as it is */
         gs->xfer_px = (uint32_t)((uint64_t)want * 8 / bpp);
         if (gs->xfer_px > gs->xfer_rc.w * gs->xfer_rc.h) gs->xfer_px = gs->xfer_rc.w * gs->xfer_rc.h;
-        if (g_gr) gpu_mem_xfer(g_gr, &gs->xfer_rc, d, gs->xfer_px);
+        if (g_gr) xfer_write(&gs->xfer_rc, d, gs->xfer_px);
         gs->stats.xfers++;
         gs->stats.xfer_bytes += want;
         gs->xfer_dir = -1;
@@ -231,6 +297,7 @@ void nr_gs_write_reg(nr_gs *gs, uint32_t addr, uint64_t data)
         return;   /* (vertex kicks: the immediate executor's own queue, nr_im.c) */
     case GS_TEX0_1: case GS_TEX0_2:
         gs->reg[addr] = data;
+        if (tp_drawlog_on()) tp_drawlog_tex0(data);
         tex0_written(gs, (int)(addr - GS_TEX0_1));
         return;
     case GS_TEX2_1: case GS_TEX2_2: {
@@ -454,6 +521,9 @@ void nr_gs_gif_reset(void)
     g_owner = 0;
     g_gst.resets++;
 }
+
+int nr_gs_movie;   /* (nr_gs.h) */
+uint32_t nr_gs_fields;
 
 int nr_gs_path_idle(int path)
 {

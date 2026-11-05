@@ -22,10 +22,10 @@ extern void LoadHandleRequestFile_28b550(void *, void *, s32, s32);
 extern void MenuItemTempRBufInit_2a8a20(void);
 extern void *memset(void *, s32, u32);
 
-extern u8 D_00461448[0x400];
+extern u8 D_00461448[0x10];
 extern u8 D_00461460[0x400];
 extern u8 D_00470F50[0x400];
-extern u8 D_004DB3D0[0x400];
+extern u8 D_004DB3D0[0x28];
 extern u8 D_004DB520[0x400];
 }
 

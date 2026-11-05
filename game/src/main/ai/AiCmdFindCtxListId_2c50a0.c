@@ -8,6 +8,7 @@
 /*rgp*/
 extern u8 D_004DB920[0x400];
 extern s32 D_004DB974[0x100];
+#define D_004DB974 (*(__typeof__(D_004DB974) *)((u8 *)&D_004DB920 + 0x54))   /* rg-interior */
 
 s32 AiCmdFindCtxListId_2c50a0(s64 * arg0) {
     s32 temp_16;

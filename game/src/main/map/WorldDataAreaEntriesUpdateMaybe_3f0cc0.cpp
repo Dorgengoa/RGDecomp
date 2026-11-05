@@ -30,9 +30,9 @@ extern void NavRemoveGraphById_30a3b0(s32);
 extern void EventObjMgrRemoveByIdFwdThunk_2fd970(s32);
 extern s32 HandleEntryFindFreeSlot_3f1500(void *);
 extern void HandleEntryRequest_3f14b0(void *, Ent *);
-extern s32 D_004644C8[4];
-extern s32 D_004644D0[4];
-extern s32 D_004644D8[4];
+extern s32 D_004644C8[2];
+extern s32 D_004644D0[2];
+extern s32 D_004644D8[2];
 }
 
 class Tbl {

@@ -7,11 +7,11 @@
 /*rgp*/
 extern volatile f32 D_0047D24C;
 extern s8 D_00495E70[16];
-extern s16 D_00495E88[16];
-extern s16 D_00495E8A[16];
-extern s16 D_00495E8C[16];
-extern s16 D_00495E8E[16];
-extern s16 D_00495E98[16];
+extern s16 D_00495E88[1];
+extern s16 D_00495E8A[1];
+extern s16 D_00495E8C[1];
+extern s16 D_00495E8E[5];
+extern s16 D_00495E98[1];
 extern s16 D_00495E9A[16];
 
 s32 TexAnimeCfgScrollCmd_1622e0(s64 *arg0)

@@ -90,6 +90,26 @@ float rg_hud_xscale_world(void); /* the same for world-anchored 2D (not laid out
 /* stage 2 (rg_layout.h): graphics.ui_layout (RG_UI_LAYOUT_KEEP / _STRETCH); read by
  * rg_aspect_step_settings, applied by rg_aspect_set_current */
 void rg_aspect_set_ui_layout(int v);
+/* accessibility.camera_shake / 100 (read by rg_aspect_step_settings): the fraction of the
+ * game's screen shake the CameraShakeApply_3056b0 override applies to the draw camera's copy
+ * (1 = Original, 0 = none) */
+void rg_camera_shake_set(float k);
+float rg_camera_shake_scale(void);
+float rg_camera_shake_k(void);   /* the same, without the RG_SHAKE_LOG count */
+/* event-scene shakes move the live camera (EventCameraCmdShake_254f90 / ShakeAt_254df0): those
+ * overrides note the offset each step added (host state only); the TaskUpdateDrawInfo_2f6ff0
+ * override takes the sum (1 = some) and scales it out of its draw-only camera copy */
+void rg_event_shake_note(const void *eye, const void *eye0, const void *at, const void *at0);
+int rg_event_shake_take(float eye[3], float at[3]);
+/* the TaskUpdateDrawInfo_2f6ff0 override's whole shake step on its draw-only camera copy `cam`
+ * (a game Camera, vptr at +0xC0): takes the noted sum and, below 100 %, scales it out of eye
+ * (+0x50) / look-at (+0x60) and recomputes via the camera's slot 0x40.  Kept out of the override so
+ * the unit's virtual-call sites stay retail's (devirt.verify, tools/devirt_verify.py). */
+void rg_event_shake_unscale_draw_copy(void *cam);
+/* gameplay.text_speed (0 original, 1 fast, 2 instant; read by rg_aspect_step_settings): the
+ * multiplier of the message windows' type-out speed (MesWinAdvanceTypeout_275f00 override) */
+void rg_text_speed_set(int v);
+float rg_text_speed_mult(void);
 
 #ifdef __cplusplus
 }

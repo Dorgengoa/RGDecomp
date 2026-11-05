@@ -45,11 +45,11 @@ s32 VariantGetInt_15f780(void *);
 void *ArchiveGetFileData_181dd0(s32, s32, s32 *);
 void ModelObjTexAnimBuildNameIndexMaybe_1abcd0(void *, s32, s32);
 extern u8 D_00470F40[0x400];
-extern u8 D_0049D390[0x400];
-extern u8 D_0049D3A0[0x400];
-extern u8 D_0049D3A4[0x400];
-extern u8 D_0049D410[0x400];
-extern u8 D_0049D414[0x400];
+extern u8 D_0049D390[8];
+extern u8 D_0049D3A0[4];
+extern u8 D_0049D3A4[4];
+extern u8 D_0049D410[4];
+extern u8 D_0049D414[4];
 extern u8 D_0049D418[0x400];
 }
 

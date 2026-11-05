@@ -10,9 +10,9 @@ extern V3 D_0047FE20 __attribute__((section(".sdata")));
 extern V3 D_0047FE30 __attribute__((section(".sdata")));
 extern V3 D_0047FE40 __attribute__((section(".sdata")));
 extern V3 D_0047FE50 __attribute__((section(".sdata")));
-extern s16 D_00464118[16];
-extern s16 D_00464120[16];
-extern s16 D_00464128[16];
+extern s16 D_00464118[4];
+extern s16 D_00464120[4];
+extern s16 D_00464128[4];
 extern s16 D_00464130[16];
 
 void UiWindowFrameLayoutMaybe_392bb0(s32 arg0, s8 *arg1, s32 x, s32 y, s32 mode) {

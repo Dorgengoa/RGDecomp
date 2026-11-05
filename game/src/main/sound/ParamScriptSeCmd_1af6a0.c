@@ -24,11 +24,11 @@ typedef struct E1af6a0 {
 /*rgp*/
 extern u8 D_0045A9A0[];
 extern s32 D_0049D45C[4];
-extern s32 D_0049D4E0[4];
-extern s32 D_0049D4E4[4];
+extern s32 D_0049D4E0[1];
+extern s32 D_0049D4E4[1];
 extern s32 D_0049D4E8[4];
-extern s32 D_0049D4F8[4];
-extern E1af6a0 *D_0049D4FC[4];
+extern s32 D_0049D4F8[1];
+extern E1af6a0 *D_0049D4FC[1];
 extern s32 D_0049D500[4];
 
 s32 ParamScriptSeCmd_1af6a0(s64 *arg0, s32 argc)

@@ -9,10 +9,10 @@ extern s8 *strcpy(s8 *, const s8 *);
 extern s8 *strncpy(s8 *, const s8 *, s32);
 extern s8 D_00459730[0x10];
 extern s8 D_00459740[0x10];
-extern s8 D_00459750[0x10];
-extern s8 D_00459758[0x10];
-extern s8 D_00459760[0x10];
-extern s8 D_00459768[0x10];
+extern s8 D_00459750[8];
+extern s8 D_00459758[8];
+extern s8 D_00459760[8];
+extern s8 D_00459768[8];
 
 s32 PathParseDevice_182350(s8 *src, s8 *dst, s32 *out)
 {

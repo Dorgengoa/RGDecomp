@@ -10,7 +10,7 @@ extern s32 GetGameData_1fede0(void);
 extern void CharaAddFlags_212460(void *, s64);
 extern u8 *ActionMgrFindById_233b50(s32, s32);
 extern s32 ScriptSlotGetInt_2cc9c0(void *);
-extern s32 D_004DB920[4];
+extern s32 D_004DB920[1];
 extern s32 D_004DB928[4];
 
 class VC_0 {

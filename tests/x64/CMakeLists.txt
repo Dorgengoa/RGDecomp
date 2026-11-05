@@ -85,9 +85,40 @@ if(RG_X64_I686_DB AND EXISTS ${RG_X64_I686_DB}/compile_commands.json)
   set_tests_properties(x64.datalayout PROPERTIES LABELS x64)
 endif()
 
-# x64.narrowabi (section 0.7): no caller declaration in the derived tree disagrees with
-# its definition on a 1/2-byte integer argument or a narrow return (i686 extends small
-# integers, Win64 does not; tools/x64/narrowabi.py, derive pass `narrowabi`).
+# x64.narrowabi (sections 0.7, 0.14): no caller declaration in the derived tree disagrees
+# with its definition in a way Win64 passes differently from i686 (narrow integers, 32-bit
+# integers for pointers, narrow / pointer-viewed returns, int vs float positions, records;
+# tools/x64/narrowabi.py, derive pass `narrowabi`); triaged exceptions in
+# tools/x64/narrowabi_accept.tsv.  Control: one injected mismatching pair must fail the
+# check and be cleared by the derive rewrite.
 add_test(NAME x64.narrowabi
          COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/x64/narrowabi.py --root ${RG_X64_SRC} --check)
 set_tests_properties(x64.narrowabi PROPERTIES LABELS x64 TIMEOUT 900)
+add_test(NAME x64.narrowabi_control
+         COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/x64/narrowabi.py --root ${RG_X64_SRC} --control)
+set_tests_properties(x64.narrowabi_control PROPERTIES LABELS x64 TIMEOUT 900)
+
+# x64.vcmdecide (section 0.11): every devirt slot call's view agrees, at each Win64
+# register position its retail targets read, with the class (integer / XMM) those
+# targets give it (tools/x64/vcmdecide.py: targets from retail vptr stores / table
+# lengths / live lanes).  Control: each view's first parameter class flipped (FAIL).
+add_test(NAME x64.vcmdecide
+         COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/x64/vcmdecide.py --check
+                 --tsv ${CMAKE_BINARY_DIR}/vcmdecide.tsv)
+add_test(NAME x64.vcmdecide_control
+         COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/x64/vcmdecide.py --check --control
+                 --tsv ${CMAKE_BINARY_DIR}/vcmdecide_control.tsv)
+set_tests_properties(x64.vcmdecide x64.vcmdecide_control PROPERTIES LABELS x64 TIMEOUT 900)
+set_tests_properties(x64.vcmdecide_control PROPERTIES WILL_FAIL TRUE)
+
+# x64.interiorcheck (section 0.15): no interior-label macro (ingest stage `interior`, `rg-interior`,
+# `#define D_x (*(T * (*)[N])((u8 *)&D_y + off))` or the `__typeof__(D_x)` form) in the
+# derived tree leaves an 8-byte pointer element over a 4-byte game table (ptr32 rules
+# `ptrarr` / `global`; tools/x64/interiorcheck.py).  Control: the raw forms must fail, ptr32's
+# rewrite of them must pass.
+add_test(NAME x64.interiorcheck
+         COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/x64/interiorcheck.py --root ${RG_X64_SRC})
+set_tests_properties(x64.interiorcheck PROPERTIES LABELS x64 TIMEOUT 300)
+add_test(NAME x64.interiorcheck_control
+         COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/x64/interiorcheck.py --control)
+set_tests_properties(x64.interiorcheck_control PROPERTIES LABELS x64 TIMEOUT 300)

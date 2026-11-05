@@ -16,11 +16,11 @@ extern "C" {
 extern void UnitCtorReset_3b8a80(void *);
 extern void Fill3U64Default_3b0990(void *);
 extern u8 D_004731D0[0x400];
-extern u8 D_00471FE0[0x400];
-extern u8 D_004720E0[0x400];
+extern u8 D_00471FE0[0x20];
+extern u8 D_004720E0[0x90];
 extern u8 D_00472170[0x400];
 extern u8 D_00473BF0[0x400];
-extern u8 D_00474100[0x400];
+extern u8 D_00474100[0x340];
 extern u8 D_00474440[0x400];
 }
 

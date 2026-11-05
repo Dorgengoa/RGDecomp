@@ -1,5 +1,5 @@
 /* rg-override: replaces game/src/main/gfx/CompassHudRender_370fb0.cpp sha256 f363f3bcda6f2867b72a9bfbe4d99dbdc6bd1c7255dc8b2019f301cf23d745ae
- * why: widescreen stage 1 (docs/WIDESCREEN.md "Stage 1"): the compass model is not WIDE-aware (projection 0.75 always): with the WIDE flag it takes rg_aspect_d() and its marker sprites rg_hud_xscale_world(); flag off = generated code */
+ * why: widescreen stage 1 (docs/WIDESCREEN.md "Stage 1"): the compass model is not WIDE-aware (projection 0.75 always): with the WIDE flag it takes rg_aspect_d() and its marker sprites rg_hud_xscale_world(); flag off = generated code; accessibility.ui_scale (docs/WIDESCREEN.md "UI scale"): scaled about the bottom-left corner (scale 1 = unchanged) */
 /* rgp:protos */
 #line 1
 #pragma opt_propagation off
@@ -11,6 +11,7 @@ extern "C" float rg_hud_xscale(void);
 extern "C" void rg_layout_suppress(int on);
 extern "C" int rg_layout_active(void);
 extern "C" float rg_hud_xscale_world(void);
+extern "C" float rg_layout_ui_scale(void);
 extern "C" unsigned char IsWidescreen_1c6ab0(void);
 #include "vec.h"
 
@@ -172,6 +173,7 @@ static void rg_wide_CompassHudRender_370fb0(Arg *arg) {
     s8 *uv;
     s8 *u1;
     s32 hw; /* rg-override: marker half width (0xD0 = 13 px) */
+    s32 hh; /* rg-override: marker half height (UI scale) */
 
 
     if (arg->f1C <= 0.0f) return;
@@ -201,6 +203,17 @@ static void rg_wide_CompassHudRender_370fb0(Arg *arg) {
        the screen's left edge, GS pixel 1792 = 2048 - 256) */
     tmp.f24 = rg_layout_active() ? 1792.0f + (D_0047D830 - 1792.0f) * rg_hud_xscale_world() : D_0047D830;
     tmp.f28 = D_0047D834;
+    if (rg_layout_ui_scale() != 1.0f) {
+        /* rg-override: accessibility.ui_scale (docs/WIDESCREEN.md "UI scale"): the compass
+           grows / shrinks about the screen's bottom-left corner (GS 1792, 2272) like the
+           laid-out HUD; the screen matrix scale (sx, sy at 0x14 / 0x18) scales the model
+           and the projected markers about its centre */
+        f32 u_ = rg_layout_ui_scale();
+        tmp.f24 = 1792.0f + (tmp.f24 - 1792.0f) * u_;
+        tmp.f28 = 2272.0f + (tmp.f28 - 2272.0f) * u_;
+        *(f32 *)(tmp.pad14 + 0) *= u_;
+        *(f32 *)(tmp.pad14 + 4) *= u_;
+    }
     tmp.f0 = D_0047D1FC * ((Cam *)buf)->f10() / 180.0f;
     ViewSetScreenMatrix_1562b0(cp, &tmp);
     ViewSetPerspective_1564a0(cp, D_0047D838, ((unsigned char)IsWidescreen_1c6ab0()) ? rg_aspect_d() : 0.75f, tmp.fC, tmp.f10, tmp.fC, tmp.f10);
@@ -239,6 +252,11 @@ static void rg_wide_CompassHudRender_370fb0(Arg *arg) {
         GsPktSetTexture_13ec00(o, arg->f8);
         GsPktSetRGBAQ_13ee40(o, 0x80, 0x80, 0x80, (s32)(96.0f * arg->f1C));
         hw = ((unsigned char)IsWidescreen_1c6ab0()) ? (s32)(208.0f * rg_hud_xscale_world()) : 0xD0;
+        hh = 0xD0;
+        if (rg_layout_ui_scale() != 1.0f) {   /* rg-override: UI scale: the marker sprites too */
+            hw = (s32)((f32)hw * rg_layout_ui_scale());
+            hh = (s32)(208.0f * rg_layout_ui_scale());
+        }
         i = 0;
         do {
             p = (Vec4 *)&pts[i];
@@ -250,9 +268,9 @@ static void rg_wide_CompassHudRender_370fb0(Arg *arg) {
             uv = D_0047F9D0[i];
             u1 = uv + 1;
             GsPktSetUV_13ed60(o, uv[0], uv[1]);
-            GsPktSetXYZ_13ef10(o, scr.x - hw, scr.y - 0xD0, 0);
+            GsPktSetXYZ_13ef10(o, scr.x - hw, scr.y - hh, 0);
             GsPktSetUV_13ed60(o, uv[0] + 0x1F, *u1 + 0x1F);
-            GsPktSetXYZ_13ef10(o, scr.x + hw, scr.y + 0xD0, 0);
+            GsPktSetXYZ_13ef10(o, scr.x + hw, scr.y + hh, 0);
             i++;
         } while (i < 4);
         GsPktClose_13f5b0(o);

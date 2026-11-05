@@ -4,25 +4,25 @@
 #line 1
 #include "types.h"
 
-extern u8 D_00465A08[0x400];
-extern u8 D_00465A10[0x400];
-extern u8 D_00465A38[0x400];
-extern u8 D_00465A40[0x400];
-extern u8 D_00465A60[0x400];
-extern u8 D_00465A68[0x400];
-extern u8 D_00465A78[0x400];
-extern u8 D_00465A80[0x400];
-extern u8 D_00465A90[0x400];
-extern u8 D_00465A98[0x400];
-extern u8 D_00465AA8[0x400];
-extern u8 D_00465AB0[0x400];
-extern u8 D_00465AD0[0x400];
-extern u8 D_00465AD8[0x400];
-extern u8 D_00465AE8[0x400];
-extern u8 D_00465AF0[0x400];
-extern u8 D_00465B00[0x400];
-extern u8 D_00465B08[0x400];
-extern u8 D_00465B30[0x400];
+extern u8 D_00465A08[8];
+extern u8 D_00465A10[8];
+extern u8 D_00465A38[8];
+extern u8 D_00465A40[8];
+extern u8 D_00465A60[8];
+extern u8 D_00465A68[8];
+extern u8 D_00465A78[8];
+extern u8 D_00465A80[8];
+extern u8 D_00465A90[8];
+extern u8 D_00465A98[8];
+extern u8 D_00465AA8[8];
+extern u8 D_00465AB0[8];
+extern u8 D_00465AD0[8];
+extern u8 D_00465AD8[8];
+extern u8 D_00465AE8[8];
+extern u8 D_00465AF0[8];
+extern u8 D_00465B00[8];
+extern u8 D_00465B08[8];
+extern u8 D_00465B30[8];
 extern u8 D_00465B38[0x400];
 
 s32 InvGetCategoryOfId_3d56f0(s32 arg0) {

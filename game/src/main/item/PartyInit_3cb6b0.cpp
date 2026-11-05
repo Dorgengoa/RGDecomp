@@ -20,7 +20,7 @@ extern void PoolInit_36ae50(s32, s32, s32, s32, s32);
 extern void PoolCtor_36b0c0(s32);
 extern s32 InvViewCtor_3cecd0(s32, u8 *, s32, s32, s32, s32);
 extern s32 ItemMaxClassSize_3d58f0(void);
-extern s32 D_00465B50[4];
+extern s32 D_00465B50[2];
 extern s32 D_00465B58[4];
 extern s32 D_00465B70[4];
 extern s32 D_00483890;

@@ -4,6 +4,7 @@
 #include "nr_mem.h"
 #include "nr_im.h"
 #include "nr.h"
+#include "nr_sfx.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -54,7 +55,9 @@ typedef struct im_rec {
     uint32_t n;            /* words */
     uint64_t start;        /* ring position */
     int mpg;               /* the packet carried microcode (composite draw-back, RG_NR_MPG=drop) */
-    int xs;                /* squeezed in X by the widescreen layout (nr_im_note_xscaled) */
+    int xs;                /* bit 0: scaled in X by the layout (nr_im_note_xscaled), bit 1: in Y */
+    const char *task;      /* the game task that built the packet (nr_im_task; screen effects, nr_sfx.c) */
+    uint32_t frame;        /* EE frame (nr_frame_no) */
 } im_rec;
 static uint64_t *g_ring;
 static uint64_t g_wpos;            /* EE: next ring word (monotonic) */
@@ -62,7 +65,11 @@ static im_rec *g_recs;
 static uint32_t g_next = 1;
 static int g_xs_pending;           /* EE: nr_im_note_xscaled since the last end_prim */
 
-void nr_im_note_xscaled(void) { g_xs_pending = 1; }
+static const char *g_task;         /* EE: the task running (TaskTableRun_1f5340 override) */
+const char *nr_im_task(const char *name) { const char *o = g_task; g_task = name; return o; }
+
+void nr_im_note_xscaled(void) { g_xs_pending |= 1; }
+void nr_im_note_yscaled(void) { g_xs_pending |= 2; }
 
 static struct {
     uint64_t pkts, replaced, regs, image_qw, prims;
@@ -71,6 +78,7 @@ static struct {
     uint64_t vifcmd[128];
     uint64_t mpg;
     uint64_t nat_batches, nat_prims, emu_prims, emu_batches, skip_batches, lines, kept_batches;
+    uint64_t sfx_skipped, sfx_zonly, sfx_box, sfx_hires;
     uint64_t gif_pkts, gif_refused, gif_ref_why[8];   /* nr_im_gif */
 } g_st;
 static int ring_init(void);
@@ -371,6 +379,8 @@ int nr_im_end_prim(uint32_t pkt)
     r->start = start;
     r->mpg = s.mpg;
     r->xs = xs;
+    r->task = g_task;
+    r->frame = nr_frame_no();
     /* the marker: CNT qwc 2 (VIF FLUSHA if the packet had one, DIRECT 2), GIF
      * tag A+D NLOOP 1 EOP, the write of id | bit 63 to GS_NATIVE_MARK; RET */
     q[0] = 0x10000002u; q[1] = 0; q[2] = s.flusha ? 0x13000000u : 0; q[3] = 0x50000002u;
@@ -420,6 +430,9 @@ int nr_im_gif(const void *qw, uint32_t nqw, uint8_t out[32])
     r->start = start;
     r->mpg = s.mpg;
     r->xs = 0;
+    r->task = NULL;   /* (decoded at the chain's walk, outside the task that built it; the slot's
+                       * previous record's task was left here before 11-01 p6fx2) */
+    r->frame = nr_frame_no();
     /* GIF tag A+D NLOOP 1 EOP, the write of id | bit 63 to GS_NATIVE_MARK */
     q[0] = 0x00008001u; q[1] = 0x10000000u; q[2] = 0x0000000Eu; q[3] = 0;
     q[4] = id; q[5] = 0x80000000u; q[6] = GS_NATIVE_MARK; q[7] = 0;
@@ -456,6 +469,8 @@ uint32_t nr_im_gif_rec(const void *qw, uint32_t nqw)
     r->start = start;
     r->mpg = 0;
     r->xs = 0;
+    r->task = NULL;
+    r->frame = nr_frame_no();
     g_st.gif_pkts++;
     return id;
 #else
@@ -627,11 +642,53 @@ static int plain_reg(uint32_t a)
     }
 }
 static int g_rec_mpg;   /* the record being run carried microcode */
+static const im_rec *g_rec_cur;   /* the record being run (screen-effect class: its task) */
 static void flush(gpu_renderer *gr, gpu_gs *gs)
 {
     int i, r;
     static int dbg = -1, dbgn, dmpg = -1;
     if (!g_pn) return;
+    {
+        /* screen effects (graphics.bloom / depth_of_field / motion_blur, accessibility.flashing;
+         * nr_sfx.c): the pass's class from the task that built the record; Original: nothing */
+        int a = nr_sfx_batch(gr, gs, g_pv, g_pn, g_ptype, g_pattr, g_rec_cur ? g_rec_cur->task : NULL,
+                             g_rec_cur ? g_rec_cur->frame : 0);
+        if (a == NR_SFX_SKIP) { g_st.sfx_skipped++; g_pn = 0; return; }
+        if (a == NR_SFX_ZONLY) {
+            /* the pass writes depth: drawn with every colour channel masked, so the depth target
+             * (the lens-flare probe reads it) stays as it was */
+            int c = (int)BITS(g_pattr, 9, 1);
+            uint64_t fr = gs->reg[GS_FRAME_1 + c];
+            gs->reg[GS_FRAME_1 + c] = fr | (0xFFFFFFFFull << 32);
+            r = gpu_nr_im_submit(gr, g_pv, g_pn, g_ptype);
+            gs->reg[GS_FRAME_1 + c] = fr;
+            g_st.sfx_zonly++;
+            g_pn = 0;
+            (void)r;
+            return;
+        }
+        if (a == NR_SFX_HIRES) {
+            /* "enhanced": the pass's work buffers drawn again at the internal resolution and read
+             * from there (gpu_set_im_hires, set by nr_sfx_batch; nr_dev.cpp "twins") */
+            r = gpu_nr_im_submit(gr, g_pv, g_pn, g_ptype);
+            gpu_set_im_hires(gr, 0, 0.0f, 0.0f, 0.0f, 0);
+            g_st.sfx_hires++;
+            if (r == 0) { g_st.nat_batches++; g_st.nat_prims += (uint64_t)g_pn; }
+            g_pn = 0;
+            return;
+        }
+        if (a == NR_SFX_BOX) {
+            /* "enhanced": the pass's minifying read of the frame box-filtered at the internal
+             * resolution (gpu_set_im_box, nr_draw.hlsl PF_BOX) */
+            gpu_set_im_box(gr, 1);
+            r = gpu_nr_im_submit(gr, g_pv, g_pn, g_ptype);
+            gpu_set_im_box(gr, 0);
+            g_st.sfx_box++;
+            if (r == 0) { g_st.nat_batches++; g_st.nat_prims += (uint64_t)g_pn; }
+            g_pn = 0;
+            return;
+        }
+    }
     {
         /* the composite draw-back (records that carried microcode) at an internal scale > 1:
          * the GS draw path, whose upscaled sampling of the character work buffer the native
@@ -807,6 +864,7 @@ void nr_im_marker(gpu_renderer *gr, gpu_gs *gs, uint32_t id)
     uint64_t pos, end;
     int replay = nr_im_mode() == NRIM_REPLAY && !NR_ONLY;
     int outer_mpg = g_rec_mpg, outer_pn = g_pn;   /* (a record's marker can run another: native-only) */
+    const im_rec *outer_rec = g_rec_cur;
     if (!g_recs) return;
     if (outer_pn) flush(gr, gs);
     r = &g_recs[id % IM_RECS];
@@ -817,6 +875,7 @@ void nr_im_marker(gpu_renderer *gr, gpu_gs *gs, uint32_t id)
     g_st.gs_runs++;
     g_gr = gr;
     g_rec_mpg = r->mpg;
+    g_rec_cur = r->task || !outer_rec ? r : outer_rec;   /* (an untagged inner record: the outer one's task) */
     g_pn = 0;
     gpu_set_im_xfree(gr, r->xs);
     pos = r->start;
@@ -923,6 +982,7 @@ void nr_im_marker(gpu_renderer *gr, gpu_gs *gs, uint32_t id)
     flush(gr, gs);
     gpu_set_im_xfree(gr, 0);
     g_rec_mpg = outer_mpg;
+    g_rec_cur = outer_rec;
 }
 
 /* (nr_interp.c) the record is still in the ring: a pass may run it again */
@@ -1002,6 +1062,12 @@ void nr_im_stats(FILE *f)
             (unsigned long long)g_st.emu_batches, (unsigned long long)g_st.skip_batches, (unsigned long long)g_st.lines,
             (unsigned long long)g_st.kept_batches);
     if (g_st.mpg) fprintf(f, "native render immediate: VU microcode uploads (MPG) dropped %llu\n", (unsigned long long)g_st.mpg);
+    if (g_st.sfx_skipped || g_st.sfx_zonly || g_st.sfx_box || g_st.sfx_hires)
+        fprintf(f, "native render immediate: screen-effect batches left out %llu, drawn depth-only %llu, box-filtered %llu, "
+                   "at the internal resolution %llu (nr_sfx.c)\n",
+                (unsigned long long)g_st.sfx_skipped, (unsigned long long)g_st.sfx_zonly,
+                (unsigned long long)g_st.sfx_box, (unsigned long long)g_st.sfx_hires);
+    nr_sfx_stats(f);
     if (g_st.gif_pkts || g_st.gif_refused)
         fprintf(f, "native render immediate: GIF streams as records (VU1 program kicks, DIRECT packets) %llu (refused %llu: "
                    "open packet %llu, VIF %llu, SIGNAL/FINISH/LABEL/marker %llu, local->host %llu, size %llu)\n",
@@ -1020,6 +1086,11 @@ void nr_im_stats(FILE *f)
         for (k = 0; k < 12; k++)
             if (ns->im_why[k]) fprintf(f, " %s %llu", nm[k], (unsigned long long)ns->im_why[k]);
         fprintf(f, "\n");
+        if (ns->hires_draws || ns->hires_reads || ns->hires_refused)
+            fprintf(f, "native render screen effects at the internal resolution: twin draws %llu, frame draws reading a twin %llu, "
+                       "refused %llu, twins made %llu\n",
+                    (unsigned long long)ns->hires_draws, (unsigned long long)ns->hires_reads,
+                    (unsigned long long)ns->hires_refused, (unsigned long long)ns->hires_twins);
     }
 #endif
     {

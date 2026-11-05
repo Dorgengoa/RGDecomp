@@ -55,6 +55,7 @@
 #include "rg_settings.h"
 #include "rg_aspect.h"
 #include "rg_prompts.h"
+#include "rg_texpatch.h"
 #include "rg_input.h"
 #include "host.h"
 #include "movie_game.h"
@@ -62,6 +63,7 @@
 #include "rg_trace.h"
 #include "ps2k.h"
 #include "rg_game_ss.h"
+#include "mc_import.h"   /* saves tools: --list-saves, --name-save, --import-card */
 
 extern uint32_t D_004810C4[];
 static uint64_t g_field_next;
@@ -70,6 +72,7 @@ static void rg_dump_spec(const char *spec_in, const char *tag, unsigned long lon
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <float.h>
 #if defined(_WIN64)
 /* x64 (docs/X64-PLAN.md step 4): the crash report and the RG_BREAK / RG_WATCH tools
  * below name the i686 CONTEXT registers; on x64 they read the 64-bit ones.  Every
@@ -148,7 +151,13 @@ static int crash_symbolise(int n)
 static void crash_minidump(EXCEPTION_POINTERS *ep, const char *path)
 {
     typedef BOOL (WINAPI *mdw_fn)(HANDLE, DWORD, HANDLE, int, void *, void *, void *);
+#if defined(_WIN64)
+    struct { DWORD tid; __attribute__((packed)) EXCEPTION_POINTERS *ep; BOOL client; } mei; /* x64: dbghelp.h packs it to 4 (ep at +4); unpacked, MiniDumpWriteDump read a wild pointer and killed the report */
+#else
+#line 154
     struct { DWORD tid; EXCEPTION_POINTERS *ep; BOOL client; } mei;   /* MINIDUMP_EXCEPTION_INFORMATION */
+#endif
+#line 155
     HMODULE dh = LoadLibraryA("dbghelp.dll");
     mdw_fn mdw = dh ? (mdw_fn)(void *)GetProcAddress(dh, "MiniDumpWriteDump") : NULL;
     HANDLE h;
@@ -187,8 +196,20 @@ static LONG WINAPI rg_game_crash(EXCEPTION_POINTERS *ep)
     crash_out("\n  eax=%08lX ebx=%08lX ecx=%08lX edx=%08lX esi=%08lX edi=%08lX ebp=%08lX esp=%08lX\n",
               (unsigned long)c->Eax, (unsigned long)c->Ebx, (unsigned long)c->Ecx, (unsigned long)c->Edx,
               (unsigned long)c->Esi, (unsigned long)c->Edi, (unsigned long)c->Ebp, (unsigned long)c->Esp);
+#if defined(_WIN64)
+    extern int rg_x64_crash_frames(EXCEPTION_POINTERS *, void (*)(const char *, ...), uint32_t *, size_t, int, int); ns = rg_x64_crash_frames(ep, crash_out, &g_crash_sym[0].rva, sizeof g_crash_sym[0], ns, 16); crash_out("  stack words in the image (rva):"); /* x64pt: unwound frames */
+#else
+#line 193
     crash_out("  stack words in the image (rva):");
+#endif
+#line 194
+#if defined(_WIN64)
+    ; /* x64: the faulting rip is frame 0 of rg_x64_crash_frames (src/x64/lowmem_check.c) */
+#else
+#line 194
     g_crash_sym[ns++].rva = (uint32_t)(c->Eip - base);
+#endif
+#line 195
     uint32_t *sp = (uint32_t *)(uintptr_t)c->Esp;
     int n = 0;
     for (int i = 0; i < 4096 && n < 40; i++) {
@@ -300,12 +321,22 @@ static DWORD WINAPI rg_watch_setter(LPVOID unused)
     ResumeThread(rg_watch_main);
     return 0;
 }
-static void rg_watch_init(void)
+/* RG_WATCH=r0xRETAIL: a retail heap address (0x00528200..), armed after
+ * rg_runtime_init through rg_crt0_retail_to_host (the host heap moves run to run). */
+static void rg_watch_init(int after_init)
 {
     const char *w = getenv("RG_WATCH");
-    if (!w || !*w)
+    if (!w || !*w || (w[0] == 'r') != (after_init != 0))
         return;
-    rg_watch_addr = (uintptr_t)strtoul(w, NULL, 0) & ~(uintptr_t)3;
+    if (w[0] == 'r') {
+        void *h = rg_crt0_retail_to_host((uint32_t)strtoul(w + 1, NULL, 0));
+        if (!h) {
+            fprintf(stderr, "rg-game: RG_WATCH %s is outside the game heap\n", w);
+            return;
+        }
+        rg_watch_addr = (uintptr_t)h & ~(uintptr_t)3;
+    } else
+        rg_watch_addr = (uintptr_t)strtoul(w, NULL, 0) & ~(uintptr_t)3;
     if (getenv("RG_WATCH_MAX"))
         rg_watch_max = (unsigned)strtoul(getenv("RG_WATCH_MAX"), NULL, 0);
     DuplicateHandle(GetCurrentProcess(), GetCurrentThread(), GetCurrentProcess(), &rg_watch_main, 0, FALSE,
@@ -317,8 +348,10 @@ static void rg_watch_init(void)
 }
 static void rg_brk_init(void)
 {
-    rg_watch_init();
+    rg_watch_init(0);
     const char *e = getenv("RG_BREAK");
+    if (getenv("RG_BREAK_STACK"))   /* RG_WATCH lines use it too */
+        rg_brk_stack = (unsigned)strtoul(getenv("RG_BREAK_STACK"), NULL, 0);
     if (!e || !*e)
         return;
     if (getenv("RG_BREAK_MAX"))
@@ -343,6 +376,86 @@ static void rg_brk_init(void)
         rg_brk_poke(at, 0xCC);
         rg_brk_n++;
     }
+}
+/* RG_FPTRAP=FIELD (diagnostic, docs/X64-PLAN.md 0.9): from FIELD on, game code runs with the
+ * SSE invalid-operation exception (and, i686, the x87 invalid / stack-fault one) unmasked: each
+ * SSE trap prints an FPTRAP line (instruction RVA, xmm0-7, code bytes), runs the instruction
+ * masked (the default NaN, as without the trap) and unmasks again after it (single step); an
+ * x87 trap prints FPTRAP87 (+ FPTRAPSTACK with RG_BREAK_STACK=N) and the x87 stays masked until
+ * the flow resumes.  RG_FPTRAP_MAX=N lines.  Packed operations trap on unused lanes too and
+ * x64 clang speculates divisions: read the operands. */
+extern unsigned nk_guest_csr;
+static uint64_t rg_fptrap_from;
+static unsigned rg_fptrap_hits, rg_fptrap_max = 40;
+static volatile int rg_fptrap_step;
+static LONG WINAPI rg_fptrap_handler(EXCEPTION_POINTERS *ep)
+{
+    CONTEXT *c = ep->ContextRecord;
+    DWORD code = ep->ExceptionRecord->ExceptionCode;
+    if (!rg_fptrap_from)
+        return EXCEPTION_CONTINUE_SEARCH;
+#if defined(_WIN64)
+    uintptr_t ip = (uintptr_t)c->Rip;
+    DWORD *csr = &c->MxCsr;
+    const uint8_t *xmm = (const uint8_t *)&c->Xmm0;
+#else
+    uintptr_t ip = (uintptr_t)c->Eip;
+    DWORD *csr = (DWORD *)&c->ExtendedRegisters[24];
+    const uint8_t *xmm = &c->ExtendedRegisters[160];
+#endif
+    if (code == EXCEPTION_SINGLE_STEP && rg_fptrap_step) {
+        /* the trapping instruction ran masked: unmask again for the rest of the slice */
+        rg_fptrap_step = 0;
+        *csr &= ~0x80u;
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+    if (code != STATUS_FLOAT_MULTIPLE_TRAPS && code != STATUS_FLOAT_INVALID_OPERATION &&
+        code != STATUS_FLOAT_STACK_CHECK)
+        return EXCEPTION_CONTINUE_SEARCH;
+    uintptr_t base = (uintptr_t)GetModuleHandleA(NULL);
+#if !defined(_WIN64)
+    if (code != STATUS_FLOAT_MULTIPLE_TRAPS && (c->FloatSave.StatusWord & 1u)) {
+        /* x87 invalid (i686: the CRT's x87 libm, float returns): the faulting x87 instruction */
+        if (rg_fptrap_hits++ < rg_fptrap_max)
+            fprintf(stderr, "FPTRAP87 rva=0x%08lX eip_rva=0x%08lX field=%llu vbl=%u sw=%04lX top=%08X\n",
+                    (unsigned long)(c->FloatSave.ErrorOffset - base), (unsigned long)(c->Eip - base),
+                    (unsigned long long)g_field_next, D_004810C4[0], (unsigned long)c->FloatSave.StatusWord,
+                    *(const uint32_t *)&c->FloatSave.RegisterArea[0]);
+        if (rg_fptrap_hits <= rg_fptrap_max && rg_brk_stack) {
+            const uint32_t *sp = (const uint32_t *)(uintptr_t)c->Esp;
+            const IMAGE_NT_HEADERS *nt =
+                (const IMAGE_NT_HEADERS *)(base + ((const IMAGE_DOS_HEADER *)base)->e_lfanew);
+            uintptr_t lo = base + nt->OptionalHeader.BaseOfCode, hi = lo + nt->OptionalHeader.SizeOfCode;
+            fprintf(stderr, "FPTRAPSTACK");
+            for (unsigned j = 0; j < rg_brk_stack; j++) {
+                if (IsBadReadPtr(&sp[j], 4))
+                    break;
+                if (sp[j] >= lo && sp[j] < hi)
+                    fprintf(stderr, " %u:%08lX", j, (unsigned long)(sp[j] - base));
+            }
+            fprintf(stderr, "\n");
+        }
+        c->FloatSave.ControlWord |= 1u;
+        c->FloatSave.StatusWord &= ~0x80BFu;
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+#endif
+    if (rg_fptrap_hits++ < rg_fptrap_max) {
+        fprintf(stderr, "FPTRAP rva=0x%08lX field=%llu vbl=%u csr=%04lX xmm0-7", (unsigned long)(ip - base),
+                (unsigned long long)g_field_next, D_004810C4[0], (unsigned long)*csr);
+        for (int i = 0; i < 8; i++) {
+            const uint32_t *w = (const uint32_t *)(xmm + 16 * i);
+            fprintf(stderr, " %08X:%08X:%08X:%08X", w[0], w[1], w[2], w[3]);
+        }
+        fprintf(stderr, " code");
+        for (int i = 0; i < 8; i++)
+            fprintf(stderr, " %02X", ((const uint8_t *)ip)[i]);
+        fprintf(stderr, "\n");
+    }
+    *csr = (*csr | 0x80u) & ~0x3Fu;   /* run it masked (the default NaN, as without the trap) ... */
+    rg_fptrap_step = 1;               /* ... then unmask again after one step */
+    c->EFlags |= 0x100;
+    return EXCEPTION_CONTINUE_EXECUTION;
 }
 static LONG WINAPI rg_brk_handler(EXCEPTION_POINTERS *ep)
 {
@@ -374,6 +487,11 @@ static LONG WINAPI rg_brk_handler(EXCEPTION_POINTERS *ep)
                         sp[1], sp[2], sp[3], sp[4],
 #endif
                         (unsigned long)(sp[0] - base), rg_brk[i].total);
+#if !defined(_WIN64)
+            if (rg_brk[i].hits <= rg_brk_limit && getenv("RG_BREAK_X87"))   /* x87 stack depth (i686) */
+                fprintf(stderr, "BRKX87 sw=%04lX tw=%04lX\n", (unsigned long)c->FloatSave.StatusWord & 0xFFFF,
+                        (unsigned long)c->FloatSave.TagWord & 0xFFFF);
+#endif
             if (rg_brk[i].hits <= rg_brk_limit && rg_brk_stack) {
                 /* RG_BREAK_STACK=N: every stack word in the first N that points into
                  * the image (a heuristic backtrace; resolve with rva.py) */
@@ -420,6 +538,21 @@ static LONG WINAPI rg_brk_handler(EXCEPTION_POINTERS *ep)
             fprintf(stderr, "WATCH eip_rva=0x%08lX vbl=%u field=%llu value=%08X\n",
                     (unsigned long)(c->Eip - base), D_004810C4[0], (unsigned long long)g_field_next,
                     *(volatile uint32_t *)rg_watch_addr);
+        if (rg_watch_hits <= rg_watch_max && rg_brk_stack) {
+            /* RG_BREAK_STACK=N also gives each WATCH line a heuristic backtrace */
+            const uint32_t *sp = (const uint32_t *)(uintptr_t)c->Esp;
+            const IMAGE_NT_HEADERS *nt =
+                (const IMAGE_NT_HEADERS *)(base + ((const IMAGE_DOS_HEADER *)base)->e_lfanew);
+            uintptr_t lo = base + nt->OptionalHeader.BaseOfCode, hi = lo + nt->OptionalHeader.SizeOfCode;
+            fprintf(stderr, "WATCHSTACK");
+            for (unsigned j = 0; j < rg_brk_stack; j++) {
+                if (IsBadReadPtr(&sp[j], 4))
+                    break;
+                if (sp[j] >= lo && sp[j] < hi)
+                    fprintf(stderr, " %u:%08lX", j, (unsigned long)(sp[j] - base));
+            }
+            fprintf(stderr, "\n");
+        }
         c->Dr6 = 0;
         if (rg_brk_rearm >= 0) {   /* also the RG_BREAK single step */
             rg_brk_poke(rg_brk[rg_brk_rearm].at, 0xCC);
@@ -556,9 +689,248 @@ extern const rg_ovl_registry rg_ovl_generated_registry; /* ovl_registry_gen.c */
  * (D_00481638, SetAspectMode_1c6a90's variable) only when the policy says so,
  * and give the host the canvas / frame shape for this field's present. */
 extern int32_t D_00481638[];   /* aspect mode: 1 = WIDE (MAIN .bss) */
+void nr_set_frame_xscale(float xs);   /* src/native/render/nr.h */
 extern uint32_t D_0047E254[];  /* loaded overlay id (2 = TITLE, docs/OVERLAY.md) */
 static rg_aspect_ctl g_aspect;
 static rg_aspect_frame g_aspect_now = { -1, 4, 3, 4, 3 };
+
+/* RG_DL_PEAK=1 (investigation, docs/WIDESCREEN.md "Culling check"): the peak fill of the
+ * game's two draw-packet buffers (draw context D_004810A4 +8 / +0xC -> block, MemStack at
+ * +8: cursor +0x2C, capacity +0x34, in quadwords), sampled after every field and printed at
+ * exit.  MemStackAllocQw_14d950 refuses a request past the capacity (that draw is dropped),
+ * so a peak near the capacity at wide aspects would cull things the 4:3 frame keeps. */
+extern uint8_t *D_004810A4;
+/* RG_RAND_LOG=PATH (lane randdraw, docs/WIDESCREEN.md "Draw-path random numbers"): every
+ * call of the game's random generator Rand_133710 (src/crt/crt_libc.c) is counted per field
+ * by (game task running: TaskTableRun_1f5340 override -> nr_im_task, caller's return address,
+ * private stream or not); after each field one "F field rand_next calls priv_calls cull_extra"
+ * line and one "C field task ret_rva priv count" line per key.  ret_rva = return address -
+ * image base (rg-game.map; tools/p6/randlog.py symbolises and sums).  Investigation only:
+ * unset = no hook. */
+extern uint64_t rg_crt_rand_next, rg_crt_rand_calls, rg_crt_rand_priv_calls;
+extern void (*rg_crt_rand_hook)(void *ret, int priv);
+const char *nr_im_task(const char *name);   /* src/native/render/nr_im.c */
+uint64_t rg_cull_extra_count(void);         /* ViewSetPerspective_1564a0 override */
+typedef struct { const char *task; uintptr_t ret; int priv; uint32_t n; } randlog_key;
+static randlog_key g_rl[1024];
+static int g_rl_n;
+static FILE *g_rl_f;
+static void randlog_hook(void *ret, int priv)
+{
+    const char *t = nr_im_task(NULL);
+    nr_im_task(t);
+    for (int i = 0; i < g_rl_n; i++)
+        if (g_rl[i].ret == (uintptr_t)ret && g_rl[i].task == t && g_rl[i].priv == priv) {
+            g_rl[i].n++;
+            return;
+        }
+    if (g_rl_n < (int)(sizeof g_rl / sizeof g_rl[0]))
+        g_rl[g_rl_n++] = (randlog_key){ t, (uintptr_t)ret, priv, 1 };
+}
+/* one "O field what obj a b" line (the draw-path overrides, investigation: RG_RAND_LOG_OBJ=1) */
+void rg_randlog_obj(const char *what, const void *obj, int a, int b)
+{
+    static int on = -1;
+    static uint64_t lo, hi;
+    if (on < 0) {
+        const char *e = getenv("RG_RAND_LOG_OBJ");   /* FROM:TO fields */
+        on = e != NULL;
+        lo = e ? strtoull(e, NULL, 0) : 0;
+        hi = e && strchr(e, ':') ? strtoull(strchr(e, ':') + 1, NULL, 0) : ~0ull;
+    }
+    if (on && g_rl_f && g_field_next >= lo && g_field_next <= hi)
+        fprintf(g_rl_f, "O\t%llu\t%s\t%p\t%d\t%d\n", (unsigned long long)g_field_next, what, obj, a, b);
+}
+static void randlog_field(uint64_t field)
+{
+    static int on = -1;
+    if (on < 0) {
+        const char *p = getenv("RG_RAND_LOG");
+        on = p && *p && (g_rl_f = fopen(p, "w")) != NULL;
+        if (on)
+            rg_crt_rand_hook = randlog_hook;
+        return;
+    }
+    if (!on) return;
+    uintptr_t base = 0;
+#ifdef _WIN32
+    base = (uintptr_t)GetModuleHandleA(NULL);
+#endif
+    fprintf(g_rl_f, "F\t%llu\t%016llx\t%llu\t%llu\t%llu\n", (unsigned long long)field,
+            (unsigned long long)rg_crt_rand_next, (unsigned long long)rg_crt_rand_calls,
+            (unsigned long long)rg_crt_rand_priv_calls, (unsigned long long)rg_cull_extra_count());
+    for (int i = 0; i < g_rl_n; i++)
+        fprintf(g_rl_f, "C\t%llu\t%s\t0x%08lx\t%d\t%u\n", (unsigned long long)field,
+                g_rl[i].task ? g_rl[i].task : "-", (unsigned long)(g_rl[i].ret - base),
+                g_rl[i].priv, g_rl[i].n);
+    g_rl_n = 0;
+    fflush(g_rl_f);
+}
+
+static int32_t g_dl_used[2], g_dl_cap[2];
+static uint64_t g_dl_near[2];
+static void dl_peak_sample(void)
+{
+    static int on = -1;
+    int i;
+    if (on < 0) on = getenv("RG_DL_PEAK") != NULL;
+    if (!on || !D_004810A4) return;
+    for (i = 0; i < 2; i++) {
+        uint8_t *blk = (uint8_t *)(uintptr_t)*(uint32_t *)(D_004810A4 + 8 + 4 * i); /* a 4-byte game word (x64) */
+        if (!blk) continue;
+        int32_t used = *(int32_t *)(blk + 8 + 0x2C), cap = *(int32_t *)(blk + 8 + 0x34);
+        if (used > g_dl_used[i]) g_dl_used[i] = used;
+        g_dl_cap[i] = cap;
+        if (cap > 0 && used * 10 >= cap * 9) g_dl_near[i]++;
+    }
+}
+static void dl_peak_report(void)
+{
+    if (getenv("RG_DL_PEAK"))
+        fprintf(stderr, "rg-game: draw-packet buffers peak %d / %d and %d / %d qw (samples >= 90%%: %llu, %llu)\n",
+                g_dl_used[0], g_dl_cap[0], g_dl_used[1], g_dl_cap[1], (unsigned long long)g_dl_near[0],
+                (unsigned long long)g_dl_near[1]);
+}
+
+/* RG_SHAKE_FORCE=FIELD[:AMP] (test hook, lane p6qol): start the game's own camera shake
+ * (CameraShakeStart_3058c0, as BattleApplyHit_2ef930 does on a heavy hit) on the live camera
+ * between fields at FIELD, so a scripted run is sure to shake; runs differing only in
+ * accessibility.camera_shake must then keep the same run hash (docs/SETTINGS.md
+ * "Accessibility").  The forced shake itself is game state (both runs get it). */
+extern void *GetCurrentScene_1f5be0(void);
+extern void *ObjRecGetLiveObject_1c3bc0(void *, int32_t);
+extern void CameraShakeStart_3058c0(void *, float, float, float, float);
+extern float D_0047D244, D_0047D1E0;
+/* RG_SET_AT="F:id=value[;F:id=value...]" (tests): the setting changes at the start of field F
+ * the way the settings menu changes it (both layers, a new generation; the live-toggle checks
+ * of docs/TEXTURES.md "Checks") */
+static void set_at(rg_settings *s, uint64_t k)
+{
+    static int init;
+    static char buf[2048];
+    if (!init) {
+        const char *e = getenv("RG_SET_AT");
+        init = 1;
+        if (e)
+            snprintf(buf, sizeof buf, "%s", e);
+    }
+    if (!buf[0] || !s)
+        return;
+    for (const char *p = buf; *p;) {
+        const char *end = strchr(p, ';');
+        size_t n = end ? (size_t)(end - p) : strlen(p);
+        char item[256];
+        if (n >= sizeof item)
+            n = sizeof item - 1;
+        memcpy(item, p, n);
+        item[n] = 0;
+        char *c = strchr(item, ':'), *eq = c ? strchr(c, '=') : NULL;
+        if (c && eq && strtoull(item, NULL, 0) == k) {
+            *eq = 0;
+            int rc = rg_settings_set_string(s, c + 1, eq + 1, RG_SRC_MENU);
+            fprintf(stderr, "rg-set-at: field %llu %s=%s (%s)\n", (unsigned long long)k, c + 1, eq + 1,
+                    rc == RG_SET_OK ? "set" : "refused");
+        }
+        p += n;
+        if (*p)
+            p++;
+    }
+}
+
+static void shake_force(uint64_t k)
+{
+    static int init;
+    static uint64_t at;
+    static float amp = 25.0f;
+    if (!init) {
+        const char *e = getenv("RG_SHAKE_FORCE");
+        init = 1;
+        if (e && *e) {
+            at = strtoull(e, NULL, 0);
+            const char *c = strchr(e, ':');
+            if (c)
+                amp = (float)atof(c + 1);
+        }
+    }
+    if (!at || k != at)
+        return;
+    uint8_t *sc = (uint8_t *)GetCurrentScene_1f5be0();
+    void *cam = sc ? ObjRecGetLiveObject_1c3bc0(sc, *(int32_t *)(sc + 0x4344)) : NULL;
+    fprintf(stderr, "rg-shake: forced at field %llu (camera %s, amplitude %.1f)\n", (unsigned long long)k,
+            cam ? "live" : "none", amp);
+    if (cam)
+        CameraShakeStart_3058c0(cam, 0.0f, amp, D_0047D244, D_0047D1E0);
+}
+
+/* RG_EVSHAKE_FORCE=FIELD[:AMP[:STEPS]] (test hook, lane p6ui): the event-scene shake.  No
+ * retail script calls the event VM's camera shake (EvCmdCameraShake_263dd0, system native
+ * 0x1AE: tools/p6/sb2natives.py finds no 4-argument call), so at the first field >= FIELD
+ * with the event camera running (EvCmdCameraBegin_2649a0 has set D_004BD9A4; EventSysUpdate
+ * then runs EventCameraUpdate_2544f0 on D_00482060) this queues the node that command
+ * queues (EventCameraNodeAddShake_253840: offset (AMP, AMP / 2, 0), STEPS steps), so the
+ * EventCameraCmdShake_254f90 / TaskUpdateDrawInfo_2f6ff0 overrides run.  The shake is game
+ * state (every run with the hook gets it); accessibility.camera_shake must keep the run hash.
+ * STEPS default 120 (-1 = until the event camera resets).  FIELD:AMP:STEPS:b also starts the
+ * event camera first when none runs (EvCmdCameraBegin_2649a0, as m04 / m11 map scripts do).  RG_SHAKE_LOG=1 prints the step
+ * notes (rg_aspect.c). */
+extern int32_t D_00482060, D_004BD9A4;
+extern void EventCameraNodeAddShake_253840(int32_t, const void *, int32_t);
+extern int32_t EvCmdCameraBegin_2649a0(void);
+extern void EventCameraUpdate_2544f0(void *);
+static void evshake_force(uint64_t k)
+{
+    static int init, done, begin, drive;
+    static uint64_t at;
+    static float amp = 0.3f;
+    static int32_t steps = 120;
+    if (!init) {
+        const char *e = getenv("RG_EVSHAKE_FORCE");
+        init = 1;
+        if (e && *e) {
+            at = strtoull(e, NULL, 0);
+            const char *c = strchr(e, ':');
+            if (c) {
+                amp = (float)atof(c + 1);
+                c = strchr(c + 1, ':');
+                if (c) {
+                    steps = (int32_t)atoi(c + 1);
+                    c = strchr(c + 1, ':');
+                    begin = c && c[1] == 'b';
+                }
+            }
+        }
+    }
+    if (drive) {
+        /* ":b": step the event camera once a frame (every second field) while the shake node
+         * is queued on track 3 (head word at +0x20), as EventSysUpdate_26ac10 does while a map
+         * script runs; stop when the node is done */
+        if (!D_004BD9A4 || !D_00482060 || !*(int32_t *)(uintptr_t)(uint32_t)(D_00482060 + 0x20)) {
+            fprintf(stderr, "rg-shake: event camera driven until field %llu\n", (unsigned long long)k);
+            drive = 0;
+        } else if (!(k & 1)) {
+            EventCameraUpdate_2544f0((void *)(uintptr_t)(uint32_t)D_00482060);
+        }
+        return;
+    }
+    if (!at || done || k < at || !D_00482060)
+        return;
+    if (!D_004BD9A4) {
+        if (!begin)
+            return;
+        /* ":b": no scripted event camera reaches this point of the run (map scripts of m04 /
+         * m11 begin one; EventSysUpdate only runs it while such a script runs): begin one the
+         * way those scripts do (EvCmdCameraBegin_2649a0: reset, camera mode 14) and drive
+         * EventCameraUpdate_2544f0 from here (above).  The camera stays in that mode after */
+        EvCmdCameraBegin_2649a0();
+        drive = 1;
+        fprintf(stderr, "rg-shake: event camera begun at field %llu\n", (unsigned long long)k);
+    }
+    done = 1;
+    float v[4] __attribute__((aligned(16))) = { amp, amp * 0.5f, 0.0f, 0.0f };
+    fprintf(stderr, "rg-shake: event shake forced at field %llu (amplitude %.2f, %d steps)\n", (unsigned long long)k,
+            amp, (int)steps);
+    EventCameraNodeAddShake_253840(D_00482060, v, steps);
+}
 
 static void aspect_apply(const rg_settings *s)
 {
@@ -581,6 +953,10 @@ static void aspect_apply(const rg_settings *s)
         D_00481638[0] = g_aspect_now.game_wide;
     /* the projection aspect / HUD x scale the stage 1 overrides read */
     rg_aspect_set_current(&g_aspect_now);
+    /* the 3D frame's horizontal squeeze while the game draws its anamorphic WIDE frame: the
+     * native renderer narrows the outline strands by it (docs/NATIVE-RENDER.md "Outlines on a
+     * wide canvas") */
+    nr_set_frame_xscale(g_aspect_now.game_wide == 1 ? rg_hud_xscale_world() : 1.0f);
     if (h) {
         int an, ad, cn, cd;
         rg_host_get_aspect(h, &an, &ad, &cn, &cd);
@@ -614,6 +990,41 @@ static int g_prompts_nsched;
 static int g_prompts_force = -1;   /* the forced style now, -1 = none */
 static uint64_t g_field_next = 1;  /* the field about to run (declared above) */
 static int g_prompts_ok = -1;      /* the ELF's button rects are the ones rg_prompts.c redraws */
+
+/* The keyboard style's full key names (docs/PROMPTS.md "Width changes (--wide)"): while the
+ * gaiji2 buffer holds the wide keyboard image, FontFindGaijiMetric_26f8c0 (override) reads this
+ * copy of D_0044E680 with the 8 button records pointing at the wide glyphs; NULL otherwise
+ * (every other style, scripted runs: the game's table).  Switched between fields only (the
+ * game thread), so a message laid out and drawn in one field uses one table. */
+#define RG_GAIJI_MAX_RECORDS 128
+static uint8_t g_wide_metrics[(RG_GAIJI_MAX_RECORDS + 1) * 12] __attribute__((aligned(4)));
+static int g_wide_metrics_on;
+uint16_t *rg_game_gaiji_metrics(void);
+uint16_t *rg_game_gaiji_metrics(void) { return g_wide_metrics_on ? (uint16_t *)g_wide_metrics : NULL; }
+
+static void prompts_wide_metrics(const rg_prompts_ctl *c)
+{
+    g_wide_metrics_on = 0;
+    if (c->cur != RG_GAIJI_KEYBOARD || !c->cur_wide)
+        return;
+    const uint8_t *t = (const uint8_t *)D_0044E680;
+    int n = 0;
+    while (n < RG_GAIJI_MAX_RECORDS && (t[n * 12] | t[n * 12 + 1] << 8))
+        n++;
+    memcpy(g_wide_metrics, t, (size_t)(n + 1) * 12);   /* (with the terminator) */
+    for (int r = 0; r < n; r++) {
+        uint8_t *q = g_wide_metrics + r * 12;
+        uint16_t code = (uint16_t)(q[0] | q[1] << 8);
+        for (int b = 0; b < RG_GAIJI_BUTTONS; b++) {
+            if (rg_gaiji_button_rects[b].code != code) continue;
+            const rg_gaiji_rect *w = &c->wide_rects[b];
+            q[2] = (uint8_t)w->u; q[3] = (uint8_t)((uint16_t)w->u >> 8);
+            q[4] = (uint8_t)w->v; q[5] = (uint8_t)((uint16_t)w->v >> 8);
+            q[6] = (uint8_t)w->w; q[7] = (uint8_t)((uint16_t)w->w >> 8);
+        }
+    }
+    g_wide_metrics_on = 1;
+}
 
 static int prompts_rects_match(void)
 {
@@ -651,30 +1062,47 @@ static void prompts_apply(const rg_settings *s)
             g_prompts_force = g_prompts_sched[i].style;
     rg_host *h = rg_runtime_host();
     int want = g_prompts_force >= 0 ? g_prompts_force : h ? (int)rg_host_prompt_style(h) : 0;
-    static const char *keys[RG_GAIJI_BUTTONS];
-    static char kb[RG_GAIJI_BUTTONS][64];
+    /* the bindings each prompt slot shows (lane p6a11y): the keyboard style its action's first
+     * key / mouse button, the pad styles its first gamepad button or trigger, so remapped
+     * actions show the bound input; re-read when a setting changed (menu, file) or the
+     * style moved between keyboard and pad */
+    static const char *keys[RG_PROMPT_SLOTS];
+    static char kb[RG_PROMPT_SLOTS][64];
     static uint64_t keys_gen = ~0ull;
-    if (want == RG_GAIJI_KEYBOARD && s && rg_settings_generation(s) != keys_gen) {
-        /* the bindings: rebuilt only when a setting changed (menu, file) */
+    static int keys_kbd = -1;
+    int kbd = want == RG_GAIJI_KEYBOARD;
+    if (s && (rg_settings_generation(s) != keys_gen || kbd != keys_kbd)) {
         static rg_actions a;
         keys_gen = rg_settings_generation(s);
+        keys_kbd = kbd;
         rg_actions_from_settings(&a, s);
-        for (int b = 0; b < RG_GAIJI_BUTTONS; b++) {
+        for (int b = 0; b < RG_PROMPT_SLOTS; b++) {
             keys[b] = NULL;
-            int act = rg_action_from_id(rg_gaiji_button_action[b]);
+            int act = rg_action_from_id(rg_prompt_slot_action[b]);
             for (int i = 0; act >= 0 && i < a.nbind[act]; i++) {
                 const rg_binding *bd = &a.bind[act][i];
-                if (bd->kind == RG_BIND_KEY || bd->kind == RG_BIND_MOUSE) {
+                int take = kbd ? bd->kind == RG_BIND_KEY || bd->kind == RG_BIND_MOUSE
+                               : bd->kind == RG_BIND_PAD_BUTTON || (bd->kind == RG_BIND_PAD_AXIS && bd->pos);
+                if (take) {
                     rg_binding_format(bd, kb[b], sizeof kb[b]);
+                    if (!kbd && bd->kind == RG_BIND_PAD_AXIS && rg_prompt_pad_button(kb[b]) == 17)
+                        continue;   /* (a stick axis: not a button glyph; the next binding) */
                     keys[b] = kb[b];
                     break;
                 }
             }
         }
     }
-    if (rg_prompts_step(&g_prompts, D_004C3180, RG_GAIJI_IMG_MAX, want, keys) && getenv("RG_PROMPTS_LOG"))
-        fprintf(stderr, "PROMPTS field=%llu style=%s writes=%u captures=%u\n",
-                (unsigned long long)g_field_next, rg_prompt_style_name((rg_prompt_style)want), g_prompts.writes, g_prompts.captures);
+    int cb = s && rg_settings_find(s, "accessibility.colour_blind") >= 0
+           ? rg_settings_get_enum(s, "accessibility.colour_blind") : 0;
+    /* textures with prompts / markers baked in (src/settings/rg_texpatch.h): patched at upload */
+    rg_texpatch_update(want, s ? keys : NULL, cb);
+    g_prompts.wide = 1;   /* the keyboard style shows full key names (SPACE, ENTER, SHIFT) in text */
+    if (rg_prompts_step(&g_prompts, D_004C3180, RG_GAIJI_IMG_MAX, want, s ? keys : NULL) && getenv("RG_PROMPTS_LOG"))
+        fprintf(stderr, "PROMPTS field=%llu style=%s writes=%u captures=%u wide=%d\n",
+                (unsigned long long)g_field_next, rg_prompt_style_name((rg_prompt_style)want), g_prompts.writes,
+                g_prompts.captures, g_prompts.cur_wide);
+    prompts_wide_metrics(&g_prompts);
 }
 
 /* ---- mouse camera (docs/INPUT.md "Mouse camera implementation") ----
@@ -725,6 +1153,59 @@ int rg_game_look_take(int32_t *yaw, int32_t *pitch, int site)
         fprintf(stderr, "LOOK field=%llu vbl=%u site=%d yaw=%d pitch=%d\n",
                 (unsigned long long)g_field_next, D_004810C4[0], site, (int)*yaw, (int)*pitch);
     return 1;
+}
+
+/* gameplay.battle_speed (docs/SETTINGS.md "Gameplay options", a gameplay option off in Original):
+ * while the fight is on, the runtime runs the VBlank phases k times as fast against the host
+ * clock (rg_runtime_set_speed).  Every phase is the one retail runs, so the game state per field
+ * and the run hash do not change; only how soon the fields come.  "The fight is on" =
+ * IsInBattleMode's flag (D_004821B8) in battle mode 7 at its fighting phase 201 (not the intro,
+ * the results 500.. / 2000.. or the attack-chain mode 9), no pause step (D_0048276C: pause menu,
+ * event skip), no event script running (EvtCurIsRunning: tutorials, battle scenes) and the
+ * "Chara Step" task enabled (TaskSetCharaTasksPaused: battle menus freeze the characters).
+ * On after RG_BSPEED_ON consecutive such fields (default 4: no flapping), off at once.
+ * $RG_BSPEED_LOG=1: a stderr line per change of the inputs (census: tools/p6/bspeed_census.py). */
+extern uint8_t D_004821B8;
+extern uint32_t D_004B51A0[], D_004B51E0[];   /* game mode, its phase */
+extern int32_t D_0048276C;
+extern char D_00460158[];   /* "Chara Step" */
+extern int32_t EvtCurIsRunning_26abf0(void);
+extern int32_t TaskIsEnabled_27c2c0(int32_t name);
+static void battle_speed_apply(const rg_settings *s, uint64_t k)
+{
+    static const double mult[] = { 1.0, 1.5, 2.0, 3.0 };
+    static int run, on_after = -1, last = -1;
+    int v = s && rg_settings_find(s, "gameplay.battle_speed") >= 0 ? rg_settings_get_enum(s, "gameplay.battle_speed") : 0;
+    const char *e = getenv("RG_BATTLE_SPEED");   /* (tests: 0..3 without a settings file) */
+    if (e && *e) v = atoi(e);
+    if (v < 0 || v > 3) v = 0;
+    if (on_after < 0) {
+        const char *o = getenv("RG_BSPEED_ON");
+        on_after = o && *o ? atoi(o) : 4;
+    }
+    int inb = 0, mode = 0, phase = 0, pause = 0, evt = 0, step = 0;
+    if (v || getenv("RG_BSPEED_LOG")) {
+        inb = D_004821B8 != 0;
+        mode = (int)D_004B51A0[0];
+        phase = (int)D_004B51E0[0];
+        pause = D_0048276C;
+        if (inb && mode == 7) {
+            evt = EvtCurIsRunning_26abf0() != 0;
+            step = TaskIsEnabled_27c2c0((int32_t)(intptr_t)D_00460158) != 0;
+        }
+    }
+    int fight = inb && mode == 7 && phase == 201 && !pause && !evt && step;
+    run = fight ? run + 1 : 0;
+    double sp = v && run > on_after ? mult[v] : 1.0;
+    if (getenv("RG_BSPEED_LOG")) {
+        int on = run > on_after;  /* (would run sped up with the option on) */
+        int key = inb | mode << 1 | (phase & 0xFFFF) << 6 | (pause & 7) << 22 | evt << 25 | step << 26 | on << 27 | (sp > 1.0) << 28;
+        if (key != last)
+            fprintf(stderr, "BSPEED field=%llu inb=%d mode=%d phase=%d pause=%d evt=%d step=%d on=%d speed=%.2f\n",
+                    (unsigned long long)k, inb, mode, phase, pause, evt, step, on, sp);
+        last = key;
+    }
+    rg_runtime_set_speed(sp, v != 0);
 }
 
 /* Before every field: the capture hint (a camera asked within the last 30
@@ -798,7 +1279,9 @@ static void usage(void)
                     "[--input SCRIPT] [--unthrottled] [--screenshot PNG] [--shot FIELD:PNG]... "
                     "[--prompt-style playstation|xbox|nintendo|keyboard[@FIELD]]... "
                     "[--mouse-motion FIRST-LAST:DX:DY]... [--look-record FILE] "
-                    "[--save-state FIELD:FILE]... [--state-note TEXT] [--load-state FILE]\n");
+                    "[--save-state FIELD:FILE]... [--state-note TEXT] [--load-state FILE]\n"
+                    "       rg-game [--saves DIR] --list-saves | --name-save CARD:NN=NAME | "
+                    "--import-card PCSX2_CARD [--import-slot 1|2] [--import-save GLOB] [--import-force] [--import-list]\n");
 }
 
 /* <exe dir>/<name>; 0 if the exe path is unknown */
@@ -856,6 +1339,16 @@ int main(int argc, char **argv)
     SetUnhandledExceptionFilter(rg_game_crash);
     AddVectoredExceptionHandler(1, rg_game_stack_overflow);
     AddVectoredExceptionHandler(1, rg_brk_handler);
+    if (getenv("RG_FPTRAP")) {
+        rg_fptrap_from = strtoull(getenv("RG_FPTRAP"), NULL, 0);
+        if (getenv("RG_FPTRAP_MAX"))
+            rg_fptrap_max = (unsigned)strtoul(getenv("RG_FPTRAP_MAX"), NULL, 0);
+        AddVectoredExceptionHandler(1, rg_fptrap_handler);
+    }
+    if (getenv("RG_X87CHECK")) {   /* i686: X87CHECK lines when a flow yields with ST0.. left (rg_nk.c) */
+        extern volatile int nk_fpdiag;
+        nk_fpdiag |= 1;
+    }
     rg_brk_init();
 #endif
     /* settings registry (docs/SETTINGS.md "Using it from a program") */
@@ -889,9 +1382,14 @@ int main(int argc, char **argv)
         rg_runtime_config_from_settings(&cfg, settings);
         cfg.settings_path = settings_path;
     }
+    mc_cli_opts saves_cli;
+    memset(&saves_cli, 0, sizeof saves_cli);
     for (int i = 1; i < argc; i++) {
         const char *a = argv[i];
         const char *v = i + 1 < argc ? argv[i + 1] : NULL;
+        int sc = mc_cli_arg(&saves_cli, argc, argv, &i);
+        if (sc < 0) { usage(); rg_settings_destroy(settings); return 2; }
+        if (sc > 0) continue;
         if (!strcmp(a, "--headless")) headless = 1;
         else if (!strcmp(a, "--unthrottled")) cfg.throttle = 0;
         else if (!strcmp(a, "--fields") && v) { fields = strtoull(v, NULL, 0); i++; }
@@ -958,6 +1456,17 @@ int main(int argc, char **argv)
     }
     cfg.headless = headless;
     rg_game_default_dirs(&cfg);
+    if (mc_cli_wanted(&saves_cli)) {
+        /* the saves tools (docs/SAVES.md): run on the saves dir and exit, the game does not start */
+        const char *root = cfg.saves_dir ? cfg.saves_dir : getenv("RG_SAVES");
+        int keep = 5;
+        if (rg_settings_find(settings, "saves.backup_keep") >= 0)
+            keep = rg_settings_get_int(settings, "saves.backup_keep");
+        int rc = mc_cli_run(&saves_cli, root && *root ? root : "saves", keep, stdout);
+        fflush(stdout);
+        rg_settings_destroy(settings);
+        return rc;
+    }
 
     if (headless && !fields)
         fields = 600;
@@ -1001,6 +1510,9 @@ int main(int argc, char **argv)
         rg_settings_destroy(settings);
         return 1;
     }
+#ifdef _WIN32
+    rg_watch_init(1);
+#endif
     rg_settings_mark_applied(settings);
     int rc = 0;
     uint64_t first_field = 0;   /* --load-state: the state's field */
@@ -1023,14 +1535,36 @@ int main(int argc, char **argv)
         uint64_t every = se ? strtoull(se, NULL, 0) : 0;
         rg_aspect_ctl_init(&g_aspect);
         rg_prompts_init(&g_prompts);
+        randlog_field(0);   /* RG_RAND_LOG: open + hook */
         for (uint64_t k = first_field; !fields || k < fields; k++) {
             aspect_apply(settings);
+            set_at(settings, k);
+            {
+                int mw = 0, mh = 0;
+                rg_movie_g_size(&mw, &mh);
+                rg_runtime_movie_playing(mw > 0 && mh > 0);   /* (texture dumps skip movie frames) */
+            }
+            shake_force(k);
+            evshake_force(k);
             g_field_next = k + 1;
+#ifdef _WIN32   /* RG_FPTRAP is a Windows vectored-handler diagnostic */
+            if (rg_fptrap_from && k + 1 == rg_fptrap_from) {
+                /* RG_FPTRAP: invalid operations unmasked in game code (the step's MXCSR here,
+                 * each flow's own MXCSR / x87 control word when it resumes: rg_nk.c) */
+                extern volatile int nk_fpdiag;
+                if (nk_guest_csr)
+                    nk_guest_csr &= ~0x80u;
+                nk_fpdiag |= 2;
+            }
+#endif
             prompts_apply(settings);
             look_apply();
+            battle_speed_apply(settings, k);
             rc = rg_runtime_run_field();
             if (rc)
                 break;
+            dl_peak_sample();
+            randlog_field(k + 1);
             if (g_nshots)
                 shot_write(k + 1);
             if (rg_game_ss_saving())
@@ -1104,6 +1638,7 @@ int main(int argc, char **argv)
            (unsigned long long)st->vblank_start, rc);
     printf("rg-game: run_hash=%016llx\n", (unsigned long long)st->run_hash);
     fflush(stdout);
+    dl_peak_report();
     rg_runtime_shutdown();
     rg_prompts_free(&g_prompts);
     if (g_look_rec)

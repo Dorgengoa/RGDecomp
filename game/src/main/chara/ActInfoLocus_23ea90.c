@@ -11,8 +11,8 @@
 /*rgp*/                         /* extern */
 /*rgp*/                              /* extern */
 extern u8 D_0044C850[0x400];
-extern u8 D_004BCE20[0x400];
-extern u8 D_004BCE74[0x400];
+extern u8 D_004BCE20[0x20];
+extern u8 D_004BCE74[8];
 extern u8 D_004BCE96[0x400];
 
 s32 ActInfoLocus_23ea90(s32 arg0, s32 arg1) {

@@ -3,7 +3,9 @@
 #include "rg_aspect.h"
 #include "rg_settings.h"
 #include "rg_layout.h"
+#include "port/vcall.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -89,6 +91,15 @@ void rg_aspect_step_settings(rg_aspect_ctl *c, const rg_settings *s, int title, 
         movie = rg_settings_get_enum(s, "graphics.movie_aspect");
     if (s && rg_settings_find(s, "graphics.ui_layout") >= 0)
         rg_aspect_set_ui_layout(rg_settings_get_enum(s, "graphics.ui_layout"));
+    /* accessibility (presentation only, docs/SETTINGS.md): the 2D UI scale (rg_layout.h) and
+     * the camera shake amount (CameraShakeApply_3056b0 override) */
+    if (s && rg_settings_find(s, "accessibility.ui_scale") >= 0)
+        rg_layout_set_ui_scale((float)rg_settings_get_int(s, "accessibility.ui_scale") / 100.0f);
+    if (s && rg_settings_find(s, "accessibility.camera_shake") >= 0)
+        rg_camera_shake_set((float)rg_settings_get_int(s, "accessibility.camera_shake") / 100.0f);
+    /* gameplay.text_speed (a gameplay option, off in Original): MesWinAdvanceTypeout_275f00 */
+    if (s && rg_settings_find(s, "gameplay.text_speed") >= 0)
+        rg_text_speed_set(rg_settings_get_enum(s, "gameplay.text_speed"));
     rg_aspect_resolve(mode, win_w, win_h, &n, &d);
     /* stage 2 showed a full-screen menu whole at 4:3 like the title; stage 3 (no aspect
      * switch for menus) keeps the canvas wide and lays the menu out as one centred 4:3
@@ -163,6 +174,89 @@ void rg_aspect_set_current(const rg_aspect_frame *f)
                          (long long)f->canvas_num * 3 > (long long)f->canvas_den * 4);
     rg_layout_set_frame(layout, ++g_frames);
     aspect_log(f);
+}
+
+static float g_text_mult = 1.0f;
+void rg_text_speed_set(int v) { g_text_mult = v == 1 ? 2.0f : v == 2 ? 4096.0f : 1.0f; }
+/* called on every type-out step of a message window; RG_TEXT_LOG=1 counts them */
+float rg_text_speed_mult(void)
+{
+    static int log = -1;
+    static unsigned long n;
+    if (log < 0) {
+        const char *e = getenv("RG_TEXT_LOG");
+        log = e && *e == '1';
+    }
+    if (log && (++n <= 3 || n % 500 == 0))
+        fprintf(stderr, "rg-text: frame %d type-out step (%lu), x%.0f\n", g_frames, n, g_text_mult);
+    return g_text_mult;
+}
+
+static float g_shake = 1.0f;
+float rg_camera_shake_k(void) { return g_shake; }
+/* event-scene shakes (EventCameraCmdShake_254f90 / ShakeAt_254df0 overrides): the offset a
+ * shake step added to the event camera's eye / look-at, summed until the next draw task takes
+ * it (TaskUpdateDrawInfo_2f6ff0 override).  Host state only. */
+static float g_ev_eye[3], g_ev_at[3];
+static int g_ev_n;
+void rg_event_shake_note(const void *eye, const void *eye0, const void *at, const void *at0)
+{
+    static int log = -1;
+    static unsigned long n;
+    const float *e = (const float *)eye, *e0 = (const float *)eye0, *t = (const float *)at, *t0 = (const float *)at0;
+    for (int i = 0; i < 3; i++) {
+        g_ev_eye[i] += e[i] - e0[i];
+        g_ev_at[i] += t[i] - t0[i];
+    }
+    g_ev_n++;
+    if (log < 0) {
+        const char *v = getenv("RG_SHAKE_LOG");
+        log = v && *v == '1';
+    }
+    if (log && (++n <= 3 || n % 100 == 0))
+        fprintf(stderr, "rg-shake: frame %d event shake step (%lu steps), scale %.2f\n", g_frames, n, g_shake);
+}
+int rg_event_shake_take(float eye[3], float at[3])
+{
+    int had = g_ev_n > 0;
+    for (int i = 0; i < 3; i++) {
+        eye[i] = g_ev_eye[i];
+        at[i] = g_ev_at[i];
+        g_ev_eye[i] = g_ev_at[i] = 0.0f;
+    }
+    g_ev_n = 0;
+    return had;
+}
+void rg_event_shake_unscale_draw_copy(void *cam)
+{
+    float e3[3], a3[3];
+    if (rg_event_shake_take(e3, a3) && rg_camera_shake_k() < 1.0f) {
+        float k = rg_camera_shake_k() - 1.0f;   /* -(1 - k) */
+        float *e = (float *)((unsigned char *)cam + 0x50), *t = (float *)((unsigned char *)cam + 0x60);
+        for (int i = 0; i < 3; i++) {
+            e[i] += e3[i] * k;
+            t[i] += a3[i] * k;
+        }
+        /* slot 0x40 through the vptr at +0xC0 (port/vcall.h VCALL0, spelled warning-free for C):
+         * recompute from eye / look-at (CameraShakeApply_3056b0's f40) */
+        vc_u32 slot = *(const vc_u32 *)(uintptr_t)(VC_VPTR(cam, 0xC0) + 0x40u);
+        ((void (VC_CC *)(void *))(uintptr_t)slot)(cam);
+    }
+}
+void rg_camera_shake_set(float k) { g_shake = k >= 0.0f && k <= 1.0f ? k : 1.0f; }
+/* called by the override on every drawn frame with a shake running; RG_SHAKE_LOG=1 counts
+ * them on stderr (the run-hash proof needs a run that shakes) */
+float rg_camera_shake_scale(void)
+{
+    static int log = -1;
+    static unsigned long n;
+    if (log < 0) {
+        const char *e = getenv("RG_SHAKE_LOG");
+        log = e && *e == '1';
+    }
+    if (log && (++n <= 3 || n % 100 == 0))
+        fprintf(stderr, "rg-shake: frame %d shaking (%lu frames), scale %.2f\n", g_frames, n, g_shake);
+    return g_shake;
 }
 
 float rg_aspect_d(void) { return g_cur_d; }

@@ -18,9 +18,9 @@ extern char D_0045AB48[];
 extern char D_0045AB58[];
 extern char D_0045AB60[];
 extern char D_0045AB68[];
-extern u8 D_00471030[0x400];
-extern u8 D_00471080[0x400];
-extern u8 D_004710A0[0x400];
+extern u8 D_00471030[0x18];
+extern u8 D_00471080[0x20];
+extern u8 D_004710A0[0x20];
 extern u8 D_004710C0[0x400];
 
 typedef struct Self {

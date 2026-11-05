@@ -12,7 +12,8 @@ collect what a play-tester would hit (docs/TEST-FIXTURES.md "Long soak").
     python tools/fixtures/soak.py fights --exe EXE --out DIR [CARD ...]   # one --wide fight per w_ card
     python tools/fixtures/soak.py coverage DIR [DIR ...]      # zones per planet, battle tactic totals
     python tools/fixtures/soak.py drivers --exe EXE --out DIR [NAME ...]  # closed-loop drivers (DRIVERS):
-                                  # insectstory (story Insectron final + rank reward), insectrun, factory production
+                                  # insectstory (story Insectron final + rank reward), insectrun, factory production,
+                                  # insectstory_d (Rank D final), insect_entry (rank menu entry + battle 1)
 
 --wide / --maps / fights / coverage: docs/TEST-FIXTURES.md "Widened soak".
 
@@ -464,6 +465,13 @@ class Session:
             self.stats["modes"].add(pr["mode"].split("/")[0])
         if mp is not None:
             self.stats["maps"].add(mp)
+        if hang and log.strip().splitlines()[-1:] == ["rg-game: 2 runs already active, waiting for a free slot..."] \
+                and "LOADSTATE" not in log:
+            # every attempt timed out before an rg_slots slot came free (a busy machine, not a
+            # game hang: 2026-10-31 ch08c_zerard, whose triage replay then ran through)
+            self.finding("slot-starved", f"no rg_slots slot in {wall:.0f} s x3 ({kind}, fields {f0}-{to})",
+                         state, inp, log, cmd)
+            return False, None, pr
         if hang:
             self.finding("hang", f"no exit after {wall:.0f} s ({kind}, fields {f0}-{to})", state, inp, log, cmd)
             return False, None, pr
@@ -1242,6 +1250,11 @@ DRIVERS = {
     "insectrun": ("insectrun.py", ["run", "--title"], "done"),
     "factory": ("factory.py", ["run", "--card", "factory_prod", "--plan", "healing_ath", "--cords", "--produce", "1000",
                                "--save"], "produced"),
+    # 2026-10-31 (optgate): Rank D final (reward key 2, opponent intro before the team prompts)
+    # and the receptionist's entry path (rank menu, 400 z fee, the opening ceremony, battle 1)
+    "insectstory_d": ("insectstory.py", ["run", "--card", "insect_final_d_s", "--team-delay", "650"], "won"),
+    "insect_entry": ("insectstory.py", ["run", "--card", "insect_entry_s", "--team-delay", "1500",
+                                        "--intro-until", "1250"], "won (not the final)"),
 }
 
 

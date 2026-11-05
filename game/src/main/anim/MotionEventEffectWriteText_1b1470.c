@@ -10,12 +10,12 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_0045A9B0[0x400];
-extern u8 D_0045A9B8[0x400];
-extern u8 D_0045A9C8[0x400];
-extern u8 D_0045A9D0[0x400];
-extern u8 D_0045A9D8[0x400];
-extern u8 D_0045A9E0[0x400];
+extern u8 D_0045A9B0[8];
+extern u8 D_0045A9B8[0x10];
+extern u8 D_0045A9C8[8];
+extern u8 D_0045A9D0[8];
+extern u8 D_0045A9D8[8];
+extern u8 D_0045A9E0[8];
 extern u8 D_0045A9E8[0x400];
 
 void MotionEventEffectWriteText_1b1470(void *arg0, s32 arg1)

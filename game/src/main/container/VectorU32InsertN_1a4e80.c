@@ -13,7 +13,7 @@ typedef struct { u32 cap; u32 size; u32 *data; } Vec;
 /*rgp*/
 extern void Fprintf_12f9a0(s32, void *);
 extern u8 D_00449858[0x400];
-extern u8 D_0045A6F0[0x400];
+extern u8 D_0045A6F0[0x20];
 extern u8 D_0045A7D0[0x400];
 
 void VectorU32InsertN_1a4e80(Vec *v, u32 *pos, u32 n, u32 *val) {

@@ -10,9 +10,9 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_0044BB40[0x400];
+extern u8 D_0044BB40[0x260];
 extern u8 D_0044BDA0[0x400];
-extern u8 D_004BCE20[0x400];
+extern u8 D_004BCE20[0x20];
 extern s32 D_004BCE4C[4];
 extern s16 D_004BCE82[8];
 #define D4C D_004BCE4C[0]

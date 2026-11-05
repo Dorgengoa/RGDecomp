@@ -18,12 +18,12 @@ typedef struct {
 
 /*rgp*/
 /*rgp*/
-extern s8 D_0045A9D0[0x10];
-extern s8 D_0045A9D8[0x10];
-extern s8 D_0045A9E0[0x10];
-extern s8 D_0045AA38[0x10];
-extern s8 D_0045AA40[0x10];
-extern s8 D_0045AA48[0x10];
+extern s8 D_0045A9D0[8];
+extern s8 D_0045A9D8[8];
+extern s8 D_0045A9E0[8];
+extern s8 D_0045AA38[8];
+extern s8 D_0045AA40[8];
+extern s8 D_0045AA48[8];
 extern s8 D_0045AA50[0x10];
 extern s8 D_0045AA60[0x10];
 extern s8 D_0045AA70[0x10];

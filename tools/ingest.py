@@ -202,6 +202,11 @@ class Stage:
 #   hwaccess    transform 5: address literals -> HW_R*/HW_W*/PS2_SPR/...
 #               (tools/stages/hwaccess.py, docs/HWBUS.md) -- LAST, after spin
 #               (spin matches loop headers textually); extra output HWACCESS.tsv
+#   interior    distinct-symbol aliasing: an interior data label (D_x = D_y + off,
+#               both declared in one file with overlapping extents) is spelled as an
+#               lvalue of its container, `#define D_x (*(__typeof__(D_x) *)((u8 *)&D_y +
+#               off))` (tools/stages/interior.py, docs/LINUX.md "Linux ABI differences")
+#               -- after hwaccess, on the final declarations; extra output INTERIOR.tsv
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent / "stages"))
 import portxform  # noqa: E402
@@ -215,6 +220,7 @@ import vu0frame  # noqa: E402
 import fnvoid  # noqa: E402
 import retwiden  # noqa: E402
 import wideret  # noqa: E402
+import interior  # noqa: E402
 
 ASM_EXCLUDE = portxform.AsmExclude()
 
@@ -230,6 +236,7 @@ def make_stages() -> list[Stage]:
     vf = vu0frame.Vu0FrameStage()
     rt = retwiden.RetWidenStage()
     wr = wideret.WideRetStage()
+    it = interior.InteriorStage()
     return [
         Stage("int128", portxform.stage_int128, ("unit", "data", "include")),
         Stage("gccvarargs", portxform.stage_gccvarargs),
@@ -247,6 +254,7 @@ def make_stages() -> list[Stage]:
         Stage("retwiden", rt.apply, ("unit",), rt),
         Stage("spin", sp.apply, ("unit",), sp),
         Stage("hwaccess", hw.apply, ("unit",), hw),
+        Stage("interior", it.apply, ("unit",), it),
     ]
 
 

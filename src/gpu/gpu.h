@@ -104,6 +104,14 @@ typedef struct gpu_config {
                        to finish the frame (docs/NATIVE-THREADS.md "3h").  Changes what
                        the game reads (flare occlusion one frame late): never in tests,
                        traces or save states.  $RG_GPU_PROBE_LAG=1 / =0 overrides it. */
+    int raytracing; /* graphics.raytracing (docs/RAYTRACING.md): 0 off (default, Original), 1 ray-
+                       traced shadows, 2 shadows + debug colours, 3 shadows + ambient occlusion (the menu's third value), 4 + reflections (rt5).  Vulkan backend only, behind a
+                       capability check (VK_KHR_acceleration_structure + VK_KHR_ray_query); without
+                       them it stays off.  Drawing only.  $RG_RT=0|1|2|3|4 overrides it. */
+    int rt_emissive; /* graphics.rt_emissive (docs/RAYTRACING.md "RT8"): 0 off (default, Original), 1 the
+                       art's emissive surfaces (lamps, screens, crystals, glow sprites: census/emissive.tsv)
+                       light the ray-traced receivers, 2 + the debug overlay (tagged texels magenta).  Only
+                       with ray tracing on.  Drawing only.  $RG_EMI=0|1|2 overrides it. */
 } gpu_config;
 
 typedef struct gpu_stats {
@@ -239,11 +247,22 @@ typedef struct gpu_nr_mesh {
     uint32_t nidx;
 } gpu_nr_mesh;
 
+#define GPU_NR_RT_MAGIC 0x31565452u   /* 'RTV1' */
 typedef struct gpu_nr_draw {
     gpu_nr_mesh mesh;
     /* nr_draw.hlsl NrCB: rows 0-10, 12-22 from the scene side; rows 11 (target
      * mapping) and 23 (pixel state) are written by gpu_nr_draw */
-    float cb[24][4];
+    float cb[26][4];
+    /* ray tracing (docs/RAYTRACING.md; read only with gpu_config.raytracing): rt_ok =
+     * GPU_NR_RT_MAGIC when filled.  rt[0..3] the object matrix columns (VU qw60-63: world =
+     * rt0 * x + rt1 * y + rt2 * z + rt3), rt[4] light 0's direction (world, towards the light;
+     * qw30-32 .x), rt[5] light 0's colour (qw33), rt[6] the ambient colour (qw37), rt[7] the
+     * camera position (qw28); rt[8..10] the drawn map area's key light (direction, w 1 = valid;
+     * colour; ambient: nr_rt_area_light, RT2), rt[11] reserved.  Placed before bones: nr_iprec
+     * copies up to bones. */
+    float rt[12][4];
+    uint32_t rt_ok;
+    uint32_t rt_frame;         /* the record's frame (nr_frame_begin count; 0 unknown): the TLAS epoch */
     float bones[256][4];       /* VU1 qwords 768..1023 (skinned meshes) */
     int nbones_rows;           /* 0: no bone upload */
     int cull;                  /* 1: cull triangles whose screen area * cull_sign > 0 */
@@ -261,6 +280,11 @@ typedef struct gpu_nr_stats {
      * 4 blend C = Ad, 5 COLCLAMP off / PABE / SCANMSK, 6 frame-Z alias, 7 texture feedback, 8 mipmaps,
      * 9 region clamp, 10 depth-format texture, 11 backend */
     uint64_t im_why[12];
+    uint64_t im_box;          /* immediate draws box-filtered (gpu_set_im_box: screen effects "enhanced") */
+    /* screen effects "enhanced" at the internal resolution (gpu_set_im_hires): draws into a work
+     * buffer's full-resolution twin, draws that read a twin instead of the work buffer, reads
+     * refused (the twin not drawn in this frame), twins created */
+    uint64_t hires_draws, hires_reads, hires_refused, hires_twins;
 } gpu_nr_stats;
 
 /* Draw one native mesh with the GS register state in force (FRAME, ZBUF,
@@ -313,6 +337,23 @@ int gpu_nr_im_submit(gpu_renderer *r, const gs_vertex *v, int nprim, int type);
  * layout (nr_im.c): at an internal scale > 1 point sprites snap only Y to native pixels
  * (coverage and nr_draw.hlsl PF_SNAP), so a 0.75x glyph keeps every texel column */
 void gpu_set_im_xfree(gpu_renderer *r, int on);
+/* (nr_sfx.c, screen effects "enhanced") the next immediate draws that read a live target read it with
+ * a box filter over each pixel's footprint at the internal resolution (nr_draw.hlsl PF_BOX) */
+void gpu_set_im_box(gpu_renderer *r, int on);
+/* (nr_sfx.c, screen effects "enhanced" at the internal resolution; docs/NATIVE-RENDER.md "Screen
+ * effects") mode 1: the next immediate draws belong to an effect chain whose reduced work buffers
+ * get a twin target at the frame's internal resolution: a draw into a work buffer (narrower than
+ * the frame) is drawn as it is AND into the buffer's twin, its coordinates scaled by (sx, sy)
+ * (work buffer pixel -> frame pixel), reading the twins of the work buffers it reads; a draw into
+ * the frame that reads a work buffer reads its twin instead (when the twin was drawn in EE frame
+ * `frame`).  box > 0: the twin draws' reads of a target box-filter a footprint `box` work pixels
+ * wide (the work buffer's own blur at the twin's resolution: depth of field).  mode 0: off.  The
+ * twins are the device's own targets: nothing in local memory changes. */
+void gpu_set_im_hires(gpu_renderer *r, int mode, float sx, float sy, float box, uint32_t frame);
+/* x thickness factor (0 < xs <= 1, default 1) of the immediate lines being submitted: the
+ * quad of a y-major line is xs native pixels across instead of one, at least one upscaled
+ * pixel (nr_scene.c draw_lines: outlines on the anamorphic WIDE frame) */
+void gpu_set_im_line_xs(gpu_renderer *r, float xs);
 /* the same, primitive i with the ALPHA register's A and B selectors swapped when swap[i]
  * is 1 (generated shadow faces alternate between (Cs-0)*As+Cd and (0-Cs)*As+Cd: one native
  * draw, a hardware blend state per run of equal flags, primitive order kept) */
@@ -327,6 +368,14 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
  * (hardware rasterizer coverage, no exact evaluation).  GS thread only. */
 void gpu_nr_prims_begin(gpu_renderer *r);
 void gpu_nr_prims_end(gpu_renderer *r);
+/* (rt4, docs/RAYTRACING.md "RT4") 1 while ray-traced character shadows are shown at (nearly) full
+ * strength (graphics.raytracing on, characters cast, a sun, not an interior): the game's own plane
+ * shadows (shadow volumes) are then not drawn -- draw only, every register write kept; 0 otherwise
+ * and without ray tracing.  $RG_RT_BLOB=1 keeps them. */
+int gpu_nr_rt_chars_shadow(gpu_renderer *r);
+/* (rt4) "" or a backend fallback the player should see once (e.g. "Vulkan backend not built into
+ * this exe; using Direct3D 11"): the runtime puts it into the settings overlay's status line */
+const char *gpu_nr_backend_notice(void);
 /* the following primitives' ALPHA is the GS register's with its A and B
  * selectors swapped (the shader swaps them per vertex), so primitives that
  * alternate between (Cs-0)*As+Cd and (0-Cs)*As+Cd share one batch in their
@@ -350,6 +399,7 @@ enum { GPU_TEXF_ORIGINAL = 0, GPU_TEXF_BILINEAR = 1, GPU_TEXF_NEAREST = 2 };
 /* Effect classes for graphics.bloom / depth_of_field / motion_blur. */
 enum { GPU_FX_BLOOM = 0, GPU_FX_DOF = 1, GPU_FX_MOTION_BLUR = 2, GPU_FX_COUNT = 3 };
 enum { GPU_FXMODE_ORIGINAL = 0, GPU_FXMODE_ENHANCED = 1, GPU_FXMODE_OFF = 2 };
+enum { GPU_FLASH_ORIGINAL = 0, GPU_FLASH_REDUCED = 1, GPU_FLASH_MINIMAL = 2 };
 
 typedef struct gpu_enhance {
     /* GPU_TEXF_*: overrides the GS MMAG/MMIN choice (nearest <-> bilinear,
@@ -363,11 +413,20 @@ typedef struct gpu_enhance {
      * they are sampled bilinearly (after the override).  Exact-triangle
      * devices only (the footprint comes from the triangle's own gradients). */
     int aniso;
-    /* graphics.bloom / depth_of_field / motion_blur (GPU_FXMODE_*).  Plumbing
-     * only: gpu_core.cpp's effect_class() hook (docs/GPU.md "Screen
-     * effects") would classify the game's effect passes, which needs
-     * game-side knowledge; until then every mode draws the original. */
+    /* graphics.bloom / depth_of_field / motion_blur (GPU_FXMODE_*): the native
+     * renderer classifies the game's passes by the task that built them
+     * (src/native/render/nr_sfx.c, docs/NATIVE-RENDER.md "Screen effects");
+     * gpu_core.cpp's old effect_class() hook still returns -1. */
     int fx[GPU_FX_COUNT];
+    /* accessibility.flashing (GPU_FLASH_*): flash passes (fades to a bright
+     * colour, full-screen effect flashes) limited in intensity and in how fast
+     * they rise (nr_sfx.c); 0 = Original */
+    int flash;
+    /* graphics.texture_dump / graphics.texture_replace (docs/TEXTURES.md): native renderer only;
+     * dump = every unique decoded texture written once as PNG (PCSX2 pack names), replace = a
+     * pack's textures drawn instead of the decoded ones.  0 = Original.  tex_dump 1 skips movie
+     * frames (as PCSX2 does by default), 2 dumps them too (graphics.texture_dump_movies) */
+    int tex_dump, tex_replace;
 } gpu_enhance;
 
 void gpu_enhance_default(gpu_enhance *e);   /* Original: all zero */
@@ -485,6 +544,8 @@ void gpu_mem_xfer(gpu_renderer *r, const gs_mem_rect *rc, const uint8_t *data, u
 void gpu_mem_copy(gpu_renderer *r, const gs_mem_rect *src, uint32_t dbp, uint32_t dbw, int dpsm, uint32_t dx,
                   uint32_t dy);
 int gpu_mem_read(gpu_renderer *r, const gs_mem_rect *rc, uint8_t *out, uint32_t bytes);
+/* probe lag in force (gpu_config.probe_lag / $RG_GPU_PROBE_LAG; native device only, 0 elsewhere) */
+int gpu_probe_lag_on(const gpu_renderer *r);
 int gpu_clut_load(gpu_renderer *r, gpu_gs *gs, const gs_mem_rect *rc, int csm, uint32_t csa, int cpsm, uint32_t n,
                   int dry);
 int gpu_mem_save(gpu_renderer *r, uint8_t *out);

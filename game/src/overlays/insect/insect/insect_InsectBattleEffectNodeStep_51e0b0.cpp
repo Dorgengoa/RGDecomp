@@ -12,7 +12,7 @@ public:
       
       
       
-    void s15(f32 t, int rgp_fwd2 = 0, int rgp_fwd3 = 0, int rgp_fwd4 = 0) { VCM(void, (void *, int, int, int, f32), 0x44, rgp_fwd2, rgp_fwd3, rgp_fwd4, t); }          /* slot 0x44 */
+    void s15(f32 t, int rgp_fwd2 = 0, int rgp_fwd3 = 0, int rgp_fwd4 = 0) { VCM(void, (void *, f32, int, int, int), 0x44, t, rgp_fwd2, rgp_fwd3, rgp_fwd4); }          /* slot 0x44 */
 };
 
 struct H {

@@ -62,7 +62,7 @@ typedef s64 M2C_UNK64;
 /*rgp*/                                 /* extern */
 /*rgp*/                       /* extern */
 extern s16 *D_004817A8;
-extern u8 D_004B3210[0x400];
+extern u8 D_004B3210[4];
 extern u8 D_004B3214[0x400];
 
 typedef struct { u8 pad[0x17920]; u8 m17920[0x50]; s32 m17970; s32 m17974; } O001d5870;

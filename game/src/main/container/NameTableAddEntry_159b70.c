@@ -73,7 +73,7 @@ extern char *strcat(char *, const char *);
 extern s32 strcmp(const char *, const char *);
 extern char *strcpy(char *, const char *);
 extern char *strncpy(char *, const char *, u32);
-extern u8 D_00491888[0x400];
+extern u8 D_00491888[1];
 extern char D_00491889[0x400];
 
 static __inline Grp *getGrp(Mgr *m, s32 i)

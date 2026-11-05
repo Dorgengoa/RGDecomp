@@ -28,8 +28,10 @@ extern s32 D_0047DF30;
 extern s32 D_00485170;
 extern s32 D_004817E4;
 extern u8 D_004B3210[0x400];
-extern s32 D_004B32C0[0x10];
+extern s32 D_004B32C0[1];
+#define D_004B32C0 (*(__typeof__(D_004B32C0) *)((u8 *)&D_004B3210 + 0xB0))   /* rg-interior */
 extern s32 D_004B32C4[0x10];
+#define D_004B32C4 (*(__typeof__(D_004B32C4) *)((u8 *)&D_004B3210 + 0xB4))   /* rg-interior */
 /*rgp*/
 /*rgp*/
 /*rgp*/

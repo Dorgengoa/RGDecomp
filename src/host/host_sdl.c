@@ -20,9 +20,11 @@
 #include <SDL3/SDL_main.h>
 
 #include "host_internal.h"
+#include "rg_tstretch.h"
 #include "rg_input.h"
 #include "rg_menu.h"
 #include "rg_settings.h"
+#include "rg_display.h"
 
 struct rg_host {
     rg_host_config cfg;
@@ -78,6 +80,11 @@ struct rg_host {
     rg_audio_reg reg;                         /* host_audio.c: latency target, drift */
     uint64_t starved_seen;
     uint32_t starved_frames_seen;             /* (adaptive cushion: frames starved since the last push) */
+    /* gameplay.battle_speed (rg_host_audio_set_speed): the pitch-keeping time compression */
+    rg_tstretch *ts;                          /* NULL until the option is first on */
+    int ts_on;
+    double ts_speed;
+    int16_t *ts_out;
     int16_t tail[2];                          /* last frame pushed (de-click origin) */
     SDL_AtomicInt tail_packed, starve_faded;  /* for the device thread: tail, fade done */
     int declick;                              /* $RG_AUDIO_DECLICK=0 turns it off (A/B) */
@@ -114,6 +121,11 @@ struct rg_host {
     uint64_t settings_gen;
     int applied_w, applied_h, applied_mode;
     int applied_monitor;     /* display.monitor last applied (-1: never) */
+    char fs_mode[32];        /* display.fullscreen_mode ("" = closest to the window size) */
+    double disp_hz;          /* refresh rate of the window's display / exclusive mode (0: unknown) */
+    /* rg_menu choice lists (host_choices): display names, exclusive modes */
+    char mon_names[16][160];
+    char modes[RG_MENU_MAX_CHOICES][32];
     rg_menu menu;
     rg_ui_nav nav;
     /* P6 menu: rebinding capture, text entry, prompts */
@@ -134,17 +146,47 @@ struct rg_host {
     uint64_t fps_logic, fps_logic0;      /* rg_host_fps_logic: game-logic ticks (cumulative) */
     uint32_t fps_starves0;
     char fps_text[128];
+    /* present thread (rg_host_present_thread, docs/NATIVE-RENDER.md "Interpolation throughput
+     * (2026-10-30)"): ren_lock serialises every use of the renderer between it and the window's
+     * thread; one posted frame at a time (pt_has) */
+    SDL_Mutex *ren_lock;
+    SDL_Thread *pt;
+    SDL_ThreadID pt_id;
+    SDL_Mutex *pt_m;
+    SDL_Condition *pt_c;
+    int pt_stop, pt_has, pt_busy;
+    void *pt_handle;
+    uint32_t pt_w, pt_h;
+    uint64_t pt_tag;
+    void (*pt_cb)(void *arg, uint64_t tag, int rc);
+    void *pt_arg;
+    uint32_t pump_skips;
+    uint64_t pt_posted, pt_done, pt_failed, pump_skipped, pump_unlocked;
 };
 
 static void apply_rumble(rg_host *h, int port);
 static uint32_t latency_frames(int ms);
+/* the renderer's lock (recursive, SDL mutexes): the present thread and the window's thread */
+static void ren_lock(rg_host *h) { if (h->ren_lock) SDL_LockMutex(h->ren_lock); }
+static void ren_unlock(rg_host *h) { if (h->ren_lock) SDL_UnlockMutex(h->ren_lock); }
+/* SDL_RenderPresent; on the present thread without the renderer's lock: the wait for the display
+ * never holds up the window's thread (and a present that needs the window's messages cannot
+ * deadlock with it) */
+static void render_present(rg_host *h)
+{
+    int pt = h->pt && SDL_GetCurrentThreadID() == h->pt_id;
+    if (pt) ren_unlock(h);
+    SDL_RenderPresent(h->ren);
+    if (pt) ren_lock(h);
+}
 static void SDLCALL audio_get_cb(void *user, SDL_AudioStream *s, int additional, int total);
 static void tap_header(rg_host *h);
 static int audio_bind(rg_host *h, const char *want);
 static void dev_names_free(rg_host *h);
 static void audio_device_event(rg_host *h, const SDL_Event *e);
 static void apply_gain(rg_host *h);
-static int audio_choices(const char *id, const char **out, int cap, void *user);
+static int host_choices(const char *id, const char **out, int cap, void *user);
+static void update_display_hz(rg_host *h);
 static uint64_t now_ms(void) { return SDL_GetTicks(); }
 
 static char g_err[512];
@@ -253,6 +295,7 @@ rg_host *rg_host_create(const rg_host_config *cfg)
     h->applied_mode = -1;
     h->applied_monitor = -1;
     if (h->headless) return h;   /* no window, no audio, no live input */
+    h->ren_lock = SDL_CreateMutex();
 
     SDL_SetMainReady();
     SDL_InitFlags fl = SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | (h->cfg.audio ? SDL_INIT_AUDIO : 0);
@@ -261,7 +304,13 @@ rg_host *rg_host_create(const rg_host_config *cfg)
     h->win = SDL_CreateWindow(h->cfg.title, h->cfg.win_w, h->cfg.win_h,
                               SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
     if (!h->win) { set_err("SDL_CreateWindow"); rg_host_destroy(h); return NULL; }
+#if defined(_WIN64)
+    { extern void rg_x64_va_fence(int); rg_x64_va_fence(1); h->ren = SDL_CreateRenderer(h->win, NULL); rg_x64_va_fence(0); }   /* the presenter's device in the fence too (docs/X64-PLAN.md 0.10) */
+#else
+#line 301
     h->ren = SDL_CreateRenderer(h->win, NULL);
+#endif
+#line 302
     if (!h->ren) { set_err("SDL_CreateRenderer"); rg_host_destroy(h); return NULL; }
     SDL_SetRenderVSync(h->ren, h->vsync);
     if (h->cfg.fullscreen) rg_host_set_fullscreen(h, 1);
@@ -298,12 +347,15 @@ rg_host *rg_host_create(const rg_host_config *cfg)
 void rg_host_destroy(rg_host *h)
 {
     if (!h) return;
+    rg_host_present_thread(h, 0);
     for (int i = 0; i < h->roster.n; i++) SDL_CloseGamepad(h->pads[i]);
     if (h->audio) SDL_DestroyAudioStream(h->audio);
     if (h->adev) SDL_CloseAudioDevice(h->adev);
     dev_names_free(h);
     if (h->tap) { tap_header(h); fclose(h->tap); }
     if (h->tap_ev) fclose(h->tap_ev);
+    SDL_free(h->ts);
+    SDL_free(h->ts_out);
     if (h->vk) rg_host_drop_vulkan(h);
     if (h->pre) SDL_DestroyTexture(h->pre);
     if (h->tex) SDL_DestroyTexture(h->tex);
@@ -316,6 +368,7 @@ void rg_host_destroy(rg_host *h)
 #endif
     if (h->ren) SDL_DestroyRenderer(h->ren);
     if (h->win) SDL_DestroyWindow(h->win);
+    if (h->ren_lock) SDL_DestroyMutex(h->ren_lock);
     if (h->sdl_inited) SDL_Quit();
     free(h->frame);
     free(h);
@@ -336,13 +389,14 @@ void rg_host_set_fullscreen(rg_host *h, int on)
 
 int rg_host_fullscreen(const rg_host *h) { return h->fullscreen; }
 
-/* display.monitor: index into SDL's display list (clamped) */
+/* display.monitor: index into SDL's display list; an index with no display connected
+ * uses the first (rg_display_monitor_index), reported in the log */
 static SDL_DisplayID monitor_id(int mon)
 {
     int n = 0;
     SDL_DisplayID *ids = SDL_GetDisplays(&n);
     SDL_DisplayID id = 0;
-    if (ids && n > 0) id = ids[mon < 0 ? 0 : (mon >= n ? n - 1 : mon)];
+    if (ids && n > 0) id = ids[rg_display_monitor_index(mon, n)];
     SDL_free(ids);
     return id;
 }
@@ -353,6 +407,13 @@ void rg_host_set_monitor(rg_host *h, int mon)
     if (!h->win) return;
     SDL_DisplayID id = monitor_id(mon);
     if (!id) return;
+    {
+        int n = 0;
+        SDL_free(SDL_GetDisplays(&n));
+        if (mon != rg_display_monitor_index(mon, n))
+            SDL_Log("rg-host: display.monitor %d: only %d display(s) connected, using %d (%s)", mon, n,
+                    rg_display_monitor_index(mon, n), SDL_GetDisplayName(id) ? SDL_GetDisplayName(id) : "?");
+    }
     if (!h->fullscreen)
         SDL_SetWindowPosition(h->win, (int)SDL_WINDOWPOS_CENTERED_DISPLAY(id), (int)SDL_WINDOWPOS_CENTERED_DISPLAY(id));
     else {
@@ -363,30 +424,57 @@ void rg_host_set_monitor(rg_host *h, int mon)
     }
 }
 
-/* borderless (the desktop mode) or exclusive (the display mode closest to
- * the configured window size, display.width/height) */
+/* borderless (the desktop mode) or exclusive: display.fullscreen_mode (WxH[@Hz], the
+ * closest mode the display has), or when empty the display mode closest to the
+ * configured window size (display.width/height) at the desktop refresh rate */
 void rg_host_set_fullscreen_mode(rg_host *h, int exclusive)
 {
     h->exclusive = exclusive ? 1 : 0;
     if (!h->win) return;
     if (!exclusive) {
         SDL_SetWindowFullscreenMode(h->win, NULL);
+        update_display_hz(h);
         return;
     }
     SDL_DisplayID id = SDL_GetDisplayForWindow(h->win);
     SDL_DisplayMode m;
-    if (id && SDL_GetClosestFullscreenDisplayMode(id, h->cfg.win_w, h->cfg.win_h, 0.0f, true, &m))
+    int w = h->cfg.win_w, hh = h->cfg.win_h;
+    double hz = 0.0;
+    if (rg_display_mode_parse(h->fs_mode, &w, &hh, &hz) <= 0) { w = h->cfg.win_w; hh = h->cfg.win_h; hz = 0.0; }
+    if (id && SDL_GetClosestFullscreenDisplayMode(id, w, hh, (float)hz, true, &m))
         SDL_SetWindowFullscreenMode(h->win, &m);
     else
         set_err("exclusive fullscreen: no display mode (staying borderless)");
+    update_display_hz(h);
 }
+
+/* the refresh rate presents meet (display.frame_rate "display"): the exclusive mode's,
+ * else the current mode of the window's display; cached on the window's thread */
+static void update_display_hz(rg_host *h)
+{
+    double hz = 0.0;
+    if (h->win) {
+        const SDL_DisplayMode *fm = h->fullscreen && h->exclusive ? SDL_GetWindowFullscreenMode(h->win) : NULL;
+        if (fm && fm->refresh_rate > 0.0f) hz = fm->refresh_rate;
+        else {
+            SDL_DisplayID id = SDL_GetDisplayForWindow(h->win);
+            const SDL_DisplayMode *cm = id ? SDL_GetCurrentDisplayMode(id) : NULL;
+            if (cm) hz = cm->refresh_rate;
+        }
+    }
+    h->disp_hz = hz;
+}
+
+double rg_host_display_hz(const rg_host *h) { return h ? h->disp_hz : 0.0; }
 void rg_host_set_scale(rg_host *h, rg_scale_mode m) { h->scale = m; }
 rg_scale_mode rg_host_scale(const rg_host *h) { return h->scale; }
 
 void rg_host_set_vsync(rg_host *h, int on)
 {
     h->vsync = on ? 1 : 0;
+    ren_lock(h);
     if (h->ren) SDL_SetRenderVSync(h->ren, h->vsync);
+    ren_unlock(h);
 }
 
 void rg_host_set_window_size(rg_host *h, int w, int hh)
@@ -400,7 +488,9 @@ void rg_host_set_window_size(rg_host *h, int w, int hh)
 void rg_host_window_size(const rg_host *h, int *w, int *hh)
 {
     *w = *hh = 0;
+    ren_lock((rg_host *)h);
     if (h->ren) SDL_GetCurrentRenderOutputSize(h->ren, w, hh);
+    ren_unlock((rg_host *)h);
 }
 
 const char *rg_host_screenshot_dir(const rg_host *h) { return h->shot_dir; }
@@ -438,6 +528,14 @@ static void apply_settings(rg_host *h)
                 rg_host_set_monitor(h, mon);
                 h->applied_mode = -1;   /* re-enter fullscreen on the new display */
             }
+        }
+    }
+    if (rg_settings_find(s, "display.fullscreen_mode") >= 0) {
+        const char *fm = rg_settings_get_string(s, "display.fullscreen_mode");
+        if (SDL_strcmp(fm ? fm : "", h->fs_mode) != 0) {
+            SDL_snprintf(h->fs_mode, sizeof h->fs_mode, "%s", fm ? fm : "");
+            /* in exclusive fullscreen now: switch the display mode at once */
+            if (h->exclusive && h->fullscreen && h->applied_mode == 2) rg_host_set_fullscreen_mode(h, 1);
         }
     }
     if (rg_settings_find(s, "display.window_mode") >= 0) {
@@ -479,6 +577,7 @@ static void apply_settings(rg_host *h)
         SDL_snprintf(h->shot_dir, sizeof h->shot_dir, "%s", d && *d ? d : ".");
     }
     for (int p = 0; p < 2; p++) apply_rumble(h, p);
+    update_display_hz(h);
 }
 
 void rg_host_attach_settings(rg_host *h, struct rg_settings *s, const char *save_path)
@@ -486,7 +585,7 @@ void rg_host_attach_settings(rg_host *h, struct rg_settings *s, const char *save
     h->settings = s;
     if (!s) { h->menu.open = false; return; }
     rg_menu_init(&h->menu, s);
-    rg_menu_set_choices(&h->menu, audio_choices, h);   /* audio.device: the devices present */
+    rg_menu_set_choices(&h->menu, host_choices, h);   /* audio.device, display.monitor, display.fullscreen_mode */
     h->menu.save_path = save_path;
     rg_capture_cancel_hint(&h->cap, h->menu.capture_hint, sizeof h->menu.capture_hint);
     h->applied_w = h->cfg.win_w;
@@ -498,6 +597,7 @@ void rg_host_attach_settings(rg_host *h, struct rg_settings *s, const char *save
 rg_actions *rg_host_actions(rg_host *h) { return &h->acts; }
 void rg_host_apply_input_map(rg_host *h) { rg_actions_from_input_map(&h->acts, &h->map); }
 bool rg_host_overlay_open(const rg_host *h) { return h->menu.open; }
+struct rg_menu *rg_host_settings_menu(rg_host *h) { return &h->menu; }
 
 void rg_host_set_overlay(rg_host *h, bool open)
 {
@@ -909,6 +1009,7 @@ void rg_host_set_camera_view(rg_host *h, int view)
 }
 
 /* ---------------------------------------------------------------- events */
+static int pump_events(rg_host *h);
 int rg_host_pump(rg_host *h)
 {
     if (h->headless) {
@@ -916,6 +1017,24 @@ int rg_host_pump(rg_host *h)
         if (h->settings && rg_settings_generation(h->settings) != h->settings_gen) apply_settings(h);
         return 1;
     }
+    /* with the present thread running, the pump (settings, overlay, F11, window events) holds the
+     * renderer's lock; the present thread holds it only while it draws (not while its present
+     * waits for the display: render_present), so this waits a fraction of a ms at most */
+    int locked = 0;
+    if (h->pt && h->ren_lock) {
+        if (!SDL_TryLockMutex(h->ren_lock)) {
+            h->pump_skipped++;   /* (counted: the pump waited for a draw) */
+            SDL_LockMutex(h->ren_lock);
+        }
+        locked = 1;
+    }
+    int run = pump_events(h);
+    if (locked) SDL_UnlockMutex(h->ren_lock);
+    return run;
+}
+
+static int pump_events(rg_host *h)
+{
     h->pumps++;
     if ((h->pumps % 1800u) == 0)
         for (int p = 0; p < 2; p++)
@@ -989,6 +1108,14 @@ int rg_host_pump(rg_host *h)
         case SDL_EVENT_AUDIO_DEVICE_REMOVED:
             audio_device_event(h, &e);   /* device list, fallback, hot switch */
             break;
+        case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
+        case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+        case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+        case SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED:
+        case SDL_EVENT_DISPLAY_ADDED:
+        case SDL_EVENT_DISPLAY_REMOVED:
+            update_display_hz(h);   /* display.frame_rate "display" */
+            break;
         case SDL_EVENT_WINDOW_FOCUS_GAINED:
         case SDL_EVENT_WINDOW_FOCUS_LOST:
             rg_host_set_focus(h, e.type == SDL_EVENT_WINDOW_FOCUS_GAINED);   /* audio.background */
@@ -1061,10 +1188,14 @@ int rg_host_present(rg_host *h, const uint32_t *rgba, uint32_t w, uint32_t hh)
     h->fw = w; h->fh = hh;
     if (h->headless || !h->ren) return 0;
 
-    if (ensure_tex(h->ren, &h->tex, &h->tex_w, &h->tex_h, (int)w, (int)hh,
-                   SDL_TEXTUREACCESS_STREAMING)) return -1;
-    SDL_UpdateTexture(h->tex, NULL, h->frame, (int)w * 4);
-    return present_tex(h, h->tex, NULL, w, hh, NULL, NULL);
+    ren_lock(h);
+    int rc = -1;
+    if (!ensure_tex(h->ren, &h->tex, &h->tex_w, &h->tex_h, (int)w, (int)hh, SDL_TEXTUREACCESS_STREAMING)) {
+        SDL_UpdateTexture(h->tex, NULL, h->frame, (int)w * 4);
+        rc = present_tex(h, h->tex, NULL, w, hh, NULL, NULL);
+    }
+    ren_unlock(h);
+    return rc;
 }
 
 /* display.fps_counter: corner text, refreshed every half second from this window's present
@@ -1173,10 +1304,10 @@ static int present_tex(rg_host *h, SDL_Texture *t, const SDL_FRect *src, uint32_
         if (cv) SDL_DestroySurface(cv);
         if (sf) SDL_DestroySurface(sf);
         h->window_shot[0] = 0;
-        if (shot_host) { SDL_RenderPresent(h->ren); return 0; }
+        if (shot_host) { render_present(h); return 0; }
     }
     draw_fps(h);   /* after the window shot: captures never show the counter */
-    SDL_RenderPresent(h->ren);
+    render_present(h);
     return 0;
 }
 
@@ -1281,7 +1412,7 @@ static int present_vk(rg_host *h, const rg_host_vk_frame *f, uint32_t w, uint32_
     return present_tex(h, h->vks[k].st, &src, w, hh, f->release, f->arg);
 }
 
-int rg_host_present_shared(rg_host *h, void *handle, uint32_t w, uint32_t hh)
+static int present_shared(rg_host *h, void *handle, uint32_t w, uint32_t hh)
 {
     if (h->vk) return present_vk(h, (const rg_host_vk_frame *)handle, w, hh);
 #ifdef _WIN32
@@ -1290,6 +1421,139 @@ int rg_host_present_shared(rg_host *h, void *handle, uint32_t w, uint32_t hh)
     (void)handle; (void)w; (void)hh;
     return -1;
 #endif
+}
+int rg_host_present_shared(rg_host *h, void *handle, uint32_t w, uint32_t hh)
+{
+    ren_lock(h);
+    int rc = present_shared(h, handle, w, hh);
+    ren_unlock(h);
+    return rc;
+}
+
+/* ---- the present thread: rg_host_present_shared off the window's thread */
+static int SDLCALL present_thread(void *arg)
+{
+    rg_host *h = (rg_host *)arg;
+    h->pt_id = SDL_GetCurrentThreadID();
+    SDL_LockMutex(h->pt_m);
+    for (;;) {
+        while (!h->pt_has && !h->pt_stop) SDL_WaitCondition(h->pt_c, h->pt_m);
+        if (!h->pt_has) break;   /* (stop, nothing posted) */
+        void *hd = h->pt_handle;
+        uint32_t w = h->pt_w, hh = h->pt_h;
+        uint64_t tag = h->pt_tag;
+        h->pt_has = 0;    /* taken: the next frame may be posted while this one is presented */
+        h->pt_busy = 1;
+        SDL_BroadcastCondition(h->pt_c);
+        SDL_UnlockMutex(h->pt_m);
+        ren_lock(h);
+        int rc = present_shared(h, hd, w, hh);
+        ren_unlock(h);
+        SDL_LockMutex(h->pt_m);
+        if (rc) h->pt_failed++;
+        h->pt_done++;
+        h->pt_busy = 0;   /* (before the callback: it may post the next frame at once) */
+        SDL_BroadcastCondition(h->pt_c);
+        SDL_UnlockMutex(h->pt_m);
+        if (h->pt_cb) h->pt_cb(h->pt_arg, tag, rc);
+        SDL_LockMutex(h->pt_m);
+    }
+    SDL_UnlockMutex(h->pt_m);
+    return 0;
+}
+
+int rg_host_present_thread(rg_host *h, int on)
+{
+    if (!h) return -1;
+    if (on && !h->pt) {
+        if (h->headless || !h->ren || !h->ren_lock) return -1;
+        h->pt_m = SDL_CreateMutex();
+        h->pt_c = SDL_CreateCondition();
+        h->pt_stop = 0;
+        h->pt_has = 0;
+        if (h->pt_m && h->pt_c) h->pt = SDL_CreateThread(present_thread, "rg-present", h);
+        if (!h->pt) {
+            if (h->pt_c) SDL_DestroyCondition(h->pt_c);
+            if (h->pt_m) SDL_DestroyMutex(h->pt_m);
+            h->pt_c = NULL;
+            h->pt_m = NULL;
+            set_err("present thread");
+            return -1;
+        }
+    } else if (!on && h->pt) {
+        SDL_LockMutex(h->pt_m);
+        h->pt_stop = 1;
+        SDL_BroadcastCondition(h->pt_c);
+        SDL_UnlockMutex(h->pt_m);
+        SDL_WaitThread(h->pt, NULL);
+        h->pt = NULL;
+        SDL_DestroyCondition(h->pt_c);
+        SDL_DestroyMutex(h->pt_m);
+        h->pt_c = NULL;
+        h->pt_m = NULL;
+    }
+    return 0;
+}
+
+int rg_host_present_thread_on(const rg_host *h) { return h && h->pt != NULL; }
+
+void rg_host_present_callback(rg_host *h, void (*cb)(void *arg, uint64_t tag, int rc), void *arg)
+{
+    h->pt_cb = cb;
+    h->pt_arg = arg;
+}
+
+int rg_host_present_post(rg_host *h, void *handle, uint32_t w, uint32_t hh, uint64_t tag)
+{
+    if (!h || !h->pt) return -1;
+    SDL_LockMutex(h->pt_m);
+    int busy = h->pt_has;
+    if (!busy) {
+        h->pt_handle = handle;
+        h->pt_w = w;
+        h->pt_h = hh;
+        h->pt_tag = tag;
+        h->pt_has = 1;
+        h->pt_posted++;
+        SDL_BroadcastCondition(h->pt_c);
+    }
+    SDL_UnlockMutex(h->pt_m);
+    return busy ? 1 : 0;
+}
+
+int rg_host_present_pending(rg_host *h)
+{
+    if (!h || !h->pt) return 0;
+    SDL_LockMutex(h->pt_m);
+    int p = h->pt_has;
+    SDL_UnlockMutex(h->pt_m);
+    return p;
+}
+
+int rg_host_present_busy(rg_host *h)
+{
+    if (!h || !h->pt) return 0;
+    SDL_LockMutex(h->pt_m);
+    int p = h->pt_has || h->pt_busy;
+    SDL_UnlockMutex(h->pt_m);
+    return p;
+}
+
+void rg_host_present_wait(rg_host *h)
+{
+    if (!h || !h->pt) return;
+    SDL_LockMutex(h->pt_m);
+    while (h->pt_has || h->pt_busy) SDL_WaitCondition(h->pt_c, h->pt_m);
+    SDL_UnlockMutex(h->pt_m);
+}
+
+void rg_host_present_thread_stats(const rg_host *h, uint64_t out[5])
+{
+    out[0] = h->pt_posted;
+    out[1] = h->pt_done;
+    out[2] = h->pt_failed;
+    out[3] = h->pump_skipped;
+    out[4] = h->pump_unlocked;
 }
 
 static void drop_renderer(rg_host *h)
@@ -1311,6 +1575,7 @@ static void drop_renderer(rg_host *h)
     h->ren = NULL;
 }
 
+static int use_vulkan(rg_host *h, const rg_host_vk_device *d);
 int rg_host_use_vulkan(rg_host *h, const rg_host_vk_device *d)
 {
     if (!h || h->headless || !h->win || !d || !d->instance || !d->physical_device || !d->device) return -1;
@@ -1322,6 +1587,13 @@ int rg_host_use_vulkan(rg_host *h, const rg_host_vk_device *d)
         SDL_Vulkan_UnloadLibrary();
         return -1;
     }
+    ren_lock(h);
+    int rc = use_vulkan(h, d);
+    ren_unlock(h);
+    return rc;
+}
+static int use_vulkan(rg_host *h, const rg_host_vk_device *d)
+{
     drop_renderer(h);
     SDL_PropertiesID p = SDL_CreateProperties();
     SDL_SetStringProperty(p, SDL_PROP_RENDERER_CREATE_NAME_STRING, "vulkan");
@@ -1335,7 +1607,13 @@ int rg_host_use_vulkan(rg_host *h, const rg_host_vk_device *d)
     SDL_DestroyProperties(p);
     if (!h->ren) {
         set_err("SDL_CreateRendererWithProperties (vulkan)");
+#if defined(_WIN64)
+        { extern void rg_x64_va_fence(int); rg_x64_va_fence(1); h->ren = SDL_CreateRenderer(h->win, NULL); rg_x64_va_fence(0); }   /* back to the default renderer */
+#else
+#line 1596
         h->ren = SDL_CreateRenderer(h->win, NULL);   /* back to the default renderer */
+#endif
+#line 1597
         if (h->ren) SDL_SetRenderVSync(h->ren, h->vsync);
         SDL_Vulkan_UnloadLibrary();
         return -1;
@@ -1354,8 +1632,10 @@ int rg_host_use_vulkan(rg_host *h, const rg_host_vk_device *d)
 void rg_host_drop_vulkan(rg_host *h)
 {
     if (!h || !h->vk) return;
+    ren_lock(h);
     drop_renderer(h);
     h->vk = 0;
+    ren_unlock(h);
     SDL_Vulkan_UnloadLibrary();
 }
 
@@ -1543,10 +1823,47 @@ static void SDLCALL audio_get_cb(void *user, SDL_AudioStream *s, int additional,
 
 static int push_locked(rg_host *h, const int16_t *lr, uint32_t frames, int starved);
 
+#define TS_OUT_CAP 16384u
+
+void rg_host_audio_set_speed(rg_host *h, double speed)
+{
+    if (speed <= 0.0) {
+        h->ts_on = 0;             /* (the next "on" starts a fresh stage) */
+        return;
+    }
+    if (!h->ts) {
+        h->ts = (rg_tstretch *)SDL_malloc(sizeof *h->ts);
+        h->ts_out = (int16_t *)SDL_malloc(TS_OUT_CAP * 2 * sizeof(int16_t));
+        if (!h->ts || !h->ts_out) { SDL_free(h->ts); SDL_free(h->ts_out); h->ts = NULL; h->ts_out = NULL; return; }
+    }
+    if (!h->ts_on) rg_tstretch_init(h->ts);
+    h->ts_on = 1;
+    h->ts_speed = speed;
+}
+
+static int push_raw(rg_host *h, const int16_t *lr, uint32_t frames);
+
 int rg_host_audio_push(rg_host *h, const int16_t *lr, uint32_t frames)
 {
     h->audio_total += frames;
     if (!h->audio || !frames) return 0;
+    if (h->ts_on && h->ts) {
+        /* gameplay.battle_speed: game time played ts_speed times as fast, pitch kept */
+        int rc = 0;
+        while (frames) {
+            uint32_t k = frames < 4096u ? frames : 4096u;
+            uint32_t n = rg_tstretch_process(h->ts, lr, k, h->ts_speed, h->ts_out, TS_OUT_CAP);
+            if (n && push_raw(h, h->ts_out, n) != 0) rc = -1;
+            lr += 2 * k;
+            frames -= k;
+        }
+        return rc;
+    }
+    return push_raw(h, lr, frames);
+}
+
+static int push_raw(rg_host *h, const int16_t *lr, uint32_t frames)
+{
     uint64_t st = (uint64_t)(uint32_t)SDL_GetAtomicInt(&h->starved);
     int starved = st != h->starved_seen;
     h->starved_seen = st;
@@ -1808,12 +2125,59 @@ const char *rg_host_audio_device(const rg_host *h, int *fallback)
     return h->dev_open;
 }
 
-/* rg_menu choices: LEFT / RIGHT on audio.device steps through the devices present */
-static int audio_choices(const char *id, const char **out, int cap, void *user)
+/* rg_menu choices: LEFT / RIGHT on audio.device steps through the devices present,
+ * on display.monitor through the connected displays (shown by name), on
+ * display.fullscreen_mode through the modes of the chosen display ("" first) */
+static int host_choices(const char *id, const char **out, int cap, void *user)
 {
     rg_host *h = (rg_host *)user;
-    if (SDL_strcmp(id, "audio.device") != 0 || !h->audio) return 0;
-    return rg_host_audio_devices(h, out, cap);
+    if (!SDL_strcmp(id, "audio.device")) return h->audio ? rg_host_audio_devices(h, out, cap) : 0;
+    int monitor = !SDL_strcmp(id, "display.monitor"), modes = !SDL_strcmp(id, "display.fullscreen_mode");
+    if (!monitor && !modes) return 0;
+    if (h->headless || !SDL_WasInit(SDL_INIT_VIDEO)) return 0;
+    int n = 0, k = 0;
+    SDL_DisplayID *ids = SDL_GetDisplays(&n);
+    if (!ids || n <= 0) { SDL_free(ids); return 0; }
+    if (monitor) {
+        SDL_DisplayID prim = SDL_GetPrimaryDisplay();
+        for (int i = 0; i < n && k < cap && k < 16; i++) {
+            const SDL_DisplayMode *dm = SDL_GetDesktopDisplayMode(ids[i]);
+            const char *nm = SDL_GetDisplayName(ids[i]);
+            if (dm)
+                SDL_snprintf(h->mon_names[k], sizeof h->mon_names[k], "%d: %s (%dx%d, %.0f Hz)%s", i + 1,
+                             nm ? nm : "display", dm->w, dm->h, (double)dm->refresh_rate,
+                             ids[i] == prim ? " [primary]" : "");
+            else
+                SDL_snprintf(h->mon_names[k], sizeof h->mon_names[k], "%d: %s", i + 1, nm ? nm : "display");
+            out[k] = h->mon_names[k];
+            k++;
+        }
+    } else {
+        int mon = h->settings ? rg_settings_get_int(h->settings, "display.monitor") : 0;
+        SDL_DisplayID id = ids[rg_display_monitor_index(mon, n)];
+        int nm = 0;
+        SDL_DisplayMode **ml = SDL_GetFullscreenDisplayModes(id, &nm);
+        if (k < cap) { h->modes[k][0] = 0; out[k] = h->modes[k]; k++; }
+        for (int i = 0; ml && i < nm && k < cap && k < RG_MENU_MAX_CHOICES; i++) {
+            char t[32];
+            rg_display_mode_format(ml[i]->w, ml[i]->h, (double)ml[i]->refresh_rate, t, sizeof t);
+            int dup = 0;
+            for (int j = 1; j < k && !dup; j++) dup = !SDL_strcmp(h->modes[j], t);
+            if (dup) continue;   /* (the same size / rate at another pixel density) */
+            SDL_snprintf(h->modes[k], sizeof h->modes[k], "%s", t);
+            out[k] = h->modes[k];
+            k++;
+        }
+        SDL_free(ml);
+        const SDL_DisplayMode *dm = SDL_GetDesktopDisplayMode(id);
+        if (k == 1 && dm && k < cap) {   /* (a driver that lists no modes: the desktop's) */
+            rg_display_mode_format(dm->w, dm->h, (double)dm->refresh_rate, h->modes[k], sizeof h->modes[k]);
+            out[k] = h->modes[k];
+            k++;
+        }
+    }
+    SDL_free(ids);
+    return k;
 }
 
 float rg_host_volume(const rg_host *h) { return h->volume; }

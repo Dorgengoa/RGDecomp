@@ -44,10 +44,10 @@ extern s16 D_00483620;
 extern s32 D_00483630;
 extern s32 D_00483634;
 extern s8 D_00483638;
-extern u8 D_004E9610[0x20];
+extern u8 D_004E9610[8];
 extern s32 D_004E9618[4];
 extern u8 D_004E9630[0x18];
-extern s32 D_004E9648[4];
+extern s32 D_004E9648[2];
 extern Flags D_004E9650;
 extern u8 D_004E9651[16];
 

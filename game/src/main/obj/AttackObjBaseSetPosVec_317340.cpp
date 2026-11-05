@@ -1,3 +1,5 @@
+/* rgp:protos */
+#line 1
 #include "types.h"
 
 struct Vec317340 { f32 x; f32 y; f32 z; };
@@ -24,7 +26,7 @@ public:
     
     
     
-    void v19(struct Vec317340 *v, f32 x, f32 y, f32 z) { VCM(void, (void *, struct Vec317340 *, f32, f32, f32), 0x54, v, x, y, z); }
+    void v19(struct Vec317340 *v, f32 x, f32 y, f32 z) { VCM(void, (void *, f32, f32, f32, struct Vec317340 *), 0x54, x, y, z, v); }
 };
 
 extern "C" void AttackObjBaseSetPosVec_317340(V317340 *o, struct Vec317340 *v)

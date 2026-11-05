@@ -40,9 +40,9 @@ typedef union {
 /*rgp*/
 /*rgp*/
 extern f32 D_0047D240;
-extern s32 D_004DB920[4];
-extern s32 D_004DB92C[4];
-extern s32 D_004DB930[4];
+extern s32 D_004DB920[1];
+extern s32 D_004DB92C[1];
+extern s32 D_004DB930[1];
 
 s32 AiCmdMoveToTarget_2c8c90(u8 *arg0, s32 arg1) {
     V4 spC0 __attribute__((aligned(16)));

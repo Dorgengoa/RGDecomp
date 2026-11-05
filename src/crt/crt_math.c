@@ -35,7 +35,7 @@ float Asinf_129190(float x) { return ee_mode() ? rg_ee_asinf(x) : asinf(x); }
 float Atan2f_1291a8(float y, float x) { return ee_mode() ? rg_ee_atan2f(y, x) : atan2f(y, x); }
 float Powf_1291c0(float x, float y) { return ee_mode() ? rg_ee_powf(x, y) : powf(x, y); }
 float Floorf_128e30(float x) { return floorf(x); }
-#if defined(_WIN64)
+#if defined(__x86_64__)
 /* x64 (docs/X64-PLAN.md section 0.7): the x64 UCRT's sin / cos / tan are WRONG under the
  * game's MXCSR (round toward zero): errors up to 2^32 ulp (tools/x64/libmcheck.c); the
  * i686 UCRT's stay within 3 ulp of their round-to-nearest results.  So on x64 the host

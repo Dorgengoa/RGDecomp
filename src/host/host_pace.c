@@ -28,9 +28,18 @@ void rg_pacer_init(rg_pacer *p, int throttle)
     p->max_lag_ns = 250000000u;
     p->now_ns = sdl_now;
     p->sleep_ns = sdl_sleep;
+    p->speed = 1.0;
 }
 
 void rg_pacer_reset(rg_pacer *p) { p->anchored = 0; }
+
+void rg_pacer_set_speed(rg_pacer *p, double speed)
+{
+    if (speed < 1.0) speed = 1.0;
+    if (speed == p->speed) return;
+    p->speed = speed;
+    p->anchored = 0;              /* the next idle jump anchors the new rate */
+}
 
 void rg_pacer_hook(uint64_t from_cycles, uint64_t to_cycles, void *user)
 {
@@ -43,7 +52,9 @@ void rg_pacer_hook(uint64_t from_cycles, uint64_t to_cycles, void *user)
         p->anchor_cycles = from_cycles;
         p->anchor_ns = now;
     }
-    uint64_t target = p->anchor_ns + rg_cycles_to_ns(to_cycles - p->anchor_cycles);
+    uint64_t vns = rg_cycles_to_ns(to_cycles - p->anchor_cycles);
+    if (p->speed > 1.0) vns = (uint64_t)((double)vns / p->speed); /* gameplay.battle_speed */
+    uint64_t target = p->anchor_ns + vns;
     if (now >= target) {
         if (now - target > p->max_lag_ns) {
             /* too far behind (debugger, load hitch): drop the debt instead of

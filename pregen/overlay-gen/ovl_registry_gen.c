@@ -13,6 +13,48 @@
 #define RG_R(sym, raw) ((uint32_t)(sym))
 #define RG_F(f) ((rg_ovl_fn)(f))
 #define RG_P(p) ((unsigned char *)(p))
+void MenuGridCursorBobCb_37c070(void);
+void MenuGridCursorBobCb_37e740(void);
+void MenuGridCursorBobCb_37f6d0(void);
+void TransMenuItemCellFocusCb_37f5c0(void);
+void TransMenuItemCellPickAnimState_37e0e0(void);
+void TransMenuItemCmdDispatchState_37e280(void);
+void TransMenuItemCmdPopupCloseState_37c100(void);
+void TransMenuItemCmdPopupOpenState_37c300(void);
+void TransMenuItemCmdPopupSelectState_37c170(void);
+void TransMenuItemCmdRowHighlightCb_37e710(void);
+void TransMenuItemCmdWindowLayoutMaybe_37bfc0(void);
+void TransMenuItemCommandCloseGoto_37d120(void);
+void TransMenuItemCommandCloseState_37e7e0(void);
+void TransMenuItemCommandOpenState_37ee90(void);
+void TransMenuItemCommandSelectState_37e880(void);
+void TransMenuItemDiscardCheckState_37d530(void);
+void TransMenuItemDiscardCloseState_37d260(void);
+void TransMenuItemDiscardConfirmState_37d2b0(void);
+void TransMenuItemGridCloseState_37f870(void);
+void TransMenuItemGridOpenState_37ff00(void);
+void TransMenuItemGridSelectState_37fb00(void);
+void TransMenuItemInfoCloseState_37c970(void);
+void TransMenuItemInfoPanelOpenState_37cb10(void);
+void TransMenuItemInfoWaitState_37cab0(void);
+void TransMenuItemMoveCheckState_37d1a0(void);
+void TransMenuItemMoveEndState_37df80(void);
+void TransMenuItemMoveStartState_37d150(void);
+void TransMenuItemMoveState_37d850(void);
+void TransMenuItemMoveTargetState_37dfe0(void);
+void TransMenuItemMsgPopupState_37be30(void);
+void TransMenuItemPartyListCloseState_37c4a0(void);
+void TransMenuItemPartyListShowState_37c510(void);
+void TransMenuItemPartyWaitState_37c900(void);
+void TransMenuItemQuantityCloseState_37cdd0(void);
+void TransMenuItemQuantityOpenState_37d070(void);
+void TransMenuItemQuantitySelectState_37ce70(void);
+void TransMenuItemQuantityValueCbMaybe_37cd60(void);
+void TransMenuItemTabCycleCb_37f260(void);
+void TransMenuItemTransferCheckState_37d7b0(void);
+void TransMenuItemTransferDoneState_37d6c0(void);
+void TransMenuItemTransferState_37d700(void);
+void TransMenuItemUvScrollStateRelated_37cda0(void);
 extern unsigned char factory_D_0050CFA8[];
 extern unsigned char factory_D_0050CFB8[];
 extern unsigned char factory_D_0050CFC8[];
@@ -3613,11 +3655,11 @@ static const uint32_t rg_ovl_normal_data[2240] = {
     RG_W(0x00000016), RG_R(&normal_TransWarpListCursorBobCb_51bbe0, 0x0051BBE0), RG_W(0x00000017), RG_R(&normal_TransHunterBountyListCursorMoveCb_51f210, 0x0051F210),
     RG_W(0x00000018), RG_R(&normal_TransHunterBountyListCursorBobCb_51f2b0, 0x0051F2B0), RG_W(0x00000019), RG_R(&normal_TransHunterRankListCursorMoveCb_51dad0, 0x0051DAD0),
     RG_W(0x0000001A), RG_R(&normal_TransHunterRankListCursorBobCb_51db80, 0x0051DB80), RG_W(0x0000001B), RG_R(&func_0051DAC0, 0x0051DAC0),
-    RG_W(0x0000001C), RG_W(0x0037F5C0), RG_W(0x0000001D), RG_W(0x0037F6D0),
-    RG_W(0x0000001E), RG_W(0x0037F260), RG_W(0x0000001F), RG_W(0x0037E710),
-    RG_W(0x00000020), RG_W(0x0037E740), RG_W(0x00000021), RG_W(0x0037CD60),
-    RG_W(0x00000022), RG_W(0x0037CDA0), RG_W(0x00000023), RG_W(0x0037BFC0),
-    RG_W(0x00000024), RG_W(0x0037C070), RG_W(0x00000000), RG_W(0x00000000),
+    RG_W(0x0000001C), RG_R(&TransMenuItemCellFocusCb_37f5c0, 0x0037F5C0), RG_W(0x0000001D), RG_R(&MenuGridCursorBobCb_37f6d0, 0x0037F6D0),
+    RG_W(0x0000001E), RG_R(&TransMenuItemTabCycleCb_37f260, 0x0037F260), RG_W(0x0000001F), RG_R(&TransMenuItemCmdRowHighlightCb_37e710, 0x0037E710),
+    RG_W(0x00000020), RG_R(&MenuGridCursorBobCb_37e740, 0x0037E740), RG_W(0x00000021), RG_R(&TransMenuItemQuantityValueCbMaybe_37cd60, 0x0037CD60),
+    RG_W(0x00000022), RG_R(&TransMenuItemUvScrollStateRelated_37cda0, 0x0037CDA0), RG_W(0x00000023), RG_R(&TransMenuItemCmdWindowLayoutMaybe_37bfc0, 0x0037BFC0),
+    RG_W(0x00000024), RG_R(&MenuGridCursorBobCb_37c070, 0x0037C070), RG_W(0x00000000), RG_W(0x00000000),
     RG_W(0x00000001), RG_R(&normal_TransMenuOpenState_515f10, 0x00515F10), RG_W(0x00000002), RG_R(&normal_TransMenuQuickOpenState_515da0, 0x00515DA0),
     RG_W(0x00000003), RG_R(&normal_TransMenuTopState_514e10, 0x00514E10), RG_W(0x00000004), RG_R(&normal_TransMenuCloseState_5159e0, 0x005159E0),
     RG_W(0x00000005), RG_R(&normal_TransSaveOpenState_51a3c0, 0x0051A3C0), RG_W(0x00000006), RG_R(&normal_TransSaveMainState_51a360, 0x0051A360),
@@ -3633,23 +3675,23 @@ static const uint32_t rg_ovl_normal_data[2240] = {
     RG_W(0x00000019), RG_R(&normal_TransHunterRankOpenState_51e290, 0x0051E290), RG_W(0x0000001A), RG_R(&normal_TransHunterRankListState_51dd40, 0x0051DD40),
     RG_W(0x0000001B), RG_R(&normal_TransHunterRankCloseState_51dcd0, 0x0051DCD0), RG_W(0x0000001C), RG_R(&normal_TransHunterRewardOpenState_51d570, 0x0051D570),
     RG_W(0x0000001D), RG_R(&normal_TransHunterRewardGiveState_51d430, 0x0051D430), RG_W(0x0000001E), RG_R(&normal_TransHunterRewardEndState_51d3c0, 0x0051D3C0),
-    RG_W(0x0000001F), RG_W(0x0037FF00), RG_W(0x00000020), RG_W(0x0037FB00),
-    RG_W(0x00000021), RG_W(0x0037F870), RG_W(0x00000022), RG_W(0x0037EE90),
-    RG_W(0x00000023), RG_W(0x0037E880), RG_W(0x00000024), RG_W(0x0037E7E0),
-    RG_W(0x00000025), RG_W(0x0037BE30), RG_W(0x00000026), RG_W(0x0037E280),
-    RG_W(0x00000027), RG_W(0x0037D070), RG_W(0x00000028), RG_W(0x0037CE70),
-    RG_W(0x00000029), RG_W(0x0037CDD0), RG_W(0x0000002A), RG_W(0x0037D530),
-    RG_W(0x0000002B), RG_W(0x0037D2B0), RG_W(0x0000002C), RG_W(0x0037D260),
-    RG_W(0x0000002D), RG_W(0x0037D1A0), RG_W(0x0000002E), RG_W(0x0037D150),
-    RG_W(0x0000002F), RG_W(0x0037D120), RG_W(0x00000030), RG_W(0x0037C300),
-    RG_W(0x00000031), RG_W(0x0037C170), RG_W(0x00000032), RG_W(0x0037C100),
-    RG_W(0x00000033), RG_W(0x0037C900), RG_W(0x00000034), RG_W(0x0037C510),
-    RG_W(0x00000035), RG_W(0x0037C4A0), RG_W(0x00000036), RG_W(0x0037E0E0),
-    RG_W(0x00000037), RG_W(0x0037DFE0), RG_W(0x00000038), RG_W(0x0037DF80),
-    RG_W(0x00000039), RG_W(0x0037D850), RG_W(0x0000003A), RG_W(0x0037CB10),
-    RG_W(0x0000003B), RG_W(0x0037CAB0), RG_W(0x0000003C), RG_W(0x0037C970),
-    RG_W(0x0000003D), RG_W(0x0037D7B0), RG_W(0x0000003E), RG_W(0x0037D700),
-    RG_W(0x0000003F), RG_W(0x0037D6C0), RG_W(0x00000000), RG_W(0x00000000),
+    RG_W(0x0000001F), RG_R(&TransMenuItemGridOpenState_37ff00, 0x0037FF00), RG_W(0x00000020), RG_R(&TransMenuItemGridSelectState_37fb00, 0x0037FB00),
+    RG_W(0x00000021), RG_R(&TransMenuItemGridCloseState_37f870, 0x0037F870), RG_W(0x00000022), RG_R(&TransMenuItemCommandOpenState_37ee90, 0x0037EE90),
+    RG_W(0x00000023), RG_R(&TransMenuItemCommandSelectState_37e880, 0x0037E880), RG_W(0x00000024), RG_R(&TransMenuItemCommandCloseState_37e7e0, 0x0037E7E0),
+    RG_W(0x00000025), RG_R(&TransMenuItemMsgPopupState_37be30, 0x0037BE30), RG_W(0x00000026), RG_R(&TransMenuItemCmdDispatchState_37e280, 0x0037E280),
+    RG_W(0x00000027), RG_R(&TransMenuItemQuantityOpenState_37d070, 0x0037D070), RG_W(0x00000028), RG_R(&TransMenuItemQuantitySelectState_37ce70, 0x0037CE70),
+    RG_W(0x00000029), RG_R(&TransMenuItemQuantityCloseState_37cdd0, 0x0037CDD0), RG_W(0x0000002A), RG_R(&TransMenuItemDiscardCheckState_37d530, 0x0037D530),
+    RG_W(0x0000002B), RG_R(&TransMenuItemDiscardConfirmState_37d2b0, 0x0037D2B0), RG_W(0x0000002C), RG_R(&TransMenuItemDiscardCloseState_37d260, 0x0037D260),
+    RG_W(0x0000002D), RG_R(&TransMenuItemMoveCheckState_37d1a0, 0x0037D1A0), RG_W(0x0000002E), RG_R(&TransMenuItemMoveStartState_37d150, 0x0037D150),
+    RG_W(0x0000002F), RG_R(&TransMenuItemCommandCloseGoto_37d120, 0x0037D120), RG_W(0x00000030), RG_R(&TransMenuItemCmdPopupOpenState_37c300, 0x0037C300),
+    RG_W(0x00000031), RG_R(&TransMenuItemCmdPopupSelectState_37c170, 0x0037C170), RG_W(0x00000032), RG_R(&TransMenuItemCmdPopupCloseState_37c100, 0x0037C100),
+    RG_W(0x00000033), RG_R(&TransMenuItemPartyWaitState_37c900, 0x0037C900), RG_W(0x00000034), RG_R(&TransMenuItemPartyListShowState_37c510, 0x0037C510),
+    RG_W(0x00000035), RG_R(&TransMenuItemPartyListCloseState_37c4a0, 0x0037C4A0), RG_W(0x00000036), RG_R(&TransMenuItemCellPickAnimState_37e0e0, 0x0037E0E0),
+    RG_W(0x00000037), RG_R(&TransMenuItemMoveTargetState_37dfe0, 0x0037DFE0), RG_W(0x00000038), RG_R(&TransMenuItemMoveEndState_37df80, 0x0037DF80),
+    RG_W(0x00000039), RG_R(&TransMenuItemMoveState_37d850, 0x0037D850), RG_W(0x0000003A), RG_R(&TransMenuItemInfoPanelOpenState_37cb10, 0x0037CB10),
+    RG_W(0x0000003B), RG_R(&TransMenuItemInfoWaitState_37cab0, 0x0037CAB0), RG_W(0x0000003C), RG_R(&TransMenuItemInfoCloseState_37c970, 0x0037C970),
+    RG_W(0x0000003D), RG_R(&TransMenuItemTransferCheckState_37d7b0, 0x0037D7B0), RG_W(0x0000003E), RG_R(&TransMenuItemTransferState_37d700, 0x0037D700),
+    RG_W(0x0000003F), RG_R(&TransMenuItemTransferDoneState_37d6c0, 0x0037D6C0), RG_W(0x00000000), RG_W(0x00000000),
     RG_R(normal_D_005265A0, 0x005265A0), RG_W(0x00000000), RG_R(normal_D_005265C0, 0x005265C0), RG_R(normal_D_005265E0, 0x005265E0),
     RG_R(normal_D_00526600, 0x00526600), RG_R(normal_D_00526620, 0x00526620), RG_R(normal_D_00526640, 0x00526640), RG_R(normal_D_00526660, 0x00526660),
     RG_R(normal_D_00526680, 0x00526680), RG_W(0x00000000), RG_W(0x00000000), RG_W(0x00000000),

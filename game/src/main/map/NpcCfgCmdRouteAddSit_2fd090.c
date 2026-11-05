@@ -14,9 +14,9 @@ struct Entry002fd090 {
     s16 unk56;
 };
 
-extern s32 D_004E6628[0x10];
-extern Entry002fd090 *D_004E662C[0x10];
-extern s16 D_004E6632[0x10];
+extern s32 D_004E6628[1];
+extern Entry002fd090 *D_004E662C[1];
+extern s16 D_004E6632[1];
 extern s16 D_004E6634[0x10];
 /*rgp*/
 

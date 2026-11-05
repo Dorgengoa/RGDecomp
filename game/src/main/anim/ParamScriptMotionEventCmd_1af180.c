@@ -12,10 +12,10 @@
 /*rgp*/
 /*rgp*/
 extern void *memset(void *, s32, s32);
-extern s32 D_0049D450[4];
+extern s32 D_0049D450[3];
 extern s32 D_0049D45C[4];
-extern void *D_0049D4E0[4];
-extern s32 D_0049D4E4[4];
+extern void *D_0049D4E0[1];
+extern s32 D_0049D4E4[1];
 extern s32 D_0049D4E8[4];
 
 s32 ParamScriptMotionEventCmd_1af180(s32 arg0, s32 arg1)

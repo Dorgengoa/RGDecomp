@@ -759,48 +759,48 @@ raw-reloc	normal	0x00525D44	0x0051F2B0	normal_TransHunterBountyListCursorBobCb_5
 raw-reloc	normal	0x00525D4C	0x0051DAD0	normal_TransHunterRankListCursorMoveCb_51dad0
 raw-reloc	normal	0x00525D54	0x0051DB80	normal_TransHunterRankListCursorBobCb_51db80
 raw-reloc	normal	0x00525D5C	0x0051DAC0	func_0051DAC0
-raw-ptr-candidate	normal	0x00525D64	0x0037F5C0	equals TransMenuItemCellFocusCb_37f5c0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525D6C	0x0037F6D0	equals MenuGridCursorBobCb_37f6d0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525D74	0x0037F260	equals TransMenuItemTabCycleCb_37f260; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525D7C	0x0037E710	equals TransMenuItemCmdRowHighlightCb_37e710; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525D84	0x0037E740	equals MenuGridCursorBobCb_37e740; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525D8C	0x0037CD60	equals TransMenuItemQuantityValueCbMaybe_37cd60; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525D94	0x0037CDA0	equals TransMenuItemUvScrollStateRelated_37cda0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525D9C	0x0037BFC0	equals TransMenuItemCmdWindowLayoutMaybe_37bfc0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525DA4	0x0037C070	equals MenuGridCursorBobCb_37c070; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EA4	0x0037FF00	equals TransMenuItemGridOpenState_37ff00; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EAC	0x0037FB00	equals TransMenuItemGridSelectState_37fb00; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EB4	0x0037F870	equals TransMenuItemGridCloseState_37f870; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EBC	0x0037EE90	equals TransMenuItemCommandOpenState_37ee90; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EC4	0x0037E880	equals TransMenuItemCommandSelectState_37e880; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525ECC	0x0037E7E0	equals TransMenuItemCommandCloseState_37e7e0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525ED4	0x0037BE30	equals TransMenuItemMsgPopupState_37be30; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EDC	0x0037E280	equals TransMenuItemCmdDispatchState_37e280; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EE4	0x0037D070	equals TransMenuItemQuantityOpenState_37d070; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EEC	0x0037CE70	equals TransMenuItemQuantitySelectState_37ce70; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EF4	0x0037CDD0	equals TransMenuItemQuantityCloseState_37cdd0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525EFC	0x0037D530	equals TransMenuItemDiscardCheckState_37d530; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F04	0x0037D2B0	equals TransMenuItemDiscardConfirmState_37d2b0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F0C	0x0037D260	equals TransMenuItemDiscardCloseState_37d260; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F14	0x0037D1A0	equals TransMenuItemMoveCheckState_37d1a0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F1C	0x0037D150	equals TransMenuItemMoveStartState_37d150; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F24	0x0037D120	equals TransMenuItemCommandCloseGoto_37d120; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F2C	0x0037C300	equals TransMenuItemCmdPopupOpenState_37c300; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F34	0x0037C170	equals TransMenuItemCmdPopupSelectState_37c170; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F3C	0x0037C100	equals TransMenuItemCmdPopupCloseState_37c100; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F44	0x0037C900	equals TransMenuItemPartyWaitState_37c900; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F4C	0x0037C510	equals TransMenuItemPartyListShowState_37c510; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F54	0x0037C4A0	equals TransMenuItemPartyListCloseState_37c4a0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F5C	0x0037E0E0	equals TransMenuItemCellPickAnimState_37e0e0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F64	0x0037DFE0	equals TransMenuItemMoveTargetState_37dfe0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F6C	0x0037DF80	equals TransMenuItemMoveEndState_37df80; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F74	0x0037D850	equals TransMenuItemMoveState_37d850; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F7C	0x0037CB10	equals TransMenuItemInfoPanelOpenState_37cb10; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F84	0x0037CAB0	equals TransMenuItemInfoWaitState_37cab0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F8C	0x0037C970	equals TransMenuItemInfoCloseState_37c970; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F94	0x0037D7B0	equals TransMenuItemTransferCheckState_37d7b0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525F9C	0x0037D700	equals TransMenuItemTransferState_37d700; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
-raw-ptr-candidate	normal	0x00525FA4	0x0037D6C0	equals TransMenuItemTransferDoneState_37d6c0; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
+raw-reloc-main	normal	0x00525D64	0x0037F5C0	TransMenuItemCellFocusCb_37f5c0
+raw-reloc-main	normal	0x00525D6C	0x0037F6D0	MenuGridCursorBobCb_37f6d0
+raw-reloc-main	normal	0x00525D74	0x0037F260	TransMenuItemTabCycleCb_37f260
+raw-reloc-main	normal	0x00525D7C	0x0037E710	TransMenuItemCmdRowHighlightCb_37e710
+raw-reloc-main	normal	0x00525D84	0x0037E740	MenuGridCursorBobCb_37e740
+raw-reloc-main	normal	0x00525D8C	0x0037CD60	TransMenuItemQuantityValueCbMaybe_37cd60
+raw-reloc-main	normal	0x00525D94	0x0037CDA0	TransMenuItemUvScrollStateRelated_37cda0
+raw-reloc-main	normal	0x00525D9C	0x0037BFC0	TransMenuItemCmdWindowLayoutMaybe_37bfc0
+raw-reloc-main	normal	0x00525DA4	0x0037C070	MenuGridCursorBobCb_37c070
+raw-reloc-main	normal	0x00525EA4	0x0037FF00	TransMenuItemGridOpenState_37ff00
+raw-reloc-main	normal	0x00525EAC	0x0037FB00	TransMenuItemGridSelectState_37fb00
+raw-reloc-main	normal	0x00525EB4	0x0037F870	TransMenuItemGridCloseState_37f870
+raw-reloc-main	normal	0x00525EBC	0x0037EE90	TransMenuItemCommandOpenState_37ee90
+raw-reloc-main	normal	0x00525EC4	0x0037E880	TransMenuItemCommandSelectState_37e880
+raw-reloc-main	normal	0x00525ECC	0x0037E7E0	TransMenuItemCommandCloseState_37e7e0
+raw-reloc-main	normal	0x00525ED4	0x0037BE30	TransMenuItemMsgPopupState_37be30
+raw-reloc-main	normal	0x00525EDC	0x0037E280	TransMenuItemCmdDispatchState_37e280
+raw-reloc-main	normal	0x00525EE4	0x0037D070	TransMenuItemQuantityOpenState_37d070
+raw-reloc-main	normal	0x00525EEC	0x0037CE70	TransMenuItemQuantitySelectState_37ce70
+raw-reloc-main	normal	0x00525EF4	0x0037CDD0	TransMenuItemQuantityCloseState_37cdd0
+raw-reloc-main	normal	0x00525EFC	0x0037D530	TransMenuItemDiscardCheckState_37d530
+raw-reloc-main	normal	0x00525F04	0x0037D2B0	TransMenuItemDiscardConfirmState_37d2b0
+raw-reloc-main	normal	0x00525F0C	0x0037D260	TransMenuItemDiscardCloseState_37d260
+raw-reloc-main	normal	0x00525F14	0x0037D1A0	TransMenuItemMoveCheckState_37d1a0
+raw-reloc-main	normal	0x00525F1C	0x0037D150	TransMenuItemMoveStartState_37d150
+raw-reloc-main	normal	0x00525F24	0x0037D120	TransMenuItemCommandCloseGoto_37d120
+raw-reloc-main	normal	0x00525F2C	0x0037C300	TransMenuItemCmdPopupOpenState_37c300
+raw-reloc-main	normal	0x00525F34	0x0037C170	TransMenuItemCmdPopupSelectState_37c170
+raw-reloc-main	normal	0x00525F3C	0x0037C100	TransMenuItemCmdPopupCloseState_37c100
+raw-reloc-main	normal	0x00525F44	0x0037C900	TransMenuItemPartyWaitState_37c900
+raw-reloc-main	normal	0x00525F4C	0x0037C510	TransMenuItemPartyListShowState_37c510
+raw-reloc-main	normal	0x00525F54	0x0037C4A0	TransMenuItemPartyListCloseState_37c4a0
+raw-reloc-main	normal	0x00525F5C	0x0037E0E0	TransMenuItemCellPickAnimState_37e0e0
+raw-reloc-main	normal	0x00525F64	0x0037DFE0	TransMenuItemMoveTargetState_37dfe0
+raw-reloc-main	normal	0x00525F6C	0x0037DF80	TransMenuItemMoveEndState_37df80
+raw-reloc-main	normal	0x00525F74	0x0037D850	TransMenuItemMoveState_37d850
+raw-reloc-main	normal	0x00525F7C	0x0037CB10	TransMenuItemInfoPanelOpenState_37cb10
+raw-reloc-main	normal	0x00525F84	0x0037CAB0	TransMenuItemInfoWaitState_37cab0
+raw-reloc-main	normal	0x00525F8C	0x0037C970	TransMenuItemInfoCloseState_37c970
+raw-reloc-main	normal	0x00525F94	0x0037D7B0	TransMenuItemTransferCheckState_37d7b0
+raw-reloc-main	normal	0x00525F9C	0x0037D700	TransMenuItemTransferState_37d700
+raw-reloc-main	normal	0x00525FA4	0x0037D6C0	TransMenuItemTransferDoneState_37d6c0
 raw-text-word	normal	0x0052619C	0x0050002A	inside own text but not a function entry; kept raw
 raw-ptr-candidate	normal	0x005262C0	0x0048002C	equals D_0048002C; kept raw (the snapshot did not symbolize it -- a pointer would need a relocation)
 raw-text-word	normal	0x005264E0	0x0050A0D8	inside own text but not a function entry; kept raw

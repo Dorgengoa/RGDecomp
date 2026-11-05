@@ -4167,7 +4167,7 @@ class ProtoStage:
                 rw.append(Rewrite(a, a + len(n), "text", ref))
             self._log(fi, d.start, d.name, "info-sb-guard", f"{n} ({typ}{dims}) guarded as {g}")
 
-    def _vcall_pairs(self, fi: FileInfo, d, log=False):
+    def _vcall_pairs(self, fi: FileInfo, d, log=False, tails=False):
         """Retail jalr sites of definition d paired in order with its C member
         calls to methods declared `virtual` in the file (counts must agree):
         (cfg, mcalls, jalrs, v0j) or None.  v0j = the jalr whose $v0 reaches
@@ -4180,7 +4180,8 @@ class ProtoStage:
         cfg = self._cfg_cache.get((img, d.name))
         if cfg is None:
             cfg = self._cfg_cache[(img, d.name)] = asmflow.CFG(r[0])
-        jalrs = [i for i, (op, _o) in enumerate(cfg.ins) if op == "jalr"]
+        jalrs = [i for i, (op, _o) in enumerate(cfg.ins) if op == "jalr" or (
+            tails and op == "jr" and _o and _o[0] != "$31")]
         if not jalrs:
             return None
         # C member calls to methods declared `virtual` in this file
@@ -4410,6 +4411,337 @@ class ProtoStage:
         parts[at:at] = [f"int {t.name}" for t in new]
         return ", ".join(parts)
 
+    # ------------------------------------------------ vcall float lanes
+    def _vcall_target_lanes(self, fi, d, j, nm, vd, vps, fl, fwd_names, noff, vlanes, rw):
+        """Rule `vcall-target-lanes` (2026-11-01, f32args lane; docs/PROTOS.md
+        "Virtual calls and float lanes").  The EE passes f32 arguments in
+        $f12.. whatever the GPR lanes hold, so a virtual declared
+        `m(Vec *v, f32 x, f32 y, f32 z)` (AttackObjBaseSetPosVec_317340) or given
+        vcall-forward lanes `m(f32 dt, int rgp_fwd2..)` reaches a slot whose
+        retail targets are `(this, f32, f32, f32)` / `(this, f32 dt)`.  devirt
+        types the slot call GPR-first, so on i686 the target read `v` / the
+        forwarded int as its float (INSECT effects never ended: dt = 0; attack
+        objects placed at (ptr, x, y)).  The jalr's targets come from retail
+        (sbresolve.Resolver.vcall_targets: slot S of every vtable stored at +V,
+        kept when every argument lane the target reads is live at the jalr);
+        each lane a plausible target READS fixes that lane's i686 position.  When
+        the positions agree, the declaration gets `/*rgp:vlanes n1,n2,..*/`: the
+        order devirt then pushes the arguments in (lanes no target reads go
+        after, so they are trailing cdecl words; a gap no parameter fills gets an
+        `int rgp_vpadN = 0` placeholder).  Switch RG_PROTOS_NO_VLANES."""
+        if os.environ.get("RG_PROTOS_NO_VLANES"):
+            return
+        R = self._sb_resolver()
+        if R is None:
+            return
+        code = fi.code
+        img = self.image_of(fi.rel)
+        fn = f"{img}:{d.name}"
+        site = R.vcall_site(fn, j)
+        if site is None:
+            return
+        V, S = site
+        # the declaration's lanes ($a0 = this)
+        names, lanes, g, f = [], {}, 1, 0
+        for k, t in enumerate(vps):
+            t0 = t.split("=")[0].strip()
+            if re.search(r"\b(double|f64|s64|u64|long\s+long)\b|\.\.\.|\(", t0):
+                return
+            ids = [x for x in re.findall(r"[A-Za-z_]\w*", re.sub(r"\[[^\]]*\]", "", t0))
+                   if x not in ("const", "volatile", "struct", "class", "union", "enum",
+                                "unsigned", "signed")]
+            # devirt's naming: an unnamed parameter is a<index>
+            pn = ids[-1] if len(ids) >= 2 and ids[-1] not in (
+                "int", "short", "long", "char", "float", "double", "bool", "void", "s8", "u8",
+                "s16", "u16", "s32", "u32", "f32") else f"a{k}"
+            names.append(pn)
+            if fl[k]:
+                lanes[("f", f)] = pn
+                f += 1
+            else:
+                lanes[("g", g)] = pn
+                g += 1
+        for nmf in fwd_names:
+            names.append(nmf)
+            lanes[("g", g)] = nmf
+            g += 1
+        isf = {nm_: (k < len(fl) and fl[k]) for k, nm_ in enumerate(names)}
+        default = [x for x in names if not isf[x]] + [x for x in names if isf[x]]
+        entry, g, f = set(), 0, 0
+        for p in self.sig(d).params:
+            if p.cls == "f":
+                entry.add("$f%d" % (12 + f))
+                f += 1
+            else:
+                entry.add("$%d" % (4 + g))
+                g += 1
+        tg = R.vcall_targets(fn, j, V, S, entry)
+        plaus = [(t, rd) for t, rd, ok, _w in tg if ok]
+        if not plaus or len(tg) > 400:
+            return
+        req: dict = {}       # lane -> byte offset the targets read it at
+        why = []
+        for t, rd in plaus:
+            tn = t.split(":", 1)[1].split("@")[0]
+            if rd is None:
+                self._log(fi, noff, nm, "manual-vcall-target-lanes",
+                          f"{d.name}: slot 0x{S:x} (vptr +0x{V:x}) target {tn} has no listing")
+                return
+            if not rd:
+                continue
+            d2 = self.gdef.get(tn)
+            if d2 is None or d2.is_asm or id(d2) not in self.eff:
+                self._log(fi, noff, nm, "manual-vcall-target-lanes",
+                          f"{d.name}: slot 0x{S:x} target {tn} has no C definition")
+                return
+            off, g, f, lay = 0, 0, 0, {}
+            for p in self.sig(d2).params:
+                if p.kind not in ("i", "f"):
+                    self._log(fi, noff, nm, "manual-vcall-target-lanes",
+                              f"{d.name}: slot 0x{S:x} target {tn} takes a {p.kind} parameter")
+                    return
+                if p.cls == "f":
+                    lay[("f", f)] = off
+                    f += 1
+                else:
+                    lay[("g", g)] = off
+                    g += 1
+                off += 4
+            for reg in rd:
+                ln = ("f", int(reg[2:]) - 12) if reg.startswith("$f") else ("g", int(reg[1:]) - 4)
+                if ln not in lay:
+                    continue        # read past its declared parameters (other rules' business)
+                if req.get(ln, lay[ln]) != lay[ln]:
+                    self._log(fi, noff, nm, "manual-vcall-target-lanes",
+                              f"{d.name}: slot 0x{S:x} targets disagree on lane {ln[0]}{ln[1]}")
+                    return
+                req[ln] = lay[ln]
+            why.append(tn)
+        slots: dict = {}
+        for ln, o in req.items():
+            if ln == ("g", 0):
+                continue
+            if ln not in lanes:
+                self._log(fi, noff, nm, "manual-vcall-target-lanes",
+                          f"{d.name}: slot 0x{S:x} target(s) {', '.join(why)} read lane "
+                          f"{ln[0]}{ln[1]}, which the call does not pass")
+                return
+            slots[o // 4] = lanes[ln]
+        if not slots:
+            return
+        free = [x for x in default if x not in slots.values()]
+        order, pads = [], []
+        for pos in range(1, max(slots) + 1):
+            if pos in slots:
+                order.append(slots[pos])
+            elif free:
+                order.append(free.pop(0))
+            else:
+                pads.append(f"rgp_vpad{pos}")
+                order.append(pads[-1])
+        order += free
+        if order == default and not pads:
+            return
+        if vd.start() in vlanes:
+            if vlanes[vd.start()] != order:
+                self._log(fi, noff, nm, "manual-vcall-target-lanes",
+                          f"{d.name}: another call of {nm} needs lane order "
+                          f"{','.join(vlanes[vd.start()])}, this one {','.join(order)}")
+            return
+        vlanes[vd.start()] = order
+        vlp = vd.end() - 1
+        vrp = match_paren(code, vlp)
+        rw.append(Rewrite(vlp + 1, vlp + 1, "text", f"/*rgp:vlanes {','.join(order)}*/"))
+        if pads:
+            rw.append(Rewrite(vrp, vrp, "text", "".join(f", int {p} = 0" for p in pads)))
+        self._log(fi, noff, nm, "vcall-target-lanes",
+                  f"{d.name}: slot 0x{S:x} (vptr +0x{V:x}) reaches {', '.join(why)}; i686 "
+                  f"argument order {','.join(order)} (devirt default {','.join(default)})")
+
+    def _vcall_x87_ret(self, fi, d, j, nm, decls, noff, vx87, rw, vretyped=()):
+        """Rule `vcall-x87-return` (2026-11-01, f32args lane after x64b's
+        EffObjStepChannels_1a9b50 finding; docs/PROTOS.md "Virtual calls and float
+        lanes").  A float / double return comes back in ST0 on i686; a call
+        through a `void` view never pops it, so the ninth call overflows the x87
+        stack and every later x87 load reads the indefinite NaN (the MIPS $f0 has
+        no such effect).  A virtual declared `void` whose slot reaches x87-returning
+        targets is re-declared f32 / f64 (the call statement discards the value,
+        so clang pops it).  Evidence: the jalr's plausible retail targets
+        (sbresolve.Resolver.vcall_targets) when any of them returns a value, else
+        the vtables (data2c tables starting with the two zero header words) long
+        enough to hold slot S, when more than half hold an x87-returning function
+        there.  A void target called through the float view leaves ST0 empty and
+        the pop is a masked no-op, so a void target among them is fine; an
+        integer-returning one is not (manual-vcall-x87-return).  Switch
+        RG_PROTOS_NO_X87RET."""
+        if os.environ.get("RG_PROTOS_NO_X87RET") or len(decls) != 1:
+            return
+        vd = decls[0]
+        if " ".join(vd.group(1).split()) != "void" or vd.start() in vx87 or vd.start() in vretyped:
+            return
+        vx87[("seen", vd.start())] = True     # a paired call decides: no slot-majority fallback
+        R = self._sb_resolver()
+        if R is None:
+            return
+        code = fi.code
+        img = self.image_of(fi.rel)
+        fn = f"{img}:{d.name}"
+        site = R.vcall_site(fn, j)
+        if site is None:
+            return
+        V, S = site
+
+        def rk(name):
+            d2 = self.gdef.get(name)
+            if d2 is None or d2.is_asm or id(d2) not in self.eff:
+                return None
+            return self.sig(d2).ret.kind
+        entry, g, f = set(), 0, 0
+        for p in self.sig(d).params:
+            if p.cls == "f":
+                entry.add("$f%d" % (12 + f))
+                f += 1
+            else:
+                entry.add("$%d" % (4 + g))
+                g += 1
+        x87, other = set(), set()
+        tg = R.vcall_targets(fn, j, V, S, entry)
+        own = [t for t, _rd, ok, _w in tg if ok and t.split("@")[0] == fn]
+        if own:
+            # the slot is the caller's own listing (an interior entry: InsectItemAddSatiety_3d1b00
+            # -> its SetSatiety at +0x20): the object is the caller's class
+            tg = [x for x in tg if x[0] in own]
+        if len(tg) <= 400:
+            for t, _rd, ok, _w in tg:
+                if not ok:
+                    continue
+                tn = t.split(":", 1)[1].split("@")[0]
+                k = rk(tn)
+                if k in ("f", "d"):
+                    x87.add((tn, k))
+                elif k not in (None, "v"):
+                    other.add(tn)
+        how = "retail targets"
+        if not x87 and not other and not own:
+            n_tab, ex = 0, set()
+            nx = 0
+            for sym, (a, n) in R.T.items():
+                if n <= S // 4 or n < 3:
+                    continue
+                if R.W.get(a) != ("int", 0) or R.W.get(a + 4) != ("int", 0):
+                    continue
+                w = R.W.get(a + S)
+                if not w or w[0] != "fn":
+                    continue
+                n_tab += 1
+                k = rk(w[1])
+                if k in ("f", "d"):
+                    nx += 1
+                    ex.add((w[1], k))
+            if n_tab and nx * 2 > n_tab:
+                x87 = ex
+                how = f"{nx} of {n_tab} vtables long enough for slot 0x{S:x}"
+        if not x87:
+            return
+        if other or len({k for _t, k in x87}) != 1:
+            self._log(fi, noff, nm, "manual-vcall-x87-return",
+                      f"{d.name}: slot 0x{S:x} reaches x87 returns ({', '.join(sorted(t for t, _k in x87))})"
+                      + (f" and integer returns ({', '.join(sorted(other))})" if other else
+                         " of both widths"))
+            return
+        typ = "f32" if next(iter(x87))[1] == "f" else "f64"
+        va = vd.start(1)
+        k = code[va:vd.end(1)].find("void")
+        rw.append(Rewrite(va + k, va + k + 4, "text", typ))
+        vx87[vd.start()] = typ
+        self._log(fi, noff, nm, "vcall-x87-return",
+                  f"{d.name}: slot 0x{S:x} (vptr +0x{V:x}) returns in ST0 ({how}: "
+                  f"{', '.join(sorted(t for t, _k in x87)[:4])}); void view -> {typ} (value dropped, "
+                  f"popped)")
+
+    def _x87_majority(self, S):
+        """[(fn, kind)] of the x87-returning functions at slot S when more than half
+        of the vtables long enough for it hold one there (data2c tables whose two
+        header words are zero), else []; and a note."""
+        R = self._sb_resolver()
+        if R is None:
+            return [], ""
+        n_tab, nx, ex = 0, 0, set()
+        for sym, (a, n) in R.T.items():
+            if n <= S // 4 or n < 3:
+                continue
+            if R.W.get(a) != ("int", 0) or R.W.get(a + 4) != ("int", 0):
+                continue
+            w = R.W.get(a + S)
+            if not w or w[0] != "fn":
+                continue
+            n_tab += 1
+            d2 = self.gdef.get(w[1])
+            k = self.sig(d2).ret.kind if d2 is not None and not d2.is_asm and id(d2) in self.eff else None
+            if k in ("f", "d"):
+                nx += 1
+                ex.add((w[1], k))
+        if n_tab and nx * 2 > n_tab:
+            return sorted(ex), f"{nx} of {n_tab} vtables long enough for slot 0x{S:x}"
+        return [], ""
+
+    def _vcall_x87_decls(self, fi, rw, vx87, vretyped):
+        """`vcall-x87-return` for virtual calls no retail jalr was paired with (the
+        definition's jalr and member-call counts differ, e.g. AbilityModeRun_2790e0):
+        a `void` virtual of a root dummy class (no base class: slot = its index
+        among the class's virtuals, as devirt numbers them) that the file calls,
+        whose slot holds an x87-returning function in most vtables."""
+        if os.environ.get("RG_PROTOS_NO_X87RET"):
+            return
+        code = fi.code
+        for f in fi.funcs:
+            if f.kind != "class":
+                continue
+            hb = re.search(r"\b(?:class|struct)\s+\w+\s*:(?!:)([^{]*)$", code[f.start:f.body_open])
+            if hb:
+                # a base with virtuals: devirt's slot numbering continues the base's
+                bases = [b.split()[-1] for b in hb.group(1).split(",") if b.split()]
+                bad = False
+                for b in bases:
+                    bc = [g for g in fi.funcs if g.kind == "class" and g.name == b]
+                    if len(bc) != 1 or re.search(r"\bvirtual\b|VC_VPTR",
+                                                  code[bc[0].body_open:bc[0].body_close]):
+                        bad = True
+                if bad:
+                    continue
+            body = code[f.body_open + 1:f.body_close]
+            k = 0
+            for m in re.finditer(r"\bvirtual\s+([^;{}()]*?)\b(\w+)\s*\(", body):
+                pos = f.body_open + 1 + m.start()
+                inner = any(g.kind == "class" and f.body_open < g.body_open < pos < g.body_close
+                            for g in fi.funcs if g is not f)
+                if inner:
+                    continue
+                S = 8 + 4 * k
+                k += 1
+                if " ".join(m.group(1).split()) != "void" or pos in vx87 or pos in vretyped \
+                        or ("seen", pos) in vx87:
+                    continue
+                nm = m.group(2)
+                decls = [x for x in re.finditer(r"\bvirtual\s+([^;{}()]*?)\b%s\s*\(" % re.escape(nm), code)
+                         if fi.in_class(x.start())]
+                if len(decls) != 1 or decls[0].start() != pos:
+                    continue
+                if not re.search(r"(?:->|\.)\s*%s\s*\(" % re.escape(nm), code[f.body_close:]):
+                    continue
+                x87, how = self._x87_majority(S)
+                if not x87 or len({kk for _t, kk in x87}) != 1:
+                    continue
+                vd = decls[0]
+                typ = "f32" if x87[0][1] == "f" else "f64"
+                va = vd.start(1)
+                kk = code[va:vd.end(1)].find("void")
+                rw.append(Rewrite(va + kk, va + kk + 4, "text", typ))
+                vx87[pos] = typ
+                self._log(fi, pos, nm, "vcall-x87-return",
+                          f"{f.name}::{nm} slot 0x{S:x} (no paired jalr) returns in ST0 ({how}: "
+                          f"{', '.join(t for t, _k in x87[:4])}); void view -> {typ} (value dropped, popped)")
+
     # ------------------------------------------------ vcall passthrough
     def _vcall_passthrough(self, fi: FileInfo, rw: list) -> None:
         """Rules `vcall-forward` and `def-vcall-v0` (ModelMeshGetGroupPkts class).
@@ -4439,12 +4771,27 @@ class ProtoStage:
         code = fi.code
         vadded: dict = {}      # virtual decl offset -> forwarded params added
         vretyped: set = set()  # virtual decl offsets retyped void -> int
+        vlanes: dict = {}      # virtual decl offset -> lane order (vcall-target-lanes)
+        vx87: dict = {}        # virtual decl offset -> x87 return type (vcall-x87-return)
         for d in fi.defs:
             if d.is_asm or d.body_close <= d.body_open or id(d) in self.tail \
                     or id(d) in self.vtail or self._vthunk(d) is not None:
                 continue
             vp = self._vcall_pairs(fi, d, log=True)
             if vp is None:
+                # a virtual TAIL call (`jr $25`, AttackObjBaseSetPosVec_317340)
+                # pairs only with the tail jumps counted: float lanes only
+                vt = self._vcall_pairs(fi, d, tails=True)
+                if vt is not None:
+                    for (_ar, noff, nm, lp, decls), j in zip(vt[1], vt[2]):
+                        vd = decls[0]
+                        vps = [code[vd.end() + x[0]:vd.end() + x[1]]
+                               for x in split_top(code[vd.end():match_paren(code, vd.end() - 1)])]
+                        fl = [bool(re.fullmatch(r"\s*(const\s+)?(f32|float)\b\s*\w*\s*(=.*)?", t, re.S))
+                              for t in vps]
+                        if len(decls) == 1 and any(fl):
+                            self._vcall_target_lanes(fi, d, j, nm, vd, vps, fl, [], noff, vlanes, rw)
+                        self._vcall_x87_ret(fi, d, j, nm, decls, noff, vx87, rw, vretyped)
                 continue
             cfg, mcalls, jalrs, v0j = vp
             body_a, body_b = d.body_open + 1, d.body_close
@@ -4453,6 +4800,8 @@ class ProtoStage:
                 rp = match_paren(code, lp)
                 args = [x for x in split_top(code[lp + 1:rp]) if code[lp + 1 + x[0]:lp + 1 + x[1]].strip()]
                 vd = decls[0]
+                if j != v0j:
+                    self._vcall_x87_ret(fi, d, j, nm, decls, noff, vx87, rw, vretyped)
                 # ---- forwarded argument registers
                 n = len(args)
                 # GPR lanes taken by the C arguments (f32 parameters ride $f12..;
@@ -4462,6 +4811,7 @@ class ProtoStage:
                 fl = [bool(re.fullmatch(r"\s*(const\s+)?(f32|float)\b\s*\w*\s*(=.*)?", t, re.S)) for t in vps]
                 ngpr = sum(1 for i in range(n) if not (i < len(fl) and fl[i]))
                 fwd = self._vcall_fwd(fi, d, cfg, j, ngpr, noff)
+                fwd_names = []
                 if fwd:
                     if len(decls) != 1:
                         self._log(fi, noff, nm, "manual-vcall-forward",
@@ -4490,6 +4840,12 @@ class ProtoStage:
                             self._log(fi, noff, nm, "vcall-forward",
                                       f"{d.name}: retail's jalr gets the untouched entry "
                                       f"register(s) of {', '.join(fwd)} -> passed")
+                            fwd_names = [f"rgp_fwd{n + 1 + k}" for k in range(len(fwd))
+                                         if n + k >= len(vps)]
+                # ---- float lanes against the slot's retail targets
+                if len(decls) == 1 and any(fl):
+                    self._vcall_target_lanes(fi, d, j, nm, vd, vps, fl, fwd_names, noff,
+                                             vlanes, rw)
                 # ---- census: further argument registers retail sets before the
                 # jalr that the C does not pass (DataTableOwnerLoadResidentBin_3b8b70:
                 # `p3 & 1` and a status byte); not rewritten, listed for review
@@ -4526,6 +4882,11 @@ class ProtoStage:
                         self._log(fi, noff, nm, "manual-vcall-v0",
                                   f"{d.name}: retail returns {nm}'s $v0; void {nm} declared "
                                   f"{len(decls)} times")
+                        continue
+                    if vd.start() in vx87:
+                        self._log(fi, noff, nm, "manual-vcall-v0",
+                                  f"{d.name}: retail returns {nm}'s $v0; {nm} was retyped "
+                                  f"{vx87[vd.start()]} by vcall-x87-return")
                         continue
                     if vd.start() not in vretyped:
                         vretyped.add(vd.start())
@@ -4573,6 +4934,7 @@ class ProtoStage:
                 self._log(fi, noff, nm, "def-vcall-v0",
                           f"{d.name}: $v0 at every return is the result of `{nm}` (retail "
                           f"jalr, nothing after it writes $v0) -> definition returns it ({rt})")
+        self._vcall_x87_decls(fi, rw, vx87, vretyped)
 
     def _plan_file(self, fi: FileInfo) -> bytes:
         rw: list[Rewrite] = []

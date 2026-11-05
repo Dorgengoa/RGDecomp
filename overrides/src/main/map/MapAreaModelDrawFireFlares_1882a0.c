@@ -1,0 +1,55 @@
+/* rg-override: replaces game/src/main/map/MapAreaModelDrawFireFlares_1882a0.c sha256 7ea4e03ab07a221a70986808fe9594b66ec8f1c5c5a3aa29eff1ef6e116e236e
+ * why: draw-path random numbers (docs/WIDESCREEN.md "Draw-path random numbers", lane randdraw): an object's fire flares drawn only because of the port's wider planes use the private stream; the helpers are in the ViewSetPerspective_1564a0 override; no effect at 4:3 / 16:9 (no retail-plane set) */
+/* rgp:protos */
+#define RGP_SELF_MapAreaModelDrawFireFlares_1882a0 1
+#include "port/game_protos.h"
+#line 1
+#include "types.h"
+
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+/*rgp*/
+typedef struct { f32 f; s32 x; } P98;
+/*rgp*/
+/*rgp*/
+
+s32 rg_cull_draw_begin(void *obj);
+void rg_randlog_obj(const char *what, const void *obj, s32 a, s32 b);
+void rg_cull_draw_end(s32 tok);
+
+void MapAreaModelDrawFireFlares_1882a0(u8 *arg0, s32 arg1)
+{
+    s32 tok;
+    P98 sp98 __attribute__((aligned(16)));
+    u8 sp50[0x40] __attribute__((aligned(16)));
+    s32 id;
+    u8 **list;
+    s32 *pc;
+    s32 i;
+    u8 *e;
+
+    sp98.f = 0.0f;
+    sp98.f = TimeOfDayGetHour_18d920((void *)arg0);
+    sp98.x = *(s32 *)(arg0 + 0x1678);
+    id = GetDrawCtx_15de80();
+    GetDrawCtxNameTable_15de40();
+    DrawListAddTexLoad_1418c0(id, arg1, 1.0f);
+    list = *(u8 ***)(arg0 + 0x58C);
+    pc = (s32 *)(arg0 + 0x580);
+    MtxIdentity_13d2e0(sp50);
+    FuncDataTableDrawFireFlaresMaybe_18eb30(sp50, arg0 + 0x1664, &sp98, 0, 0);
+    if (list != NULL) {
+        for (i = 0; i < *pc; i++, list++) {
+            e = *list;
+            if (*(s32 *)(e + 0x114) & 2) {
+                NodeCalcWorldMatrixThunk_186130(e, sp50);
+                tok = rg_cull_draw_begin(e);
+                rg_randlog_obj("flare", e, tok, (s32)(*(f32 *)(e + 0x3C + 0x18) * 1000.0f));
+                FuncDataTableDrawFireFlaresMaybe_18eb30(sp50, e + 0x114, &sp98, 0, 0);
+                rg_cull_draw_end(tok);
+            }
+        }
+    }
+}

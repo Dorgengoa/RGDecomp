@@ -302,6 +302,8 @@ static void t_settings_map(gpu_renderer *r)
         { "graphics.texture_filter", "nearest" }, { "graphics.anisotropic", "8x" },
         { "graphics.gamma", "1.2" }, { "graphics.brightness", "0.9" }, { "graphics.sharpen", "0.5" },
         { "graphics.output_filter", "crt" }, { "graphics.bloom", "off" },
+        { "graphics.depth_of_field", "enhanced" }, { "graphics.motion_blur", "off" },
+        { "accessibility.flashing", "reduced" },
     };
     for (size_t i = 0; i < sizeof cases / sizeof cases[0]; i++) {
         rg_settings_apply_preset(s, "original");
@@ -337,12 +339,29 @@ static void t_settings_map(gpu_renderer *r)
     gpu_gfx_from_settings(&g, s);
     EXPECT(g.enh.aniso == 16 && g.enh.tex_filter == GPU_TEXF_BILINEAR, "aniso %d filter %d", g.enh.aniso,
            g.enh.tex_filter);
+    /* HD texture dump / replacement (docs/TEXTURES.md): off in Original, renderer fields when on */
+    rg_settings_apply_preset(s, "original");
+    gpu_gfx_from_settings(&g, s);
+    EXPECT(!g.enh.tex_dump && !g.enh.tex_replace && gpu_gfx_original(&g), "texture dump / replace off in Original");
+    rg_settings_set_text(s, rg_settings_find(s, "graphics.texture_replace"), "on", RG_SRC_API, NULL, 0);
+    rg_settings_set_text(s, rg_settings_find(s, "graphics.texture_dump"), "on", RG_SRC_API, NULL, 0);
+    gpu_gfx_from_settings(&g, s);
+    EXPECT(g.enh.tex_dump == 1 && g.enh.tex_replace == 1 && !gpu_gfx_original(&g), "texture dump %d replace %d",
+           g.enh.tex_dump, g.enh.tex_replace);
+    rg_settings_set_text(s, rg_settings_find(s, "graphics.texture_dump_movies"), "on", RG_SRC_API, NULL, 0);
+    gpu_gfx_from_settings(&g, s);
+    EXPECT(g.enh.tex_dump == 2, "texture dump with movie frames %d", g.enh.tex_dump);
+    rg_settings_apply_preset(s, "original");
+    rg_settings_set_text(s, rg_settings_find(s, "graphics.texture_dump_movies"), "on", RG_SRC_API, NULL, 0);
+    gpu_gfx_from_settings(&g, s);
+    EXPECT(g.enh.tex_dump == 0 && gpu_gfx_original(&g), "movie frames alone: no dump (%d)", g.enh.tex_dump);
     /* the menu marks no renderer setting as planned any more, except the
      * screen effects and the game-side ones */
     const char *real[] = { "graphics.internal_res", "graphics.antialiasing", "graphics.downsample",
                            "graphics.anisotropic", "graphics.texture_filter", "graphics.gamma",
                            "graphics.brightness", "graphics.sharpen", "graphics.output_filter",
-                           "display.frame_rate", "display.monitor" };
+                           "display.frame_rate", "display.monitor", "graphics.bloom",
+                           "graphics.depth_of_field", "graphics.motion_blur", "accessibility.flashing" };
     for (size_t i = 0; i < sizeof real / sizeof real[0]; i++) {
         int k = rg_settings_find(s, real[i]);
         EXPECT(k >= 0 && !(rg_settings_def(s, k)->flags & RG_SETF_PLACEHOLDER), "%s still planned", real[i]);

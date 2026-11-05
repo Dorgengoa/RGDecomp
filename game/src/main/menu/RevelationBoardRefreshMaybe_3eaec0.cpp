@@ -113,7 +113,7 @@ void RevelationBoardCellSetLevel_409410(u8 *, s32, s32, s32);
 void RevelationBoardEntryRaiseState_409960(Ev *, s32);
 Ev *RevelationBoardGetEntry_409990(Scr *, s32);
 extern G *D_00449858[0x100];
-extern u8 D_00466BD0[0x400];
+extern u8 D_00466BD0[0x30];
 extern u8 D_00466C00[0x400];
 extern f32 D_0047D1DC;
 s32 RevelationBoardRefreshMaybe_3eaec0(Arg0 *arg0, s32 filt, s32 arg2);

@@ -62,7 +62,15 @@ void __cdecl _free_base(void *);
 
 #define SS_RAM_SIZE   RG_CRT0_HEAP_ALLOC  /* the game heap + one page (crt0.c) */
 #define SS_ARENA_SIZE (0x04000000u)        /* 64 MB: 60 guest stacks of 1 MB */
+#if defined(_WIN64)
+/* x64: 64 MB.  The whole process lives below 2 GB there and the 64-bit graphics driver
+ * takes ~1 GB of it; with 256 MB reserved the golden route ran out of address space at
+ * field 26,674 (docs/X64-PLAN.md 0.8).  The route's state heap peaks under 4 MB
+ * (tools/x64/vmpoll.py: the reservation's commit). */
+#define SS_HEAP_SIZE  (0x04000000u)
+#else
 #define SS_HEAP_SIZE  (0x10000000u)        /* 256 MB reserved, committed as used */
+#endif
 #define SS_COMMIT_STEP (1u << 20)
 /* Fixed addresses: what is free at main differs run to run (CRT heap
  * segments, loader allocations), so "lowest free" gave 0x05900000 in one run
@@ -554,6 +562,140 @@ void ss_heap_walk(void (*fn)(void *user, uintptr_t p, uint32_t n, uintptr_t call
 /* ------------------------------------------------------------ interposition */
 #if SS_HEAP_SUPPORTED
 
+#if defined(_WIN64)
+/* x64 host-heap census (docs/X64-PLAN.md 0.8): RG_X64_HEAPCENSUS=FILE records every
+ * CRT-heap (host) allocation by its 3 return addresses and writes the live bytes per
+ * call site to FILE at each new peak (+16 MB) and at exit; name the RVAs with
+ * tools/x64/rva2sym.py.  Its tables live above 4 GB (VirtualAlloc with a fixed high
+ * address), so the census does not change the space it measures. */
+#define HC_PTRS (1u << 23)
+#define HC_SITES (1u << 16)
+typedef struct { uintptr_t p; uint32_t n, site; } hc_ptr;
+typedef struct { uintptr_t f[5]; uint64_t live, total, count; } hc_site;
+static struct {
+    int state; /* 0 untested, 1 on, -1 off */
+    SRWLOCK lk;
+    hc_ptr *ptr;
+    hc_site *site;
+    uint64_t live, peak, dumped;
+    char path[260];
+} HC;
+
+static __declspec(thread) int hc_in; /* the census's own allocations (fopen) */
+static void hc_dump(void)
+{
+    hc_in = 1;
+    FILE *f = fopen(HC.path, "w");
+    if (!f) {
+        hc_in = 0;
+        return;
+    }
+    uintptr_t base = (uintptr_t)GetModuleHandleA(NULL);
+    fprintf(f, "# x64 host heap census: live %llu MB, peak %llu MB (image base %llx; columns: live_kb total_kb count rva0..rva4, innermost first)\n",
+            (unsigned long long)(HC.live >> 20), (unsigned long long)(HC.peak >> 20), (unsigned long long)base);
+    for (uint32_t i = 0; i < HC_SITES; i++) {
+        hc_site *s = &HC.site[i];
+        if (!s->count)
+            continue;
+        fprintf(f, "%llu\t%llu\t%llu", (unsigned long long)(s->live >> 10), (unsigned long long)(s->total >> 10),
+                (unsigned long long)s->count);
+        for (int k = 0; k < 5; k++)
+            fprintf(f, "\t%llx", (unsigned long long)(s->f[k] ? s->f[k] - base : 0));
+        fputc('\n', f);
+    }
+    fclose(f);
+}
+static void hc_atexit(void)
+{
+    AcquireSRWLockExclusive(&HC.lk);
+    hc_dump();
+    ReleaseSRWLockExclusive(&HC.lk);
+}
+static int hc_on(void)
+{
+    if (HC.state)
+        return HC.state > 0;
+    HC.state = -1;
+    /* the Win32 call: the first malloc can come before the CRT environment exists */
+    DWORD en = GetEnvironmentVariableA("RG_X64_HEAPCENSUS", HC.path, sizeof HC.path);
+    if (!en || en >= sizeof HC.path)
+        return 0;
+    HC.ptr = (hc_ptr *)VirtualAlloc((void *)0x300000000ull, sizeof(hc_ptr) * HC_PTRS, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    HC.site = (hc_site *)VirtualAlloc((void *)0x340000000ull, sizeof(hc_site) * HC_SITES, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    if (!HC.ptr || !HC.site)
+        return 0;
+    InitializeSRWLock(&HC.lk);
+    atexit(hc_atexit);
+    HC.state = 1;
+    return 1;
+}
+static uint32_t hc_hash(uintptr_t v) { return (uint32_t)((v >> 4) * 0x9E3779B97F4A7C15ull >> 40); }
+static void hc_add(void *p, size_t n)
+{
+    if (!p || HC.state <= 0 || hc_in)
+        return;
+    void *fr[5] = {0};
+    RtlCaptureStackBackTrace(1, 5, fr, NULL);
+    AcquireSRWLockExclusive(&HC.lk);
+    uintptr_t key = 0;
+    for (int k = 0; k < 5; k++)
+        key = key * 31 + (uintptr_t)fr[k];
+    uint32_t si = hc_hash(key) & (HC_SITES - 1);
+    for (;; si = (si + 1) & (HC_SITES - 1)) {
+        hc_site *s = &HC.site[si];
+        if (!s->count) {
+            for (int k = 0; k < 5; k++)
+                s->f[k] = (uintptr_t)fr[k];
+            break;
+        }
+        if (!memcmp(s->f, fr, sizeof s->f))
+            break;
+    }
+    hc_site *s = &HC.site[si];
+    s->live += n;
+    s->total += n;
+    s->count++;
+    uint32_t pi = hc_hash((uintptr_t)p) & (HC_PTRS - 1);
+    while (HC.ptr[pi].p && HC.ptr[pi].p != 1)
+        pi = (pi + 1) & (HC_PTRS - 1);
+    HC.ptr[pi].p = (uintptr_t)p;
+    HC.ptr[pi].n = (uint32_t)(n > 0xFFFFFFFFu ? 0xFFFFFFFFu : n);
+    HC.ptr[pi].site = si;
+    HC.live += n;
+    if (HC.live > HC.peak) {
+        HC.peak = HC.live;
+        if (HC.peak >= HC.dumped + (16u << 20)) {
+            HC.dumped = HC.peak;
+            hc_dump();
+        }
+    }
+    ReleaseSRWLockExclusive(&HC.lk);
+}
+static void hc_del(void *p)
+{
+    if (!p || HC.state <= 0 || hc_in)
+        return;
+    AcquireSRWLockExclusive(&HC.lk);
+    uint32_t probes = 0;
+    for (uint32_t pi = hc_hash((uintptr_t)p) & (HC_PTRS - 1); HC.ptr[pi].p && probes < 65536; pi = (pi + 1) & (HC_PTRS - 1), probes++) {
+        if (HC.ptr[pi].p == (uintptr_t)p) {
+            HC.site[HC.ptr[pi].site].live -= HC.ptr[pi].n;
+            HC.live -= HC.ptr[pi].n;
+            HC.ptr[pi].p = 1; /* tombstone */
+            break;
+        }
+    }
+    ReleaseSRWLockExclusive(&HC.lk);
+}
+#define HC_ON() hc_on()
+#define HC_ADD(p, n) hc_add((p), (n))
+#define HC_DEL(p) hc_del(p)
+#else
+#define HC_ON() 0
+#define HC_ADD(p, n) ((void)0)
+#define HC_DEL(p) ((void)0)
+#endif
+
 static void *ss_alloc_for(uintptr_t caller, size_t n, int zero)
 {
     if (wants_state(caller)) {
@@ -570,6 +712,11 @@ static void *ss_alloc_for(uintptr_t caller, size_t n, int zero)
         return p;
     }
     H.host_allocs++;
+    if (HC_ON()) {
+        void *q = zero ? _calloc_base(1, n) : _malloc_base(n);
+        HC_ADD(q, n);
+        return q;
+    }
     return zero ? _calloc_base(1, n) : _malloc_base(n);
 }
 
@@ -593,6 +740,7 @@ void __cdecl free(void *p)
         unlock();
         return;
     }
+    HC_DEL(p);
     _free_base(p);
 }
 
@@ -612,6 +760,12 @@ void *__cdecl realloc(void *p, size_t n)
             ((chunk *)q - 1)->caller = caller;
         fp_mix(3, (uint32_t)n, (uint32_t)((uintptr_t)q - H.reg.heap));
         unlock();
+        return q;
+    }
+    if (HC_ON()) {
+        HC_DEL(p);
+        void *q = _realloc_base(p, n);
+        HC_ADD(q ? q : p, q ? n : 0);
         return q;
     }
     return _realloc_base(p, n);

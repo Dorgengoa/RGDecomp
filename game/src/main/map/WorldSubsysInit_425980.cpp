@@ -12,7 +12,7 @@ struct A { s32 x0; s32 x4; VC_0 *x8; VC_0 *xC; };
 extern "C" {
 extern VC_0 *ConstructNewArray_100710(s32, void *, s32, s32, s32);
 extern s32 MemStackNew_14e0b0(s32, s32);
-extern s32 D_004657E8[0x100];
+extern s32 D_004657E8[2];
 extern s32 D_004657F0[0x100];
 extern void DataTableCtor_425d40();
 extern void DataTableCtor_4263a0();

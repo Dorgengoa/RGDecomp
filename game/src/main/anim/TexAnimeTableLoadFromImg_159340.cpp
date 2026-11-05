@@ -6,9 +6,9 @@ extern s32 MemStackNew_14e230(s32 arg0, s32 arg1);
 extern void TexAnimeCfgParse_162780(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4);
 extern s32 TexAnimeTableCtor_162ed0(s32 arg0);
 extern s32 memcmp(void *arg0, const void *arg1, s32 arg2);
-extern u8 D_00458B18[0x400];
-extern u8 D_00458B20[0x400];
-extern u8 D_00458B28[0x400];
+extern u8 D_00458B18[8];
+extern u8 D_00458B20[8];
+extern u8 D_00458B28[8];
 extern u8 D_00458B30[0x400];
 }
 

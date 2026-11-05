@@ -85,6 +85,7 @@ s32 ItemGetOwnerCharaId_3d4d50(VC_0 *, s32);
 s32 ItemDefGetIconIndex_40e1b0(s8 *);
 extern s16 D_00461060[14][3];
 extern char D_004610B0[0x40];
+#define D_004610B0 (*(__typeof__(D_004610B0) *)((u8 *)&D_00461060 + 0x50))   /* rg-interior */
 extern s32 D_00481BBC;
 extern char D_004822E0[8];
 

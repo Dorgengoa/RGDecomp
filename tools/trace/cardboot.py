@@ -233,7 +233,27 @@ def plan_revel(d: Driver):
     d.shot("place", v + 720)
 
 
-PLANS = {"lib": plan_lib, "factory": plan_factory, "loadmenu": plan_loadmenu, "revel": plan_revel}
+ITEMGRID_SHOTS = (10, 20, 30, 45, 60, 90, 150, 250, 310, 320, 330, 345, 360, 390, 450, 550, 1267)
+
+
+def plan_itemgrid(d: Driver):
+    """item_grid_cursor.input.txt (zuser1031 card) anchored on field control C: TRIANGLE at
+    T = C+250 (port: control ~4450, TRIANGLE 4700), CROSS Items T+300, DOWN T+600 / T+700; shots
+    `t<off>` at T+off for ITEMGRID_SHOTS (menu open and Items transitions, settled grid at T+1267
+    = port field 6000).  Port side: same offsets at field 4733+off (tools/playtest/menuret.sh)."""
+    c = boot_to_control(d)
+    t = d.press("TRIANGLE", c + 250)
+    d.ms["T"] = t
+    presses = {300: "CROSS", 600: "DOWN", 700: "DOWN"}
+    for off in sorted(set(ITEMGRID_SHOTS) | set(presses)):
+        if off in presses:
+            d.press(presses[off], t + off)
+        else:
+            d.shot(f"t{off:04d}", t + off)
+
+
+PLANS = {"lib": plan_lib, "factory": plan_factory, "loadmenu": plan_loadmenu, "revel": plan_revel,
+         "itemgrid": plan_itemgrid}
 
 
 def _par(v):

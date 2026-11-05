@@ -37,6 +37,8 @@ ALLOW = {
     ("nr_scene.c", "game_constants"): "the caller's microcode tuple (live during the call)",
     ("nr_scene.c", "nr_model_record2"): "the caller's microcode tuple (live during the call)",
     ("nr_scene.c", "clip_note"): "the draw context struct (lives as long as the game)",
+    ("nr_scene.c", "clip_note_emu"): "the same draw context flag as clip_note (ctx+0x3CCC, record time; "
+                                     "counter only, lives as long as the game)",
     ("nr_im.c", "nr_im_end_prim"): "writes the marker over the packet just finished (build time)",
     ("nr_fx.c", "words"): "RG_NR_FXCENSUS: records an address, no read",
     ("nr_mem.c", "nr_game_ptr"): "the checked translation itself",

@@ -31,6 +31,12 @@ static inline float rg_ovl_bits_f32(int bits)
 #define RG_OVL_ASM_SYM(n) RG_OVL_STR(__USER_LABEL_PREFIX__) #n
 #define RG_OVL_ASM_BSS_SECTION ".bss"
 #define RG_OVL_ASM_PREVIOUS ".text"
+/* read-only data section directive (the x64 data images, gen_overlay_registry.py --arch x64) */
+#if defined(_WIN32)
+#define RG_OVL_ASM_RODATA ".section .rdata,\"dr\""
+#else
+#define RG_OVL_ASM_RODATA ".section .rodata,\"a\""
+#endif
 
 #if defined(__i386__)
 #define RG_OVL_TRAMPOLINE(name, table, idx)                                   \
@@ -43,7 +49,7 @@ static inline float rg_ovl_bits_f32(int bits)
             "addl $8, %esp\n\t"                                               \
             "jmp *%eax\n\t");                                                 \
     }
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && defined(_WIN32)
 /* Win64 (docs/X64-PLAN.md step 4): the argument registers (rcx rdx r8 r9, xmm0-3)
  * survive the resolver call; 32 bytes of shadow space; rsp 16-aligned at the call
  * (entry rsp = 8 mod 16, 4 pushes, 0x68 = 4 x 16 xmm + 32 shadow + 8). */
@@ -73,6 +79,53 @@ static inline float rg_ovl_bits_f32(int bits)
             "popq %rdx\n\t"                                                   \
             "popq %rcx\n\t"                                                   \
             "jmp *%rax\n\t");                                                 \
+    }
+#elif defined(__x86_64__)
+/* SysV x86-64 (Linux, docs/LINUX.md "x64 Linux"): the argument registers (rdi rsi rdx rcx
+ * r8 r9, xmm0-7; rax = al, the vector count of a varargs call) survive the resolver call;
+ * no shadow space; rsp 16-aligned at the call (entry rsp = 8 mod 16, 7 pushes = 0 mod 16,
+ * 0x80 = 8 x 16 xmm); r11 (scratch, not an argument register) carries the target. */
+#define RG_OVL_TRAMPOLINE(name, table, idx)                               \
+    __attribute__((naked, used)) void name(void)                          \
+    {                                                                     \
+        __asm__ volatile(                                                 \
+            "pushq %rdi\n\t"                                              \
+            "pushq %rsi\n\t"                                              \
+            "pushq %rdx\n\t"                                              \
+            "pushq %rcx\n\t"                                              \
+            "pushq %r8\n\t"                                               \
+            "pushq %r9\n\t"                                               \
+            "pushq %rax\n\t"                                              \
+            "subq $0x80, %rsp\n\t"                                        \
+            "movdqu %xmm0, 0x00(%rsp)\n\t"                                \
+            "movdqu %xmm1, 0x10(%rsp)\n\t"                                \
+            "movdqu %xmm2, 0x20(%rsp)\n\t"                                \
+            "movdqu %xmm3, 0x30(%rsp)\n\t"                                \
+            "movdqu %xmm4, 0x40(%rsp)\n\t"                                \
+            "movdqu %xmm5, 0x50(%rsp)\n\t"                                \
+            "movdqu %xmm6, 0x60(%rsp)\n\t"                                \
+            "movdqu %xmm7, 0x70(%rsp)\n\t"                                \
+            "leaq " RG_OVL_ASM_SYM(table) "(%rip), %rdi\n\t"              \
+            "movl $" #idx ", %esi\n\t"                                    \
+            "call " RG_OVL_ASM_SYM(rg_ovl_call_import_at) "\n\t"          \
+            "movq %rax, %r11\n\t"                                         \
+            "movdqu 0x00(%rsp), %xmm0\n\t"                                \
+            "movdqu 0x10(%rsp), %xmm1\n\t"                                \
+            "movdqu 0x20(%rsp), %xmm2\n\t"                                \
+            "movdqu 0x30(%rsp), %xmm3\n\t"                                \
+            "movdqu 0x40(%rsp), %xmm4\n\t"                                \
+            "movdqu 0x50(%rsp), %xmm5\n\t"                                \
+            "movdqu 0x60(%rsp), %xmm6\n\t"                                \
+            "movdqu 0x70(%rsp), %xmm7\n\t"                                \
+            "addq $0x80, %rsp\n\t"                                        \
+            "popq %rax\n\t"                                               \
+            "popq %r9\n\t"                                                \
+            "popq %r8\n\t"                                                \
+            "popq %rcx\n\t"                                               \
+            "popq %rdx\n\t"                                               \
+            "popq %rsi\n\t"                                               \
+            "popq %rdi\n\t"                                               \
+            "jmp *%r11\n\t");                                             \
     }
 #else
 #error "RG_OVL_TRAMPOLINE: i686 or x64 only"

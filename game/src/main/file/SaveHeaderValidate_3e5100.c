@@ -23,9 +23,9 @@ typedef struct Hdr {
 extern u128 Md5DigestQword_369050(void *, s32);
 /*rgp*/
 extern s32 memcmp(void *, void *, s32);
-extern s32 D_004658D8[0x400];
-extern s32 D_004658E0[0x400];
-extern s32 D_004658F0[0x400];
+extern s32 D_004658D8[2];
+extern s32 D_004658E0[2];
+extern s32 D_004658F0[2];
 extern s32 D_004658F8[0x400];
 
 s32 SaveHeaderValidate_3e5100(s32 arg0, Hdr *arg1, s32 arg2, s32 arg3)

@@ -16,7 +16,7 @@ extern void Sprintf_1343b8(void *, void *, s32);
 /*rgp*/
 /*rgp*/
 extern u8 D_0045B078[0x400];
-extern u8 D_0045BFE0[0x400];
+extern u8 D_0045BFE0[8];
 extern u8 D_0045BFE8[0x400];
 
 s32 EventTimerMonographsSpawnMaybe_1fee00(void)

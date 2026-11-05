@@ -19,8 +19,8 @@ typedef struct S003c8d70 {
 
 /*rgp*/
 /*rgp*/
-extern u8 D_00465B00[0x400];
-extern u8 D_00465B08[0x400];
+extern u8 D_00465B00[8];
+extern u8 D_00465B08[8];
 extern u8 D_00465B50[0x400];
 
 s32 InvFreeCategory8Items_3c8d70(S003c8d70 *arg0) {

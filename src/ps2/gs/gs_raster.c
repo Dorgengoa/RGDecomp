@@ -5,6 +5,7 @@
  * FBA, FBMSK/ZMSK.  docs/GS.md "Rasterizer" lists the rules and the places
  * where hardware rounding is approximated. */
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -570,6 +571,91 @@ void gs_draw_kick(gs_state *gs, const gs_vertex *v, int nv, int prim_type)
     if (gs->hooks.draw) gs->hooks.draw(gs->hooks.user, gs, v, nv, prim_type);
     if (!gs->sw_raster) return;
     dctx_init(gs, &d);
+    {
+        /* RG_GS_DRAWLOG=V:A (investigation, lane floorx2): from vsync V on, one stderr line per
+         * textured kick with ALPHA bits 0-7 = A (hex): TEX0, the CLUT words, the vertices.
+         * RG_GS_SKIPA=A: kicks with that ALPHA byte (blending on) are not drawn */
+        extern uint32_t gs__vsyncs;
+        static int lg = -2, la, sk = -2;
+        static uint32_t lv;
+        if (lg == -2) {
+            const char *e = getenv("RG_GS_DRAWLOG");
+            lg = (e && sscanf(e, "%u:%x", &lv, &la) == 2) ? 1 : 0;
+            e = getenv("RG_GS_SKIPA");
+            sk = e ? (int)strtol(e, NULL, 16) : -1;
+        }
+        uint64_t al = gs->reg[GS_ALPHA_1 + (int)GS_BITS((gs->reg[GS_PRMODECONT] & 1) ? gs->reg[GS_PRIM] : gs->reg[GS_PRMODE], 9, 1)];
+        if (sk >= 0 && d.abe && (int)(al & 255u) == sk) {
+            /* RG_GS_SKIPT=T: only kicks with TEX0 bits 0-31 = T (hex) are skipped */
+            static int st = -2;
+            static uint32_t stv;
+            if (st == -2) { const char *e = getenv("RG_GS_SKIPT"); st = e ? 1 : 0; if (e) stv = (uint32_t)strtoul(e, NULL, 16); }
+            if (!st || (d.tme && (uint32_t)d.tc.tex0 == stv)) return;
+        }
+        /* RG_GS_SKIPK=V:LO:HI: from vsync V on, the kicks LO..HI (counted from each vsync) are
+         * not drawn (bisecting which primitives make a pixel); RG_GS_KICKAT=V:X:Y: one stderr
+         * line per kick whose bounding box holds window pixel X,Y (index, registers) */
+        static int kk = -2, kx, ky;
+        static uint32_t kv, klo, khi, kav, kcur = ~0u, kn;
+        if (kk == -2) {
+            const char *e = getenv("RG_GS_SKIPK");
+            kk = (e && sscanf(e, "%u:%u:%u", &kv, &klo, &khi) == 3) ? 1 : 0;
+            e = getenv("RG_GS_KICKAT");
+            if (e && sscanf(e, "%u:%d:%d", &kav, &kx, &ky) == 3) kk |= 2;
+        }
+        if (kk) {
+            if (kcur != gs__vsyncs) { kcur = gs__vsyncs; kn = 0; }
+            uint32_t idx = kn++;
+            if ((kk & 1) && gs__vsyncs >= kv && idx >= klo && idx <= khi) return;
+            if ((kk & 2) && gs__vsyncs >= kav && prim_type >= GS_PRIM_TRIANGLE && prim_type <= GS_PRIM_TRIFAN && nv == 3) {
+                double X = (kx + d.ofx / 16.0) * 16.0, Y = (ky + d.ofy / 16.0) * 16.0;
+                double e0 = ((double)v[1].x - v[0].x) * (Y - v[0].y) - ((double)v[1].y - v[0].y) * (X - v[0].x);
+                double e1 = ((double)v[2].x - v[1].x) * (Y - v[1].y) - ((double)v[2].y - v[1].y) * (X - v[1].x);
+                double e2 = ((double)v[0].x - v[2].x) * (Y - v[2].y) - ((double)v[0].y - v[2].y) * (X - v[2].x);
+                if ((e0 >= 0 && e1 >= 0 && e2 >= 0) || (e0 <= 0 && e1 <= 0 && e2 <= 0))
+                    fprintf(stderr, "gs kickat %u #%u: prim %d fbp %u FRAME %llX ZBUF %llX TEST %llX ALPHA %llX TEX0 %016llX tme %d abe %d | %u,%u,%u %u %u %u %u | %u,%u,%u %u %u %u %u | %u,%u,%u %u %u %u %u\n",
+                            gs__vsyncs, idx, prim_type, d.fbp, (unsigned long long)gs->reg[GS_FRAME_1], (unsigned long long)gs->reg[GS_ZBUF_1],
+                            (unsigned long long)gs->reg[GS_TEST_1], (unsigned long long)al, (unsigned long long)d.tc.tex0, d.tme, d.abe,
+                            v[0].x, v[0].y, v[0].z, v[0].r, v[0].g, v[0].b, v[0].a, v[1].x, v[1].y, v[1].z, v[1].r, v[1].g, v[1].b, v[1].a,
+                            v[2].x, v[2].y, v[2].z, v[2].r, v[2].g, v[2].b, v[2].a);
+            }
+        }
+        if (lg == 1 && gs__vsyncs >= lv && d.tme && (int)(al & 255u) == la) {
+            fprintf(stderr, "gs drawlog %u: prim %d TEX0 %016llX TEX1 %llX TEXA %llX fbp %u c0 %08X c64 %08X c128 %08X c200 %08X c255 %08X",
+                    gs__vsyncs, prim_type, (unsigned long long)d.tc.tex0, (unsigned long long)d.tc.tex1,
+                    (unsigned long long)d.tc.texa, d.fbp, gs->clut[0] | ((uint32_t)gs->clut[256] << 16),
+                    gs->clut[64] | ((uint32_t)gs->clut[320] << 16), gs->clut[128] | ((uint32_t)gs->clut[384] << 16),
+                    gs->clut[200] | ((uint32_t)gs->clut[456] << 16), gs->clut[255] | ((uint32_t)gs->clut[511] << 16));
+            for (int i = 0; i < nv; i++)
+                fprintf(stderr, " | %u,%u rgba %u %u %u %u stq %g %g %g", v[i].x, v[i].y, v[i].r, v[i].g, v[i].b, v[i].a,
+                        v[i].s, v[i].t, v[i].q);
+            fputc('\n', stderr);
+            /* RG_GS_TEXDUMP=DIR: the first such kick of each vsync also writes its texture's
+             * level 0 (raw words of TEX0's PSM at TBP/TBW, TW x TH) as DIR/tex_VSYNC.raw */
+            static uint32_t dv = ~0u;
+            const char *td = getenv("RG_GS_TEXDUMP");
+            const char *tf = getenv("RG_GS_TEXDUMP_TEX0");   /* (only kicks with TEX0 bits 0-31 = this, hex) */
+            if (td && dv != gs__vsyncs && (!tf || (uint32_t)d.tc.tex0 == (uint32_t)strtoul(tf, NULL, 16))) {
+                dv = gs__vsyncs;
+                char fn[600];
+                snprintf(fn, sizeof fn, "%s/tex_%u.raw", td, gs__vsyncs);
+                FILE *f = fopen(fn, "wb");
+                if (f) {
+                    int psm = (int)GS_BITS(d.tc.tex0, 20, 6);
+                    uint32_t tbp = (uint32_t)GS_BITS(d.tc.tex0, 0, 14), tbw = (uint32_t)GS_BITS(d.tc.tex0, 14, 6);
+                    for (int y = 0; y < (1 << d.th); y++)
+                        for (int x = 0; x < (1 << d.tw); x++) {
+                            uint32_t w = gs_read_pixel(gs, psm, tbp, tbw, x, y);
+                            fwrite(&w, 4, 1, f);
+                        }
+                    fclose(f);
+                }
+                snprintf(fn, sizeof fn, "%s/mem_%u.vram", td, gs__vsyncs);   /* (and the whole local memory) */
+                f = fopen(fn, "wb");
+                if (f) { fwrite(gs->vram, 1, GS_VRAM_BYTES, f); fclose(f); }
+            }
+        }
+    }
     for (int i = 0; i < nv; i++) to_wv(&d, &v[i], &w[i]);
     d.texmem = gs;
     gs_state view;

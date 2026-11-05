@@ -74,6 +74,8 @@ COLS = ["pad", "audio", "ktrace", "ktrace_n", "now"]
 CLASS = {
     "display.window_mode": ("host", "window only (a headless host has no window)"),
     "display.monitor": ("host", "window only"),
+    "display.fullscreen_mode": ("host", "exclusive fullscreen display mode only (no window headless)"),
+    "saves.dir": ("host", "card folder only; the harness passes --saves / $RG_SAVES, which take precedence"),
     "display.scale": ("host", "window fit only; headless frames are never scaled to a window"),
     "display.vsync": ("host", "presents / host clock only (headless: retail cadence, no presents)"),
     "display.pacing": ("host", "headless forces the retail cadence (runtime.c pace_update)"),
@@ -93,16 +95,31 @@ CLASS = {
     # headless with a note
     "display.width": ("headless", "aspect_apply reads it headless (graphics.aspect=auto); window size otherwise"),
     "display.height": ("headless", "as display.width"),
-    "graphics.anisotropic": ("headless", "read, but no effect in the native-only exe (P6-STATUS)"),
+    "graphics.anisotropic": ("headless", "native renderer sampler only (3D bilinear textures; p6gfx 2026-11-01)"),
     "display.interpolation": ("headless", "inert headless without $RG_INTERP_SIM; swept with RG_INTERP_SIM=120"),
+    "accessibility.ui_scale": ("headless", "2D layout transform of the GsPkt packets (rg_layout.c; p6qol 2026-11-01)"),
+    "accessibility.camera_shake": ("headless", "draw camera copy only (CameraShakeApply_3056b0 override; p6qol "
+                                               "2026-11-01); RG_SHAKE_LOG=1 shows the run shook"),
+    "graphics.rt_emissive": ("headless", "Vulkan x64 drawing only (docs/RAYTRACING.md RT8; a sub-option of graphics.raytracing): "
+                                         "swept with RG_GPU_API=vulkan RG_RT=3 (shadows + AO on)"),
+    "graphics.raytracing": ("headless", "Vulkan x64 drawing only (docs/RAYTRACING.md; menu row since rt2); swept with "
+                                        "RG_GPU_API=vulkan, also under interpolation (RT2d presents); an i686 / D3D11 exe "
+                                        "prints 'unavailable' and runs as off"),
 }
 
 # Curated sweep values (else derived from the type).  A value may be (value, {env}).
 VALUES = {
     "display.interpolation": [("true", {"RG_INTERP_SIM": "120"}), ("true", {})],
     "audio.device": ["optgate-no-such-device"],
+    "accessibility.ui_scale": ["75", "150"],
+    "accessibility.camera_shake": ["0", "50"],
+    "display.fullscreen_mode": ["1920x1080@60"],
     "system.screenshot_dir": ["out/optgate-shots"],
     "input.overlay_chord": ["", "pad:leftshoulder, pad:rightshoulder"],
+    "graphics.rt_emissive": [("on", {"RG_GPU_API": "vulkan", "RG_RT": "3"}), ("overlay", {"RG_GPU_API": "vulkan", "RG_RT": "3"})],
+    "graphics.raytracing": [("shadows", {"RG_GPU_API": "vulkan"}), ("shadows_ao", {"RG_GPU_API": "vulkan"}),
+                            ("shadows_ao_refl", {"RG_GPU_API": "vulkan"}),
+                            ("shadows", {"RG_GPU_API": "vulkan", "RG_INTERP": "1", "RG_INTERP_SIM": "120"})],
 }
 # "on" value for the combined run (else the last sweep value).  Kept moderate where the
 # headless cost would explode (8x x SSAA4).
@@ -119,6 +136,10 @@ COMBINED = {
 # RG_INTERP_SIM_SNAP=1 = no passes at all; the full combined run (4x x SSAA2 = 8x + sim) made
 # ~1 field/s).  The interpolation passes are exercised instead by "combined_interp": the
 # combined set at 2x without SSAA, with the sim (and by the per-setting sweep at native).
+# Without the sim the combined set was still 8-10x slower in 3D (10-26, "slowdown 2"); bisected
+# 2026-10-31 with tools/p6/optcost.py on the save2 boot: the whole cost is the internal
+# resolution's pixel count (4x x SSAA2 = 8x: GPU fill on 4096-wide targets; probe sync ~10 %),
+# the other 89 settings cost nothing; since rtrows (10-31) 14.5 s vs 5.7 s Original (2.5x).
 COMBINED_ENV = {}
 COMBINED_INTERP = {"graphics.internal_res": "2x", "graphics.antialiasing": "off"}
 BINDING_SWEEP = ["", "key:F9"]

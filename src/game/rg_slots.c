@@ -8,7 +8,10 @@
  * Both apply only to headless runs (`--headless` on the command line; 2026-10-22, launch by
  * double-click): a windowed game runs at normal priority without taking a slot.
  * Overrides, either way: RG_SLOTS_PRIORITY=normal|low picks the priority, RG_SLOTS=1|0
- * forces the slot wait on or off. */
+ * forces the slot wait on or off.
+ * RG_SLOT_WAIT_DIR=<dir> (set by tools/fixtures/slotwatch.py, 2026-11-01): each headless run
+ * writes <dir>/slotwait-<pid>.txt: "wait <unix ms>" before a wait (only when it has to wait) and
+ * "got <unix ms>" once it holds a slot, so a test harness can time its runs without the waits. */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_WARNINGS
@@ -20,6 +23,24 @@
 #define RG_SLOT_COUNT 2
 
 static HANDLE g_slots[RG_SLOT_COUNT];
+
+/* One line to the RG_SLOT_WAIT_DIR record (see the header); best effort. */
+static void rg_slots_note(const char *what)
+{
+    const char *dir = getenv("RG_SLOT_WAIT_DIR");
+    if (!dir || !*dir)
+        return;
+    char path[1024];
+    snprintf(path, sizeof path, "%s/slotwait-%lu.txt", dir, (unsigned long)GetCurrentProcessId());
+    FILE *f = fopen(path, "a");
+    if (!f)
+        return;
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    unsigned long long t = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+    fprintf(f, "%s %llu\n", what, (t - 116444736000000000ULL) / 10000ULL);
+    fclose(f);
+}
 
 /* Before main, so argv is not parsed yet: look for a whole `--headless` token. */
 static int rg_slots_headless(void)
@@ -59,8 +80,10 @@ __attribute__((constructor)) static void rg_slots_acquire(void)
         fprintf(stderr, "rg-game: %d runs already active, waiting for a free slot...\n",
                 RG_SLOT_COUNT);
         fflush(stderr);
+        rg_slots_note("wait");
         r = WaitForMultipleObjects(RG_SLOT_COUNT, g_slots, FALSE, INFINITE);
     }
+    rg_slots_note("got");
     (void)r; /* slot held until the process exits */
 }
 #endif

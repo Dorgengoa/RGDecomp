@@ -139,6 +139,15 @@ int rg_runtime_run_field(void);
  * Returns the last run_field result (0 when the field limit ended it). */
 int rg_runtime_run(uint64_t max_fields);
 void rg_runtime_request_quit(void);
+/* gameplay.battle_speed (src/game/rg_game_main.c decides when): from the next field on, VBlank
+ * phases run `speed` times as fast against the host clock (both pacing modes) and the host audio
+ * is time-compressed with its pitch kept; each phase, and so the game state and the run hash,
+ * is unchanged.  stage = the option is on (the audio stage stays in, at speed 1 outside
+ * battles: no seam); 0 = off (speed must be 1).  Interpolated presents pause while speed > 1. */
+void rg_runtime_set_speed(double speed, int stage);
+/* rg-game, per field: whether a movie is open (the native device's texture dumps skip movie
+ * frames, docs/TEXTURES.md); reaches the GS worker behind everything already sent */
+void rg_runtime_movie_playing(int on);
 void rg_runtime_shutdown(void);
 
 /* ---- per-field statistics (tests, the demo) ---- */

@@ -61,8 +61,8 @@ Mgr *GetReadBuffHeap_2025e0(void);
 void TargetRefCtorWrap_2db800(void *);
 void EffectInstanceCtor_2db830(void *);
 void TargetRefCtor_2e71f0(void *);
-extern u8 D_00471670[0x400];
-extern u8 D_004716F0[0x400];
+extern u8 D_00471670[0x68];
+extern u8 D_004716F0[0x70];
 extern u8 D_00471760[0x400];
 extern u8 D_004E8050[0x400];
 }

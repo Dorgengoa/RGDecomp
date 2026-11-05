@@ -26,7 +26,7 @@ typedef struct Root002fd6e0 {
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_004E6620[0x400];
+extern u8 D_004E6620[4];
 extern Ctx002fd6e0 *D_004E6628[0x100];
 
 s32 NpcCfgCmdSelectDef_2fd6e0(s32 arg0, s32 arg1)

@@ -38,7 +38,7 @@
 /*rgp*/
 extern s32 strcpy(void *, void *);
 extern u32 strlen(void *);
-extern u8 D_0045C128[0x400];
+extern u8 D_0045C128[8];
 extern u8 D_0045C130[0x400];
 extern s8 D_00481AFC;
 extern s32 D_00481B00;
@@ -46,7 +46,7 @@ extern s8 D_00481B04;
 extern s32 D_00481B2C;
 extern s8 D_00481B30;
 extern s8 D_00481B34;
-extern u8 D_004B8BB0[0x400];
+extern u8 D_004B8BB0[0x60];
 extern u8 D_004B8C10[0x400];
 
 void MapSystemsInit_2017f0(s32 arg0, s32 arg1) {

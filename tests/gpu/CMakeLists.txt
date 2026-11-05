@@ -15,7 +15,7 @@ add_library(rg_gpu_golden OBJECT
 target_include_directories(rg_gpu_golden PRIVATE ${CMAKE_SOURCE_DIR}/tests/gs
   ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(rg_gpu_golden PRIVATE
-  "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/gpu_tee.h")
+  "SHELL:-include \"${CMAKE_CURRENT_SOURCE_DIR}/gpu_tee.h\"")
 target_compile_definitions(rg_gpu_golden PRIVATE _CRT_SECURE_NO_WARNINGS)
 target_link_libraries(rg_gpu_golden PRIVATE rg_ps2_gs rg_flags)
 

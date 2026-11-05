@@ -825,6 +825,34 @@ class Ptr32Stage:
                         continue        # a member access named like a typedef
                     ins[p] = " " + P32
                     cnt["dptr-td"] += 1
+        # ---- ptrarr: a pointer to an ARRAY OF POINTERS, `T *(*)[N]` (casts, macro
+        # bodies) or `T *(*name)[N]` (locals, parameters): the array is a game table of
+        # 4-byte words (linux interiorfix macros `#define D_x (*(T * (*)[N])((u8 *)&D_y +
+        # off))`, x64e 11-02: 8-byte slots over NpcCfgCmdSelectDef_2fd6e0's D_004E6628
+        # table faulted at field 2,114).  Every element star gets RG_P32.  An array of
+        # FUNCTION pointers `R (*(*)[N])(A)` has no __ptr32 spelling in clang's abstract
+        # declarator and is REJECTED (self.errors -> derive problem): spell it as a u32
+        # table and convert at the call, or use __typeof__ of a ptr32-rewritten extern.
+        code_d2 = blank(raw, keep_define=True)
+        for m in re.finditer(r"\b(" + ID + r")((?:\s*(?:const\s*|volatile\s*)*\*)+)\s*\(\s*\*\s*(?:"
+                             + ID + r")?\s*\)\s*\[", code_d2):
+            if m.group(1) not in td.names or m.group(1) in ("return", "sizeof", "case"):
+                continue
+            hit = False
+            for k in range(m.start(2), m.end(2)):
+                if code_d2[k] == "*" and k not in rep:
+                    rep[k] = (k + 1, "* " + P32 + " ")
+                    hit = True
+            if hit:
+                cnt["ptrarr"] += 1
+                self.rows.append(f"{relpath}\t{line(m.start())}\tptrarr\t"
+                                 f"{' '.join(code_d2[m.start():m.end() + 20].split())}")
+        for m in re.finditer(r"\(\s*\*\s*(?:const\s*|volatile\s*)*\(\s*\*\s*(?:" + ID
+                             + r")?\s*\)\s*\[[^\]]*\]\s*\)\s*\(", code_d2):
+            self.errors.append(f"{relpath}:{line(m.start())}: pointer to an array of function "
+                               f"pointers (8-byte slots over a 4-byte game table; no RG_P32 "
+                               f"spelling): {' '.join(code_d2[max(0, m.start() - 30):m.end() + 10].split())}")
+            cnt["ptrarr-fn-rejected"] += 1
         # ---- calls through RG_P32 function pointers
         wraps: list[tuple[int, int]] = []
         if fn_names or fn_globals:
@@ -1039,11 +1067,13 @@ class Ptr32Stage:
 
 
 def main(argv):
-    """Debug: rewrite one file to stdout (headers from --inc DIR)."""
+    """Rewrite one file to stdout or --out (headers from --inc DIR); also builds the x64
+    dialect.bitfields fixture (cmake/x64.cmake)."""
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("file")
     ap.add_argument("--inc", action="append", default=[])
+    ap.add_argument("--out", help="write the rewritten file here (default stdout)")
     a = ap.parse_args(argv)
     st = Ptr32Stage()
     hdr = {}
@@ -1053,7 +1083,10 @@ def main(argv):
     st.prepare_headers(hdr)
     t = Path(a.file).read_text(encoding="utf-8", errors="surrogateescape")
     out, n = st.rewrite(Path(a.file).name, t)
-    sys.stdout.write(out)
+    if a.out:
+        Path(a.out).write_text(out, encoding="utf-8", errors="surrogateescape")
+    else:
+        sys.stdout.write(out)
     sys.stderr.write(st.report() + "\n")
     return 0
 

@@ -9,7 +9,7 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_0045F0A0[0x100];
+extern u8 D_0045F0A0[0x10];
 extern u8 D_0045F0B0[0x100];
 
 struct S0025FBB0 {

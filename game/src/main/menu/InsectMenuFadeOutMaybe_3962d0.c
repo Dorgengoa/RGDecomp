@@ -13,7 +13,7 @@
 extern f32 D_0047DD2C;
 extern f32 D_0047FF44;
 extern s32 D_004834F0;
-extern u8 D_004E95C0[0x400];
+extern u8 D_004E95C0[8];
 extern u8 D_004E95E0[0x400];
 
 s32 InsectMenuFadeOutMaybe_3962d0(s32 pad0, s32 arg1)

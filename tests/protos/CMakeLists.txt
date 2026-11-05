@@ -74,6 +74,9 @@ foreach(v ok providers bits wide vslot abi2 shortagg abi3)
   target_compile_options(${_exe} PRIVATE -w $<$<COMPILE_LANGUAGE:C>:-Wno-int-conversion
       -Wno-incompatible-pointer-types -Wno-implicit-function-declaration>)
   target_link_libraries(${_exe} PRIVATE rg_flags)
+  if(NOT WIN32)   # as the game's C++ (cmake/game.cmake): pointer -> narrow int casts
+    target_compile_options(${_exe} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fms-extensions>)
+  endif()
 endforeach()
 
 add_test(NAME protos.abi COMMAND rg-protos-abi-ok)
@@ -142,6 +145,20 @@ if(RG_PYTHON)
            --game ${RG_GAME_TREE} --ignore-overrides)
   set_tests_properties(protos.deficits protos.deficits_control PROPERTIES LABELS protos TIMEOUT 60)
   set_tests_properties(protos.deficits_control PROPERTIES WILL_FAIL TRUE)
+  # 2026-11-01 (f32args lane, docs/PROTOS.md "Virtual calls and float lanes"):
+  # protos.f32args   every devirt slot call / float function-pointer call whose i686
+  #                  argument layout puts a float where its retail target reads another
+  #                  lane (tools/census/f32args.py: retail vtable targets, plausibility
+  #                  from the jalr's live lanes); unreviewed rows fail
+  # control          the thunks re-typed GPR-first (devirt without vcall-target-lanes):
+  #                  the INSECT effect step / menu item model / map entry / attack-object
+  #                  SetPosVec sites must come back (FAIL)
+  add_test(NAME protos.f32args COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/census/f32args.py
+           --game ${RG_GAME_TREE})
+  add_test(NAME protos.f32args_control COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/census/f32args.py
+           --game ${RG_GAME_TREE} --control)
+  set_tests_properties(protos.f32args protos.f32args_control PROPERTIES LABELS protos TIMEOUT 300)
+  set_tests_properties(protos.f32args_control PROPERTIES WILL_FAIL TRUE)
   # 2026-10-25 protos manual-row close-out (docs/PROTOS.md "Manual rows closed"):
   # protos.manual   every manual / unresolved PROTOS.tsv row has a reviewed verdict in
   #                 census/protos_manual.tsv, none BUG; control: overrides ignored (FAIL)
@@ -162,3 +179,20 @@ if(RG_PYTHON)
   set_tests_properties(protos.irabi protos.irabi_control PROPERTIES LABELS protos TIMEOUT 900)
   set_tests_properties(protos.manual_control protos.irabi_control PROPERTIES WILL_FAIL TRUE)
 endif()
+
+# protos.interior: the ingest stage `interior` (distinct-symbol aliasing, tools/stages/interior.py,
+# docs/LINUX.md "Linux ABI differences"): game/ was generated with it (a dry run changes no file),
+# every overlapping declared pair of a file is routed to one root symbol, no use precedes its
+# define, no chain member lies past its root's declared extent, and every true-extent row
+# (tools/stages/interior_extent.tsv) applied and fits the data layer.  Control: synthetic sources
+# (a store through an interior label, a chain, a use before a redeclaration, a past-extent
+# member, true-extent rows, a stale row) must come out as expected.  i686 / Linux game trees only: an x64 build's
+# RG_GAME_TREE is the DERIVED tree (ptr32 declarators); there x64.interiorcheck checks the macros.
+if(NOT RG_ARCH STREQUAL "x64")
+  add_test(NAME protos.interior COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/stages/interior.py
+           --check --game ${RG_GAME_TREE})
+  set_tests_properties(protos.interior PROPERTIES LABELS protos TIMEOUT 300)
+endif()
+add_test(NAME protos.interior_control COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/stages/interior.py
+         --control)
+set_tests_properties(protos.interior_control PROPERTIES LABELS protos TIMEOUT 300)

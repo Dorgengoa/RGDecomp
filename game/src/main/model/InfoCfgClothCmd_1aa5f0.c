@@ -29,9 +29,9 @@ typedef struct Obj {
     Map m430;
 } Obj;
 
-extern Obj *D_0049D418[0x100];
-extern s32 D_0049D398[0x100];
-extern s32 D_0049D390[0x100];
+extern Obj *D_0049D418[1];
+extern s32 D_0049D398[1];
+extern s32 D_0049D390[2];
 extern s32 D_0049D434[0x100];
 extern f32 D_0047E1C0;
 extern f32 D_0047E1C4;

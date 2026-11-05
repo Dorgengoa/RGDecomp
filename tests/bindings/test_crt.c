@@ -50,6 +50,17 @@ int bt_crt(void)
     BT_EQ(f, Rand_133710(), 1270216262);
     Srand_1336f8(12345);
     BT_EQ(f, Rand_133710(), 134732914);
+    {
+        /* the private stream (draw-path isolation, lane randdraw): calls made while
+         * rg_crt_rand_private > 0 leave the game's sequence where it was */
+        extern int rg_crt_rand_private;
+        Srand_1336f8(12345);
+        rg_crt_rand_private = 1;
+        (void)Rand_133710();
+        (void)Rand_133710();
+        rg_crt_rand_private = 0;
+        BT_EQ(f, Rand_133710(), 134732914);
+    }
 
     /* ---- ctype quirks ---- */
     BT_EQ(f, Toupper_1363e0('a'), 'A');
@@ -179,8 +190,20 @@ int bt_crt(void)
 
     /* ---- global destructor chain: LIFO, node popped before the call ---- */
     {
+#if defined(_WIN64)
+        extern struct { void *__ptr32 __uptr head; int pad[3]; } D_004853D0; /* x64: game words (docs/X64-PLAN.md 0.8) */
+#else
+#line 182
         extern struct { void *head; int pad[3]; } D_004853D0;
+#endif
+#line 183
+#if defined(_WIN64)
+        struct node { struct node *__ptr32 __uptr next; rg_xtor_fn __ptr32 __uptr dtor; void *__ptr32 __uptr obj; } n1, n2;
+#else
+#line 183
         struct node { struct node *next; rg_xtor_fn dtor; void *obj; } n1, n2;
+#endif
+#line 184
         int o1 = 1, o2 = 2;
         n1.next = NULL, n1.dtor = dtor_cb, n1.obj = &o1;
         n2.next = &n1, n2.dtor = dtor_cb, n2.obj = &o2;

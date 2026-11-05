@@ -7,15 +7,15 @@
 extern void Sprintf_1343b8(void *, void *, s32, void *);
 /*rgp*/
 extern s8 *strcpy(s8 *, const s8 *);
-extern s8 D_0045C840[0x400];
-extern s8 D_0045C868[0x400];
-extern s8 D_0045C870[0x400];
-extern s8 D_0045C8F0[0x400];
-extern s8 D_0045C910[0x400];
-extern s8 D_0045CAF0[0x400];
-extern s8 D_0045CB00[0x400];
-extern s8 D_0045CB10[0x400];
-extern s8 D_0045CB20[0x400];
+extern s8 D_0045C840[8];
+extern s8 D_0045C868[8];
+extern s8 D_0045C870[0x10];
+extern s8 D_0045C8F0[0x10];
+extern s8 D_0045C910[0x10];
+extern s8 D_0045CAF0[0x10];
+extern s8 D_0045CB00[0x10];
+extern s8 D_0045CB10[0x10];
+extern s8 D_0045CB20[0x10];
 extern s8 D_0045CB30[0x400];
 
 s32 CharaIsInKnockbackMotionMaybe_214db0(u8 *arg0) {

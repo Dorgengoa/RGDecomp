@@ -7,7 +7,7 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern s32 D_004DB928[0x100];
+extern s32 D_004DB928[1];
 extern s32 D_004DB930[0x100];
 
 s32 AiCmdGetAllySuggestChoiceMaybe_2cab00(s64 *arg0) {

@@ -53,9 +53,15 @@ def run(exe: Path, api: str, out: Path, fields: int, stale: bool) -> tuple[bool,
     shop = any(m == "12/1" for f, m in modes if 4250 <= f <= 4700)
     back = any(m == "6/100" for f, m in modes if f > CLOSE_FIELD)
     stale = re.search(r"native render constants notes: .*", txt)
-    ok = p.returncode == 0 and not exc and shop and back
+    # the API must be the one asked for (integ2 11-01: a build without the Vulkan backend ran
+    # D3D11 silently for --api vulkan and passed); the exe prints "rg gpu: <device>"
+    dev = re.search(r"rg gpu: (.*)", txt)
+    # (D3D11 prints no such line; Vulkan prints "rg gpu: Vulkan <device>")
+    api_ok = bool(dev and dev.group(1).startswith("Vulkan ")) == (api == "vulkan")
+    ok = p.returncode == 0 and not exc and shop and back and api_ok
     why = (f"rc {p.returncode}, shop menu {'seen' if shop else 'NOT seen'}, field after close "
            f"{'yes' if back else 'NO'}, last field {modes[-1][0] if modes else '-'}"
+           + f"; device {dev.group(1) if dev else 'D3D11 (no rg gpu line)'}" + ("" if api_ok else f" (NOT {api})")
            + (f"; {exc.group(0)}" if exc else "") + (f"; {stale.group(0)}" if stale else ""))
     return ok, why
 

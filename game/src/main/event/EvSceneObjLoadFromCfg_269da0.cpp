@@ -23,7 +23,7 @@ extern void ModelObjExCtor_1c4920(void *, int, int, int);
 extern void *ObjRecGetLiveObject_1c4a90(s32, s32);
 extern void GameSceneObjBindMaybe_1cfcd0(s32, s32, void *, s32);
 extern s32 GetEffectMgr_2d9040(void);
-extern u8 D_0045EF98[0x400];
+extern u8 D_0045EF98[8];
 extern u8 D_0045F1B0[0x400];
 extern u8 D_00470F50[0x400];
 extern s32 D_0047E180;

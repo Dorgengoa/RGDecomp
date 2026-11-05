@@ -84,7 +84,7 @@ void ResGroupUnloadGroup_42b650(s32, s32);
 void *memset(void *, s32, u32);
 char *strcpy(char *, const char *);
 extern u8 D_00454460[];
-extern u8 D_004642F0[0x400];
+extern u8 D_004642F0[0x18];
 extern char D_00464308[];
 extern u8 D_00470F50[];
 extern s16 D_0047FF40;

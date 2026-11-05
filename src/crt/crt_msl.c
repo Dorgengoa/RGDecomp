@@ -8,7 +8,7 @@
 
 #include "crt.h"
 /* x64 (docs/X64-PLAN.md): size parameters from the game are 32-bit values */
-#if defined(_WIN64)
+#if defined(__x86_64__)
 #define RG_GSIZE(x) ((x) = (size_t)(uint32_t)(x))
 #else
 #define RG_GSIZE(x) ((void)0)
@@ -127,7 +127,11 @@ typedef struct rg_ostream_sentry {
     void *CRT_P32 os; /* the game's stack object (retail 8 bytes) */
 } rg_ostream_sentry;
 
+#if defined(__x86_64__) /* the ostream's ios pointer: a 4-byte game-memory word (docs/X64-PLAN.md 0.8) */
+#define RG_IOS(os)        ((uint8_t *)(uintptr_t)*(const uint32_t *)(os))
+#else
 #define RG_IOS(os)        (*(uint8_t **)(os))
+#endif
 #define RG_IOS_RDBUF(i)   (*(uint32_t *)((i) + 0x20))
 #define RG_IOS_FLAGS(i)   (*(uint16_t *)((i) + 0x38))
 #define RG_IOS_STATE(i)   (*(uint8_t *)((i) + 0x3A))

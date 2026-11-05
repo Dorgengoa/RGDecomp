@@ -10,11 +10,13 @@ project(rgport LANGUAGES C CXX)
 # cmake/x64.cmake).  Nothing below changes for i686.
 if(CMAKE_SIZEOF_VOID_P EQUAL 4)
   set(RG_ARCH i686)
-elseif(CMAKE_SIZEOF_VOID_P EQUAL 8 AND WIN32)
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 8 AND (WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Linux"))
+  # x64: Windows (cmake/toolchain-x64-windows-clang.cmake) or Linux
+  # (cmake/toolchain-linux-x64.cmake, docs/LINUX.md "x64 Linux")
   set(RG_ARCH x64)
 else()
-  message(FATAL_ERROR "rgport builds i686 (cmake/toolchain-i686-*.cmake) or Windows x64 "
-                      "(cmake/toolchain-x64-windows-clang.cmake, docs/X64-PLAN.md)")
+  message(FATAL_ERROR "rgport builds i686 (cmake/toolchain-i686-*.cmake) or x64 "
+                      "(cmake/toolchain-x64-windows-clang.cmake, cmake/toolchain-linux-x64.cmake, docs/X64-PLAN.md)")
 endif()
 message(STATUS "RG_ARCH=${RG_ARCH}")
 
@@ -208,6 +210,13 @@ target_compile_definitions(rg-test-vu0 PRIVATE RG_VU0_ORACLE=1)  # checks the mo
 add_test(NAME vu0 COMMAND rg-test-vu0)
 set_tests_properties(vu0 PROPERTIES LABELS port)
 
+# the native renderer's generated overrides still equal their generator's output over game/
+if(RG_PYTHON)
+  add_test(NAME overrides.render_generated
+           COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/native/render_overrides.py --check)
+  set_tests_properties(overrides.render_generated PROPERTIES LABELS port)
+endif()
+
 # ---- game/ as OBJECT libraries rg_game_<image> + umbrella rg_game_objs
 # (EXCLUDE_FROM_ALL; source list from game/MANIFEST.tsv; cmake/game.cmake)
 include(cmake/game.cmake)
@@ -270,6 +279,22 @@ include(cmake/game_link.cmake)
 add_subdirectory(tests/fixtures)
 # D9 link gate (docs/NATIVE-ONLY.md): reads the rg-game map
 add_subdirectory(tests/native_only)
+
+# Linux i686: the VU0 libraries get the game objects' float-sqrt mapping (port/sqrtf_map.h:
+# rounded to nearest as the Windows exe's CRT sqrtf; cmake/game.cmake, docs/LINUX.md "Float sqrt")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT RG_ARCH STREQUAL "x64")
+  foreach(d src/native/vu0 src/sce/vu0)
+    if(EXISTS ${CMAKE_SOURCE_DIR}/${d}/CMakeLists.txt)
+      get_property(_t DIRECTORY ${CMAKE_SOURCE_DIR}/${d} PROPERTY BUILDSYSTEM_TARGETS)
+      foreach(t ${_t})
+        get_target_property(_ty ${t} TYPE)
+        if(NOT _ty STREQUAL "INTERFACE_LIBRARY")
+          target_compile_options(${t} PRIVATE "SHELL:-include port/sqrtf_map.h")
+        endif()
+      endforeach()
+    endif()
+  endforeach()
+endif()
 
 # x64: start-up low-address self-check in every executable + tests/x64 (cmake/x64.cmake)
 if(RG_ARCH STREQUAL "x64")

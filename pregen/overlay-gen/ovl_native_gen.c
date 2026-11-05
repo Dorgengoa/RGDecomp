@@ -9,6 +9,48 @@
 #define RG_W(v) (v##u)
 #define RG_R(sym, raw) ((uint32_t)(sym))
 #define RG_F(f) ((rg_ovl_fn)(f))
+void MenuGridCursorBobCb_37c070(void);
+void MenuGridCursorBobCb_37e740(void);
+void MenuGridCursorBobCb_37f6d0(void);
+void TransMenuItemCellFocusCb_37f5c0(void);
+void TransMenuItemCellPickAnimState_37e0e0(void);
+void TransMenuItemCmdDispatchState_37e280(void);
+void TransMenuItemCmdPopupCloseState_37c100(void);
+void TransMenuItemCmdPopupOpenState_37c300(void);
+void TransMenuItemCmdPopupSelectState_37c170(void);
+void TransMenuItemCmdRowHighlightCb_37e710(void);
+void TransMenuItemCmdWindowLayoutMaybe_37bfc0(void);
+void TransMenuItemCommandCloseGoto_37d120(void);
+void TransMenuItemCommandCloseState_37e7e0(void);
+void TransMenuItemCommandOpenState_37ee90(void);
+void TransMenuItemCommandSelectState_37e880(void);
+void TransMenuItemDiscardCheckState_37d530(void);
+void TransMenuItemDiscardCloseState_37d260(void);
+void TransMenuItemDiscardConfirmState_37d2b0(void);
+void TransMenuItemGridCloseState_37f870(void);
+void TransMenuItemGridOpenState_37ff00(void);
+void TransMenuItemGridSelectState_37fb00(void);
+void TransMenuItemInfoCloseState_37c970(void);
+void TransMenuItemInfoPanelOpenState_37cb10(void);
+void TransMenuItemInfoWaitState_37cab0(void);
+void TransMenuItemMoveCheckState_37d1a0(void);
+void TransMenuItemMoveEndState_37df80(void);
+void TransMenuItemMoveStartState_37d150(void);
+void TransMenuItemMoveState_37d850(void);
+void TransMenuItemMoveTargetState_37dfe0(void);
+void TransMenuItemMsgPopupState_37be30(void);
+void TransMenuItemPartyListCloseState_37c4a0(void);
+void TransMenuItemPartyListShowState_37c510(void);
+void TransMenuItemPartyWaitState_37c900(void);
+void TransMenuItemQuantityCloseState_37cdd0(void);
+void TransMenuItemQuantityOpenState_37d070(void);
+void TransMenuItemQuantitySelectState_37ce70(void);
+void TransMenuItemQuantityValueCbMaybe_37cd60(void);
+void TransMenuItemTabCycleCb_37f260(void);
+void TransMenuItemTransferCheckState_37d7b0(void);
+void TransMenuItemTransferDoneState_37d6c0(void);
+void TransMenuItemTransferState_37d700(void);
+void TransMenuItemUvScrollStateRelated_37cda0(void);
 extern unsigned char factory_D_0050CFA8[];
 extern unsigned char factory_D_0050CFB8[];
 extern unsigned char factory_D_0050CFC8[];
@@ -2856,11 +2898,11 @@ static const uint32_t rg_ovl_normal_data[2240] = {
     RG_W(@W@BIN/NORMAL.BIN@3BEB0@), RG_R(&normal_TransWarpListCursorBobCb_51bbe0, 0x0051BBE0), RG_W(@W@BIN/NORMAL.BIN@3BEB8@), RG_R(&normal_TransHunterBountyListCursorMoveCb_51f210, 0x0051F210),
     RG_W(@W@BIN/NORMAL.BIN@3BEC0@), RG_R(&normal_TransHunterBountyListCursorBobCb_51f2b0, 0x0051F2B0), RG_W(@W@BIN/NORMAL.BIN@3BEC8@), RG_R(&normal_TransHunterRankListCursorMoveCb_51dad0, 0x0051DAD0),
     RG_W(@W@BIN/NORMAL.BIN@3BED0@), RG_R(&normal_TransHunterRankListCursorBobCb_51db80, 0x0051DB80), RG_W(@W@BIN/NORMAL.BIN@3BED8@), RG_R(&func_0051DAC0, 0x0051DAC0),
-    RG_W(@W@BIN/NORMAL.BIN@3BEE0@), RG_W(@W@BIN/NORMAL.BIN@3BEE4@), RG_W(@W@BIN/NORMAL.BIN@3BEE8@), RG_W(@W@BIN/NORMAL.BIN@3BEEC@),
-    RG_W(@W@BIN/NORMAL.BIN@3BEF0@), RG_W(@W@BIN/NORMAL.BIN@3BEF4@), RG_W(@W@BIN/NORMAL.BIN@3BEF8@), RG_W(@W@BIN/NORMAL.BIN@3BEFC@),
-    RG_W(@W@BIN/NORMAL.BIN@3BF00@), RG_W(@W@BIN/NORMAL.BIN@3BF04@), RG_W(@W@BIN/NORMAL.BIN@3BF08@), RG_W(@W@BIN/NORMAL.BIN@3BF0C@),
-    RG_W(@W@BIN/NORMAL.BIN@3BF10@), RG_W(@W@BIN/NORMAL.BIN@3BF14@), RG_W(@W@BIN/NORMAL.BIN@3BF18@), RG_W(@W@BIN/NORMAL.BIN@3BF1C@),
-    RG_W(@W@BIN/NORMAL.BIN@3BF20@), RG_W(@W@BIN/NORMAL.BIN@3BF24@), RG_W(@W@BIN/NORMAL.BIN@3BF28@), RG_W(@W@BIN/NORMAL.BIN@3BF2C@),
+    RG_W(@W@BIN/NORMAL.BIN@3BEE0@), RG_R(&TransMenuItemCellFocusCb_37f5c0, 0x0037F5C0), RG_W(@W@BIN/NORMAL.BIN@3BEE8@), RG_R(&MenuGridCursorBobCb_37f6d0, 0x0037F6D0),
+    RG_W(@W@BIN/NORMAL.BIN@3BEF0@), RG_R(&TransMenuItemTabCycleCb_37f260, 0x0037F260), RG_W(@W@BIN/NORMAL.BIN@3BEF8@), RG_R(&TransMenuItemCmdRowHighlightCb_37e710, 0x0037E710),
+    RG_W(@W@BIN/NORMAL.BIN@3BF00@), RG_R(&MenuGridCursorBobCb_37e740, 0x0037E740), RG_W(@W@BIN/NORMAL.BIN@3BF08@), RG_R(&TransMenuItemQuantityValueCbMaybe_37cd60, 0x0037CD60),
+    RG_W(@W@BIN/NORMAL.BIN@3BF10@), RG_R(&TransMenuItemUvScrollStateRelated_37cda0, 0x0037CDA0), RG_W(@W@BIN/NORMAL.BIN@3BF18@), RG_R(&TransMenuItemCmdWindowLayoutMaybe_37bfc0, 0x0037BFC0),
+    RG_W(@W@BIN/NORMAL.BIN@3BF20@), RG_R(&MenuGridCursorBobCb_37c070, 0x0037C070), RG_W(@W@BIN/NORMAL.BIN@3BF28@), RG_W(@W@BIN/NORMAL.BIN@3BF2C@),
     RG_W(@W@BIN/NORMAL.BIN@3BF30@), RG_R(&normal_TransMenuOpenState_515f10, 0x00515F10), RG_W(@W@BIN/NORMAL.BIN@3BF38@), RG_R(&normal_TransMenuQuickOpenState_515da0, 0x00515DA0),
     RG_W(@W@BIN/NORMAL.BIN@3BF40@), RG_R(&normal_TransMenuTopState_514e10, 0x00514E10), RG_W(@W@BIN/NORMAL.BIN@3BF48@), RG_R(&normal_TransMenuCloseState_5159e0, 0x005159E0),
     RG_W(@W@BIN/NORMAL.BIN@3BF50@), RG_R(&normal_TransSaveOpenState_51a3c0, 0x0051A3C0), RG_W(@W@BIN/NORMAL.BIN@3BF58@), RG_R(&normal_TransSaveMainState_51a360, 0x0051A360),
@@ -2876,23 +2918,23 @@ static const uint32_t rg_ovl_normal_data[2240] = {
     RG_W(@W@BIN/NORMAL.BIN@3BFF0@), RG_R(&normal_TransHunterRankOpenState_51e290, 0x0051E290), RG_W(@W@BIN/NORMAL.BIN@3BFF8@), RG_R(&normal_TransHunterRankListState_51dd40, 0x0051DD40),
     RG_W(@W@BIN/NORMAL.BIN@3C000@), RG_R(&normal_TransHunterRankCloseState_51dcd0, 0x0051DCD0), RG_W(@W@BIN/NORMAL.BIN@3C008@), RG_R(&normal_TransHunterRewardOpenState_51d570, 0x0051D570),
     RG_W(@W@BIN/NORMAL.BIN@3C010@), RG_R(&normal_TransHunterRewardGiveState_51d430, 0x0051D430), RG_W(@W@BIN/NORMAL.BIN@3C018@), RG_R(&normal_TransHunterRewardEndState_51d3c0, 0x0051D3C0),
-    RG_W(@W@BIN/NORMAL.BIN@3C020@), RG_W(@W@BIN/NORMAL.BIN@3C024@), RG_W(@W@BIN/NORMAL.BIN@3C028@), RG_W(@W@BIN/NORMAL.BIN@3C02C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C030@), RG_W(@W@BIN/NORMAL.BIN@3C034@), RG_W(@W@BIN/NORMAL.BIN@3C038@), RG_W(@W@BIN/NORMAL.BIN@3C03C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C040@), RG_W(@W@BIN/NORMAL.BIN@3C044@), RG_W(@W@BIN/NORMAL.BIN@3C048@), RG_W(@W@BIN/NORMAL.BIN@3C04C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C050@), RG_W(@W@BIN/NORMAL.BIN@3C054@), RG_W(@W@BIN/NORMAL.BIN@3C058@), RG_W(@W@BIN/NORMAL.BIN@3C05C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C060@), RG_W(@W@BIN/NORMAL.BIN@3C064@), RG_W(@W@BIN/NORMAL.BIN@3C068@), RG_W(@W@BIN/NORMAL.BIN@3C06C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C070@), RG_W(@W@BIN/NORMAL.BIN@3C074@), RG_W(@W@BIN/NORMAL.BIN@3C078@), RG_W(@W@BIN/NORMAL.BIN@3C07C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C080@), RG_W(@W@BIN/NORMAL.BIN@3C084@), RG_W(@W@BIN/NORMAL.BIN@3C088@), RG_W(@W@BIN/NORMAL.BIN@3C08C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C090@), RG_W(@W@BIN/NORMAL.BIN@3C094@), RG_W(@W@BIN/NORMAL.BIN@3C098@), RG_W(@W@BIN/NORMAL.BIN@3C09C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C0A0@), RG_W(@W@BIN/NORMAL.BIN@3C0A4@), RG_W(@W@BIN/NORMAL.BIN@3C0A8@), RG_W(@W@BIN/NORMAL.BIN@3C0AC@),
-    RG_W(@W@BIN/NORMAL.BIN@3C0B0@), RG_W(@W@BIN/NORMAL.BIN@3C0B4@), RG_W(@W@BIN/NORMAL.BIN@3C0B8@), RG_W(@W@BIN/NORMAL.BIN@3C0BC@),
-    RG_W(@W@BIN/NORMAL.BIN@3C0C0@), RG_W(@W@BIN/NORMAL.BIN@3C0C4@), RG_W(@W@BIN/NORMAL.BIN@3C0C8@), RG_W(@W@BIN/NORMAL.BIN@3C0CC@),
-    RG_W(@W@BIN/NORMAL.BIN@3C0D0@), RG_W(@W@BIN/NORMAL.BIN@3C0D4@), RG_W(@W@BIN/NORMAL.BIN@3C0D8@), RG_W(@W@BIN/NORMAL.BIN@3C0DC@),
-    RG_W(@W@BIN/NORMAL.BIN@3C0E0@), RG_W(@W@BIN/NORMAL.BIN@3C0E4@), RG_W(@W@BIN/NORMAL.BIN@3C0E8@), RG_W(@W@BIN/NORMAL.BIN@3C0EC@),
-    RG_W(@W@BIN/NORMAL.BIN@3C0F0@), RG_W(@W@BIN/NORMAL.BIN@3C0F4@), RG_W(@W@BIN/NORMAL.BIN@3C0F8@), RG_W(@W@BIN/NORMAL.BIN@3C0FC@),
-    RG_W(@W@BIN/NORMAL.BIN@3C100@), RG_W(@W@BIN/NORMAL.BIN@3C104@), RG_W(@W@BIN/NORMAL.BIN@3C108@), RG_W(@W@BIN/NORMAL.BIN@3C10C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C110@), RG_W(@W@BIN/NORMAL.BIN@3C114@), RG_W(@W@BIN/NORMAL.BIN@3C118@), RG_W(@W@BIN/NORMAL.BIN@3C11C@),
-    RG_W(@W@BIN/NORMAL.BIN@3C120@), RG_W(@W@BIN/NORMAL.BIN@3C124@), RG_W(@W@BIN/NORMAL.BIN@3C128@), RG_W(@W@BIN/NORMAL.BIN@3C12C@),
+    RG_W(@W@BIN/NORMAL.BIN@3C020@), RG_R(&TransMenuItemGridOpenState_37ff00, 0x0037FF00), RG_W(@W@BIN/NORMAL.BIN@3C028@), RG_R(&TransMenuItemGridSelectState_37fb00, 0x0037FB00),
+    RG_W(@W@BIN/NORMAL.BIN@3C030@), RG_R(&TransMenuItemGridCloseState_37f870, 0x0037F870), RG_W(@W@BIN/NORMAL.BIN@3C038@), RG_R(&TransMenuItemCommandOpenState_37ee90, 0x0037EE90),
+    RG_W(@W@BIN/NORMAL.BIN@3C040@), RG_R(&TransMenuItemCommandSelectState_37e880, 0x0037E880), RG_W(@W@BIN/NORMAL.BIN@3C048@), RG_R(&TransMenuItemCommandCloseState_37e7e0, 0x0037E7E0),
+    RG_W(@W@BIN/NORMAL.BIN@3C050@), RG_R(&TransMenuItemMsgPopupState_37be30, 0x0037BE30), RG_W(@W@BIN/NORMAL.BIN@3C058@), RG_R(&TransMenuItemCmdDispatchState_37e280, 0x0037E280),
+    RG_W(@W@BIN/NORMAL.BIN@3C060@), RG_R(&TransMenuItemQuantityOpenState_37d070, 0x0037D070), RG_W(@W@BIN/NORMAL.BIN@3C068@), RG_R(&TransMenuItemQuantitySelectState_37ce70, 0x0037CE70),
+    RG_W(@W@BIN/NORMAL.BIN@3C070@), RG_R(&TransMenuItemQuantityCloseState_37cdd0, 0x0037CDD0), RG_W(@W@BIN/NORMAL.BIN@3C078@), RG_R(&TransMenuItemDiscardCheckState_37d530, 0x0037D530),
+    RG_W(@W@BIN/NORMAL.BIN@3C080@), RG_R(&TransMenuItemDiscardConfirmState_37d2b0, 0x0037D2B0), RG_W(@W@BIN/NORMAL.BIN@3C088@), RG_R(&TransMenuItemDiscardCloseState_37d260, 0x0037D260),
+    RG_W(@W@BIN/NORMAL.BIN@3C090@), RG_R(&TransMenuItemMoveCheckState_37d1a0, 0x0037D1A0), RG_W(@W@BIN/NORMAL.BIN@3C098@), RG_R(&TransMenuItemMoveStartState_37d150, 0x0037D150),
+    RG_W(@W@BIN/NORMAL.BIN@3C0A0@), RG_R(&TransMenuItemCommandCloseGoto_37d120, 0x0037D120), RG_W(@W@BIN/NORMAL.BIN@3C0A8@), RG_R(&TransMenuItemCmdPopupOpenState_37c300, 0x0037C300),
+    RG_W(@W@BIN/NORMAL.BIN@3C0B0@), RG_R(&TransMenuItemCmdPopupSelectState_37c170, 0x0037C170), RG_W(@W@BIN/NORMAL.BIN@3C0B8@), RG_R(&TransMenuItemCmdPopupCloseState_37c100, 0x0037C100),
+    RG_W(@W@BIN/NORMAL.BIN@3C0C0@), RG_R(&TransMenuItemPartyWaitState_37c900, 0x0037C900), RG_W(@W@BIN/NORMAL.BIN@3C0C8@), RG_R(&TransMenuItemPartyListShowState_37c510, 0x0037C510),
+    RG_W(@W@BIN/NORMAL.BIN@3C0D0@), RG_R(&TransMenuItemPartyListCloseState_37c4a0, 0x0037C4A0), RG_W(@W@BIN/NORMAL.BIN@3C0D8@), RG_R(&TransMenuItemCellPickAnimState_37e0e0, 0x0037E0E0),
+    RG_W(@W@BIN/NORMAL.BIN@3C0E0@), RG_R(&TransMenuItemMoveTargetState_37dfe0, 0x0037DFE0), RG_W(@W@BIN/NORMAL.BIN@3C0E8@), RG_R(&TransMenuItemMoveEndState_37df80, 0x0037DF80),
+    RG_W(@W@BIN/NORMAL.BIN@3C0F0@), RG_R(&TransMenuItemMoveState_37d850, 0x0037D850), RG_W(@W@BIN/NORMAL.BIN@3C0F8@), RG_R(&TransMenuItemInfoPanelOpenState_37cb10, 0x0037CB10),
+    RG_W(@W@BIN/NORMAL.BIN@3C100@), RG_R(&TransMenuItemInfoWaitState_37cab0, 0x0037CAB0), RG_W(@W@BIN/NORMAL.BIN@3C108@), RG_R(&TransMenuItemInfoCloseState_37c970, 0x0037C970),
+    RG_W(@W@BIN/NORMAL.BIN@3C110@), RG_R(&TransMenuItemTransferCheckState_37d7b0, 0x0037D7B0), RG_W(@W@BIN/NORMAL.BIN@3C118@), RG_R(&TransMenuItemTransferState_37d700, 0x0037D700),
+    RG_W(@W@BIN/NORMAL.BIN@3C120@), RG_R(&TransMenuItemTransferDoneState_37d6c0, 0x0037D6C0), RG_W(@W@BIN/NORMAL.BIN@3C128@), RG_W(@W@BIN/NORMAL.BIN@3C12C@),
     RG_R(normal_D_005265A0, 0x005265A0), RG_W(@W@BIN/NORMAL.BIN@3C134@), RG_R(normal_D_005265C0, 0x005265C0), RG_R(normal_D_005265E0, 0x005265E0),
     RG_R(normal_D_00526600, 0x00526600), RG_R(normal_D_00526620, 0x00526620), RG_R(normal_D_00526640, 0x00526640), RG_R(normal_D_00526660, 0x00526660),
     RG_R(normal_D_00526680, 0x00526680), RG_W(@W@BIN/NORMAL.BIN@3C154@), RG_W(@W@BIN/NORMAL.BIN@3C158@), RG_W(@W@BIN/NORMAL.BIN@3C15C@),

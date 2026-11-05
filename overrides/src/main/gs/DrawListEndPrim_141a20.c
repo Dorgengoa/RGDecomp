@@ -27,7 +27,7 @@ typedef struct {
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern const u128 D_0047DE40 __attribute__((section(".sdata")));
+extern u128 D_0047DE40 __attribute__((section(".sdata")));
 
 int nr_im_end_prim(u32 pkt);
 

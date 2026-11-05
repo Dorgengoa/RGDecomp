@@ -21,12 +21,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <string.h>
 
 #include <algorithm>
 #include <cmath>
 #include <deque>
 #include <map>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -56,6 +58,7 @@ struct Cmd {
     uint32_t bp, bw;
     int psm;
     int img;                     /* C_LOAD: the target as the load left it (local memory may differ at replay) */
+    int img_rect;                /* C_LOAD: img holds only the loaded rect, at (0, 0) */
     GpuRect r2;                  /* C_REINT: the source rect (r: the destination's); bp bw psm the destination's */
     uint32_t bp2, bw2;
     int psm2;
@@ -71,12 +74,14 @@ struct Slot {
     std::map<int, uint32_t> born;   /* targets created in the log: id -> life at creation */
     std::map<int, int> ord;      /* targets created in the log: id -> creation ordinal (current life) */
     int nborn = 0;
+    uint64_t gen = 0;            /* changes whenever the slot is freed (pair_im's cache) */
 };
 
 struct Stats {
     uint64_t draws, copies, loads, clears, creates, pre_images, pre_fail;
     uint64_t replays, replay_draws, replay_interp, replay_stale, replay_notex, replay_bad;
-    uint64_t saves, restores, put_fail;
+    uint64_t saves, restores, put_fail, pre_skipped;
+    uint64_t pc_plans, pc_plan_skip, pc_plan_cmds, pc_plan_cuts, pc_passes, pc_skipped, pc_taken, pc_put, pc_fail;
     uint64_t im_draws, im_paired, im_tris, im_tris_lerped, trimmed, zs_strips, zs_groups, zs_groups_all, zs_pose, zs_widened;
 };
 
@@ -94,6 +99,10 @@ public:
     std::vector<uint32_t> life;  /* per target id: creations + destructions */
     Slot slot[NR_IP_SLOTS];
     int cur = -1;                /* slot recording */
+    uint64_t gen_clock = 0;
+    /* pair_im of the last (slot, previous slot) pair: the same for every pass between two game
+     * frames (the passes of a frame pair differ only in alpha) */
+    struct { uint64_t gs, gp; size_t ns, np; std::vector<int> m; } pm_cache = { 0, 0, 0, 0, {} };
     int replaying = 0;
     std::vector<Pre> saved;      /* current content of targets a replay wrote (restore) */
     int dirty = 0;
@@ -132,6 +141,7 @@ public:
         s.nborn = 0;
         s.rec = 0;
         s.bad = 0;
+        s.gen = ++gen_clock;
     }
     /* a write to target id is coming: its pre-image first (pre-existing targets, once per log) */
     void writes(int id)
@@ -161,6 +171,7 @@ public:
         c.srt[0] = c.srt[1] = c.srt[2] = -1;
         c.life[0] = c.life[1] = c.life[2] = 0;
         c.img = -1;
+        c.img_rect = 0;
         return c;
     }
     bool recording() const { return cur >= 0 && !replaying; }
@@ -237,7 +248,13 @@ public:
             in->rt_load(id, bp, bw, psm, r);
             /* the target after the load: the replay puts it back (local memory is not the same
              * then: the core makes it current from live targets before a load) */
-            slot[cur].cmds.back().img = in->rt_clone(id);
+            {
+                /* ($RG_INTERP_LOADRECT, default on) only the loaded rect: the replay copies just it */
+                Cmd &cl = slot[cur].cmds.back();
+                cl.img = loadrect_on() ? in->rt_clone_rect(id, r) : -1;
+                cl.img_rect = cl.img >= 0;
+                if (cl.img < 0) cl.img = in->rt_clone(id);
+            }
             return;
         }
         in->rt_load(id, bp, bw, psm, r);
@@ -290,6 +307,38 @@ public:
     const uint8_t *snap_map(int s) override { return in->snap_map(s); }
     void snap_unmap(int s) override { in->snap_unmap(s); }
     int disp_rt[2] = { -1, -1 };   /* the targets the last display read (circuits) */
+    /* redirected replay ($RG_INTERP_REDIRECT, default 1; docs/NATIVE-RENDER.md "Interpolation at
+     * 5x"): a pass writes no pre-existing target; each one it touches is a temporary made from
+     * its pre-image (pre-existing id -> temporary), the compose reads the temporaries of the
+     * displayed targets, the restore only frees them.  (Was: the targets' content saved, the
+     * pre-images put in, the content put back after the compose: three whole-target copies per
+     * target instead of one.) */
+    std::map<int, int> redir;
+    static int redirect_on()
+    {
+        static int on = -1;
+        if (on < 0) { const char *e = getenv("RG_INTERP_REDIRECT"); on = !(e && e[0] == '0'); }
+        return on;
+    }
+    const GpuDisplay &redir_display(const GpuDisplay &d, GpuDisplay &d2)
+    {
+        if (redir.empty()) return d;
+        d2 = d;
+        for (int i = 0; i < 2; i++) {
+            if (!d2.c[i].en || d2.c[i].rt < 0) continue;
+            auto it = redir.find(d2.c[i].rt);
+            if (it != redir.end()) d2.c[i].rt = it->second;
+        }
+        return d2;
+    }
+    void drop_redir()
+    {
+        for (auto &kv : redir) {
+            in->rt_destroy(kv.second);
+            bump(kv.second);
+        }
+        redir.clear();
+    }
     void note_display(const GpuDisplay &d)
     {
         for (int i = 0; i < 2; i++) disp_rt[i] = d.c[i].en ? d.c[i].rt : -1;
@@ -297,14 +346,20 @@ public:
     int display(const GpuDisplay &d, uint32_t *out) override
     {
         note_display(d);
-        int rc = in->display(d, out);
+        in->prof_tag(dirty ? GPT_COMPOSE_PASS : GPT_COMPOSE);
+        GpuDisplay d2;
+        int rc = in->display(redir_display(d, d2), out);
+        in->prof_tag(GPT_GAME);
         sync();
         return rc;
     }
     int display_post(const GpuDisplay &d, const GpuPost &p, uint32_t *out) override
     {
         note_display(d);
-        int rc = in->display_post(d, p, out);
+        in->prof_tag(dirty ? GPT_COMPOSE_PASS : GPT_COMPOSE);
+        GpuDisplay d2;
+        int rc = in->display_post(redir_display(d, d2), p, out);
+        in->prof_tag(GPT_GAME);
         sync();
         return rc;
     }
@@ -312,6 +367,7 @@ public:
     bool vk_present_device(gpu_vk_device *o) override { return in->vk_present_device(o); }
     void set_scale(int s) override
     {
+        pc_drop();
         for (int i = 0; i < NR_IP_SLOTS; i++) free_slot(i);
         drop_saved();
         in->set_scale(s);
@@ -350,6 +406,8 @@ public:
     void nr_mesh_prewarm(const gpu_nr_mesh &m) override { in->nr_mesh_prewarm(m); }
     int rt_clone(int src) override { return in->rt_clone(src); }
     bool rt_put(int dst, int src) override { return in->rt_put(dst, src); }
+    void prof_tag(int cat) override { in->prof_tag(cat); }
+    int rt_clone_rect(int src, const GpuRect &r) override { return in->rt_clone_rect(src, r); }
 
     /* ---- interpolated presentation ---- */
     void drop_saved()
@@ -357,11 +415,14 @@ public:
         for (Pre &p : saved)
             if (p.img >= 0) in->rt_destroy(p.img);
         saved.clear();
+        drop_redir();
         dirty = 0;
     }
     void restore()
     {
         if (!dirty) return;
+        in->prof_tag(GPT_RESTORE);
+        drop_redir();
         for (Pre &p : saved) {
             if (p.img < 0) continue;
             if (life_of(p.id) != p.life || !in->rt_put(p.id, p.img)) st.put_fail++;
@@ -370,6 +431,7 @@ public:
         saved.clear();
         dirty = 0;
         st.restores++;
+        in->prof_tag(GPT_GAME);
     }
     /* map a recorded target to the one the replay uses (-1 stays -1); false: stale */
     bool map_rt(const Slot &s, std::map<int, int> &tmp, int id, uint32_t lf, int *out)
@@ -388,8 +450,12 @@ public:
     {
         for (int i = 0; i < n; i++)
             if (!slot[sl[i]].rec || slot[sl[i]].bad) { st.replay_bad++; return -1; }
-        /* the targets' current content, once per dirty period */
-        for (int i = 0; i < n; i++)
+        /* the targets' current content, once per dirty period (redirected: nothing to save; the
+         * previous pass's temporaries go) */
+        const int rd = redirect_on();
+        if (rd) drop_redir();
+        in->prof_tag(GPT_SAVE);
+        for (int i = 0; i < n && !rd; i++)
             for (const Pre &p : slot[sl[i]].pre) {
                 bool have = false;
                 for (const Pre &q : saved)
@@ -409,28 +475,7 @@ public:
         std::map<int, int> tmp;   /* targets the slots created or that are gone -> temporary ones */
         /* every target at its state when the sequence began: the first pre-image of it in the
          * sequence (targets an earlier slot created are its temporaries, already right) */
-        {
-            std::vector<int> done;
-            std::map<int, uint32_t> born;
-            for (int i = 0; i < n; i++) {
-                for (const Pre &p : slot[sl[i]].pre) {
-                    bool skip = p.img < 0 || born.count(p.id);
-                    for (int d : done)
-                        if (d == p.id) skip = true;
-                    if (skip) continue;
-                    done.push_back(p.id);
-                    if (life_of(p.id) != p.life) {
-                        /* destroyed (or re-made) since: a temporary target from its pre-image */
-                        int t = in->rt_clone(p.img);
-                        if (t >= 0) tmp[p.id] = t;
-                        else st.put_fail++;
-                    } else if (!in->rt_put(p.id, p.img)) {
-                        st.put_fail++;
-                    }
-                }
-                for (auto &kv : slot[sl[i]].born) born[kv.first] = kv.second;
-            }
-        }
+        std::vector<size_t> lims((size_t)n);
         for (int i = 0; i < n; i++) {
             /* after the interpolated frame only what reaches the displayed target matters (this
              * game: the copy of the frame into the display buffer at the next frame's start);
@@ -445,11 +490,95 @@ public:
                 }
                 st.trimmed += slot[sl[i]].cmds.size() - lim;
             }
-            replay_cmds(slot[sl[i]], tmp, i == interp_at,
-                        i == interp_at && prev >= 0 && prev != sl[i] && slot[prev].rec && !slot[prev].bad ? &slot[prev] : NULL, alpha,
-                        lim);
+            lims[(size_t)i] = lim;
         }
+        const std::vector<std::vector<char>> *need = live_cmds(sl, n, lims);
+        /* (redirected) the pre-existing targets the replayed commands touch: only they need a
+         * temporary (the others' pre-images would be copied for nothing) */
+        std::vector<char> touched;
+        if (rd) {
+            auto tch = [&touched](int id) {
+                if (id < 0) return;
+                if ((size_t)id >= touched.size()) touched.resize((size_t)id + 1, 0);
+                touched[(size_t)id] = 1;
+            };
+            for (int i = 0; i < n; i++) {
+                const Slot &s = slot[sl[i]];
+                for (size_t ci = 0; ci < lims[(size_t)i] && ci < s.cmds.size(); ci++) {
+                    if (need && !(*need)[(size_t)i][ci]) continue;
+                    for (int k = 0; k < 3; k++) tch(s.cmds[ci].rt[k]);
+                }
+            }
+            tch(disp_rt[0]);
+            tch(disp_rt[1]);
+        }
+        in->prof_tag(GPT_PRE);
+        {
+            std::vector<int> done;
+            std::map<int, uint32_t> born;
+            for (int i = 0; i < n; i++) {
+                for (const Pre &p : slot[sl[i]].pre) {
+                    bool skip = p.img < 0 || born.count(p.id);
+                    for (int d : done)
+                        if (d == p.id) skip = true;
+                    if (skip) continue;
+                    done.push_back(p.id);
+                    if (rd && !((size_t)p.id < touched.size() && touched[(size_t)p.id])) {
+                        st.pre_skipped++;
+                    } else if (rd) {
+                        /* a temporary from its pre-image; the compose reads it when displayed */
+                        int t = in->rt_clone(p.img);
+                        if (t >= 0) {
+                            bump(t);
+                            tmp[p.id] = t;
+                            if (life_of(p.id) == p.life) redir[p.id] = t;
+                        } else
+                            st.put_fail++;
+                    } else if (life_of(p.id) != p.life) {
+                        /* destroyed (or re-made) since: a temporary target from its pre-image */
+                        int t = in->rt_clone(p.img);
+                        if (t >= 0) tmp[p.id] = t;
+                        else st.put_fail++;
+                    } else if (!in->rt_put(p.id, p.img)) {
+                        st.put_fail++;
+                    }
+                }
+                for (auto &kv : slot[sl[i]].born) born[kv.first] = kv.second;
+            }
+        }
+        /* the pair cache (pc_plan): the first pass of a frame pair takes the copies, the later
+         * ones skip what is the same in all of them */
+        const Slot *pslot = interp_at >= 0 && prev >= 0 && prev != sl[interp_at] && slot[prev].rec && !slot[prev].bad ? &slot[prev] : NULL;
+        int pcmode = 0;   /* 0 off, 1 capture, 2 use */
+        if (paircache_on() && rd && interp_at >= 0 && need) {
+            std::vector<uint64_t> key = dce.key;
+            key.push_back((uint64_t)(uint32_t)interp_at << 32 | (uint32_t)(pslot ? prev : -1));
+            key.push_back(pslot ? pslot->gen : 0);
+            if (key != pc.key) {
+                pc_drop();
+                pc.key = key;
+                pc.state = pc_plan(sl, n, interp_at, pslot, lims, need) ? 0 : -1;
+            }
+            pcmode = pc.state == 0 ? 1 : pc.state == 1 ? 2 : 0;
+        }
+        /* ray tracing (RT2d): the interpolated frame's mesh draws at this present's rows as the
+         * present's casters, before it draws (the backend builds its TLAS; nothing drawn) */
+        const bool rtp = interp_at >= 0 && in->rt_pass(0);
+        if (rtp) {
+            rt_precast(slot[sl[interp_at]], lims[(size_t)interp_at]);
+            in->rt_pass(1);
+        }
+        for (int i = 0; i < n; i++)
+            replay_cmds(slot[sl[i]], tmp, i == interp_at, i == interp_at ? pslot : NULL, alpha,
+                        lims[(size_t)i], need ? (*need)[(size_t)i].data() : NULL,
+                        pcmode == 2 ? pc.skip[(size_t)i].data() : NULL, pcmode ? pc.cutf[(size_t)i].data() : NULL, pcmode == 1);
+        if (rtp) in->rt_pass(2);
+        if (pcmode == 1 && pc.state == 0) pc.state = 1;
+        if (pcmode == 2) st.pc_passes++;
+        in->prof_tag(GPT_CREATE);
         for (auto &kv : tmp) {
+            auto r = redir.find(kv.first);
+            if (r != redir.end() && r->second == kv.second) continue;   /* (kept for the compose) */
             in->rt_destroy(kv.second);
             bump(kv.second);
         }
@@ -963,11 +1092,505 @@ public:
         for (GpuImVtx &o : zs_tmp) { o.x += dx; o.y += dy; }
         return zs_tmp.data();
     }
-    void replay_cmds(Slot &s, std::map<int, int> &tmp, int interp, const Slot *prev, float alpha, size_t lim)
+    /* Dead commands of a pass (docs/NATIVE-RENDER.md "Interpolation throughput (2026-10-30)", "Replay
+     * only what the image needs"): backward over the replayed sequence from the displayed targets,
+     * a command is needed when it writes a live target (a draw: its colour or depth target; a copy,
+     * load, clear, reinterpretation: its destination); a needed command makes the targets it reads
+     * live (a draw: texture, colour and depth: blending and the depth test read them; a copy: its
+     * source); a creation ends a target's life (before it, the id is another target).  Commands no
+     * displayed pixel depends on are skipped: their targets are put back by the restore anyway.
+     * Cached per sequence (the passes of a frame pair replay the same commands).  NULL: replay all
+     * ($RG_INTERP_DCE=0, or no display seen yet). */
+    struct { std::vector<uint64_t> key; std::vector<std::vector<char>> need; } dce;
+    uint64_t dce_skipped = 0, dce_cmds = 0;
+    const std::vector<std::vector<char>> *live_cmds(const int *sl, int n, const std::vector<size_t> &lims)
+    {
+        static int on = -1;
+        if (on < 0) { const char *e = getenv("RG_INTERP_DCE"); on = !(e && e[0] == '0'); }
+        if (!on || (disp_rt[0] < 0 && disp_rt[1] < 0)) return NULL;
+        std::vector<uint64_t> key;
+        key.push_back((uint64_t)(uint32_t)disp_rt[0] << 32 | (uint32_t)disp_rt[1]);
+        for (int i = 0; i < n; i++) {
+            key.push_back(slot[sl[i]].gen);
+            key.push_back(lims[(size_t)i]);
+        }
+        if (key == dce.key) return &dce.need;
+        dce.key = key;
+        dce.need.assign((size_t)n, std::vector<char>());
+        std::vector<char> live;
+        auto is = [&live](int id) { return id >= 0 && (size_t)id < live.size() && live[(size_t)id]; };
+        auto mk = [&live](int id) {
+            if (id < 0) return;
+            if ((size_t)id >= live.size()) live.resize((size_t)id + 1, 0);
+            live[(size_t)id] = 1;
+        };
+        auto kill = [&live](int id) { if (id >= 0 && (size_t)id < live.size()) live[(size_t)id] = 0; };
+        mk(disp_rt[0]);
+        mk(disp_rt[1]);
+        for (int i = n - 1; i >= 0; i--) {
+            const Slot &s = slot[sl[i]];
+            size_t lim = lims[(size_t)i] < s.cmds.size() ? lims[(size_t)i] : s.cmds.size();
+            std::vector<char> &nd = dce.need[(size_t)i];
+            nd.assign(s.cmds.size(), 0);
+            for (size_t ci = lim; ci-- > 0;) {
+                const Cmd &c = s.cmds[ci];
+                switch (c.k) {
+                case C_CREATE:
+                    nd[ci] = 1;
+                    kill(c.rt[0]);
+                    break;
+                case C_DESTROY:
+                    nd[ci] = 1;
+                    break;
+                case C_DRAW:
+                    if (is(c.rt[0]) || is(c.rt[1])) {
+                        nd[ci] = 1;
+                        mk(c.rt[0]);
+                        mk(c.rt[1]);
+                        mk(c.rt[2]);
+                    }
+                    break;
+                case C_COPY:
+                case C_REINT:
+                    if (is(c.rt[0])) { nd[ci] = 1; mk(c.rt[1]); }
+                    break;
+                case C_CLEAR:   /* (the whole target: what it held before is dead) */
+                    if (is(c.rt[0])) { nd[ci] = 1; kill(c.rt[0]); }
+                    break;
+                default:   /* C_LOAD (a rectangle), C_RESIZE */
+                    if (is(c.rt[0])) nd[ci] = 1;
+                    break;
+                }
+                dce_cmds++;
+                if (!nd[ci]) dce_skipped++;
+            }
+        }
+        return &dce.need;
+    }
+    /* $RG_INTERP_IMPROF=1 with $RG_GPU_PROFILE=4 (measurement): the pass's draws timed per kind
+     * (target, texture target, colour view, blending, size), printed at exit (gpu_ip_stats) */
+    static int improf_on()
+    {
+        static int on = -1;
+        if (on < 0) { const char *e = getenv("RG_INTERP_IMPROF"); on = e && e[0] == '1'; }
+        return on;
+    }
+    std::map<std::string, int> ip_keys;
+    std::vector<std::string> ip_names;
+    int improf_key(const Cmd &c)
+    {
+        char b[160];
+        if (c.im.empty())
+            snprintf(b, sizeof b, "mesh  rt %d z %d tex %d", c.srt[0], c.srt[1] >= 0, c.srt[2]);
+        else {
+            float x0 = 1e30f, y0 = 1e30f, x1 = -1e30f, y1 = -1e30f;
+            for (const GpuImVtx &v : c.im) {
+                x0 = v.x < x0 ? v.x : x0; x1 = v.x > x1 ? v.x : x1;
+                y0 = v.y < y0 ? v.y : y0; y1 = v.y > y1 ? v.y : y1;
+            }
+            double ar = (double)(x1 - x0) * (double)(y1 - y0);
+            int lb = 0;
+            while (lb < 24 && ar >= (double)(1 << (lb + 1))) lb++;
+            snprintf(b, sizeof b, "im    rt %d z %d tex %d crov %d tme %d abe %d tris %zu area 2^%d", c.srt[0], c.srt[1] >= 0, c.srt[2],
+                     c.g.crov, c.g.tme, c.g.abe, c.im.size() / 3 >= 64 ? (size_t)64 : c.im.size() / 3, lb);
+        }
+        auto it = ip_keys.find(b);
+        if (it != ip_keys.end()) return it->second;
+        int k = GPT_N + (int)ip_names.size();
+        if (k >= 4095) return GPT_IM;
+        ip_keys[b] = k;
+        ip_names.push_back(b);
+        return k;
+    }
+    void improf_print(FILE *f)
+    {
+        std::vector<std::pair<double, int>> v;
+        double tot = 0;
+        for (size_t i = 0; i < ip_names.size(); i++) {
+            double ms = 0, n = 0;
+            if (!in->prof_get(GPT_N + (int)i, &ms, &n)) return;
+            v.push_back(std::make_pair(ms, (int)i));
+            tot += ms;
+        }
+        std::sort(v.rbegin(), v.rend());
+        fprintf(f, "interp device: pass draws by kind (RG_INTERP_IMPROF, GPU ms, %.1f in all):\n", tot);
+        for (size_t i = 0; i < v.size() && i < 60; i++) {
+            double ms = 0, n = 0;
+            in->prof_get(GPT_N + v[i].second, &ms, &n);
+            fprintf(f, "  %9.1f ms %5.1f%% %8.0f segs  %s\n", ms, tot > 0 ? 100.0 * ms / tot : 0.0, n, ip_names[(size_t)v[i].second].c_str());
+        }
+    }
+    /* ---- pair cache ($RG_INTERP_PAIRCACHE, measurement, default off; docs/NATIVE-RENDER.md "Interpolation at 5x") ----
+     * The passes of one frame pair replay the same commands; only alpha differs.  A command is
+     * the same in every one of them (invariant) when nothing it reads or writes depends on alpha:
+     * not a mesh draw of the interpolated frame (its constants are interpolated), not an
+     * immediate draw of it that is paired and moves (lerped) or belongs to a composite group
+     * (moved / widened), and no target it reads or writes was written by a varying command
+     * before (taint, from the pre-images on: they are the same in every pass).  For each target
+     * life the invariant writes before its first varying use end at a cut: the first pass of the
+     * pair runs everything and takes a copy of the target after the cut (only where a command
+     * that still runs uses it later, or it is displayed); the later passes skip the invariant
+     * draws, copies, reinterpretations and loads and put the copy at the cut.  Creations,
+     * destructions, clears and resizes always run. */
+    struct PcCut { int rtk; int snap; int next; };
+    struct {
+        std::vector<uint64_t> key;
+        std::vector<std::vector<char>> skip;
+        std::vector<std::vector<int>> cutf;
+        std::vector<PcCut> cuts;
+        std::vector<int> snaps;    /* target ids of the copies (-1: not taken) */
+        int state = 0;             /* 0: take the copies in the next pass, 1: valid, -1: off for this key */
+    } pc;
+    /* $RG_INTERP_PAIRCACHE (measurement, default 0 = off): 1 exact (the same images: 74 of 74
+     * pass dumps identical), 2 effect layers taken from the pair's first pass (see pc_plan; may
+     * change in-between images).  Measured not worth it (docs/NATIVE-RENDER.md "Interpolation at
+     * 5x"): 7.6 % (exact) / 9.3 % (2) of the replayed commands could be skipped, for ~16 target
+     * copies per pass. */
+    static int paircache_on()
+    {
+        static int m = -1;
+        if (m < 0) { const char *e = getenv("RG_INTERP_PAIRCACHE"); m = e && *e ? atoi(e) : 0; }
+        return m;
+    }
+    void pc_drop()
+    {
+        for (int &id : pc.snaps)
+            if (id >= 0) { in->rt_destroy(id); id = -1; }
+        pc.snaps.clear();
+        pc.key.clear();
+        pc.skip.clear();
+        pc.cutf.clear();
+        pc.cuts.clear();
+        pc.state = 0;
+    }
+    void pc_cut(const Slot &s, std::map<int, int> &tmp, const Cmd &c, int ci0, int capture)
+    {
+        for (int k = ci0; k >= 0; k = pc.cuts[(size_t)k].next) {
+            const PcCut &u = pc.cuts[(size_t)k];
+            int a = -1;
+            if (!map_rt(s, tmp, c.rt[u.rtk], c.life[u.rtk], &a) || a < 0) { st.pc_fail++; pc.state = -1; continue; }
+            int &sn = pc.snaps[(size_t)u.snap];
+            if (capture) {
+                if (sn >= 0) in->rt_destroy(sn);
+                sn = in->rt_clone(a);
+                if (sn < 0) { st.pc_fail++; pc.state = -1; }
+                else st.pc_taken++;
+            } else if (sn < 0 || !in->rt_put(a, sn)) {
+                st.pc_fail++;
+                pc.state = -1;
+            } else
+                st.pc_put++;
+        }
+    }
+    /* does immediate draw c (paired with pc_) have a triangle im_lerp would move? */
+    static bool im_moves(const Cmd &c, const Cmd &pcm)
+    {
+        size_t n = c.im.size();
+        float lim = 0.15f * (float)(c.g.vp_w > c.g.vp_h ? c.g.vp_w : c.g.vp_h);
+        for (size_t t = 0; t + 2 < n; t += 3) {
+            if (t + 2 >= pcm.im.size()) break;
+            const GpuImVtx *a = &pcm.im[t], *b = &c.im[t];
+            bool ok = true, moved = false;
+            for (int k = 0; k < 3 && ok; k++) {
+                if (memcmp(&a[k].s, &b[k].s, 3 * sizeof(float))) ok = false;
+                float dx = b[k].x - a[k].x, dy = b[k].y - a[k].y;
+                if (!(dx * dx + dy * dy <= lim * lim)) ok = false;
+                if (dx != 0.0f || dy != 0.0f || a[k].z != b[k].z || a[k].rgba != b[k].rgba) moved = true;
+            }
+            if (ok && moved) return true;
+        }
+        return false;
+    }
+    /* plan the pair cache for the sequence (returns false: none) */
+    bool pc_plan(const int *sl, int n, int interp_at, const Slot *prev, const std::vector<size_t> &lims,
+                 const std::vector<std::vector<char>> *need)
+    {
+        pc.skip.assign((size_t)n, std::vector<char>());
+        pc.cutf.assign((size_t)n, std::vector<int>());
+        pc.cuts.clear();
+        pc.snaps.clear();
+        /* what varies in the interpolated frame */
+        std::vector<char> varies;
+        if (interp_at >= 0) {
+            const Slot &s = slot[sl[interp_at]];
+            varies.assign(s.cmds.size(), 0);
+            std::vector<int> pm;
+            Plan zp;
+            if (prev) {
+                if (pm_cache.gs != s.gen || pm_cache.gp != prev->gen || pm_cache.ns != s.cmds.size() ||
+                    pm_cache.np != prev->cmds.size() || !s.gen) {
+                    pm_cache.m = pair_im(s, *prev);
+                    pm_cache.gs = s.gen;
+                    pm_cache.gp = prev->gen;
+                    pm_cache.ns = s.cmds.size();
+                    pm_cache.np = prev->cmds.size();
+                }
+                pm = pm_cache.m;
+                /* (the groups that move or are posed at some alpha: their shift is d x (1 - alpha)) */
+                if (place_on()) place_plan(s, *prev, 0.5f, zp);
+            }
+            for (size_t ci = 0; ci < s.cmds.size(); ci++) {
+                const Cmd &c = s.cmds[ci];
+                if (c.k != C_DRAW) continue;
+                if (c.im.empty()) varies[ci] = c.mesh_id && c.has_d;
+                else if (prev) {
+                    int zg = !zp.of.empty() ? zp.of[ci] : -1;
+                    if (zg >= 0 && (zp.pose[(size_t)zg] == 1 || zp.sh[2 * (size_t)zg] != 0.0f || zp.sh[2 * (size_t)zg + 1] != 0.0f))
+                        varies[ci] = 1;
+                    else if (!zp.clear_of.empty() && zp.clear_of[ci] >= 0) varies[ci] = 1;
+                    else if (zg < 0 && !pm.empty() && pm[ci] >= 0 && im_moves(c, prev->cmds[(size_t)pm[ci]])) varies[ci] = 1;
+                }
+            }
+        }
+        /* (mode 2, effect layers reused) the final targets: the displayed ones, what is drawn or
+         * copied into them, and the depth of draws into those; a command that varies with alpha
+         * never runs from the cache, and one that writes a final target only when exact; any
+         * other one (an effect layer: blur, glow, afterimage buffers) is taken as it was in the
+         * pair's first pass even when it reads the moving scene */
+        const int approx = paircache_on() == 2;
+        std::vector<char> fin;
+        auto isfin = [&fin](int id) { return id >= 0 && (size_t)id < fin.size() && fin[(size_t)id]; };
+        auto mkfin = [&fin](int id) {
+            if (id < 0) return;
+            if ((size_t)id >= fin.size()) fin.resize((size_t)id + 1, 0);
+            fin[(size_t)id] = 1;
+        };
+        if (approx) {
+            mkfin(disp_rt[0]);
+            mkfin(disp_rt[1]);
+            for (int pass = 0; pass < 2; pass++)
+                for (int i = 0; i < n; i++) {
+                    const Slot &s = slot[sl[i]];
+                    size_t lim = lims[(size_t)i] < s.cmds.size() ? lims[(size_t)i] : s.cmds.size();
+                    for (size_t ci = 0; ci < lim; ci++) {
+                        const Cmd &c = s.cmds[ci];
+                        if (!isfin(c.rt[0])) continue;
+                        if (c.k == C_COPY || c.k == C_REINT) { if (pass == 0) mkfin(c.rt[1]); }
+                        else if (c.k == C_DRAW) {
+                            if (pass == 0 && c.rt[0] != c.rt[2]) mkfin(c.rt[2]);
+                            mkfin(c.rt[1]);
+                        }
+                    }
+                }
+        }
+        /* the sequence; taint; target lives */
+        struct Touch { size_t g; int w; };
+        struct Life { int id; int cut = -1, cut_rtk = 0; int tainted = 0; std::vector<Touch> t; int open = 1; };
+        std::vector<std::pair<int, size_t>> seq;
+        std::vector<char> inv, skippable;
+        std::vector<Life> lives;
+        std::map<int, int> cur;   /* id -> its open life */
+        std::vector<char> T;
+        auto tt = [&T](int id) { return id >= 0 && (size_t)id < T.size() && T[(size_t)id]; };
+        auto ts = [&T](int id, char v) {
+            if (id < 0) return;
+            if ((size_t)id >= T.size()) T.resize((size_t)id + 1, 0);
+            T[(size_t)id] = v;
+        };
+        auto life = [&](int id) -> Life & {
+            auto it = cur.find(id);
+            if (it == cur.end()) {
+                Life L;
+                L.id = id;
+                lives.push_back(L);
+                it = cur.insert(std::make_pair(id, (int)lives.size() - 1)).first;
+            }
+            return lives[(size_t)it->second];
+        };
+        for (int i = 0; i < n; i++) {
+            const Slot &s = slot[sl[i]];
+            size_t lim = lims[(size_t)i] < s.cmds.size() ? lims[(size_t)i] : s.cmds.size();
+            pc.skip[(size_t)i].assign(s.cmds.size(), 0);
+            pc.cutf[(size_t)i].assign(s.cmds.size(), -1);
+            for (size_t ci = 0; ci < lim; ci++) {
+                if (need && !(*need)[(size_t)i][ci]) continue;
+                const Cmd &c = s.cmds[ci];
+                size_t g = seq.size();
+                seq.push_back(std::make_pair(i, ci));
+                int iv = 1, sk = 0;
+                int rd[3] = { -1, -1, -1 }, wr[2] = { -1, -1 };
+                switch (c.k) {
+                case C_CREATE:
+                    if (cur.count(c.rt[0])) lives[(size_t)cur[c.rt[0]]].open = 0;
+                    cur.erase(c.rt[0]);
+                    ts(c.rt[0], 0);
+                    wr[0] = c.rt[0];
+                    break;
+                case C_DESTROY:
+                    if (cur.count(c.rt[0])) lives[(size_t)cur[c.rt[0]]].open = 0;
+                    cur.erase(c.rt[0]);
+                    break;
+                case C_CLEAR:
+                    ts(c.rt[0], 0);
+                    sk = 1;
+                    wr[0] = c.rt[0];
+                    break;
+                case C_RESIZE:
+                    iv = !tt(c.rt[0]);
+                    rd[0] = wr[0] = c.rt[0];
+                    break;
+                case C_LOAD:
+                    iv = !tt(c.rt[0]);
+                    sk = 1;
+                    rd[0] = wr[0] = c.rt[0];
+                    break;
+                case C_COPY:
+                case C_REINT:
+                    iv = !tt(c.rt[0]) && !tt(c.rt[1]);
+                    if (approx && !isfin(c.rt[0])) iv = 1;
+                    if (!iv) ts(c.rt[0], 1);
+                    sk = 1;
+                    rd[0] = wr[0] = c.rt[0];
+                    rd[1] = c.rt[1];
+                    break;
+                case C_DRAW:
+                    iv = !(i == interp_at && !varies.empty() && varies[ci]) && !tt(c.rt[0]) && !tt(c.rt[1]) && !tt(c.rt[2]);
+                    if (approx && !(i == interp_at && !varies.empty() && varies[ci]) && !isfin(c.rt[0]) && !isfin(c.rt[1])) iv = 1;
+                    if (!iv) { ts(c.rt[0], 1); ts(c.rt[1], 1); }
+                    sk = 1;
+                    rd[0] = wr[0] = c.rt[0];
+                    rd[1] = wr[1] = c.rt[1];
+                    rd[2] = c.rt[2];
+                    break;
+                }
+                inv.push_back((char)iv);
+                skippable.push_back((char)(iv && sk));
+                if (c.k == C_CREATE || c.k == C_DESTROY) continue;
+                /* touches, in order; the cut moves along the invariant writes until the first
+                 * varying touch */
+                int seen[5] = { -2, -2, -2, -2, -2 }, ns = 0;
+                for (int k = 0; k < 3; k++) {
+                    int id = rd[k];
+                    bool w = k < 2 && wr[k] == id && id >= 0;
+                    if (id < 0) continue;
+                    bool dup = false;
+                    for (int q = 0; q < ns; q++) if (seen[q] == id) dup = true;
+                    if (dup) continue;
+                    seen[ns++] = id;
+                    Life &L = life(id);
+                    L.t.push_back(Touch{ g, w ? 1 : 0 });
+                    if (!iv) L.tainted = 1;
+                    else if (!L.tainted && w && sk) { L.cut = (int)g; L.cut_rtk = k; }
+                }
+                for (int k = 0; k < 2; k++) {
+                    int id = wr[k];
+                    if (id < 0) continue;
+                    bool dup = false;
+                    for (int q = 0; q < ns; q++) if (seen[q] == id) dup = true;
+                    if (dup) continue;
+                    seen[ns++] = id;
+                    Life &L = life(id);
+                    L.t.push_back(Touch{ g, 1 });
+                    if (!iv) L.tainted = 1;
+                    else if (!L.tainted && sk) { L.cut = (int)g; L.cut_rtk = k; }
+                }
+            }
+        }
+        /* skipped: invariant draws / copies / reinterpretations / loads at or before the cut of
+         * every target they write; a target's cut: its last skipped write before the first
+         * command that runs and touches it (until nothing changes: a command left to run ends
+         * the runs of what it touches) */
+        std::vector<char> skip(seq.size(), 0);
+        for (size_t g = 0; g < seq.size(); g++) skip[g] = skippable[g];
+        for (int it = 0; it < 64; it++) {
+            for (Life &L : lives) {
+                L.cut = -1;
+                for (const Touch &t : L.t) {
+                    if (!skip[t.g]) break;
+                    if (t.w) L.cut = (int)t.g;
+                }
+            }
+            bool changed = false;
+            for (const Life &L : lives)
+                for (const Touch &t : L.t)
+                    if (t.w && skip[t.g] && (int)t.g > L.cut) { skip[t.g] = 0; changed = true; }
+            if (!changed) break;
+            if (it == 63) return false;
+        }
+        for (Life &L : lives) {
+            /* (the write at the cut: which of the command's targets) */
+            if (L.cut < 0) continue;
+            const Cmd &c = slot[sl[seq[(size_t)L.cut].first]].cmds[seq[(size_t)L.cut].second];
+            L.cut_rtk = c.rt[0] == L.id ? 0 : 1;
+        }
+        /* the cuts that need a copy: a command that still runs touches the target after it, or
+         * it is displayed at the end */
+        size_t nskip = 0;
+        for (size_t g = 0; g < seq.size(); g++) nskip += skip[g];
+        if (!nskip) return false;
+        for (const Life &L : lives) {
+            if (L.cut < 0) continue;
+            bool needed = L.open && (L.id == disp_rt[0] || L.id == disp_rt[1]);
+            for (const Touch &t : L.t)
+                if ((int)t.g > L.cut && !skip[t.g]) needed = true;
+            if (!needed) continue;
+            const std::pair<int, size_t> &q = seq[(size_t)L.cut];
+            PcCut u;
+            u.rtk = L.cut_rtk;
+            u.snap = (int)pc.snaps.size();
+            u.next = pc.cutf[(size_t)q.first][q.second];
+            pc.snaps.push_back(-1);
+            pc.cutf[(size_t)q.first][q.second] = (int)pc.cuts.size();
+            pc.cuts.push_back(u);
+        }
+        for (size_t g = 0; g < seq.size(); g++)
+            if (skip[g]) pc.skip[(size_t)seq[g].first][seq[g].second] = 1;
+        st.pc_plans++;
+        st.pc_plan_skip += nskip;
+        st.pc_plan_cmds += seq.size();
+        st.pc_plan_cuts += pc.cuts.size();
+        return true;
+    }
+    static int loadrect_on()
+    {
+        static int on = -1;
+        if (on < 0) { const char *e = getenv("RG_INTERP_LOADRECT"); on = !(e && e[0] == '0'); }
+        return on;
+    }
+    void unredir(int id, int t)
+    {
+        auto r = redir.find(id);
+        if (r != redir.end() && r->second == t) redir.erase(r);
+    }
+    /* RT2d: the slot's mesh draws with the present's interpolated rows (composite parts: their
+     * pose, as mode 3) to the backend's caster collection only */
+    void rt_precast(const Slot &s, size_t lim)
+    {
+        gpu_nr_draw dd;
+        for (size_t ci = 0; ci < lim && ci < s.cmds.size(); ci++) {
+            const Cmd &c = s.cmds[ci];
+            if (c.k != C_DRAW || !c.mesh_id || !c.has_d || !c.im.empty()) continue;
+            GpuNrDraw g = c.g;
+            memcpy(&dd, &c.d, offsetof(gpu_nr_draw, bones));
+            if (c.d.nbones_rows > 0)
+                memcpy(dd.bones, c.d.bones, sizeof dd.bones[0] * (size_t)(c.d.nbones_rows < 256 ? c.d.nbones_rows : 256));
+            dd.nbones_rows = c.d.nbones_rows;
+            nr_ip_zs_allow(1);
+            nr_ip_mesh_cb(c.mesh_id, &dd);
+            nr_ip_zs_allow(0);
+            g.im = NULL;
+            g.d = &dd;
+            g.dec_rgba = c.rgba.empty() ? NULL : c.rgba.data();
+            g.tex_cached_only = 1;
+            in->rt_pass_cast(g);
+        }
+    }
+    void replay_cmds(Slot &s, std::map<int, int> &tmp, int interp, const Slot *prev, float alpha, size_t lim,
+                     const char *need = NULL, const char *pcs = NULL, const int *pcc = NULL, int capture = 0)
     {
         std::vector<int> pm;
         Plan pl;
-        if (prev) pm = pair_im(s, *prev);
+        if (prev) {
+            if (pm_cache.gs != s.gen || pm_cache.gp != prev->gen || pm_cache.ns != s.cmds.size() ||
+                pm_cache.np != prev->cmds.size() || !s.gen) {
+                pm_cache.m = pair_im(s, *prev);
+                pm_cache.gs = s.gen;
+                pm_cache.gp = prev->gen;
+                pm_cache.ns = s.cmds.size();
+                pm_cache.np = prev->cmds.size();
+            }
+            pm = pm_cache.m;
+        }
         if (prev && place_on()) place_plan(s, *prev, alpha, pl);
         const std::vector<int> &zof = pl.of;
         const std::vector<float> &zsh = pl.sh;
@@ -991,10 +1614,19 @@ public:
         for (size_t ci = 0; ci < lim && ci < s.cmds.size(); ci++) {
             Cmd &c = s.cmds[ci];
             int a = -1, b = -1, t = -1;
+            if (need && !need[ci]) continue;   /* (no displayed pixel depends on it: live_cmds) */
+            if (pcs && pcs[ci]) {
+                /* (pair cache) the same in every pass of this frame pair: its result comes from the
+                 * snapshot put at the cut below */
+                st.pc_skipped++;
+            } else {
+            in->prof_tag(c.k == C_DRAW ? (improf_on() ? improf_key(c) : c.im.empty() ? GPT_MESH : GPT_IM) : c.k == C_COPY ? GPT_COPY
+                         : c.k == C_LOAD ? GPT_LOAD : c.k == C_CLEAR ? GPT_CLEAR : c.k == C_REINT ? GPT_REINT : GPT_CREATE);
             switch (c.k) {
             case C_CREATE: {
                 auto old = tmp.find(c.rt[0]);
                 if (old != tmp.end()) {   /* (a temporary for the id's earlier life) */
+                    unredir(c.rt[0], old->second);
                     in->rt_destroy(old->second);
                     bump(old->second);
                     tmp.erase(old);
@@ -1009,6 +1641,7 @@ public:
             case C_DESTROY: {
                 auto it = tmp.find(c.rt[0]);
                 if (it != tmp.end()) {
+                    unredir(c.rt[0], it->second);
                     in->rt_destroy(it->second);
                     bump(it->second);
                     tmp.erase(it);
@@ -1022,8 +1655,18 @@ public:
                 if (map_rt(s, tmp, c.rt[0], c.life[0], &a) && a >= 0) in->rt_clear(a);
                 break;
             case C_LOAD:
-                if (map_rt(s, tmp, c.rt[0], c.life[0], &a) && a >= 0 && !(c.img >= 0 && in->rt_put(a, c.img)))
-                    in->rt_load(a, c.bp, c.bw, c.psm, c.r);
+                /* the loaded rectangle from the target as the load left it ($RG_INTERP_LOADRECT=0:
+                 * the whole target, as before: a whole-target copy per load, and what the pass drew
+                 * into the target outside the rectangle replaced by the recorded frame's) */
+                if (map_rt(s, tmp, c.rt[0], c.life[0], &a) && a >= 0) {
+                    bool done = false;
+                    if (c.img >= 0 && c.img_rect) {
+                        GpuRect r0 = { 0, 0, c.r.x1 - c.r.x0, c.r.y1 - c.r.y0 };
+                        done = in->rt_copy(a, c.r.x0, c.r.y0, c.img, r0);
+                    } else if (c.img >= 0)
+                        done = (loadrect_on() && in->rt_copy(a, c.r.x0, c.r.y0, c.img, c.r)) || in->rt_put(a, c.img);
+                    if (!done) in->rt_load(a, c.bp, c.bw, c.psm, c.r);
+                }
                 break;
             case C_REINT:
                 if (map_rt(s, tmp, c.rt[0], c.life[0], &a) && map_rt(s, tmp, c.rt[1], c.life[1], &b) && a >= 0 && b >= 0)
@@ -1099,13 +1742,22 @@ public:
                 if (iso_mask) g.cmask = 0;
                 if (g.tme && g.tex_rt < 0 && !g.dec_rgba) g.tex_cached_only = 1;   /* by its content key */
                 if (interp && c.mesh_id && c.has_d) {
-                    dd = c.d;
+                    /* (the header and constant rows; bone rows only as far as the draw uploads them:
+                     * a whole gpu_nr_draw is 4.5 KB per mesh draw per pass) */
+                    memcpy(&dd, &c.d, offsetof(gpu_nr_draw, bones));
+                    if (c.d.nbones_rows > 0)
+                        memcpy(dd.bones, c.d.bones, sizeof dd.bones[0] * (size_t)(c.d.nbones_rows < 256 ? c.d.nbones_rows : 256));
+                    dd.nbones_rows = c.d.nbones_rows;
+                    dd.cull = c.d.cull;
+                    dd.cull_sign = c.d.cull_sign;
+                    dd.has_box = c.d.has_box;
+                    memcpy(dd.box, c.d.box, sizeof dd.box);
                     /* (mode 4) a composite part moves only when its copy was widened */
                     nr_ip_zs_allow(!pl.feed.empty() && pl.feed[ci] >= 0 && pl.pose[(size_t)pl.feed[ci]] == 1);
                     if (nr_ip_mesh_cb(c.mesh_id, &dd)) {
                         if (dbg_on() > 0) {
                             static int nprint;
-                            for (int k = 0; k < 24 && nprint < 60; k++) {
+                            for (int k = 0; k < (int)(sizeof g.cb / sizeof g.cb[0]) && nprint < 60; k++) {
                                 if (k == 11 || k == 23) continue;
                                 float m = 0;
                                 for (int j = 0; j < 4; j++) {
@@ -1124,8 +1776,14 @@ public:
                         /* only the components the interpolated constants changed (the
                          * recorded source c.d vs the new dd): what the device derived at
                          * submit (row 10.z the depth format's largest Z, row 11 the
-                         * viewport, 22-23 pixel state, 12-13 for target textures) stays */
-                        for (int k = 0; k < 24; k++)
+                         * viewport, 22-23 pixel state, 12-13 for target textures) stays; rows 24-25
+                         * (the VU clipper's clip-space mapping, per camera) move with the camera */
+                        static int nrows = -1;   /* $RG_INTERP_CLIPROWS=0: rows 0-23 only (before) */
+                        if (nrows < 0) {
+                            const char *e = getenv("RG_INTERP_CLIPROWS");
+                            nrows = e && e[0] == '0' ? 24 : (int)(sizeof g.cb / sizeof g.cb[0]);
+                        }
+                        for (int k = 0; k < nrows; k++)
                             for (int j = 0; j < 4; j++)
                                 if (memcmp(&c.d.cb[k][j], &dd.cb[k][j], 4)) g.cb[k][j] = dd.cb[k][j];
                         g.d = &dd;
@@ -1136,6 +1794,16 @@ public:
                     static int nodraw = -1;   /* $RG_INTERP_NODRAW=1: control, the replay draws nothing */
                     if (nodraw < 0) { const char *e = getenv("RG_INTERP_NODRAW"); nodraw = e && e[0] == '1'; }
                     if (nodraw) break;
+                    /* $RG_INTERP_SKIPDRAW=bits (measurement; the picture is wrong): the pass skips
+                     * 1 mesh draws, 2 immediate draws through the output merger, 4 immediate draws
+                     * through the colour view, 8 draws sampling a target, 16 draws into a target
+                     * other than the displayed ones' sources (work buffers) */
+                    static int skipm = -1;
+                    if (skipm < 0) { const char *e = getenv("RG_INTERP_SKIPDRAW"); skipm = e && *e ? atoi(e) : 0; }
+                    if (skipm) {
+                        int k = !g.im ? 1 : g.crov ? 4 : 2;
+                        if ((skipm & k) || ((skipm & 8) && g.tex_rt >= 0) || ((skipm & 16) && c.rt[0] != 1)) break;
+                    }
                 }
                 nr_ip_zs_allow(0);
                 if (!in->nr_draw(g)) st.replay_notex++;
@@ -1143,6 +1811,8 @@ public:
                 break;
             }
             }
+            }
+            if (pcc && pcc[ci] >= 0) pc_cut(s, tmp, c, pcc[ci], capture);
         }
     }
 };
@@ -1295,6 +1965,17 @@ void gpu_ip_stats(gpu_renderer *r, FILE *f)
             (unsigned long long)s.im_tris, (unsigned long long)s.zs_groups, (unsigned long long)s.zs_groups_all,
             (unsigned long long)s.zs_strips, (unsigned long long)s.zs_pose, (unsigned long long)s.zs_widened,
             (unsigned long long)s.trimmed);
+    fprintf(f, "interp device: dead commands (live_cmds) %llu of %llu sequence commands analysed; redirected %s, "
+               "pre-images not needed %llu\n",
+            (unsigned long long)p->dce_skipped, (unsigned long long)p->dce_cmds, p->redirect_on() ? "on" : "off",
+            (unsigned long long)s.pre_skipped);
+    fprintf(f, "interp device: pair cache %s: plans %llu (commands %llu, skippable %llu, cuts %llu), passes using it %llu "
+               "(commands skipped %llu, copies taken %llu, put %llu, failed %llu)\n",
+            p->paircache_on() ? "on" : "off", (unsigned long long)s.pc_plans, (unsigned long long)s.pc_plan_cmds,
+            (unsigned long long)s.pc_plan_skip, (unsigned long long)s.pc_plan_cuts, (unsigned long long)s.pc_passes,
+            (unsigned long long)s.pc_skipped, (unsigned long long)s.pc_taken, (unsigned long long)s.pc_put,
+            (unsigned long long)s.pc_fail);
+    if (p->improf_on()) p->improf_print(f);
 }
 
 } /* extern "C" */

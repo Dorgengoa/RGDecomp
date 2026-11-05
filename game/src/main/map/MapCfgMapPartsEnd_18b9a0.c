@@ -44,7 +44,7 @@ extern u8 D_0049CF00[0x80];
 extern s8 D_0049CF80[0x80];
 extern s8 D_0049D000[0x80];
 extern u8 D_0049D080[0xC];
-extern f32 D_0049D08C[4];
+extern f32 D_0049D08C[1];
 extern f32 D_0049D090[4];
 
 s32 MapCfgMapPartsEnd_18b9a0(void)

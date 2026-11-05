@@ -4,7 +4,7 @@
 
 extern void NameTableNodeReset_15ada0(void *node);
 extern s32 NameTableNodeSetImage_15a640(void *node, s32 a1, void *name, s32 a3, s32 w, s32 h,
-                                        s32 psm, s32 a7, s64 a8, s64 a9);
+                                        s32 psm, s32 a7, s64 a8, s32 a9);
 extern void *NameTableNodeCtor_15ae50(void *node);
 extern void DrawEnvGetFrameTexDesc_144cc0(void *ctx, void *node);
 extern void DrawEnvPush_144830(void *ctx);

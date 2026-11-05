@@ -883,6 +883,9 @@ def free_rows(ind):
     return runs
 
 
+WIDE_EXTRA = 12   # px a wide keyboard glyph may add to the original advance (lane p6a11y)
+
+
 def wide_layout(metrics, ind, binding):
     """Keyboard metrics with each button glyph widened to its label, packed into the
     biggest free band of the atlas. Returns new metric dicts (others unchanged)."""
@@ -896,7 +899,10 @@ def wide_layout(metrics, ind, binding):
             lab = key_label(binding.get(action) or 'key:-', True)
             need = m['w'] if isinstance(lab, tuple) else int(
                 math.ceil(text_width_px(lab, 1.6) + 8))
-            w = max(m['w'], need)
+            # (at most WIDE_EXTRA wider: windows of a fixed width, e.g. the battle command
+            # hint, have about that much slack; the label is drawn to fit, the same size as a
+            # short label in the original rect)
+            w = max(m['w'], min(need, m['w'] + WIDE_EXTRA))
             if x + w > ind.w:
                 x, y, row_h = 0, y + row_h + 1, 0
             if y + m['h'] > band[1]:

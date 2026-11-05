@@ -10,7 +10,7 @@ endif()
 
 set(RG_HOST_TESTS
   pad_report input_mapping input_config input_script script_determinism
-  scaling png_roundtrip pacing audio_reg audio_device audio_focus)
+  scaling png_roundtrip pacing audio_reg audio_tstretch audio_device audio_focus display_host)
 foreach(t IN LISTS RG_HOST_TESTS)
   add_test(NAME host.${t} COMMAND rg-host-tests ${t})
   set_tests_properties(host.${t} PROPERTIES TIMEOUT 60 LABELS host)
@@ -32,8 +32,12 @@ add_test(NAME settings.wide_layout COMMAND rg-host-tests wide_layout)
 set_tests_properties(settings.wide_layout PROPERTIES TIMEOUT 60 LABELS "settings;wide")
 add_test(NAME settings.wide_menu COMMAND rg-host-tests wide_menu)
 set_tests_properties(settings.wide_menu PROPERTIES TIMEOUT 60 LABELS "settings;wide")
+add_test(NAME settings.ui_scale COMMAND rg-host-tests ui_scale)
+set_tests_properties(settings.ui_scale PROPERTIES TIMEOUT 60 LABELS "settings;wide")
 add_test(NAME settings.wide_strips COMMAND rg-host-tests wide_strips)
 set_tests_properties(settings.wide_strips PROPERTIES TIMEOUT 60 LABELS "settings;wide")
+add_test(NAME settings.wide_sides COMMAND rg-host-tests wide_sides)
+set_tests_properties(settings.wide_sides PROPERTIES TIMEOUT 60 LABELS "settings;wide")
 add_test(NAME host.wide_present_control COMMAND rg-host-tests wide_present_control)
 set_tests_properties(host.wide_present_control PROPERTIES WILL_FAIL TRUE TIMEOUT 60 LABELS "host;wide")
 

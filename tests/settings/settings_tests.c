@@ -12,6 +12,7 @@
 #include "rg_input.h"
 #include "rg_menu.h"
 #include "rg_settings.h"
+#include "rg_display.h"
 
 static int g_fail;
 #define CHECK(c) do { if (!(c)) { g_fail++; if (g_fail < 60) \
@@ -26,6 +27,7 @@ static int g_fail;
     _a ? _a : "(null)", _b ? _b : "(null)"); } } while (0)
 
 static const char *g_out = ".";
+static int fake_choices(const char *id, const char **out, int cap, void *user);   /* (display_modes) */
 
 /* ------------------------------------------------------------ helpers */
 typedef struct warnlog { int n; char all[8192]; } warnlog;
@@ -627,9 +629,8 @@ static int t_core_defs(void)
          * planned */
         if (!strncmp(d->id, "graphics.", 9)) {
             /* graphics.aspect / movie_aspect: real since widescreen stage 0 (docs/WIDESCREEN.md) */
-            static const char *const planned[] = { "graphics.bloom", "graphics.depth_of_field",
-                                                   "graphics.motion_blur", "graphics.lod_bias",
-                                                   "graphics.shadow_res" };
+            /* graphics.bloom / depth_of_field / motion_blur: real since 2026-11-01 (p6fx, nr_sfx.c) */
+            static const char *const planned[] = { "graphics.lod_bias", "graphics.shadow_res" };
             int want = 0;
             for (size_t k = 0; k < sizeof planned / sizeof planned[0]; k++)
                 if (!strcmp(d->id, planned[k])) want = 1;
@@ -818,6 +819,7 @@ static int menu_every_setting(int kb)
     e.kb = kb;
     rg_actions_from_settings(&e.a, e.s);
     rg_menu_init(&e.m, e.s);
+    rg_menu_set_choices(&e.m, fake_choices, NULL);   /* the host's display lists (display_modes) */
     rg_ui_nav_init(&e.nav);
     int changed = 0, visited = 0;
     for (int i = 0; i < rg_settings_count(e.s); i++) {
@@ -827,6 +829,15 @@ static int menu_every_setting(int kb)
         if (go_to(&e, i)) { fprintf(stderr, "cannot reach %s\n", d->id); CHECK(!"reach"); continue; }
         char before[1024], after[1024];
         rg_settings_value_text(e.s, i, before, sizeof before);
+        if (!strcmp(d->id, "display.fullscreen_mode")) {
+            /* a mode from the monitor's list (free text must be WxH[@Hz]) */
+            cmd(&e, U_RIGHT);
+            cmd(&e, U_ACCEPT);   /* keep (display trial) */
+            rg_settings_value_text(e.s, i, after, sizeof after);
+            if (strcmp(before, after)) changed++;
+            else { fprintf(stderr, "cannot pick %s\n", d->id); CHECK(!"pick"); }
+            continue;
+        }
         if (d->type == RG_SET_STRING) {
             /* text entry: typed on the keyboard, or picked on the on-screen selector */
             cmd(&e, U_ACCEPT);
@@ -2723,7 +2734,7 @@ static int t_menu_flags(void)
     CHECK(menu_has(&e, "[gameplay]"));
     CHECK(menu_has(&e, "[gameplay] changes game logic, off in Original"));
     /* a planned one */
-    CHECK_EQ(go_to(&e, rg_settings_find(e.s, "graphics.bloom")), 0);   /* prompts.style is real now */
+    CHECK_EQ(go_to(&e, rg_settings_find(e.s, "graphics.lod_bias")), 0);   /* (graphics.bloom is real since p6fx) */
     CHECK(menu_has(&e, "(planned)"));
     CHECK(menu_has(&e, "(planned) stored, no effect yet"));
     /* every row says what it is */
@@ -3329,6 +3340,410 @@ static int t_fps_counter(void)
     return 0;
 }
 
+/* ---- P6 display (lane p6gfx 2026-11-01): display.monitor names + clamp,
+ * display.fullscreen_mode picker, display.frame_rate 165 / 240 / match display */
+static const char *const k_fake_mon[] = { "1: Fake A (2560x1440, 165 Hz) [primary]", "2: Fake B (1920x1080, 60 Hz)" };
+static const char *const k_fake_modes[] = { "", "2560x1440@165", "2560x1440@59.95", "1920x1080@60" };
+static int fake_choices(const char *id, const char **out, int cap, void *user)
+{
+    (void)user;
+    const char *const *l = NULL;
+    int n = 0;
+    if (!strcmp(id, "display.monitor")) { l = k_fake_mon; n = 2; }
+    else if (!strcmp(id, "display.fullscreen_mode")) { l = k_fake_modes; n = 4; }
+    for (int i = 0; i < n && i < cap; i++) out[i] = l[i];
+    return n;
+}
+
+static void display_flow(int kb)
+{
+    uienv e;
+    env_init(&e, kb);
+    rg_menu_set_choices(&e.m, fake_choices, NULL);
+    int mon = rg_settings_find(e.s, "display.monitor");
+    CHECK_EQ(go_to(&e, mon), 0);
+    CHECK(menu_sel_has(&e, "1: Fake A"));
+    cmd(&e, U_RIGHT);
+    CHECK_EQ(rg_settings_get_int(e.s, "display.monitor"), 1);
+    CHECK(menu_sel_has(&e, "2: Fake B"));
+    cmd(&e, U_RIGHT);   /* wraps within the connected displays */
+    CHECK_EQ(rg_settings_get_int(e.s, "display.monitor"), 0);
+    cmd(&e, U_LEFT);
+    CHECK_EQ(rg_settings_get_int(e.s, "display.monitor"), 1);
+    cmd(&e, U_ACCEPT);   /* keep (display trial) */
+    CHECK(!rg_settings_trial_active(e.s));
+    rg_settings_set_int(e.s, "display.monitor", 5, RG_SRC_FILE);   /* unplugged since */
+    CHECK(menu_sel_has(&e, "5 (not connected: using 1: Fake A"));
+    cmd(&e, U_LEFT);
+    CHECK_EQ(rg_settings_get_int(e.s, "display.monitor"), 1);
+    cmd(&e, U_ACCEPT);
+    /* exclusive mode: "" (default) first, then the display's modes; a display trial */
+    int fm = rg_settings_find(e.s, "display.fullscreen_mode");
+    CHECK(fm >= 0 && (rg_settings_def(e.s, fm)->flags & RG_SETF_DISPLAY));
+    CHECK_EQ(go_to(&e, fm), 0);
+    CHECK(menu_sel_has(&e, "(default)"));
+    cmd(&e, U_RIGHT);
+    CHECK_STR(rg_settings_get_string(e.s, "display.fullscreen_mode"), "2560x1440@165");
+    CHECK(rg_settings_trial_active(e.s));
+    cmd(&e, U_RIGHT);
+    CHECK_STR(rg_settings_get_string(e.s, "display.fullscreen_mode"), "2560x1440@59.95");
+    cmd(&e, U_BACK);   /* revert the trial */
+    CHECK_STR(rg_settings_get_string(e.s, "display.fullscreen_mode"), "");
+    cmd(&e, U_LEFT);
+    CHECK_STR(rg_settings_get_string(e.s, "display.fullscreen_mode"), "1920x1080@60");
+    cmd(&e, U_ACCEPT);
+    CHECK(!rg_settings_trial_active(e.s));
+    /* frame cap: every value reachable from the menu */
+    int fr = rg_settings_find(e.s, "display.frame_rate");
+    CHECK_EQ(go_to(&e, fr), 0);
+    for (int i = 0; i < RG_FRAME_RATE_DISPLAY; i++) cmd(&e, U_RIGHT);
+    CHECK_EQ(rg_settings_get_enum(e.s, "display.frame_rate"), RG_FRAME_RATE_DISPLAY);
+    CHECK(menu_sel_has(&e, "Match the display refresh rate"));
+    rg_settings_destroy(e.s);
+}
+
+static int t_display_modes(void)
+{
+    int w, h;
+    double hz;
+    char t[64];
+    CHECK_EQ(rg_display_mode_parse("", &w, &h, &hz), 0);
+    CHECK_EQ(rg_display_mode_parse("2560x1440@165", &w, &h, &hz), 1);
+    CHECK(w == 2560 && h == 1440 && hz == 165.0);
+    CHECK_EQ(rg_display_mode_parse("1920X1080", &w, &h, &hz), 1);
+    CHECK(w == 1920 && h == 1080 && hz == 0.0);
+    CHECK_EQ(rg_display_mode_parse("1920x1080@59.94", &w, &h, &hz), 1);
+    CHECK(hz > 59.93 && hz < 59.95);
+    CHECK_EQ(rg_display_mode_parse("1920x", &w, &h, &hz), -1);
+    CHECK_EQ(rg_display_mode_parse("foo", &w, &h, &hz), -1);
+    CHECK_EQ(rg_display_mode_parse("1920x1080@", &w, &h, &hz), -1);
+    CHECK_EQ(rg_display_mode_parse("1920x1080@60hz", &w, &h, &hz), -1);
+    rg_display_mode_format(2560, 1440, 165.0, t, sizeof t);
+    CHECK_STR(t, "2560x1440@165");
+    rg_display_mode_format(1920, 1080, 59.9400024, t, sizeof t);
+    CHECK_STR(t, "1920x1080@59.94");
+    rg_display_mode_format(1280, 720, 0.0, t, sizeof t);
+    CHECK_STR(t, "1280x720");
+    /* monitor index: out of range -> the first (primary) */
+    CHECK_EQ(rg_display_monitor_index(1, 2), 1);
+    CHECK_EQ(rg_display_monitor_index(2, 2), 0);
+    CHECK_EQ(rg_display_monitor_index(-1, 2), 0);
+    CHECK_EQ(rg_display_monitor_index(3, 0), 0);
+    /* frame caps */
+    CHECK_EQ(rg_frame_cap_fps(RG_FRAME_RATE_ORIGINAL, 144.0), 0);
+    CHECK_EQ(rg_frame_cap_fps(RG_FRAME_RATE_144, 60.0), 144);
+    CHECK_EQ(rg_frame_cap_fps(RG_FRAME_RATE_165, 0.0), 165);
+    CHECK_EQ(rg_frame_cap_fps(RG_FRAME_RATE_240, 0.0), 240);
+    CHECK_EQ(rg_frame_cap_fps(RG_FRAME_RATE_DISPLAY, 164.83), 165);
+    CHECK_EQ(rg_frame_cap_fps(RG_FRAME_RATE_DISPLAY, 59.94), 60);
+    CHECK_EQ(rg_frame_cap_fps(RG_FRAME_RATE_DISPLAY, 0.0), 60);
+    CHECK_EQ(rg_frame_cap_fps(RG_FRAME_RATE_UNCAPPED, 144.0), 0);
+    /* registry: names, validation, normalisation, Original */
+    rg_settings *s = mk();
+    const rg_setting_def *d = rg_settings_def(s, rg_settings_find(s, "display.frame_rate"));
+    CHECK_EQ(d->enum_count, RG_FRAME_RATE_COUNT);
+    CHECK_STR(d->enum_names[RG_FRAME_RATE_165], "165");
+    CHECK_STR(d->enum_names[RG_FRAME_RATE_240], "240");
+    CHECK_STR(d->enum_names[RG_FRAME_RATE_DISPLAY], "display");
+    CHECK_STR(d->enum_names[RG_FRAME_RATE_UNCAPPED], "uncapped");
+    rg_settings_parse(s, "[display]\nframe_rate = 240\nfullscreen_mode = 2560X1440@165.00\n", "f.ini");
+    CHECK_EQ(rg_settings_get_enum(s, "display.frame_rate"), RG_FRAME_RATE_240);
+    CHECK_STR(rg_settings_get_string(s, "display.fullscreen_mode"), "2560x1440@165");
+    CHECK(rg_settings_set_string(s, "display.fullscreen_mode", "big", RG_SRC_API) == RG_SET_INVALID);
+    CHECK_STR(rg_settings_get_string(s, "display.fullscreen_mode"), "2560x1440@165");
+    CHECK_EQ(rg_settings_apply_preset(s, "original"), 0);
+    CHECK_EQ(rg_settings_get_enum(s, "display.frame_rate"), RG_FRAME_RATE_ORIGINAL);
+    rg_settings_destroy(s);
+    display_flow(1);
+    display_flow(0);
+    return 0;
+}
+
+/* ---- P6 save manager in the overlay (lane p6ui 2026-11-01): list + names, PCSX2 import
+ * (typed path or the file picker), replace confirmation, import all; keyboard alone and
+ * gamepad alone, through the real UI bindings.  The card side is a fake here (the real one,
+ * src/native/saves/mc_menu.c on the card model, is ctest padmc.mc_menu). */
+typedef struct fake_card { int n; rg_menu_save sv[8]; } fake_card;
+static fake_card g_fc[2];
+static int g_fc_forced, g_fc_imported;
+static const char *const k_src_dirs[] = { "BASCUS-97490LV5RG_00", "BASCUS-97490LV5RG_03", "BASLUS-20000OTHER" };
+static void fc_add(int c, const char *dir)
+{
+    rg_menu_save *o = &g_fc[c].sv[g_fc[c].n++];
+    memset(o, 0, sizeof *o);
+    snprintf(o->dir, sizeof o->dir, "%s", dir);
+    snprintf(o->meta, sizeof o->meta, "Ch. 1: summary of %s", dir);
+    o->game = !strncmp(dir, "BASCUS-97490LV5RG_", 18);
+}
+static int fc_find(int c, const char *dir)
+{
+    for (int i = 0; i < g_fc[c].n; i++) if (!strcmp(g_fc[c].sv[i].dir, dir)) return i;
+    return -1;
+}
+static int f_list(void *u, int card, rg_menu_save *out, int cap, char *msg, size_t mc)
+{
+    (void)u; (void)msg; (void)mc;
+    int k = 0;
+    for (int i = 0; i < g_fc[card].n && k < cap; i++) out[k++] = g_fc[card].sv[i];
+    return k;
+}
+static int f_rename(void *u, int card, const char *dir, const char *name, char *msg, size_t mc)
+{
+    (void)u;
+    int i = fc_find(card, dir);
+    if (i < 0) { snprintf(msg, mc, "no such save"); return -1; }
+    snprintf(g_fc[card].sv[i].name, sizeof g_fc[card].sv[i].name, "%s", name);
+    return 0;
+}
+static int f_src_list(void *u, const char *path, int card, rg_menu_save *out, int cap, char *msg, size_t mc)
+{
+    (void)u;
+    if (strcmp(path, "/fake/Mcd001.ps2") && strcmp(path, "/fake/sub/Mcd002.ps2")) { snprintf(msg, mc, "not a memory card"); return -1; }
+    int k = 0;
+    for (int i = 0; i < 3 && k < cap; i++) {
+        memset(&out[k], 0, sizeof out[k]);
+        snprintf(out[k].dir, sizeof out[k].dir, "%s", k_src_dirs[i]);
+        snprintf(out[k].title, sizeof out[k].title, "Title %d", i);
+        out[k].game = i < 2;
+        out[k].exists = fc_find(card, k_src_dirs[i]) >= 0;
+        k++;
+    }
+    return k;
+}
+static int f_src_import(void *u, const char *path, int card, const char *dir, int force, char *msg, size_t mc)
+{
+    (void)u; (void)path;
+    if (fc_find(card, dir) >= 0) {
+        if (!force) { snprintf(msg, mc, "Card %d already has %s", card + 1, dir); return 1; }
+        g_fc_forced++;
+        snprintf(msg, mc, "%s replaced", dir);
+        return 0;
+    }
+    fc_add(card, dir);
+    g_fc_imported++;
+    snprintf(msg, mc, "%s imported into card %d", dir, card + 1);
+    return 0;
+}
+static int f_browse(void *u, const char *dir, rg_menu_file *out, int cap, char *res, size_t rc, char *msg, size_t mc)
+{
+    (void)u; (void)cap;
+    if (!dir[0] || !strcmp(dir, "/fake")) {
+        snprintf(res, rc, "/fake");
+        snprintf(out[0].name, sizeof out[0].name, ".."); out[0].kind = RG_FILE_UP;
+        snprintf(out[1].name, sizeof out[1].name, "sub"); out[1].kind = RG_FILE_DIR;
+        snprintf(out[2].name, sizeof out[2].name, "Mcd001.ps2"); out[2].kind = RG_FILE_CARD;
+        return 3;
+    }
+    if (!strcmp(dir, "/fake/sub")) {
+        snprintf(res, rc, "/fake/sub");
+        snprintf(out[0].name, sizeof out[0].name, ".."); out[0].kind = RG_FILE_UP;
+        snprintf(out[1].name, sizeof out[1].name, "Mcd002.ps2"); out[1].kind = RG_FILE_FOLDER_CARD;
+        return 2;
+    }
+    snprintf(msg, mc, "not a folder");
+    return -1;
+}
+static void f_join(void *u, const char *dir, const char *name, int kind, char *out, size_t cap)
+{
+    (void)u;
+    if (kind == RG_FILE_UP) snprintf(out, cap, "/fake");
+    else snprintf(out, cap, "%s/%s", dir, name);
+}
+static const rg_menu_saves_ops k_fake_saves = { NULL, f_list, f_rename, f_src_list, f_src_import, f_browse, f_join };
+
+/* the on-screen selector (rg_menu.c k_osk): move to each character and type it */
+static void osk_type(uienv *e, const char *str)
+{
+    static const char *const osk[] = { "abcdefghijklm", "nopqrstuvwxyz", "ABCDEFGHIJKLM", "NOPQRSTUVWXYZ",
+                                       "0123456789.-_", "/\\:~()!,\x27+=@&" };
+    for (const char *p = str; *p; p++) {
+        int r = -1, c = -1;
+        for (int i = 0; i < 6 && r < 0; i++) {
+            const char *q = strchr(osk[i], *p);
+            if (q) { r = i; c = (int)(q - osk[i]); }
+        }
+        if (*p == ' ') { r = 6; c = 0; }
+        CHECK(r >= 0);
+        if (r < 0) return;
+        while (e->m.osk_row != r) cmd(e, U_DOWN);
+        while (e->m.osk_col != c) cmd(e, U_RIGHT);
+        cmd(e, U_ACCEPT);
+    }
+}
+static void osk_special(uienv *e, int col)   /* 0 Space 1 Delete 2 Clear 3 OK 4 Cancel */
+{
+    while (e->m.osk_row != 6) cmd(e, U_DOWN);
+    while (e->m.osk_col != col) cmd(e, U_RIGHT);
+    cmd(e, U_ACCEPT);
+}
+static int sv_row(const uienv *e)
+{
+    int rows[RG_MENU_MAX_ROWS];
+    int n = rg_menu_rows(&e->m, rows, RG_MENU_MAX_ROWS);
+    return e->m.cursor < n ? rows[e->m.cursor] : 0;
+}
+static int views_wrap_ok(const uienv *e, int cols)
+{
+    rg_menu_line in[RG_MENU_MAX_ROWS + 16], out[4 * (RG_MENU_MAX_ROWS + 16)];
+    int n = rg_menu_render(&e->m, e->t, in, RG_MENU_MAX_ROWS + 16);
+    int w = rg_menu_wrap(in, n, cols, out, 4 * (RG_MENU_MAX_ROWS + 16));
+    size_t a = 0, b = 0;
+    for (int i = 0; i < n; i++) for (const char *p = in[i].text; *p; p++) a += *p != ' ';
+    for (int i = 0; i < w; i++) {
+        if ((int)strlen(out[i].text) > cols) return 0;
+        for (const char *p = out[i].text; *p; p++) b += *p != ' ';
+    }
+    return a == b;
+}
+static void saves_flow(int kb)
+{
+    uienv e;
+    env_init(&e, kb);
+    memset(g_fc, 0, sizeof g_fc);
+    g_fc_forced = g_fc_imported = 0;
+    fc_add(0, "BASCUS-97490LV5RG_00");
+    fc_add(0, "BASCUS-97490LV5RG_01");
+    /* without ops the Saves page has no manager rows */
+    cmd(&e, U_TOGGLE);
+    for (int i = 0; i < RG_MENU_MAX_PAGES && strcmp(e.m.pages[e.m.page], "saves"); i++) cmd(&e, U_NEXT);
+    CHECK_STR(e.m.pages[e.m.page], "saves");
+    CHECK(!menu_has(&e, "Manage saves"));
+    rg_menu_set_saves(&e.m, &k_fake_saves);
+    CHECK(menu_has(&e, "Manage saves") && menu_has(&e, "Import saves from a PCSX2"));
+    for (int i = 0; i < 8 && sv_row(&e) != -1 - RG_ROW_SAVES_MANAGE; i++) cmd(&e, U_DOWN);
+    CHECK_EQ(sv_row(&e), -1 - RG_ROW_SAVES_MANAGE);
+    cmd(&e, U_ACCEPT);
+    CHECK_EQ(e.m.view, RG_MENU_VIEW_SAVES);
+    CHECK(menu_has(&e, "BASCUS-97490LV5RG_01") && menu_has(&e, "2 save directories"));
+    CHECK(views_wrap_ok(&e, 40) && views_wrap_ok(&e, 78));
+    /* rename save _01 */
+    cmd(&e, U_DOWN);
+    cmd(&e, U_DOWN);
+    CHECK(menu_sel_has(&e, "BASCUS-97490LV5RG_01"));
+    cmd(&e, U_ACCEPT);
+    CHECK(rg_menu_text_editing(&e.m) && menu_has(&e, "Name for BASCUS-97490LV5RG_01"));
+    if (kb) {
+        rg_menu_text_input(&e.m, "Before the boss");
+        rg_menu_text_key(&e.m, RG_TEXT_COMMIT);
+    } else {
+        osk_type(&e, "Before the boss");
+        osk_special(&e, 3);
+    }
+    CHECK_EQ(e.m.view, RG_MENU_VIEW_SAVES);
+    CHECK_STR(g_fc[0].sv[1].name, "Before the boss");
+    CHECK(menu_sel_has(&e, "\"Before the boss\""));
+    /* too long: the editor stays open; cancel keeps the name */
+    cmd(&e, U_ACCEPT);
+    if (kb) {
+        for (int i = 0; i < 7; i++) rg_menu_text_input(&e.m, "0123456789");
+        rg_menu_text_key(&e.m, RG_TEXT_COMMIT);
+        CHECK(rg_menu_text_editing(&e.m) && strstr(e.m.status, "too long"));
+        rg_menu_text_key(&e.m, RG_TEXT_CANCEL);
+    } else {
+        osk_special(&e, 4);
+    }
+    CHECK_EQ(e.m.view, RG_MENU_VIEW_SAVES);
+    CHECK_STR(g_fc[0].sv[1].name, "Before the boss");
+    /* empty = remove the name */
+    cmd(&e, U_ACCEPT);
+    if (kb) {
+        rg_menu_text_key(&e.m, RG_TEXT_HOME);
+        for (int i = 0; i < 20; i++) rg_menu_text_key(&e.m, RG_TEXT_DELETE);
+        rg_menu_text_key(&e.m, RG_TEXT_COMMIT);
+    } else {
+        osk_special(&e, 2);
+        osk_special(&e, 3);
+    }
+    CHECK_STR(g_fc[0].sv[1].name, "");
+    CHECK(strstr(e.m.status, "name removed") != NULL);
+    /* the other card */
+    cmd(&e, U_RIGHT);
+    CHECK_EQ(e.m.sv_card, 1);
+    CHECK(menu_has(&e, "no saves on this card"));
+    cmd(&e, U_LEFT);
+    CHECK_EQ(e.m.sv_card, 0);
+    cmd(&e, U_BACK);
+    CHECK_EQ(e.m.view, RG_MENU_VIEW_PAGE);
+    CHECK(e.m.open);
+    /* import */
+    cmd(&e, U_DOWN);
+    CHECK_EQ(sv_row(&e), -1 - RG_ROW_SAVES_IMPORT);
+    cmd(&e, U_ACCEPT);
+    CHECK_EQ(e.m.view, RG_MENU_VIEW_IMPORT);
+    CHECK(menu_sel_has(&e, "Card file:  (none"));
+    if (kb) {
+        cmd(&e, U_ACCEPT);
+        CHECK(rg_menu_text_editing(&e.m));
+        rg_menu_text_input(&e.m, "/nowhere.ps2");
+        rg_menu_text_key(&e.m, RG_TEXT_COMMIT);
+        CHECK(strstr(e.m.status, "not a memory card") && e.m.imp_n < 0);
+        cmd(&e, U_ACCEPT);
+        rg_menu_text_key(&e.m, RG_TEXT_HOME);
+        for (int i = 0; i < 20; i++) rg_menu_text_key(&e.m, RG_TEXT_DELETE);
+        rg_menu_text_input(&e.m, " \"/fake/Mcd001.ps2\" ");   /* pasted with quotes */
+        rg_menu_text_key(&e.m, RG_TEXT_COMMIT);
+        CHECK_STR(e.m.imp_path, "/fake/Mcd001.ps2");
+    } else {
+        cmd(&e, U_DOWN);
+        cmd(&e, U_ACCEPT);
+        CHECK_EQ(e.m.view, RG_MENU_VIEW_BROWSE);
+        CHECK(menu_has(&e, "Folder: /fake") && menu_has(&e, "[card]"));
+        CHECK(views_wrap_ok(&e, 40));
+        cmd(&e, U_DOWN);   /* sub */
+        cmd(&e, U_ACCEPT);
+        CHECK(menu_has(&e, "Folder: /fake/sub") && menu_has(&e, "[PCSX2 folder card]"));
+        cmd(&e, U_ACCEPT);   /* ".." */
+        CHECK(menu_has(&e, "Folder: /fake") && !menu_has(&e, "/fake/sub"));
+        cmd(&e, U_NEXT);     /* 10 rows down: clamps to the last (the card) */
+        CHECK(menu_sel_has(&e, "Mcd001.ps2"));
+        cmd(&e, U_ACCEPT);
+        CHECK_EQ(e.m.view, RG_MENU_VIEW_IMPORT);
+        CHECK_STR(e.m.imp_path, "/fake/Mcd001.ps2");
+    }
+    CHECK_EQ(e.m.imp_n, 3);
+    CHECK(menu_sel_has(&e, "BASCUS-97490LV5RG_00") && menu_sel_has(&e, "[card 1 has one"));
+    CHECK(views_wrap_ok(&e, 40) && views_wrap_ok(&e, 78));
+    /* _00 is there: asks; back keeps, accept replaces */
+    cmd(&e, U_ACCEPT);
+    CHECK(menu_has(&e, "Replace it?") && g_fc_forced == 0);
+    cmd(&e, U_BACK);
+    CHECK(!menu_has(&e, "Replace it?") && g_fc_forced == 0 && strstr(e.m.status, "kept"));
+    CHECK_EQ(e.m.view, RG_MENU_VIEW_IMPORT);
+    cmd(&e, U_ACCEPT);
+    cmd(&e, U_ACCEPT);
+    CHECK_EQ(g_fc_forced, 1);
+    CHECK(strstr(e.m.status, "replaced") != NULL);
+    /* _03 is new */
+    cmd(&e, U_DOWN);
+    CHECK(menu_sel_has(&e, "BASCUS-97490LV5RG_03"));
+    cmd(&e, U_ACCEPT);
+    CHECK_EQ(g_fc_imported, 1);
+    CHECK(fc_find(0, "BASCUS-97490LV5RG_03") >= 0 && menu_sel_has(&e, "[card 1 has one"));
+    /* card 2, import all: both game saves, not the other game's */
+    for (int i = 0; i < 10 && e.m.sub != 2; i++) cmd(&e, U_UP);
+    cmd(&e, U_RIGHT);
+    CHECK_EQ(e.m.sv_card, 1);
+    CHECK(menu_has(&e, "card 2 does not have (2)"));
+    for (int i = 0; i < 10 && !menu_sel_has(&e, "Import every"); i++) cmd(&e, U_DOWN);
+    cmd(&e, U_ACCEPT);
+    CHECK_EQ(g_fc[1].n, 2);
+    CHECK(fc_find(1, "BASLUS-20000OTHER") < 0);
+    CHECK(strstr(e.m.status, "Imported 2 saves into card 2") != NULL);
+    CHECK(menu_has(&e, "card 2 does not have (0)"));
+    cmd(&e, U_BACK);
+    CHECK_EQ(e.m.view, RG_MENU_VIEW_PAGE);
+    cmd(&e, U_BACK);
+    CHECK(!e.m.open);
+    rg_settings_destroy(e.s);
+}
+
+static int t_menu_saves(void)
+{
+    saves_flow(1);
+    saves_flow(0);
+    return 0;
+}
+
 /* ================================================================ main */
 typedef struct test { const char *name; int (*fn)(void); } test;
 static const test k_tests[] = {
@@ -3352,7 +3767,8 @@ static const test k_tests[] = {
     { "menu_mouse_capture_keyboard", t_menu_mouse_capture_keyboard },
     { "menu_mouse_capture_gamepad", t_menu_mouse_capture_gamepad },
     { "menu_wrap", t_menu_wrap }, { "screenshot_dir_live", t_screenshot_dir_live },
-    { "fps_counter", t_fps_counter },
+    { "fps_counter", t_fps_counter }, { "display_modes", t_display_modes },
+    { "menu_saves", t_menu_saves },
 };
 
 int main(int argc, char **argv)

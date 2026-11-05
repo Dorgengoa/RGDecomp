@@ -5,16 +5,16 @@
 #include "types.h"
 
 /*rgp*/
-extern char D_0045F560[0x40];
-extern char D_0045F568[0x40];
-extern char D_0045F570[0x40];
-extern char D_0045F578[0x40];
-extern char D_0045F580[0x40];
-extern char D_0045F588[0x40];
-extern char D_0045F590[0x40];
-extern char D_0045F598[0x40];
-extern char D_0045F5A0[0x40];
-extern char D_0045F5A8[0x40];
+extern char D_0045F560[8];
+extern char D_0045F568[8];
+extern char D_0045F570[8];
+extern char D_0045F578[8];
+extern char D_0045F580[8];
+extern char D_0045F588[8];
+extern char D_0045F590[8];
+extern char D_0045F598[8];
+extern char D_0045F5A0[8];
+extern char D_0045F5A8[8];
 
 s32 FontGlyphDigitValue_26ec20(void *arg0, s32 arg1)
 {

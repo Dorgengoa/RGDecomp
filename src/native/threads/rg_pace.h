@@ -56,6 +56,16 @@ typedef struct rg_pace_config {
     int      cost_at_decision; /* control: ignore rg_pace_phase_done (the cost sample stops at the
                                   present decision, before the GS worker wait: the design before
                                   2026-10-22; $RG_PACE_COST_AT_DECISION=1) */
+    int      phase_rate; /* every phase may present when the cap is at least the phase rate (59.94 Hz:
+                            cap >= 60); the cap's slots then pace only the presents between
+                            phases.  Set when nothing presents between phases (interpolation
+                            off): a phase present that comes a little early after the last one
+                            (a long phase, then a short one) is not dropped, so a 30 Hz game
+                            shows each frame for exactly two phases (docs/NATIVE-RENDER.md
+                            "Interpolation throughput (2026-10-30)") */
+    uint32_t speed_cap_fps; /* with cap_fps 0: the cap while a battle is sped up (rg_pace_set_speed > 1;
+                               display.frame_rate original: 60, so the presents stay one per host
+                               phase-time; uncapped: 0) */
 } rg_pace_config;
 
 typedef struct rg_pace {
@@ -79,6 +89,10 @@ typedef struct rg_pace {
     uint64_t dropped_ticks;   /* ... in phases */
     uint64_t forced;          /* presents forced after k phases (host slower than 59.94 Hz) */
     uint64_t hist[RG_PACE_HIST];
+    /* gameplay.battle_speed: phases owed per host phase-time, 1/65536 (0 or 65536 = 1, retail
+     * rate).  Host time accumulates this much faster: the phases (and so the game) run faster
+     * against the host clock while each phase stays the same; set by rg_pace_set_speed. */
+    uint32_t speed_q16;
 } rg_pace;
 
 void rg_pace_default_config(rg_pace_config *c);
@@ -87,6 +101,9 @@ void rg_pace_init(rg_pace *p, const rg_pace_config *c);
 void rg_pace_configure(rg_pace *p, const rg_pace_config *c);
 /* forget the host time anchor (after a pause, a load, a hitch the caller knows of) */
 void rg_pace_reset(rg_pace *p);
+/* gameplay.battle_speed: from now on host time owes phases `speed` times as fast (1 = the
+ * retail 59.94 Hz; 1..8).  The debt already owed is kept. */
+void rg_pace_set_speed(rg_pace *p, double speed);
 
 /* Before a phase: 0 when a phase is owed at host time now_ns (retail: always), else the
  * nanoseconds until it is.  Accumulates host time and drops debt beyond max_ticks phases. */

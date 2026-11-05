@@ -5,7 +5,7 @@
 #include "types.h"
 #pragma opt_common_subs off
 extern u8 D_0045B078[0x400];
-extern u8 D_00465D80[0x400];
+extern u8 D_00465D80[8];
 extern u8 D_00465D90[0x400];
 extern s32 D_004838E8;
 

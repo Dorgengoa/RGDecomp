@@ -70,6 +70,11 @@ OVERLAYS = [  # (name, loader index, MWo3 id)
 ]
 STUBS = [("viewer", 0, 1), ("launcher", 1, 4)]   # 256-byte nop stubs, no data/bss
 MAIN_BSS = (0x00481080, 0x004E9E80)
+# Overlay data words that equal a MAIN function entry and are relocated (OVERLAY_REGISTRY
+# raw-reloc-main): NORMAL 0x00525D64..0x00525FA4, the transporter item menu's
+# {id, callback} and {state, handler} tables (TransMenuItem*_37xxxx).  Other words that
+# equal MAIN symbols (0x00100000, 0x00480000, ...) are constants and stay raw.
+MAIN_FUNC_TABLES = {("normal", a) for a in range(0x00525D64, 0x00525FA8, 8)}
 NAME_RE = re.compile(r"\b(D|jtbl)_([0-9A-Fa-f]{8})\b")
 OVL_NAME_RE = re.compile(r"\b(?:(title|insmenu|normal|factory|insect)_)?(D|jtbl)_([0-9A-Fa-f]{8})\b")
 FUNC_IMPORT_RE = re.compile(r"\b(?:func|FUN)_([0-9A-Fa-f]{6,8})\b")
@@ -742,6 +747,14 @@ class Gen:
                 self.tsv.append(("raw-text-word", o.name, where, f"0x{v:08X}",
                                  "inside own text but not a function entry; kept raw"))
                 return f"RG_W(0x{v:08X})"
+            if (o.name, o.data_vram + w.off) in MAIN_FUNC_TABLES and v in self.main_funcs:
+                # NORMAL's transporter item-menu callback / state tables hold MAIN
+                # function entries splat left raw; called through, so relocate
+                # (raw = jump to the PS2 address: 1028a play-test crash, state 0x1F).
+                n = self.main_funcs[v]
+                externs[n] = "void {}(void);"
+                self.tsv.append(("raw-reloc-main", o.name, where, f"0x{v:08X}", n))
+                return f"RG_R(&{n}, 0x{v:08X})"
             hit = self.exact_symbol(None, v) if v < ARENA_BASE else None
             if hit:
                 self.tsv.append(("raw-ptr-candidate", o.name, f"0x{o.data_vram + w.off:08X}",
@@ -987,7 +1000,7 @@ class Gen:
                 # (IMAGE_REL_AMD64_ADDR32, the exe lies below 2 GB: tools/x64/pecheck.py)
                 body.append(f"extern const uint32_t {p}_data[{len(ws)}];")
                 body.append("__asm__(")
-                body.append('    ".section .rdata,\\"dr\\"\\n"')
+                body.append('    RG_OVL_ASM_RODATA "\\n"')   # COFF .rdata / ELF .rodata (ovl_gen.h)
                 body.append('    ".p2align 2\\n"')
                 body.append(f'    ".globl " RG_OVL_ASM_SYM({p}_data) "\\n" RG_OVL_ASM_SYM({p}_data) ":\\n"')
                 for i in range(0, len(ws), 4):

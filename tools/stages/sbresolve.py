@@ -675,3 +675,117 @@ class Resolver:
                          + (f", incomplete: {' '.join(inc[:4])}" if inc else ""))
             done = done and not inc
         return e, done, notes, targets, wend
+
+    # ------------------------------------------------------------ vcall targets
+    # (2026-11-01, f32args lane: the protos rule `vcall-target-lanes` and
+    # tools/census/f32args.py share these; docs/PROTOS.md "Virtual calls and
+    # float lanes")
+    ovl_word = None      # optional hook (img, addr) -> u32 word of an overlay image (census)
+
+    def vcall_site(self, fn, j):
+        """(V, S) of the vtable jalr at insn j of listing fn, V relative to the
+        `this` the jalr passes; None when the slot or the vptr load is not read."""
+        S = self._jalr_slot(fn, j)
+        if S is None:
+            return None
+        cfg = self.flow.cfg(fn.partition("@")[0])
+        f = cfg.ins[j][1][-1]
+        V, seen_slot = None, False
+        for op, ops in reversed(cfg.ins[max(0, j - 16):j]):
+            if op == "lw" and ops and ops[0] == f:
+                m = re.fullmatch(r"(-?\w+)\((\$\w+)\)", ops[1])
+                if not m:
+                    continue
+                if m.group(2) == f and not seen_slot:
+                    seen_slot = True
+                    continue
+                if m.group(2) != f:
+                    im = asmflow._imm(m.group(1))
+                    V = im[1] if im and im[0] == "int" else None
+                    break
+        if V is None:
+            vs = set()
+            for op, ops in cfg.ins:
+                if op == "lw" and ops and ops[0] == f:
+                    m = re.fullmatch(r"(-?\w+)\((\$\w+)\)", ops[1])
+                    if m and m.group(2) != f:
+                        im = asmflow._imm(m.group(1))
+                        if im and im[0] == "int":
+                            vs.add(im[1])
+            V = vs.pop() if len(vs) == 1 else None
+        if V is None:
+            return None
+        d = self._this_delta(fn, j, V)
+        return (V - (d or 0), S)
+
+    def slot_target(self, img, sym, S):
+        """Listing of slot S of vtable sym seen from image img, with the table's
+        length checked (a slot past the table's end is another object's word);
+        overlay vtables through the ovl_word hook (else None)."""
+        a = self.sym_addr(sym, img)
+        if a is None:
+            return None
+        if a >= 0x004E9E80:
+            if img == "main" or self.ovl_word is None:
+                return None
+            w = self.ovl_word(img, a + S)
+            return self.fn_listing(w, img) if w else None
+        tl = self.T.get(sym)
+        if tl is not None and S // 4 >= tl[1]:
+            return None
+        w = self.W.get(a + S)
+        if not w or w[0] != "fn":
+            return None
+        return self.word_fn(a + S, img)
+
+    def reads_lane(self, listing, reg):
+        r = self.flow.reads(listing, reg)
+        return isinstance(r, str) and r.startswith("yes")
+
+    def lanes_read(self, listing):
+        """argument registers ($5.., $f12..) a listing reads, or None (no listing)."""
+        if self.flow.cfg(listing.partition("@")[0]) is None:
+            return None
+        return [r for r in ["$%d" % i for i in range(5, 12)] + ["$f%d" % i for i in range(12, 20)]
+                if self.reads_lane(listing, r)]
+
+    def lane_state(self, fn, j, reg):
+        """'set' / 'entry' / 'dead' of an argument register at the jalr."""
+        cfg = self.flow.cfg(fn.partition("@")[0])
+        t = asmflow.value_at_call(cfg, j, reg)
+        if asmflow.has_clobber(t) or (t.kind == "other" and "entry" in str(t.a)):
+            return "dead"
+        if t.kind == "entry" or (t.kind == "phi" and any(x.kind == "entry" for x in t.a)):
+            return "entry"
+        return "set"
+
+    def vcall_targets(self, fn, j, V, S, entry_lanes=None):
+        """[(listing, lanes read, plausible, why)] of slot S of every vtable some
+        code stores at +V of an object.  plausible: every argument lane the
+        target reads holds a value at the jalr (computed before it, or an
+        incoming register the caller itself received: entry_lanes, a set of
+        register names, None = any); a target reading a dead lane belongs to
+        another class sharing the vptr offset."""
+        self._scan()
+        img = fn.split(":", 1)[0]
+        out = {}
+        for im2, sym in self._dv.get(V, ()):
+            if im2 != "main" and img not in ("main", im2):
+                continue
+            t = self.slot_target(im2 if im2 != "main" else img, sym, S)
+            if t and t not in out:
+                out[t] = sym
+        res = []
+        for t in sorted(out):
+            rd = self.lanes_read(t)
+            if rd is None:
+                res.append((t, None, True, "no listing"))
+                continue
+            dead = []
+            for r in rd:
+                st = self.lane_state(fn, j, r)
+                if st == "dead" or (st == "entry" and entry_lanes is not None and r not in entry_lanes):
+                    dead.append(r)
+            res.append((t, rd, not dead, ("reads dead " + ",".join(dead)) if dead
+                        else "reads " + (",".join(rd) or "-")))
+        return res

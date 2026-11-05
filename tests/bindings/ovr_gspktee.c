@@ -29,7 +29,13 @@ extern void VecCopy_1cbe30(void *dst, const void *src);
 #define W32(b, o) (*(s32 *)((u8 *)(b) + (o)))
 #define U32(b, o) (*(u32 *)((u8 *)(b) + (o)))
 #define U64(b, o) (*(u64 *)((u8 *)(b) + (o)))
+#if defined(_WIN64)
+#define PTR(b, o) (*(u8 * RG_P32 *)((u8 *)(b) + (o))) /* x64: 4-byte pointer words in game objects (docs/X64-PLAN.md 0.8) */
+#else
+#line 32
 #define PTR(b, o) (*(u8 **)((u8 *)(b) + (o)))
+#endif
+#line 33
 #define F32(b, o) (*(f32 *)((u8 *)(b) + (o)))
 
 static u8 g_pkt[0x140] __attribute__((aligned(16)));

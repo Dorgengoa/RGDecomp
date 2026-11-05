@@ -8,7 +8,7 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_004B2570[0x400];
+extern u8 D_004B2570[0x270];
 extern u8 D_004B27E0[0x400];
 
 void MenuYesNoCursorInput_377180(s32 *arg0) {

@@ -40,12 +40,12 @@ typedef struct Owner {
 } Owner;
 
 extern "C" {
-extern u8 D_0049D3A8[0x400];
-extern u8 D_0049D398[0x400];
-extern u8 D_0049D3A4[0x400];
-extern u8 D_0049D418[0x400];
-extern u8 D_0049D42C[0x400];
-extern u8 D_0049D43C[0x400];
+extern u8 D_0049D3A8[8];
+extern u8 D_0049D398[4];
+extern u8 D_0049D3A4[4];
+extern u8 D_0049D418[4];
+extern u8 D_0049D42C[4];
+extern u8 D_0049D43C[4];
 extern u8 D_0049D440[0x400];
 extern u8 D_00470F30[];
 extern char D_0045A940[];

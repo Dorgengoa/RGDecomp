@@ -12,8 +12,8 @@ typedef struct Obj00373840 {
     Arr27 unk4;
 } Obj00373840;
 
-extern u8 D_004E9080[0x400];
-extern u8 D_004E9082[0x400];
+extern u8 D_004E9080[2];
+extern u8 D_004E9082[2];
 extern Arr27 D_004E9084;
 
 void SaveSysMsgGet_373840(Obj00373840 *arg0)

@@ -40,7 +40,7 @@ void UiSetWidgetColor_2905b0(s32, s32, f32, f32, f32, f32);
 void UiSetSpriteFlags_290bd0(s32, s32, long long, s32, s32, s32);
 VO *InvFindByCategoryIndex_3c86e0(s32, s32, s32, s32, s32, s32);
 s32 ItemRecKindIs6_3d4510(VO *);
-extern s32 D_004659F0[4];
+extern s32 D_004659F0[2];
 extern s32 D_004659F8[4];
 extern f32 D_0047D40C;
 extern f32 D_0047D488;

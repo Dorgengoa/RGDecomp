@@ -5,10 +5,10 @@ extern void *MemStackNew_14e0b0(u32, s32);
 extern void *ConstructNewArray_100710(void *, void *, void *, u32, u32);
 extern void *DataTableCtor_410430(void *);
 extern void *DataTableCtor_40f7b0(void *);
-extern s32 D_00465818[4];
-extern s32 D_00465820[4];
-extern s32 D_00465828[4];
-extern s32 D_00465830[4];
+extern s32 D_00465818[2];
+extern s32 D_00465820[2];
+extern s32 D_00465828[2];
+extern s32 D_00465830[2];
 }
 
 class VO {

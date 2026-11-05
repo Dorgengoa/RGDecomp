@@ -11,7 +11,7 @@ typedef struct E00380560 {
 } E00380560;
 
 /*rgp*/
-extern s16 D_00463B38[0x100];
+extern s16 D_00463B38[1];
 extern s16 D_00463B3A[0x100];
 
 void MenuYesNoHighlightMaybe_380560(s32 arg0, s32 arg1, s32 arg2)

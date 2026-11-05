@@ -145,7 +145,10 @@ def scan(kind: str, path: Path):
     if not re.search(r"HW_|hw_[rw]|PS2_|RG_OVL_DATA|0[xX](1[0-2]|7000|[0-9A-Fa-f]{5,8})", raw):
         return []
     s = strip_comments(raw)
-    rel = path.relative_to(PORT).as_posix()
+    try:
+        rel = path.relative_to(PORT).as_posix()
+    except ValueError:   # a build-dir generated file (overlay-gen) of a build outside the tree
+        rel = path.as_posix()
     fn = path.stem
     rows = []
 

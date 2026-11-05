@@ -8,7 +8,7 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_0045B418[0x10];
+extern u8 D_0045B418[8];
 extern u8 D_0045B420[0x400];
 
 typedef struct { u8 pad[0x10]; s32 unk10; } T1df;

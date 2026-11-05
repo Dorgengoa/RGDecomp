@@ -48,7 +48,7 @@ extern Obj0029a2d0 D_004DB240;
 /*rgp*/
 /*rgp*/
 
-extern s32 D_004E8960[0x100],D_004E8964[0x100],D_004E8968[0x100],D_004E8D90[0x100];
+extern s32 D_004E8960[1],D_004E8964[1],D_004E8968[0x100],D_004E8D90[0x100];
 void StaticInitLoadingScreen_46d360(void){
  IosBaseInitCtor_102bd0(&D_00482D5C);
  RegisterGlobalObject_100dc0(&D_00482D5C, &IosBaseInitDtor_102ee0, &D_00482D50);

@@ -99,8 +99,18 @@ static int t_image(const char *regions, const char *out, const char *img)
 
 /* ---------------------------------------------------------------- deref */
 static uint8_t objA[64];
-static void *ptrs[4];
-static void *ptrs2[2];
+#if defined(_WIN64)
+/* x64 (docs/X64-PLAN.md 0.8): game memory holds 4-byte pointer words (strategy A); the
+ * test's game-memory pointer slots are __ptr32 as in the derived game tree */
+#define RG_GPTR void *__ptr32 __uptr
+#define RG_HOSTPTR32 1
+#else
+#define RG_GPTR void *
+#define RG_HOSTPTR32 (sizeof(void *) == 4)
+#endif
+#line 102
+static RG_GPTR ptrs[4];
+static RG_GPTR ptrs2[2];
 static uint8_t arena[0x1000];
 
 static void expect_bytes(rg_trace_regions *rs, const char *name, const void *want, int n, int note)
@@ -195,7 +205,7 @@ static int t_deref(const char *dir)
 
     uint8_t want[16];
     expect_bytes(&rs, "sym:A", objA, 64, 0);
-    if (sizeof(void *) == 4) {
+    if (RG_HOSTPTR32) {
         /* slots: objA+8 -> 0x00400008, NULL stays 0, heap -> 0x00600000, 0x12 untranslated */
         put32(want, 0x00400008);
         put32(want + 4, 0);
@@ -246,7 +256,13 @@ static int t_deref(const char *dir)
         fclose(f);
     CHECK(rows == 2 + 11 - 2);  /* @cycle @vbl + 11 regions - 2 unmapped */
     CHECK(unm == 2 && stop == 1);
+#if defined(_WIN64)
+    CHECK(note == 1); /* host pointers translate on x64 too (RG_TRACE_HOSTPTR32) */
+#else
+#line 249
     CHECK(note == (sizeof(void *) == 4));
+#endif
+#line 250
     rg_trace_regions_free(&rs);
     rg_trace_set_ram(NULL, 0, 0);
     rg_trace_set_arena(NULL, 0, 0);

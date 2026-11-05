@@ -18,10 +18,38 @@ if(DEFINED ENV{WindowsSdkDir})
     list(APPEND _rg_fxc_hints "${b}/x64" "${b}/x86")
   endforeach()
 endif()
+# ...and the installed Windows Kits root from the registry (any drive; newest SDK first), so a
+# build dir configured without the vcvars env or -DRG_FXC still gets the renderer (integ 11-01:
+# such a dir silently built a renderless rg-game).
+cmake_host_system_information(RESULT _rg_kits QUERY WINDOWS_REGISTRY
+  "HKLM/SOFTWARE/Microsoft/Windows Kits/Installed Roots" VALUE KitsRoot10 VIEW BOTH)
+if(_rg_kits)
+  file(TO_CMAKE_PATH "${_rg_kits}" _rg_kits)
+  string(REGEX REPLACE "/$" "" _rg_kits "${_rg_kits}")
+endif()
+foreach(_r "${_rg_kits}" "C:/Program Files (x86)/Windows Kits/10")
+  if(_r AND IS_DIRECTORY "${_r}/bin")
+    file(GLOB _rg_sdk_bins "${_r}/bin/10.*")
+    list(SORT _rg_sdk_bins COMPARE NATURAL ORDER DESCENDING)
+    foreach(b IN LISTS _rg_sdk_bins)
+      list(APPEND _rg_fxc_hints "${b}/x64" "${b}/x86")
+    endforeach()
+    list(APPEND _rg_fxc_hints "${_r}/bin/x64" "${_r}/bin/x86")
+  endif()
+endforeach()
 find_program(RG_FXC NAMES fxc fxc.exe HINTS ${_rg_fxc_hints})
+# Without fxc there is no GPU renderer and rg-game draws nothing: fail loudly unless the build
+# asks for a renderless rg-game explicitly (-DRG_GPU_OPTIONAL=ON).
+option(RG_GPU_OPTIONAL "allow a renderless build when fxc (Windows SDK) is missing" OFF)
 if(NOT RG_FXC)
-  message(WARNING "src/gpu: fxc.exe (Windows SDK) not found; GPU renderer not built")
-  return()
+  if(RG_GPU_OPTIONAL)
+    message(WARNING "src/gpu: fxc.exe (Windows SDK) not found; GPU renderer not built "
+                    "(RG_GPU_OPTIONAL=ON: rg-game will be RENDERLESS)")
+    return()
+  endif()
+  message(FATAL_ERROR "src/gpu: fxc.exe (Windows SDK) not found, so rg-game would have no "
+                      "renderer.  Install the Windows 10 SDK, pass -DRG_FXC=<path to fxc.exe>, "
+                      "or -DRG_GPU_OPTIONAL=ON for a deliberately renderless build.")
 endif()
 message(STATUS "src/gpu: fxc = ${RG_FXC}")
 
@@ -47,6 +75,7 @@ set(_rg_entries
   "CS_decode|cs_5_0|gs_draw.hlsl|/DGS_DECODE=1"
   "VS_quad|vs_5_0|gs_util.hlsl"
   "PS_load_color|ps_5_0|gs_util.hlsl"
+  "CS_load_phase|cs_5_0|gs_util.hlsl"
   "PS_load_depth|ps_5_0|gs_util.hlsl"
   "PS_load_depth|ps_5_0|gs_util.hlsl|/DGS_DEPTH_RT=1|PS_load_depth_rt"
   "PS_copy_depth|ps_5_0|gs_util.hlsl"
@@ -64,10 +93,15 @@ set(_rg_entries
   "PS_final|ps_5_0|gs_post.hlsl"
   "VS_nr|vs_5_0|nr_draw.hlsl"
   "VS_im|vs_5_0|nr_draw.hlsl"
+  "GS_nr|gs_5_0|nr_draw.hlsl"
   "PS_nr|ps_5_0|nr_draw.hlsl"
   "PS_nr|ps_5_0|nr_draw.hlsl|/DNR_ZROV=1|PS_nr_z"
+  "PS_nr|ps_5_0|nr_draw.hlsl|/DNR_ZDSV=1|PS_nr_zd"
+  "PS_nr|ps_5_0|nr_draw.hlsl|/DNR_ZDSV=1 /DNR_ZDSV_PLAIN=1|PS_nr_zdp"
   "PS_nr|ps_5_0|nr_draw.hlsl|/DNR_CROV=1|PS_nr_c"
-  "PS_nr|ps_5_0|nr_draw.hlsl|/DNR_CROV=1 /DNR_ZROV=1|PS_nr_cz")
+  "PS_nr|ps_5_0|nr_draw.hlsl|/DNR_CROV=1 /DNR_ZROV=1|PS_nr_cz"
+  "PS_nr|ps_5_0|nr_draw.hlsl|/DNR_CROV=1 /DNR_CROV_PLAIN=1|PS_nr_cu"
+  "PS_nr|ps_5_0|nr_draw.hlsl|/DNR_CROV=1 /DNR_ZROV=1 /DNR_CROV_PLAIN=1|PS_nr_czu")
 foreach(e IN LISTS _rg_entries)
   string(REPLACE "|" ";" _l "${e}")
   list(GET _l 0 _entry)

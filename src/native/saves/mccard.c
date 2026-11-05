@@ -638,6 +638,210 @@ static void icon_title(const uint8_t *s, uint32_t n, char *out, size_t outlen)
     out[o] = 0;
 }
 
+void mc_icon_title(const uint8_t *s, uint32_t n, char *out, size_t outlen) { icon_title(s, n, out, outlen); }
+
+/* ---- save metadata and slot names (docs/SAVES.md "Named slots and metadata") ---- */
+static void cstr_copy(char *out, size_t cap, const uint8_t *s, size_t n)
+{
+    size_t o = 0;
+    for (size_t i = 0; i < n && s[i] && o + 1 < cap; i++)
+        out[o++] = (char)(s[i] >= 0x20 && s[i] < 0x7F ? s[i] : '?');
+    out[o] = 0;
+}
+
+int mc_save_meta_parse(const uint8_t *d, uint32_t n, mc_save_meta *m)
+{
+    memset(m, 0, sizeof *m);
+    if (!d || n < 0x350 || (d[4] | d[5] << 8) != 0x25)
+        return -1;
+    double pt;
+    int64_t money;
+    memcpy(&pt, d + 0x50, 8);
+    memcpy(&money, d + 0x58, 8);
+    m->play_seconds = pt > 0.0 && pt < 1e12 ? (uint32_t)(pt / 60.0) : 0;
+    m->money = money;
+    m->party_n = (int16_t)(d[0x60] | d[0x61] << 8);
+    cstr_copy(m->leader, sizeof m->leader, d + 0x64, 16);
+    m->leader_level = (int16_t)(d[0x64 + 20] | d[0x64 + 21] << 8);
+    m->chapter = (int16_t)(d[0x20C] | d[0x20D] << 8);
+    cstr_copy(m->chapter_name, sizeof m->chapter_name, d + 0x214, 0x40);
+    cstr_copy(m->location, sizeof m->location, d + 0x29A, 0x80);
+    m->valid = 1;
+    return 0;
+}
+
+void mc_save_meta_line(const mc_save_meta *m, char *out, size_t cap)
+{
+    if (!m->valid) {
+        snprintf(out, cap, "(no readable summary)");
+        return;
+    }
+    unsigned t = m->play_seconds;
+    snprintf(out, cap, "%s | %s | %s Lv %d | %u:%02u:%02u", m->chapter_name[0] ? m->chapter_name : "?",
+             m->location[0] ? m->location : "?", m->leader[0] ? m->leader : "?", m->leader_level, t / 3600u,
+             t / 60u % 60u, t % 60u);
+}
+
+static void names_path(int port, char *out, size_t cap)
+{
+    snprintf(out, cap, "%s/%s.names", M.root, mccard_slot_name(port));
+}
+
+/* the name of save directory `dir` in <root>/card<N>.names ("DIR = name" lines) */
+static int names_get(int port, const char *dir, char *out, size_t cap)
+{
+    char path[HOST_PATH_MAX + 8], line[512];
+    out[0] = 0;
+    names_path(port, path, sizeof path);
+    FILE *f = fopen(path, "rb");
+    if (!f)
+        return 0;
+    size_t dl = strlen(dir);
+    int found = 0;
+    while (!found && fgets(line, sizeof line, f)) {
+        if (line[0] == '#' || strncmp(line, dir, dl) != 0)
+            continue;
+        const char *p = line + dl;
+        while (*p == ' ' || *p == '\t')
+            p++;
+        if (*p != '=')
+            continue;
+        p++;
+        while (*p == ' ' || *p == '\t')
+            p++;
+        size_t n = strcspn(p, "\r\n");
+        while (n && (p[n - 1] == ' ' || p[n - 1] == '\t'))
+            n--;
+        if (n >= cap)
+            n = cap - 1;
+        memcpy(out, p, n);
+        out[n] = 0;
+        found = out[0] != 0;
+    }
+    fclose(f);
+    return found;
+}
+
+int mccard_save_name(int port, const char *dir, char *out, int outlen)
+{
+    if (!M.inited || port < 0 || port >= MC_PORTS || !dir || !out || outlen <= 0)
+        return 0;
+    if (*dir == '/')
+        dir++;
+    return names_get(port, dir, out, (size_t)outlen);
+}
+
+static void save_index(int port);
+int mccard_set_save_name(int port, const char *dir, const char *name)
+{
+    if (!M.inited || port < 0 || port >= MC_PORTS || !dir || !name)
+        return -1;
+    if (*dir == '/')
+        dir++;
+    size_t dl = strlen(dir);
+    if (!dl || dl >= MC_NAME_MAX || strchr(dir, '/') || strchr(dir, '=') || strchr(dir, ' ') || dir[0] == '#')
+        return -1;
+    /* the name: printable, one line, trimmed, at most MC_SAVE_NAME_MAX - 1 bytes */
+    char nm[MC_SAVE_NAME_MAX];
+    size_t o = 0;
+    while (*name == ' ')
+        name++;
+    for (const unsigned char *q = (const unsigned char *)name; *q && o + 1 < sizeof nm; q++)
+        nm[o++] = (char)(*q < 0x20 || *q == 0x7F ? ' ' : *q);
+    while (o && nm[o - 1] == ' ')
+        o--;
+    nm[o] = 0;
+    char path[HOST_PATH_MAX + 8], line[512];
+    names_path(port, path, sizeof path);
+    sbuf b = {0};
+    FILE *f = fopen(path, "rb");
+    int had_header = 0;
+    if (f) {
+        while (fgets(line, sizeof line, f)) {
+            const char *p = line + dl;
+            int same = !strncmp(line, dir, dl) && (*p == ' ' || *p == '\t' || *p == '=');
+            if (line[0] == '#')
+                had_header = 1;
+            if (!same && line[0] && line[0] != '\r' && line[0] != '\n')
+                sb_printf(&b, "%s%s", line, strchr(line, '\n') ? "" : "\n");
+        }
+        fclose(f);
+    }
+    sbuf out = {0};
+    if (!had_header)
+        sb_printf(&out, "# Names of the save slots on memory card slot %d (%s/): one line per save directory,\n"
+                        "# DIRECTORY = name.  Shown in %s.txt and by rg-game --list-saves; set with\n"
+                        "# rg-game --name-save %d:NN=name or the settings overlay (Saves > Manage saves),\n"
+                        "# or edit this file while the game is closed.\n",
+                  port + 1, mccard_slot_name(port), mccard_slot_name(port), port + 1);
+    if (b.p)
+        sb_printf(&out, "%s", b.p);
+    if (nm[0])
+        sb_printf(&out, "%s = %s\n", dir, nm);
+    int rc = h_write_atomic(path, out.p ? out.p : "", out.n, 0);
+    free(b.p);
+    free(out.p);
+    if (rc == 0 && M.card[port].present)
+        save_index(port);
+    return rc;
+}
+
+/* the summary of save directory `top` ("/NAME"): its data file /NAME/NAME, first 0x350 bytes */
+static int read_meta(int port, const char *top, mc_save_meta *m)
+{
+    char cp[MC_PATH_MAX + 40], hp[HOST_PATH_MAX];
+    memset(m, 0, sizeof *m);
+    snprintf(cp, sizeof cp, "%s/%s", top, base_of(top));
+    if (!find(&M.card[port], cp))
+        return -1;
+    host_of(port, cp, hp);
+    FILE *f = fopen(hp, "rb");
+    if (!f)
+        return -1;
+    uint8_t head[0x350];
+    size_t got = fread(head, 1, sizeof head, f);
+    fclose(f);
+    return mc_save_meta_parse(head, (uint32_t)got, m);
+}
+
+int mccard_list_saves(int port, mc_save_info *out, int max)
+{
+    if (!M.inited || port < 0 || port >= MC_PORTS)
+        return -1;
+    mcard *c = &M.card[port];
+    if (!c->present || !c->formatted)
+        return 0;
+    int k = 0;
+    for (int i = 0; i < c->n; i++) {
+        ment *m = &c->e[i];
+        if (!m->is_dir || !is_child("/", m->path))
+            continue;
+        if (out && k < max) {
+            mc_save_info *o = &out[k];
+            memset(o, 0, sizeof *o);
+            snprintf(o->dir, sizeof o->dir, "%s", base_of(m->path));
+            o->mtime = m->mtime;
+            for (int j = 0; j < c->n; j++)
+                if (is_child(m->path, c->e[j].path) && !c->e[j].is_dir)
+                    o->kb += (c->e[j].size + 1023u) / 1024u;
+            char ip[MC_PATH_MAX + 16], hp[HOST_PATH_MAX];
+            snprintf(ip, sizeof ip, "%s/icon.sys", m->path);
+            if (find(c, ip)) {
+                host_of(port, ip, hp);
+                uint32_t n;
+                uint8_t *d = h_slurp(hp, &n);
+                if (d)
+                    icon_title(d, n, o->title, sizeof o->title);
+                free(d);
+            }
+            names_get(port, o->dir, o->name, sizeof o->name);
+            o->has_meta = read_meta(port, m->path, &o->meta) == 0;
+        }
+        k++;
+    }
+    return k;
+}
+
 /* <root>/card<N>.txt: one line per top-level directory, for people browsing saves */
 static void save_index(int port)
 {
@@ -676,6 +880,17 @@ static void save_index(int port)
             const mc_datetime *t = &m->mtime;
             sb_printf(&b, "%-34s %04u-%02u-%02u %02u:%02u:%02u    %4u KB  %s\n", base_of(m->path), t->year,
                       t->month, t->day, t->hour, t->min, t->sec, (unsigned)kb, title);
+            /* the slot's name (card<N>.names) and the save's summary (chapter, location,
+             * leader, play time) on an indented line */
+            char nm[MC_SAVE_NAME_MAX], line[400];
+            mc_save_meta sm;
+            int named = names_get(port, base_of(m->path), nm, sizeof nm);
+            if (read_meta(port, m->path, &sm) == 0) {
+                mc_save_meta_line(&sm, line, sizeof line);
+                sb_printf(&b, "    %s%s%s\n", named ? nm : "", named ? " | " : "", line);
+            } else if (named) {
+                sb_printf(&b, "    %s\n", nm);
+            }
         }
     }
     if (b.p)
@@ -1029,6 +1244,13 @@ void mccard_eject(int port)
     strcpy(M.card[port].cwd, "/");
 }
 
+void mccard_mark_changed(int port)
+{
+    ensure();
+    if (port >= 0 && port < MC_PORTS && M.card[port].present)
+        M.card[port].changed = 1;
+}
+
 int mccard_present(int port)
 {
     ensure();
@@ -1213,10 +1435,20 @@ static int same_file(const char *a, const char *b)
  * save renames icon.sys away first (McSaveStep_374110), so exactly one snapshot is
  * taken per save, holding the previous one. Files only (PS2 saves have no
  * subdirectories); the card metadata is not copied. */
+static int g_hold_port = -1;
+static char g_hold_top[MC_PATH_MAX];
+void mccard_backup_hold(int port, const char *top, int on)
+{
+    g_hold_port = on ? port : -1;
+    snprintf(g_hold_top, sizeof g_hold_top, "%s", on && top ? top : "");
+}
+
 static void backup_top(int port, mcard *c, const char *top)
 {
     if (M.cfg.backup_keep <= 0)
         return;
+    if (port == g_hold_port && !strcmp(top, g_hold_top))
+        return;   /* an import writing this directory (mc_import.c): backed up before it began */
     ment *t = find(c, top);
     if (!t || !t->is_dir || !is_child("/", top))
         return;

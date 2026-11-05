@@ -330,8 +330,17 @@ static const double *font_glyph(char ch)
 #define GLYPH_GAP 1.4
 
 /* gaiji.py draw_text: centre text in a max_w x max_h box around (cx, cy). */
+static void draw_text_r(canvas *cv, const char *text, double cx, double cy, double max_w, double max_h,
+                        rgbaf color, double extra);
 static void draw_text(canvas *cv, const char *text, double cx, double cy, double max_w, double max_h,
                       rgbaf color)
+{
+    draw_text_r(cv, text, cx, cy, max_w, max_h, color, 0.0);
+}
+
+/* (extra: added to the stroke radius, for an outline) */
+static void draw_text_r(canvas *cv, const char *text, double cx, double cy, double max_w, double max_h,
+                        rgbaf color, double extra)
 {
     char t[16];
     size_t n = 0;
@@ -342,7 +351,7 @@ static void draw_text(canvas *cv, const char *text, double cx, double cy, double
     t[n] = 0;
     double tw = n ? (double)n * (4 + GLYPH_GAP) - GLYPH_GAP : 0;
     double s = fmin(2.0, fmin(max_w / (tw + 1.2), max_h / 7.2));
-    double radius = fmax(0.55, 0.5 * s);
+    double radius = fmax(0.55, 0.5 * s) + extra;
     double x = cx - tw * s / 2;
     double y = cy - 3 * s;
     static segs_t S;
@@ -469,10 +478,24 @@ static void str_lower_trim(const char *s, char *out, size_t cap)
     out[n] = 0;
 }
 
+/* gaiji.py KEY_LABELS_WIDE: the full names of the --wide keyboard glyphs (top level only) */
+static const struct { const char *name, *label; } k_key_labels_wide[] = {
+    { "space", "SPACE" }, { "return", "ENTER" }, { "backspace", "BKSP" }, { "left shift", "SHIFT" },
+    { "right shift", "SHIFT" }, { "left ctrl", "CTRL" }, { "right ctrl", "CTRL" }, { "capslock", "CAPS" },
+    { "page up", "PGUP" }, { "page down", "PGDN" }, { "escape", "ESC" },
+};
+static int s_wide;   /* set while the wide copies are drawn (one thread: the game's) */
+
 static void key_name_label(const char *name, char *out, size_t cap)
 {
     char n[64];
     str_lower_trim(name, n, sizeof n);
+    if (s_wide)
+        for (size_t i = 0; i < sizeof k_key_labels_wide / sizeof k_key_labels_wide[0]; i++)
+            if (!strcmp(n, k_key_labels_wide[i].name)) {
+                snprintf(out, cap, "%s", k_key_labels_wide[i].label);
+                return;
+            }
     for (size_t i = 0; i < sizeof k_key_labels / sizeof k_key_labels[0]; i++)
         if (!strcmp(n, k_key_labels[i].name)) {
             snprintf(out, cap, "%s", k_key_labels[i].label);
@@ -480,7 +503,10 @@ static void key_name_label(const char *name, char *out, size_t cap)
         }
     if (!strncmp(n, "keypad ", 7)) {
         char sub[16];
+        int w = s_wide;
+        s_wide = 0;
         key_name_label(n + 7, sub, sizeof sub);
+        s_wide = w;
         snprintf(out, cap, "K%s", sub);
         return;
     }
@@ -517,12 +543,138 @@ const char *rg_gaiji_key_label(const char *binding, char *out, size_t cap, int *
     return out;
 }
 
-static void draw_glyph(canvas *cv, int style, int btn, const char *const *keys)
+/* ------------------------------------------------------------ physical buttons (lane p6a11y)
+ * A gamepad binding text ("pad:a", "axis:lefttrigger+") names a physical button; a slot shows
+ * the glyph of the button its action is bound to, so remapped actions show the bound button.
+ * Without a binding (keys == NULL) every slot shows its positional default (the PS2 layout),
+ * which draws exactly what gaiji.py draws. */
+enum { PB_NONE = -1, PB_SOUTH = 0, PB_EAST, PB_WEST, PB_NORTH, PB_LB, PB_RB, PB_LT, PB_RT, PB_LS, PB_RS,
+       PB_START, PB_BACK, PB_UP, PB_DOWN, PB_LEFT, PB_RIGHT, PB_GUIDE, PB_OTHER };
+
+static const int k_slot_phys[RG_PROMPT_SLOTS] = {
+    PB_LT, PB_LB, PB_RB, PB_RT, PB_EAST, PB_NORTH, PB_WEST, PB_SOUTH, PB_LS, PB_RS, PB_START, PB_BACK,
+};
+static const char *const k_slot_default_key[RG_PROMPT_SLOTS] = {
+    "key:1", "key:Q", "key:E", "key:3", "key:C", "key:Tab", "key:Z", "key:Space",
+    "key:V", "key:B", "key:Return", "key:Backspace",
+};
+const char *const rg_prompt_slot_action[RG_PROMPT_SLOTS] = {
+    "decline", "camera_turn_left", "camera_turn_right", "camera_recentre",
+    "cancel", "menu", "attack", "confirm", "switch_leader", "first_person", "pause", "map",
+};
+
+static int ieq_prefix(const char *s, const char *pre)
 {
-    const rg_gaiji_rect *R = &rg_gaiji_button_rects[btn];
-    double x = R->u, y = R->v, w = R->w, h = R->h;
+    for (; *pre; s++, pre++)
+        if (tolower((unsigned char)*s) != *pre) return 0;
+    return 1;
+}
+
+int rg_prompt_pad_button(const char *b)
+{
+    static const struct { const char *n; int pb; } k[] = {
+        { "pad:a", PB_SOUTH }, { "pad:b", PB_EAST }, { "pad:x", PB_WEST }, { "pad:y", PB_NORTH },
+        { "pad:leftshoulder", PB_LB }, { "pad:rightshoulder", PB_RB },
+        { "axis:lefttrigger+", PB_LT }, { "axis:righttrigger+", PB_RT },
+        { "pad:leftstick", PB_LS }, { "pad:rightstick", PB_RS }, { "pad:start", PB_START },
+        { "pad:back", PB_BACK }, { "pad:dpup", PB_UP }, { "pad:dpdown", PB_DOWN },
+        { "pad:dpleft", PB_LEFT }, { "pad:dpright", PB_RIGHT }, { "pad:guide", PB_GUIDE },
+    };
+    if (!b || !*b) return PB_NONE;
+    while (*b == ' ') b++;
+    for (size_t i = 0; i < sizeof k / sizeof k[0]; i++) {
+        size_t n = strlen(k[i].n);
+        if (ieq_prefix(b, k[i].n) && (b[n] == 0 || b[n] == ' ' || b[n] == ','))
+            return k[i].pb;
+    }
+    return ieq_prefix(b, "pad:") || ieq_prefix(b, "axis:") ? PB_OTHER : PB_NONE;
+}
+
+int rg_prompt_slot_default_button(int slot)
+{
+    return slot >= 0 && slot < RG_PROMPT_SLOTS ? k_slot_phys[slot] : PB_NONE;
+}
+
+/* PlayStation face symbols (procedural; the original art is used wherever it exists) */
+static void draw_ps_face(canvas *cv, double x, double y, double w, double h, int pb)
+{
+    double cx = x + w / 2, cy = y + h / 2;
+    double r = fmin(w, h) / 2 - 0.5;
+    cv_ellipse(cv, cx, cy, r, r, hexc(C_EDGE));
+    cv_ellipse(cv, cx, cy, r - 1.2, r - 1.2, hexc(C_LIGHT));
+    cv_ellipse(cv, cx, cy + 0.6, r - 2.0, r - 2.4, hexc(C_DARK));
+    double s = (r - 2) * 0.62, lw = fmax(0.7, s * 0.16);
+    static segs_t S;
+    S.n = 0;
+    uint32_t col;
+    if (pb == PB_EAST) {
+        cv_ellipse(cv, cx, cy + 0.3, s, s, hexc(0xF0606A));
+        cv_ellipse(cv, cx, cy + 0.3, s - 2 * lw, s - 2 * lw, hexc(C_DARK));
+        return;
+    } else if (pb == PB_SOUTH) {
+        double p1[4] = { cx - s, cy - s + 0.3, cx + s, cy + s + 0.3 }, p2[4] = { cx + s, cy - s + 0.3, cx - s, cy + s + 0.3 };
+        segs_add(&S, p1, 2);
+        segs_add(&S, p2, 2);
+        col = 0x8CB4F0;
+    } else if (pb == PB_WEST) {
+        double p[10] = { cx - s * 0.85, cy - s * 0.85 + 0.3, cx + s * 0.85, cy - s * 0.85 + 0.3, cx + s * 0.85,
+                         cy + s * 0.85 + 0.3, cx - s * 0.85, cy + s * 0.85 + 0.3, cx - s * 0.85, cy - s * 0.85 + 0.3 };
+        segs_add(&S, p, 5);
+        col = 0xE88AD8;
+    } else {
+        double p[8] = { cx, cy - s + 0.3, cx + s, cy + s * 0.75 + 0.3, cx - s, cy + s * 0.75 + 0.3, cx, cy - s + 0.3 };
+        segs_add(&S, p, 4);
+        col = 0x46C8A4;
+    }
+    segs_fill(cv, &S, lw, hexc(col));
+}
+
+/* a physical button's glyph in a pad style */
+static void draw_phys(canvas *cv, int style, int pb, double x, double y, double w, double h)
+{
+    if (pb >= PB_SOUTH && pb <= PB_NORTH) {
+        /* (the face order here: south, east, west, north) */
+        static const char *const xb_l[4] = { "A", "B", "X", "Y" };
+        static const uint32_t xb_c[4] = { 0x5DC21E, 0xE3352B, 0x2D8FE6, 0xF5C400 };
+        static const char *const nt_l[4] = { "B", "A", "Y", "X" };   /* positional */
+        if (style == RG_GAIJI_XBOX) draw_pad_face(cv, x, y, w, h, xb_l[pb], xb_c[pb]);
+        else if (style == RG_GAIJI_NINTENDO) draw_pad_face(cv, x, y, w, h, nt_l[pb], C_WHITE);
+        else draw_ps_face(cv, x, y, w, h, pb);
+        return;
+    }
+    static const char *const xb[] = { "LB", "RB", "LT", "RT", "LS", "RS", "MENU", "VIEW" };
+    static const char *const nt[] = { "L", "R", "ZL", "ZR", "LS", "RS", "+", "-" };
+    static const char *const ps[] = { "L1", "R1", "L2", "R2", "L3", "R3", "START", "SELECT" };
+    const char *t;
+    int trig = 0;
+    if (pb >= PB_LB && pb <= PB_BACK) {
+        int i = pb - PB_LB;
+        t = style == RG_GAIJI_XBOX ? xb[i] : style == RG_GAIJI_NINTENDO ? nt[i] : ps[i];
+        trig = pb == PB_LT || pb == PB_RT;
+    } else if (pb >= PB_UP && pb <= PB_RIGHT) {
+        static const char *const ar[4] = { "\x01", "\x02", "\x03", "\x04" };
+        t = ar[pb - PB_UP];
+    } else if (pb == PB_GUIDE) {
+        t = style == RG_GAIJI_XBOX ? "XBOX" : style == RG_GAIJI_NINTENDO ? "HOME" : "PS";
+    } else {
+        t = pb == PB_OTHER ? "?" : "-";
+    }
+    if (w < h + 4 && (pb == PB_NONE || pb == PB_OTHER || (pb >= PB_UP && pb <= PB_RIGHT))) {
+        /* a face-sized cell: a disc with the label */
+        draw_pad_face(cv, x, y, w, h, t, C_WHITE);
+        return;
+    }
+    draw_pad_shoulder(cv, x, y, w, h, t, trig);
+}
+
+/* one slot's glyph in the rect (x, y, w, h).  keys: NULL = the positional defaults; else
+ * keys[slot] is the slot's binding text (NULL = unbound): key / mouse for KEYBOARD, the first
+ * pad / trigger binding for the pad styles. */
+static void draw_slot(canvas *cv, int style, int slot, const char *const *keys, double x, double y, double w,
+                      double h)
+{
     if (style == RG_GAIJI_KEYBOARD) {
-        const char *b = keys ? keys[btn] : k_default_keys[btn];
+        const char *b = keys ? keys[slot] : k_slot_default_key[slot];
         char lab[16];
         int mouse = 0;
         rg_gaiji_key_label(b, lab, sizeof lab, &mouse);
@@ -532,22 +684,14 @@ static void draw_glyph(canvas *cv, int style, int btn, const char *const *keys)
             draw_keycap(cv, x, y, w, h, lab);
         return;
     }
-    static const char *const xb_sh[4] = { "LT", "LB", "RB", "RT" };
-    static const char *const nt_sh[4] = { "ZL", "L", "R", "ZR" };
-    if (btn <= RG_GAIJI_R2) {
-        draw_pad_shoulder(cv, x, y, w, h, style == RG_GAIJI_XBOX ? xb_sh[btn] : nt_sh[btn],
-                          btn == RG_GAIJI_L2 || btn == RG_GAIJI_R2);
-        return;
-    }
-    /* face: Circle east, Triangle north, Square west, Cross south */
-    static const char *const xb_l[4] = { "B", "Y", "X", "A" };
-    static const uint32_t xb_c[4] = { 0xE3352B, 0xF5C400, 0x2D8FE6, 0x5DC21E };
-    static const char *const nt_l[4] = { "A", "X", "Y", "B" };   /* positional */
-    int f = btn - RG_GAIJI_CIRCLE;
-    if (style == RG_GAIJI_XBOX)
-        draw_pad_face(cv, x, y, w, h, xb_l[f], xb_c[f]);
-    else
-        draw_pad_face(cv, x, y, w, h, nt_l[f], C_WHITE);
+    int pb = keys ? rg_prompt_pad_button(keys[slot]) : k_slot_phys[slot];
+    draw_phys(cv, style, pb, x, y, w, h);
+}
+
+static void draw_glyph(canvas *cv, int style, int btn, const char *const *keys)
+{
+    const rg_gaiji_rect *R = &rg_gaiji_button_rects[btn];
+    draw_slot(cv, style, btn, keys, R->u, R->v, R->w, R->h);
 }
 
 /* ------------------------------------------------------------ quantisation (gaiji.py index_rgba) */
@@ -607,18 +751,102 @@ static uint8_t ps2_alpha(uint8_t a8) { return (uint8_t)((a8 + 1) / 2); }
 /* rint() rounds half to even, like Python's round() */
 static uint8_t chan8(double v) { double r = rint(v); return (uint8_t)(r > 255 ? 255 : r < 0 ? 0 : r); }
 
+/* gaiji.py text_width_px(text, 1.6) */
+static double text_width_px16(const char *t)
+{
+    size_t n = strlen(t);
+    double units = n ? (double)n * (4 + GLYPH_GAP) - GLYPH_GAP : 0;
+    return units * 1.6 + 2 * fmax(0.55, 0.5 * 1.6);
+}
+
+/* gaiji.py wide_layout: each keyboard glyph widened to its full label, packed (metric-table
+ * order) into the largest band of fully transparent rows; -1 when it does not fit */
+static int wide_layout(const uint8_t *idx, const col4 *pal, const char *const *keys, rg_gaiji_rect *wr)
+{
+    int best0 = 0, best1 = 0;
+    for (int y = 0; y < RG_GAIJI_H;) {
+        int clear = 1;
+        for (int x = 0; x < RG_GAIJI_W && clear; x++) clear = pal[idx[y * RG_GAIJI_W + x]].a == 0;
+        if (!clear) { y++; continue; }
+        int y0 = y;
+        while (y < RG_GAIJI_H) {
+            int c = 1;
+            for (int x = 0; x < RG_GAIJI_W && c; x++) c = pal[idx[y * RG_GAIJI_W + x]].a == 0;
+            if (!c) break;
+            y++;
+        }
+        if (y - y0 > best1 - best0) { best0 = y0; best1 = y; }
+    }
+    int x = 0, y = best0 + 1, row_h = 0;
+    s_wide = 1;
+    for (int k = 0; k < RG_GAIJI_BUTTONS; k++) {
+        int b = k_draw_order[k];
+        const rg_gaiji_rect *R = &rg_gaiji_button_rects[b];
+        char lab[16];
+        int mouse = 0;
+        rg_gaiji_key_label(keys ? keys[b] : k_default_keys[b], lab, sizeof lab, &mouse);
+        int need = mouse ? R->w : (int)ceil(text_width_px16(lab) + 8);
+        if (need > R->w + 12) need = R->w + 12;   /* gaiji.py WIDE_EXTRA: fixed-width windows' slack */
+        int w = need > R->w ? need : R->w;
+        if (x + w > RG_GAIJI_W) { x = 0; y += row_h + 1; row_h = 0; }
+        if (y + R->h > best1) { s_wide = 0; return -1; }
+        wr[b] = *R;
+        wr[b].u = (int16_t)x;
+        wr[b].v = (int16_t)y;
+        wr[b].w = (int16_t)w;
+        x += w + 1;
+        if (R->h > row_h) row_h = R->h;
+    }
+    s_wide = 0;
+    return 0;
+}
+
+static int build_impl(const uint8_t *orig_region, int style, const char *const *keys, uint8_t *out,
+                      rg_gaiji_rect *wide);
+
 int rg_gaiji_build(const uint8_t *orig_region, int style, const char *const *keys, uint8_t *out)
+{
+    return build_impl(orig_region, style, keys, out, NULL);
+}
+
+int rg_gaiji_build_wide(const uint8_t *orig_region, const char *const *keys, uint8_t *out,
+                        rg_gaiji_rect wide_rects[RG_GAIJI_BUTTONS])
+{
+    return build_impl(orig_region, RG_GAIJI_KEYBOARD, keys, out, wide_rects);
+}
+
+static int build_impl(const uint8_t *orig_region, int style, const char *const *keys, uint8_t *out,
+                      rg_gaiji_rect *wide)
 {
     if (style < 0 || style >= RG_GAIJI_STYLES)
         return -1;
-    if (style == RG_GAIJI_PLAYSTATION) {
+    if (style == RG_GAIJI_PLAYSTATION && rg_prompt_keys_default(style, keys, RG_GAIJI_BUTTONS)) {
         memcpy(out, orig_region, RG_GAIJI_SWAP_BYTES);
         return 0;
     }
     const int W = RG_GAIJI_W, H = RG_GAIJI_H;
+    /* per button: 2 = drawn; for PlayStation with moved bindings 0 = kept, 1 = the bound
+     * button's original art copied in (same-sized rect: src[]) */
+    int mode[RG_GAIJI_BUTTONS], src[RG_GAIJI_BUTTONS];
+    for (int b = 0; b < RG_GAIJI_BUTTONS; b++) {
+        mode[b] = 2;
+        src[b] = b;
+        if (style != RG_GAIJI_PLAYSTATION) continue;
+        int pb = rg_prompt_pad_button(keys[b]);
+        mode[b] = 0;
+        if (pb == k_slot_phys[b]) continue;
+        mode[b] = 2;
+        for (int o = 0; o < RG_GAIJI_BUTTONS; o++)
+            if (k_slot_phys[o] == pb && rg_gaiji_button_rects[o].w == rg_gaiji_button_rects[b].w &&
+                rg_gaiji_button_rects[o].h == rg_gaiji_button_rects[b].h) {
+                mode[b] = 1;
+                src[b] = o;
+            }
+    }
     uint8_t *idx = (uint8_t *)malloc((size_t)W * H);
     uint8_t *in_new = (uint8_t *)calloc((size_t)W * H, 1);
-    canvas cv = { W, 48, (double *)calloc((size_t)W * 48 * 4, sizeof(double)) };
+    const int CH = wide ? H : 48;   /* the canvas rows: the button rows, or all for the wide copies */
+    canvas cv = { W, CH, (double *)calloc((size_t)W * CH * 4, sizeof(double)) };
     quant *q = (quant *)calloc(1, sizeof *q);
     col4 pal[256];
     int rc = -1;
@@ -628,10 +856,35 @@ int rg_gaiji_build(const uint8_t *orig_region, int style, const char *const *key
     for (int i = 0; i < 256; i++)
         if (pal[i].a > 0x80)
             goto done;
+    {
+        /* copies first, from the original indices */
+        static uint8_t orig_idx[RG_GAIJI_W * RG_GAIJI_H];
+        memcpy(orig_idx, idx, sizeof orig_idx);
+        for (int b = 0; b < RG_GAIJI_BUTTONS; b++) {
+            if (mode[b] != 1) continue;
+            const rg_gaiji_rect *R = &rg_gaiji_button_rects[b], *S = &rg_gaiji_button_rects[src[b]];
+            for (int y = 0; y < R->h; y++)
+                memcpy(idx + (R->v + y) * W + R->u, orig_idx + (S->v + y) * W + S->u, (size_t)R->w);
+        }
+    }
+    if (wide && wide_layout(idx, pal, keys, wide) != 0)
+        goto done;
     for (int k = 0; k < RG_GAIJI_BUTTONS; k++)
-        draw_glyph(&cv, style, k_draw_order[k], keys);
-    for (int b = 0; b < RG_GAIJI_BUTTONS; b++) {
-        const rg_gaiji_rect *R = &rg_gaiji_button_rects[b];
+        if (mode[k_draw_order[k]] == 2)
+            draw_glyph(&cv, style, k_draw_order[k], keys);
+    if (wide) {
+        /* the wide copies (full key names) after the short ones, as gaiji.py --wide */
+        s_wide = 1;
+        for (int k = 0; k < RG_GAIJI_BUTTONS; k++) {
+            int b = k_draw_order[k];
+            const rg_gaiji_rect *R = &wide[b];
+            draw_slot(&cv, style, b, keys, R->u, R->v, R->w, R->h);
+        }
+        s_wide = 0;
+    }
+    for (int b = 0; b < RG_GAIJI_BUTTONS * (wide ? 2 : 1); b++) {
+        if (b < RG_GAIJI_BUTTONS && mode[b] != 2) continue;
+        const rg_gaiji_rect *R = b < RG_GAIJI_BUTTONS ? &rg_gaiji_button_rects[b] : &wide[b - RG_GAIJI_BUTTONS];
         for (int y = R->v; y < R->v + R->h; y++)
             for (int x = R->u; x < R->u + R->w; x++)
                 in_new[y * W + x] = 1;
@@ -653,7 +906,7 @@ int rg_gaiji_build(const uint8_t *orig_region, int style, const char *const *key
                 break;
             }
     /* the new art (Canvas.rgba -> PS2 colours), counted in raster order */
-    static col4 px[RG_GAIJI_W * 48];
+    static col4 px[RG_GAIJI_W * RG_GAIJI_H];
     for (int y = 0; y < cv.h; y++)
         for (int x = 0; x < W; x++) {
             int i = y * W + x;
@@ -756,7 +1009,16 @@ static uint32_t keys_hash(const char *const *keys)
         for (; *s; s++) h = (h ^ (uint8_t)*s) * 16777619u;
         h = (h ^ 0xFF) * 16777619u;
     }
-    return h;
+    return h | 1u;   /* (0 = the defaults of a pad style) */
+}
+
+int rg_prompt_keys_default(int style, const char *const *keys, int n)
+{
+    if (!keys) return 1;
+    if (style == RG_GAIJI_KEYBOARD) return 0;
+    for (int i = 0; i < n && i < RG_PROMPT_SLOTS; i++)
+        if (rg_prompt_pad_button(keys[i]) != k_slot_phys[i]) return 0;
+    return 1;
 }
 
 static void drop_images(rg_prompts_ctl *c)
@@ -783,31 +1045,104 @@ int rg_prompts_step(rg_prompts_ctl *c, uint8_t *buf, size_t cap, int wanted, con
         memcpy(c->orig, region, RG_GAIJI_SWAP_BYTES);
         c->have_orig = 1;
         c->cur = RG_GAIJI_PLAYSTATION;
+        c->cur_keys = 0;
+        c->cur_wide = 0;
         c->captures++;
         drop_images(c);
     }
-    uint32_t kh = wanted == RG_GAIJI_KEYBOARD ? keys_hash(keys) : 0;
-    if (wanted == c->cur && (wanted != RG_GAIJI_KEYBOARD || kh == c->keys_hash))
+    /* the bindings that matter: the keyboard's keys always, a pad style's only when they
+     * move a slot off its positional button (0 = the defaults) */
+    int wide = wanted == RG_GAIJI_KEYBOARD && c->wide;
+    uint32_t kh = wanted == RG_GAIJI_KEYBOARD ? keys_hash(keys) ^ (wide ? 0x5A5A5A5Au : 0u)
+                : rg_prompt_keys_default(wanted, keys, RG_GAIJI_BUTTONS) ? 0 : keys_hash(keys);
+    if (wanted == c->cur && kh == c->cur_keys)
         return 0;
     const uint8_t *src = c->orig;
-    if (wanted != RG_GAIJI_PLAYSTATION) {
-        if (wanted == RG_GAIJI_KEYBOARD && c->img[wanted] && kh != c->keys_hash) {
+    if (wanted != RG_GAIJI_PLAYSTATION || kh) {
+        if (c->img[wanted] && kh != c->img_keys[wanted]) {
             free(c->img[wanted]);
             c->img[wanted] = NULL;
         }
         if (!c->img[wanted]) {
             uint8_t *im = (uint8_t *)malloc(RG_GAIJI_SWAP_BYTES);
-            if (!im || rg_gaiji_build(c->orig, wanted, keys, im) != 0) {
+            int bad = !im;
+            if (!bad && wide) {
+                bad = rg_gaiji_build_wide(c->orig, keys, im, c->wide_rects) != 0;
+                if (bad) {
+                    /* no room for the wide copies: the short labels */
+                    wide = 0;
+                    bad = rg_gaiji_build(c->orig, wanted, keys, im) != 0;
+                }
+            } else if (!bad) {
+                bad = rg_gaiji_build(c->orig, wanted, kh || wanted == RG_GAIJI_KEYBOARD ? keys : NULL, im) != 0;
+            }
+            if (bad) {
                 free(im);
                 return 0;
             }
             c->img[wanted] = im;
-            if (wanted == RG_GAIJI_KEYBOARD) c->keys_hash = kh;
+            c->img_keys[wanted] = kh;
+            c->img_wide = wide;
         }
         src = c->img[wanted];
+        if (wanted == RG_GAIJI_KEYBOARD) wide = c->img_wide;
     }
     memcpy(region, src, RG_GAIJI_SWAP_BYTES);
     c->cur = wanted;
+    c->cur_keys = kh;
+    c->cur_wide = wide;
     c->writes++;
     return 1;
+}
+
+/* ------------------------------------------------------------ glyphs for other textures */
+int rg_prompt_glyph_rgba(int style, int slot, const char *const *keys, int w, int h, int shape, uint8_t *rgba)
+{
+    if (style < 0 || style >= RG_GAIJI_STYLES || slot < 0 || slot >= RG_PROMPT_SLOTS || w <= 0 || h <= 0 ||
+        w > 512 || h > 512 || !rgba)
+        return -1;
+    canvas cv = { w, h, (double *)calloc((size_t)w * h * 4, sizeof(double)) };
+    if (!cv.px) return -1;
+    if (shape == RG_PROMPT_SHAPE_TEXT) {
+        char lab[16] = "-";
+        if (style == RG_GAIJI_KEYBOARD) {
+            int mouse = 0;
+            rg_gaiji_key_label(keys ? keys[slot] : k_slot_default_key[slot], lab, sizeof lab, &mouse);
+            if (mouse) snprintf(lab, sizeof lab, "M%d", mouse);
+        } else {
+            static const char *const xb[] = { "A", "B", "X", "Y", "LB", "RB", "LT", "RT", "LS", "RS", "MENU", "VIEW" };
+            static const char *const nt[] = { "B", "A", "Y", "X", "L", "R", "ZL", "ZR", "LS", "RS", "+", "-" };
+            static const char *const ps[] = { "X", "O", "[]", "/\\", "L1", "R1", "L2", "R2", "L3", "R3", "START", "SELECT" };
+            int pb = keys ? rg_prompt_pad_button(keys[slot]) : k_slot_phys[slot];
+            if (pb >= 0 && pb <= PB_BACK)
+                snprintf(lab, sizeof lab, "%s", style == RG_GAIJI_XBOX ? xb[pb] : style == RG_GAIJI_NINTENDO ? nt[pb] : ps[pb]);
+            else if (pb >= PB_UP && pb <= PB_RIGHT)
+                snprintf(lab, sizeof lab, "%c", (char)(1 + pb - PB_UP));
+            else if (pb == PB_OTHER)
+                snprintf(lab, sizeof lab, "?");
+        }
+        /* a dark outline, then the white label, right-aligned (the word the game follows it
+         * with, "button", is to its right) */
+        size_t n = strlen(lab);
+        double tw = n ? (double)n * (4 + GLYPH_GAP) - GLYPH_GAP : 0;
+        double sc = fmin(2.0, fmin((w - 2.0) / (tw + 1.2), (h - 2.0) / 7.2));
+        double cx = w - 1.5 - fmax(0.55, 0.5 * sc) - tw * sc / 2;
+        if (cx < w / 2.0) cx = w / 2.0;
+        draw_text_r(&cv, lab, cx, h / 2.0, w - 2.0, h - 2.0, hexc(0x101014), 1.0);
+        draw_text_r(&cv, lab, cx, h / 2.0, w - 2.0, h - 2.0, hexc(C_WHITE), 0.0);
+    } else {
+        draw_slot(&cv, style, slot, keys, 0, 0, w, h);
+    }
+    for (int i = 0; i < w * h; i++) {
+        const double *p = cv.px + 4 * i;
+        uint8_t *o = rgba + 4 * i;
+        if (p[3] <= 0) { o[0] = o[1] = o[2] = o[3] = 0; continue; }
+        double f = 1.0 / p[3];
+        o[0] = chan8(p[0] * f * 255);
+        o[1] = chan8(p[1] * f * 255);
+        o[2] = chan8(p[2] * f * 255);
+        o[3] = chan8(p[3] * 255);
+    }
+    free(cv.px);
+    return 0;
 }

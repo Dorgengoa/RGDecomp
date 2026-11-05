@@ -24,6 +24,12 @@
 
 nkstate NK;
 unsigned nk_guest_csr;
+/* float diagnostics, set by rg-game (RG_X87CHECK / RG_FPTRAP: src/game/rg_game_main.c, docs/X64-PLAN.md
+ * 0.9): bit 0 = report an x87 stack that is not empty when a flow yields (i686: a void view of an
+ * f32 / f64 callee leaves ST0 behind; 8 of them overflow the stack and every later x87 load reads
+ * the indefinite NaN), bit 1 = unmask the invalid exception in a flow when it resumes (the fiber
+ * switch restores the flow's own MXCSR and x87 control word) */
+volatile int nk_fpdiag;
 ps2k_tap_fn nk_tap;
 ps2k_start_hook_fn nk_start_hook;
 ps2k_signal_hook_fn nk_signal_hook;
@@ -295,7 +301,27 @@ static void switch_to_driver(void)
         abort();
     }
     save_eie(t);
+#if !defined(_WIN64)
+    if (nk_fpdiag & 1) {
+        unsigned short sw_;
+        __asm__ volatile("fnstsw %0" : "=m"(sw_));
+        if ((sw_ & 0x3800) || (sw_ & 0x41) == 0x41) {   /* TOP != 0, or a stack fault since the last one */
+            fprintf(stderr, "X87CHECK thread %d entry %p sw %04X\n", t->id, (void *)t->entry, sw_);
+            __asm__ volatile("fnclex");
+        }
+    }
+#endif
     ps2k_fiber_switch(t->fiber, NK.sched);
+    if (nk_fpdiag & 2)
+        _mm_setcsr(_mm_getcsr() & ~0x80u);   /* SSE invalid unmasked (the flow's own MXCSR) */
+#if !defined(_WIN64)
+    if (nk_fpdiag & 2) {   /* and x87 invalid / stack fault */
+        unsigned short cw_;
+        __asm__ volatile("fnclex; fnstcw %0" : "=m"(cw_));
+        cw_ &= ~1u;
+        __asm__ volatile("fldcw %0" : : "m"(cw_));
+    }
+#endif
 }
 
 static int block_current(void)

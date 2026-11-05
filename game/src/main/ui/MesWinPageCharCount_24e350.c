@@ -9,7 +9,7 @@
 /*rgp*/
 extern void memcpy(s8 *dst, s32 src, s32 n);
 extern s32 strlen(s8 *arg0);
-extern s8 D_0045EC38[0x400];
+extern s8 D_0045EC38[8];
 extern u8 D_0045EC40[0x400];
 
 s32 MesWinPageCharCount_24e350(s32 arg0, s32 arg1)

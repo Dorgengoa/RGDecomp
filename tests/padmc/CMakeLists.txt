@@ -19,6 +19,10 @@ foreach(f PadOpenPorts_1c6bf0 PadSysInit_185080 PadPortOpen_184ed0 PadStateInit_
   if(NOT EXISTS ${p})
     set(p ${PROJECT_SOURCE_DIR}/game/src/main/pad/${f}.c)
   endif()
+  # x64: the game sources of the derived tree (tools/x64/derive.py; docs/X64-PLAN.md 0.8)
+  if(RG_ARCH STREQUAL "x64" AND p MATCHES "^${PROJECT_SOURCE_DIR}/(overrides|game)/(.*)$")
+    set(p ${RG_X64_SRC}/${CMAKE_MATCH_1}/${CMAKE_MATCH_2})
+  endif()
   if(EXISTS ${p})
     list(APPEND RG_PADMC_GAME_PAD_SRCS ${p})
   endif()
@@ -55,6 +59,10 @@ foreach(u IN LISTS RG_PADMC_GAME_MC_UNITS)
   set(p ${PROJECT_SOURCE_DIR}/overrides/src/main/${u}.c)
   if(NOT EXISTS ${p})
     set(p ${PROJECT_SOURCE_DIR}/game/src/main/${u}.c)
+  endif()
+  # x64: the game sources of the derived tree (tools/x64/derive.py; docs/X64-PLAN.md 0.8)
+  if(RG_ARCH STREQUAL "x64" AND p MATCHES "^${PROJECT_SOURCE_DIR}/(overrides|game)/(.*)$")
+    set(p ${RG_X64_SRC}/${CMAKE_MATCH_1}/${CMAKE_MATCH_2})
   endif()
   if(EXISTS ${p})
     list(APPEND RG_PADMC_GAME_MC_SRCS ${p})
@@ -166,5 +174,14 @@ if(RG_PYTHON)
     ENVIRONMENT "RG_PADMC_TMP=${CMAKE_CURRENT_BINARY_DIR}")
   add_test(NAME padmc.mc_pyimport COMMAND rg-padmc-tests mc_pyimport)
   set_tests_properties(padmc.mc_pyimport PROPERTIES LABELS padmc TIMEOUT 60 FIXTURES_REQUIRED padmc_pyimport
+    ENVIRONMENT "RG_PADMC_TMP=${CMAKE_CURRENT_BINARY_DIR};RG_IOP_QUIET=1")
+  # the exe's PCSX2 import, named slots and save metadata (src/native/saves/mc_import.c) on
+  # the PCSX2 cards padmc.ps2card leaves
+  add_test(NAME padmc.mc_import COMMAND rg-padmc-tests mc_import)
+  set_tests_properties(padmc.mc_import PROPERTIES LABELS padmc TIMEOUT 60 FIXTURES_REQUIRED padmc_pyimport
+    ENVIRONMENT "RG_PADMC_TMP=${CMAKE_CURRENT_BINARY_DIR};RG_IOP_QUIET=1")
+  # the settings overlay's save manager (src/native/saves/mc_menu.c) on the same cards
+  add_test(NAME padmc.mc_menu COMMAND rg-padmc-tests mc_menu)
+  set_tests_properties(padmc.mc_menu PROPERTIES LABELS "padmc;menu" TIMEOUT 60 FIXTURES_REQUIRED padmc_pyimport
     ENVIRONMENT "RG_PADMC_TMP=${CMAKE_CURRENT_BINARY_DIR};RG_IOP_QUIET=1")
 endif()

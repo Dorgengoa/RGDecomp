@@ -54,6 +54,15 @@ if(NOT RG_OVL_GEN_OK AND NOT RG_ARCH STREQUAL "x64"
   set(RG_OVL_GEN_DIR ${CMAKE_SOURCE_DIR}/pregen/overlay-gen)
   message(STATUS "overlay registry: pre-generated pregen/overlay-gen (no snapshot repo)")
 endif()
+# x64 (a native Linux build away from the snapshot repo, docs/LINUX.md "x64 Linux"): the
+# generator's --arch x64 output shipped as pregen/overlay-gen-x64 (tools/linux/remote.py sync-src)
+if(NOT RG_OVL_GEN_OK AND RG_ARCH STREQUAL "x64"
+   AND EXISTS ${CMAKE_SOURCE_DIR}/pregen/overlay-gen-x64/ovl_native_gen.c)
+  set(RG_OVL_GEN_OK TRUE)
+  set(RG_OVL_PREGEN TRUE)
+  set(RG_OVL_GEN_DIR ${CMAKE_SOURCE_DIR}/pregen/overlay-gen-x64)
+  message(STATUS "overlay registry: pre-generated pregen/overlay-gen-x64 (no snapshot repo)")
+endif()
 set(RG_OVL_DATA2C "" CACHE STRING
     "REPO@REV holding config/data2c.json (MAIN data slots into overlays); empty = the snapshot's own (docs/LINK.md)")
 set(RG_OVL_GEN_OK ${RG_OVL_GEN_OK} PARENT_SCOPE)

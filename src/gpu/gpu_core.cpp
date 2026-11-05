@@ -299,6 +299,7 @@ struct gpu_renderer {
     int im_nruns;
     int im_crov;               /* gpu_nr_im_submit: the draw goes through the colour target's ordered view */
     int im_xfree;              /* gpu_set_im_xfree: squeezed 2D, sprites not snapped in X when upscaled */
+    float im_line_xs;          /* gpu_set_im_line_xs (0 = 1): y-major lines' x thickness in native pixels */
     /* $RG_NR_IMFB_CENSUS=1: immediate fallbacks by (reason, FRAME, TEX0), primitives (printed at destroy) */
     int fb_census;
     std::map<std::tuple<int, uint64_t, uint64_t>, uint64_t> fbc;
@@ -3165,6 +3166,12 @@ const gpu_stats *gpu_get_stats(const gpu_renderer *r) { return &r->stats; }
 
 int gpu_get_scale(const gpu_renderer *r) { return r->scale; }
 void gpu_set_im_xfree(gpu_renderer *r, int on) { if (r) r->im_xfree = on != 0; }
+void gpu_set_im_box(gpu_renderer *r, int on) { (void)r; (void)on; }   /* (screen effects: native renderer only) */
+void gpu_set_im_hires(gpu_renderer *r, int mode, float sx, float sy, float box, uint32_t frame)
+{
+    (void)r; (void)mode; (void)sx; (void)sy; (void)box; (void)frame;   /* (native renderer only) */
+}
+void gpu_set_im_line_xs(gpu_renderer *r, float xs) { if (r) r->im_line_xs = xs > 0.0f && xs < 1.0f ? xs : 0.0f; }
 
 int gpu_read_target(gpu_renderer *r, uint32_t bp, uint32_t bw, int psm, int x, int y, int w,
                     int h, uint32_t *out)
@@ -3482,6 +3489,8 @@ void gpu_get_enhance(const gpu_renderer *r, gpu_enhance *e) { *e = r->enh; }
  * docs/NATIVE-RENDER.md: a mesh drawn by the native pipeline at the marker's
  * place in the GS stream.  Targets, coherence and the texture follow the same
  * rules as a batch (flush_batch); the state is the GS registers in force. */
+int gpu_nr_rt_chars_shadow(gpu_renderer *r) { (void)r; return 0; }
+const char *gpu_nr_backend_notice(void) { return ""; }   /* (no ray tracing on this renderer) */
 void gpu_nr_prims_begin(gpu_renderer *r)
 {
     flush_batch(r);
@@ -4402,6 +4411,8 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
             if (ddx == 0.0f && ddy == 0.0f) continue;
             int xmaj = fabsf(ddx) >= fabsf(ddy);
             float hx = xmaj ? 0.0f : 0.5f, hy = xmaj ? 0.5f : 0.0f;
+            if (!xmaj && r->im_line_xs > 0.0f && r->scale > 1)   /* gpu_set_im_line_xs: >= one upscaled pixel */
+                hx = fmaxf(0.5f * r->im_line_xs, 0.5f / (float)r->scale);
             GpuImVtx c0, c1, c2, c3;
             put(c0, a, ax - hx, ay - hy, a);
             put(c1, b, bx - hx, by - hy, b);

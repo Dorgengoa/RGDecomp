@@ -7,15 +7,15 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_00462398[0x400];
+extern u8 D_00462398[8];
 extern u8 D_004623A0[0x10];
 extern u8 D_004623B0[0x10];
-extern s16 D_004E8010[0x40];
-extern s32 D_004E8018[0x40];
-extern void *D_004E801C[0x40];
-extern void *D_004E8020[0x40];
-extern void *D_004E8024[0x40];
-extern void *D_004E8028[0x40];
+extern s16 D_004E8010[4];
+extern s32 D_004E8018[1];
+extern void *D_004E801C[1];
+extern void *D_004E8020[1];
+extern void *D_004E8024[1];
+extern void *D_004E8028[1];
 extern void *D_004E802C[0x40];
 
 void InsectBattleLoadMap_31a1a0(void)

@@ -1697,6 +1697,65 @@ static void pace_run(rg_pace *p, uint64_t seconds, uint64_t work_ns, uint64_t pr
     }
 }
 
+/* gameplay.battle_speed (rg_pace_set_speed): host time owes phases k times as fast; each phase is
+ * unchanged, presents keep to the cap (frame_rate original: speed_cap_fps 60). */
+static void t_pace_speed(void)
+{
+    rg_pace p;
+    rg_pace_config c;
+    pace_sim r;
+    rg_pace_default_config(&c);
+    c.mode = RG_PACE_HOST;
+    c.phase_rate = 1;
+    c.speed_cap_fps = 60;
+    static const double sp[] = { 1.0, 1.5, 2.0, 3.0 };
+    for (int i = 0; i < 4; i++) {
+        rg_pace_init(&p, &c);
+        rg_pace_set_speed(&p, sp[i]);
+        pace_run(&p, 10, 2000000, 1000000, 0, 0, 0, 0, &r);
+        double want = 599.4 * sp[i];
+        fprintf(stderr, "  speed %.1f: ticks %llu (want %.0f) presents %llu\n", sp[i], (unsigned long long)r.ticks, want,
+                (unsigned long long)r.presents);
+        CHECK(r.ticks >= (uint64_t)(want - 2) && r.ticks <= (uint64_t)(want + 2));
+        if (sp[i] > 1.0)
+            CHECK(r.presents <= 602);            /* original frame rate: at most ~60 / s */
+        else
+            CHECK_EQ(r.presents, r.ticks);       /* unchanged at 1x: one present per phase */
+    }
+    /* vsync 60, original frame rate, 2x: the presents do not hold the phases back */
+    c.vsync = 1;
+    rg_pace_init(&p, &c);
+    rg_pace_set_speed(&p, 2.0);
+    pace_run(&p, 10, 2000000, 0, 1, 0, 0, 0, &r);
+    fprintf(stderr, "  speed 2 vsync: ticks %llu presents %llu\n", (unsigned long long)r.ticks, (unsigned long long)r.presents);
+    CHECK(r.ticks >= 1195 && r.ticks <= 1201);
+    CHECK(r.presents >= 580);                   /* ~one per refresh (2 phases each) */
+    /* a host too slow for 2x (a phase costs 12 ms, 8.3 ms would be needed): the battle runs as
+     * fast as the host can, and it keeps presenting about every 2nd phase (not batches of 8) */
+    c.vsync = 0;
+    rg_pace_init(&p, &c);
+    rg_pace_set_speed(&p, 2.0);
+    pace_run(&p, 10, 12000000, 1000000, 0, 0, 0, 0, &r);
+    fprintf(stderr, "  speed 2 slow host: ticks %llu presents %llu max batch %llu\n", (unsigned long long)r.ticks,
+            (unsigned long long)r.presents, (unsigned long long)r.max_batch);
+    CHECK(r.ticks >= 750);
+    CHECK(r.max_batch <= 2);
+    CHECK(r.presents * 2 + 2 >= r.ticks);
+    /* uncapped (speed_cap_fps 0): every phase may present */
+    c.vsync = 0;
+    c.speed_cap_fps = 0;
+    rg_pace_init(&p, &c);
+    rg_pace_set_speed(&p, 2.0);
+    pace_run(&p, 10, 2000000, 1000000, 0, 0, 0, 0, &r);
+    CHECK(r.presents >= r.ticks - 2);
+    /* back to 1x: the retail rate again (the sim's clock restarts, so a fresh anchor) */
+    rg_pace_init(&p, &c);
+    rg_pace_set_speed(&p, 2.0);
+    rg_pace_set_speed(&p, 1.0);
+    pace_run(&p, 10, 2000000, 1000000, 0, 0, 0, 0, &r);
+    CHECK(r.ticks >= 598 && r.ticks <= 602);
+}
+
 static void t_pace(void)
 {
     rg_pace p;
@@ -1830,6 +1889,7 @@ static const struct {
     {"frame_driver", t_frame_driver},
     {"frame_native", t_frame_native},
     {"pace", t_pace},
+    {"pace_speed", t_pace_speed},
 };
 
 int main(int argc, char **argv)

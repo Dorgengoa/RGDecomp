@@ -16,6 +16,21 @@
 #if defined(_WIN64) || defined(__x86_64__)
 #define RG_P32 __ptr32 __uptr
 #define RG_FPC(e) ((__typeof_unqual__(*(e)) *)(e))
+/* the `this` register of a naked vtable forwarder (tools/x64/derive.py vthunk):
+ * Win64 passes the first argument in rcx, SysV x86-64 (Linux) in rdi */
+#if defined(_WIN64)
+#define RG_X64_THIS "%rcx"
+#else
+#define RG_X64_THIS "%rdi"
+#endif
+/* section flags of the data-layer asm objects (tools/x64/addr32.py): COFF / ELF */
+#if defined(_WIN32)
+#define RG_ASM_SECF_RO "\"dr\""
+#define RG_ASM_SECF_RW "\"dw\""
+#else
+#define RG_ASM_SECF_RO "\"a\",@progbits"
+#define RG_ASM_SECF_RW "\"aw\",@progbits"
+#endif
 /* EE kernel calls that share a name with a kernel32 export: on i686 the Win32 ones are
  * stdcall-decorated (_CreateThread@24) and never collide; x64 names are undecorated.
  * The same renames are in src/sce/kernel/eekernel.h (the definitions). */
@@ -24,6 +39,7 @@
 #define TerminateThread rg_ee_TerminateThread
 #define SuspendThread   rg_ee_SuspendThread
 #define ResumeThread    rg_ee_ResumeThread
+#define GetThreadId     rg_ee_GetThreadId
 /* Float sqrt rounds to NEAREST as on i686 (the CRT's x87 sqrtf there), not toward
  * zero under the guest MXCSR as an inlined sqrtss would (port/sqrtf_rn.h). */
 #include "port/sqrtf_rn.h"

@@ -2,9 +2,12 @@
 # Native save service (docs/NATIVE-IOP.md, docs/SAVES.md): the PS2 memory card on host
 # files (mccard.c) and the card time model (mc_time.c).  libmc calls it directly in
 # RG_IOP=native; the mcserv HLE (src/ps2/padmc, the oracle) calls the same functions.
-add_library(rg_native_saves STATIC mccard.h mccard.c mc_time.c)
+add_library(rg_native_saves STATIC mccard.h mccard.c mc_time.c mc_import.h mc_import.c
+  mc_menu.h mc_menu.c)
 target_include_directories(rg_native_saves PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(rg_native_saves PRIVATE rg_flags)
+# mc_menu.c: the overlay's save manager implements rg_menu.h's rg_menu_saves_ops
+target_link_libraries(rg_native_saves PUBLIC rg_settings)
 if(WIN32)
   target_compile_definitions(rg_native_saves PRIVATE _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS)
 endif()

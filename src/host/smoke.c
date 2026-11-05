@@ -11,6 +11,10 @@ int main(void)
     /* x64 (strategy A, docs/X64-PLAN.md): 64-bit pointers, but the whole image below 2 GB */
     int ok = sizeof(void *) == 8 && sizeof(long) == 4 && sum == 16777216.0f &&
              (uintptr_t)&main < 0x80000000u;
+#elif defined(__x86_64__)
+    /* x64 Linux (LP64: long is 8 bytes; non-PIE image below 2 GB, docs/LINUX.md "x64 Linux") */
+    int ok = sizeof(void *) == 8 && sizeof(long) == 8 && sum == 16777216.0f &&
+             (uintptr_t)&main < 0x80000000u;
 #else
     int ok = sizeof(void *) == 4 && sizeof(long) == 4 && sum == 16777216.0f;
 #endif

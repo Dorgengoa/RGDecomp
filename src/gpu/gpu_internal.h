@@ -184,7 +184,7 @@ struct GpuNrDraw {
     uint32_t alpha_abcd;     /* A | B << 2 | C << 4 | D << 6 */
     int cull;                /* 0 none, 1 cull clockwise (D3D front), 2 cull counter-clockwise */
     const gpu_nr_draw *d;    /* mesh and bones */
-    float cb[24][4];         /* d->cb with rows 11 and 23 filled */
+    float cb[26][4];         /* d->cb with rows 11 and 23 filled */
     /* texture: level 0 decoded once (CS_decode with dec_cb, as GpuDraw.dec) */
     int tme;
     GpuRect dec_rect;
@@ -192,6 +192,11 @@ struct GpuNrDraw {
     GpuDrawCB dec_cb;
     int lin;                 /* bilinear */
     int clamp_u, clamp_v;    /* 1: clamp, 0: repeat */
+    /* graphics.anisotropic (gpu_enhance.aniso) on the native renderer: 0 = the plain
+     * sampler (Original, off); 2..16 = the backend's anisotropic sampler of that degree.
+     * Set by nr_dev only for decoded, ordinary-memory, bilinear 3D textures sampled by the
+     * shader's plain Sample path (docs/NATIVE-RENDER.md "Anisotropic filtering") */
+    int aniso;
     int tex_cached_only;     /* replay: a decoded texture not in the cache fails the draw (no decode) */
     const GpuImVtx *im;      /* immediate primitives (triangle list) instead of d->mesh; NULL: a mesh */
     /* texture = a live colour target sampled directly at the internal resolution
@@ -211,7 +216,15 @@ struct GpuNrDraw {
     /* immediate primitives through the colour target's ordered view (PS_nr_c / PS_nr_cz:
      * the GS pixel back end in the shader; cb rows 1-2 hold its state) */
     int crov;
+    /* HD texture replacement (src/native/render/nr_texrep.h, docs/TEXTURES.md): non-NULL = draw
+     * with this RGBA8 mip chain (any size, same normalised coordinates) instead of the decoded
+     * texture; the backend caches it by rep->id */
+    const struct NrRepImg *rep;
 };
+
+/* GpuBackend::prof_tag categories (interpolated passes, nr_iprec.cpp) */
+enum GpuProfTag { GPT_GAME = 0, GPT_SAVE, GPT_PRE, GPT_CREATE, GPT_CLEAR, GPT_LOAD, GPT_COPY, GPT_REINT, GPT_MESH, GPT_IM,
+                  GPT_RESTORE, GPT_COMPOSE_PASS, GPT_COMPOSE, GPT_N };
 
 class GpuBackend {
 public:
@@ -314,11 +327,29 @@ public:
     virtual bool nr_draw(const GpuNrDraw &g) { (void)g; return false; }
     /* a decoded native texture with this key and rect is cached */
     virtual bool nr_tex_cached(const uint32_t *key, const GpuRect &rc) { (void)key; (void)rc; return false; }
+    /* HD texture replacement turned off (docs/TEXTURES.md): drop the uploaded replacements */
+    virtual void nr_rep_clear() {}
     /* interpolated presentation (src/native/render/nr_interp.h): a new target holding a copy of
      * target src (same kind and size; -1: not supported), and a whole-target copy between two
      * targets of the same kind and size */
     virtual int rt_clone(int src) { (void)src; return -1; }
     virtual bool rt_put(int dst, int src) { (void)dst; (void)src; return false; }
+    /* a new target of the native rect r's size holding that rect of src at (0, 0) (-1: not
+     * supported) */
+    virtual int rt_clone_rect(int src, const GpuRect &r) { (void)src; (void)r; return -1; }
+    /* GPU time by segment ($RG_GPU_PROFILE=4, docs/NATIVE-RENDER.md "Interpolation at 5x"): the
+     * GPU work queued from here to the next tag counts for category cat (GpuProfTag) */
+    virtual void prof_tag(int cat) { (void)cat; }
+    /* the GPU ms and segments counted for cat so far (false: not profiling) */
+    virtual bool prof_get(int cat, double *ms, double *n) { (void)cat; (void)ms; (void)n; return false; }
+    /* ray tracing, an interpolated present's own TLAS (docs/RAYTRACING.md "RT2d"; nr_iprec.cpp):
+     * rt_pass(0) begins a present (false: not wanted), rt_pass_cast hands it each of the
+     * present's mesh draws at its interpolated rows (casters only, nothing drawn), rt_pass(1)
+     * builds its TLAS before the present draws, rt_pass(2) ends the present */
+    virtual bool rt_pass(int phase) { (void)phase; return false; }
+    /* (rt4) ray-traced character shadows shown at nearly full strength now (gpu_nr_rt_chars_shadow) */
+    virtual int rt_chars_shadow() { return 0; }
+    virtual void rt_pass_cast(const GpuNrDraw &g) { (void)g; }
     /* any thread: create the GPU copy of a native mesh ahead of its first draw (gpu.h
      * gpu_nr_mesh_prewarm) */
     virtual void nr_mesh_prewarm(const gpu_nr_mesh &m) { (void)m; }
@@ -340,5 +371,143 @@ extern "C" void rg_x64_va_fence(int on);
 #else
 #define RG_X64_VA_FENCE(on) ((void)0)
 #endif
+
+/* x64 (docs/X64-PLAN.md 0.10): driver-memory trim of the D3D11 backend.  The NVIDIA x64
+ * driver backs EVERY default-usage resource (textures, render targets) with process-private
+ * system memory of its size (64 KB granules), placed by the kernel: in this LAA:NO process
+ * below 2 GB, and no user-mode hook or VA fence moves it higher (a fence only starves the
+ * driver).  The i686 driver does not (tools/x64/d3dfence_probe.c: 2,000 128x128 textures cost
+ * 243 MB private on x64, 0 on i686).  Released resources' memory stays committed in the
+ * driver's per-size caches, so a stretch that evicts and re-creates many textures of varying
+ * sizes (the Insectron results screen: 12,000 native texture decodes in 1,000 fields) grew
+ * private commit by ~1.1 GB in a second and CreateTexture2D failed (E_OUTOFMEMORY).
+ * rg_x64_trim_note(bytes) as a resource is released: every RG_X64_TRIM_MB released MB
+ * (default 16, 0 = off) WHILE the address space is tight (rg_x64_va_tight: each trim stalls
+ * ~20 ms) the context is flushed, the GPU waited for (event query) and IDXGIDevice3::Trim
+ * returns the driver's cached allocations.  With the shared textures below this is a reserve
+ * for non-texture resources.  Timing only. */
+#if defined(_WIN64)
+/* x64 (docs/X64-PLAN.md 0.10), both backends (D3D11 and Vulkan): the address-space budgets.
+ * The NVIDIA x64 drivers back device resources with process-private memory below 2 GB (see
+ * the D3D11 shared textures and trim above; Vulkan's allocations likewise).
+ * rg_x64_va_tight(bytes about to be created): 1 while the free space below 2 GB is under
+ * RG_X64_VA_LOW_MB (default 512; re-measured with a VirtualQuery walk after every 16 MB of
+ * creations and every 256 calls); then the texture cache stops growing (evicts instead) and the
+ * render-target pool is emptied and not refilled. */
+extern "C" size_t rg_x64_va_free_below_2g(void);   /* src/x64/lowmem_check.c */
+/* Vulkan twin of the shared textures (nr_vulkan.cpp, x64alt lines): every VMA memory type is
+ * allocated EXPORTABLE (VkExportMemoryAllocateInfo, opaque Win32 handles; images and buffers
+ * carry the matching VkExternalMemory*CreateInfo): the NVIDIA x64 Vulkan driver then gives it no
+ * process-private backing either (Insectron results: free below 2 GB 48 -> 930 MB, commit
+ * 1,458 -> 404 MB).  RG_X64_VK_EXTMEM=0 turns it off. */
+static inline int rg_x64_vk_extmem(void)
+{
+    static int on = -1;
+    if (on < 0) { const char *e = getenv("RG_X64_VK_EXTMEM"); on = !(e && e[0] == '0'); }
+    return on;
+}
+static inline int rg_x64_va_tight(size_t bytes)
+{
+    static size_t since, low;
+    static unsigned calls;
+    static int tight = -1;
+    if (tight < 0) {
+        const char *e = getenv("RG_X64_VA_LOW_MB");
+        low = (size_t)(e && *e ? atoi(e) : 512) << 20;
+    }
+    since += bytes;
+    if (tight < 0 || since >= ((size_t)16 << 20) || ++calls >= 256) {
+        since = 0;
+        calls = 0;
+        int t = rg_x64_va_free_below_2g() < low;
+        if (t && tight != 1) fprintf(stderr, "rg x64: address space below 2 GB is tight (under %u MB free)\n", (unsigned)(low >> 20));
+        tight = t;
+    }
+    return tight;
+}
+#endif
+
+#if defined(_WIN64) && defined(__d3d11_h__)
+/* x64 (docs/X64-PLAN.md 0.10): default-usage 2D textures are created SHARED.  The NVIDIA x64
+ * driver backs a non-shared default texture with process-private system memory of its size
+ * (below 2 GB here), a D3D11_RESOURCE_MISC_SHARED one with none (tools/x64/d3dfence_probe.c:
+ * 100 x 1024x1024 RGBA8 cost 420 MB private plain, 0 shared; the same for the formats and
+ * bind flags of the backend: RGBA8 / R32 typeless with RT|SRV|UAV, depth R32 typeless with
+ * DS(|SRV), R32_UINT SRV|UAV).  Without it the render targets at internal resolution 5x
+ * (2560x1440 window: 23 MB each) and the texture cache exhausted the 2 GB in a windowed
+ * session.  The macro rewrites every dev->CreateTexture2D(desc, ..) of the including TU (the
+ * D3D11 backend) through rg_x64_td: eligible = default usage, no CPU access, one mip, one
+ * array slice, no MSAA, no misc flags.  RG_X64_SHARED_TEX=0 turns it off. */
+static inline const D3D11_TEXTURE2D_DESC *rg_x64_td(const D3D11_TEXTURE2D_DESC *d)
+{
+    static int on = -1;
+    static thread_local D3D11_TEXTURE2D_DESC c;
+    if (on < 0) { const char *e = getenv("RG_X64_SHARED_TEX"); on = e && e[0] >= '0' && e[0] <= '2' ? e[0] - '0' : 1; }
+    if (!on || !d || d->Usage != D3D11_USAGE_DEFAULT || d->CPUAccessFlags || d->MipLevels != 1 || d->ArraySize != 1 ||
+        d->SampleDesc.Count != 1 || d->MiscFlags)
+        return d;
+    if (on == 2 && (d->BindFlags & (D3D11_BIND_RENDER_TARGET | D3D11_BIND_DEPTH_STENCIL)))
+        return d;   /* 2: textures only, not targets */
+    c = *d;
+    c.MiscFlags |= D3D11_RESOURCE_MISC_SHARED;
+    return &c;
+}
+#define CreateTexture2D(desc, init, out) CreateTexture2D(rg_x64_td(desc), init, out)
+
+#include <dxgi1_3.h>
+struct rg_x64_trimstate {
+    ID3D11DeviceContext *ctx;
+    ID3D11Query *q;
+    IDXGIDevice3 *d3;
+    uint64_t n, us;
+    size_t acc, step;
+    int init;
+};
+static rg_x64_trimstate g_rg_x64_trim;
+static void rg_x64_trim_report(void)
+{
+    const rg_x64_trimstate &s = g_rg_x64_trim;
+    if (s.n)
+        fprintf(stderr, "rg x64: driver memory trims: %llu (every %u MB released), %llu ms\n", (unsigned long long)s.n,
+                (unsigned)(s.step >> 20), (unsigned long long)(s.us / 1000));
+}
+static inline void rg_x64_trim_note(ID3D11Device *dev, ID3D11DeviceContext *ctx, size_t bytes)
+{
+    rg_x64_trimstate &s = g_rg_x64_trim;
+    if (!s.init) {
+        const char *e = getenv("RG_X64_TRIM_MB");
+        s.init = 1;
+        s.step = e && *e ? (size_t)atoi(e) << 20 : (size_t)16 << 20;
+        atexit(rg_x64_trim_report);
+    }
+    if (!s.step || !ctx || !dev) return;
+    if (s.ctx != ctx) {   /* a new device */
+        if (s.q) s.q->Release();
+        if (s.d3) s.d3->Release();
+        s.q = NULL;
+        s.d3 = NULL;
+        s.ctx = ctx;
+        s.acc = 0;
+        D3D11_QUERY_DESC qd = { D3D11_QUERY_EVENT, 0 };
+        if (FAILED(dev->CreateQuery(&qd, &s.q))) s.q = NULL;
+        if (FAILED(dev->QueryInterface(__uuidof(IDXGIDevice3), (void **)&s.d3))) s.d3 = NULL;
+    }
+    s.acc += bytes;
+    if (s.acc < s.step || !s.d3 || !rg_x64_va_tight(0)) return;
+    s.acc = 0;
+    LARGE_INTEGER f, t0, t1;
+    QueryPerformanceFrequency(&f);
+    QueryPerformanceCounter(&t0);
+    if (s.q) {
+        ctx->End(s.q);
+        while (ctx->GetData(s.q, NULL, 0, 0) == S_FALSE) SwitchToThread();
+    }
+    s.d3->Trim();
+    QueryPerformanceCounter(&t1);
+    s.n++;
+    s.us += (uint64_t)((t1.QuadPart - t0.QuadPart) * 1000000 / f.QuadPart);
+}
+#endif
+
 
 #endif

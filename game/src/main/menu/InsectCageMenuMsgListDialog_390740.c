@@ -22,7 +22,7 @@ extern s32 D_004832D8;
 extern s32 D_00483304;
 extern s8 D_00483368;
 extern s8 D_0048336C;
-extern u8 D_004E94E0[0x400];
+extern u8 D_004E94E0[0x14];
 extern u8 D_004E94FC[0x400];
 
 s32 InsectCageMenuMsgListDialog_390740(s32 pad0, s32 arg1)

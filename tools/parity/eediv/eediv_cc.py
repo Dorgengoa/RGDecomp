@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: CC0-1.0
-"""Compiler launcher for game objects with EE float semantics (docs/BRINGUP.md "Retail
-parity"; opt-in, see cmake/game.cmake RG_EE_FLOAT).
+"""Compiler launcher for game objects with EE float semantics (docs/TEST-FIXTURES.md "Retail
+parity"; opt-in build option RG_EE_FPU_EXACT in cmake/game.cmake, never the shipping default).
 
-    eediv_cc.py CLANG ARGS... -o OBJ -c SRC         (CMake C/CXX_COMPILER_LAUNCHER)
+    eediv_cc.py [--cache=DIR] [--only=REGEX] CLANG ARGS... -o OBJ -c SRC   (C/CXX_COMPILER_LAUNCHER)
+
+--cache=DIR: where the helpers' IR (rg_ee_ops.ll) is built once (default: env EEDIV_CACHE, else
+the object's directory).  --only=REGEX: rewrite only sources whose path matches (searched);
+any other source is compiled by the plain command (RG_EE_FPU_EXACT: crt_eelibm.c of rg_crt).
 
 1. the same command with `-ffp-contract=off -S -emit-llvm -Xclang -disable-llvm-passes
    -o OBJ.ll` (dependency flags stay; IR before any optimisation, so the VU0 helpers of
@@ -27,7 +31,8 @@ FOPS = {"fdiv": "rg_ee_divf", "fadd": "rg_ee_addf", "fsub": "rg_ee_subf"}
 SCALAR = re.compile(r"^(\s*)(%[\w.\-]+) = (fdiv|fadd|fsub)(?: [a-z ]+?)? float (\S+), (\S+?)(, !.*)?$")
 VECTOR = re.compile(r"^(\s*)(%[\w.\-]+) = (fdiv|fadd|fsub)(?: [a-z ]+?)? <(\d+) x float> (.+?), (<.+?>|%[\w.\-]+|zeroinitializer|poison|undef)(, !.*)?$")
 DEFINE = re.compile(r"^define .*?@\"?([^\"(]+)\"?\(")
-EXCLUDE = re.compile(r"^(rg_vu|rg_vu0|vu0_|rg_vf|rg_vi)")
+# VU0 models (port/vu0.h rg_vu*, port/vu0intrin.h rg_vb* / rg_vbi*, rg_vf*, rg_vi*): VU, not EE FPU
+EXCLUDE = re.compile(r"^(rg_v|vu0_)")
 
 
 def rewrite(ir: str, ops=("fadd", "fsub", "fdiv"), exclude=EXCLUDE) -> tuple[str, int]:
@@ -87,13 +92,29 @@ def ops_module(clang, target, cache_dir):
                                                 src, "-o", tmp])
         if r:
             raise SystemExit("eediv_cc: rg_ee_ops.cpp failed")
-        os.replace(tmp, path)
+        try:
+            os.replace(tmp, path)
+        except OSError:      # a parallel compile replaced it first (Windows: file in use)
+            if not os.path.exists(path):
+                raise
+            os.remove(tmp)
     return path
 
 
 def main(argv):
     cmd = argv[1:]
+    cache, only = os.environ.get("EEDIV_CACHE"), None
+    while cmd and cmd[0].startswith("--") and "=" in cmd[0]:
+        k, v = cmd.pop(0).split("=", 1)
+        if k == "--cache":
+            cache = v
+        elif k == "--only":
+            only = re.compile(v)
+        else:
+            raise SystemExit(f"eediv_cc: unknown option {k}")
     if "-c" not in cmd or "-o" not in cmd:
+        return subprocess.call(cmd)
+    if only is not None and not only.search(cmd[cmd.index("-c") + 1].replace("\\", "/")):
         return subprocess.call(cmd)
     clang = cmd[0]
     o = cmd.index("-o")
@@ -114,7 +135,8 @@ def main(argv):
     if n:
         with open(ll2, "w", encoding="utf-8") as f:
             f.write(ir2)
-        cache = os.environ.get("EEDIV_CACHE") or os.path.dirname(os.path.abspath(obj))
+        cache = cache or os.path.dirname(os.path.abspath(obj))
+        os.makedirs(cache, exist_ok=True)
         ops = ops_module(clang, target, cache)
         r = subprocess.call([tool(clang, "llvm-link"), ll2, ops, "-o", bc])
         if r:

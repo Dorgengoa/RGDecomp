@@ -29,6 +29,35 @@
 #include <windows.h>
 #endif
 
+/* The save path's big host buffers (the runtime hook's GS image, the flattened statics):
+ * on x64 above 4 GB, where nothing else competes (the process's NULL-hint space is the
+ * 2 GB below, shared with the 64-bit graphics driver; a 4 MB malloc failed there at the
+ * battle_won save, docs/X64-PLAN.md 0.8).  Host-only memory: never seen by game code. */
+#if defined(_WIN64)
+static void *ss_big_alloc(size_t n)
+{
+    size_t r = (n + 0xFFFFu) & ~(size_t)0xFFFFu;
+    for (uintptr_t a = 0x400000000ull; a < 0x10000000000ull; a += 0x40000000ull) {
+        void *p = VirtualAlloc((void *)a, r, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+        if (p)
+            return p;
+    }
+    return malloc(n);
+}
+static void ss_big_free(void *p)
+{
+    if ((uintptr_t)p >= 0x100000000ull)
+        VirtualFree(p, 0, MEM_RELEASE);
+    else
+        free(p);
+}
+#define SS_BIG_ALLOC(n) ss_big_alloc(n)
+#define SS_BIG_FREE(p) ss_big_free(p)
+#else
+#define SS_BIG_ALLOC(n) malloc(n)
+#define SS_BIG_FREE(p) free(p)
+#endif
+
 /* 2 (2026-10-18): section "ram" (and the header's ram / ram_size) is the game heap
  * allocation (RG_CRT0_HEAP_ALLOC bytes, heap at +0x200), no longer a 32 MB EE-RAM image
  * (docs/NATIVE-CPU.md section 8).  Version-1 files are refused with a message. */
@@ -141,7 +170,7 @@ static void w_section(wr *w, const char *name, uint32_t addr, const piece *pc, i
     if (npc == 1) {
         src = pc[0].p;
     } else {
-        flat = (uint8_t *)malloc(size ? size : 1);
+        flat = (uint8_t *)SS_BIG_ALLOC(size ? size : 1);
         if (!flat) {
             w->failed = 1;
             return;
@@ -180,7 +209,7 @@ static void w_section(wr *w, const char *name, uint32_t addr, const piece *pc, i
         w_bytes(w, src + o, n);
     }
     free(bitmap);
-    free(flat);
+    SS_BIG_FREE(flat);
     w->nsect++;
 }
 
@@ -281,10 +310,10 @@ int rg_ss_save(const char *path, const rg_ss_meta *meta, char *err, size_t cap)
         if (!g_hooks[i].save_size || !g_hooks[i].save)
             continue;
         size_t n = g_hooks[i].save_size();
-        uint8_t *b = (uint8_t *)malloc(n ? n : 1);
+        uint8_t *b = (uint8_t *)SS_BIG_ALLOC(n ? n : 1);
         int got = b ? g_hooks[i].save(b, n) : -1;
         if (got < 0) {
-            free(b);
+            SS_BIG_FREE(b);
             fclose(w.f);
             remove(tmp);
             snprintf(err, cap, "hook %s failed to save", g_hooks[i].name);
@@ -294,7 +323,7 @@ int rg_ss_save(const char *path, const rg_ss_meta *meta, char *err, size_t cap)
         snprintf(nm, sizeof nm, "hook:%s", g_hooks[i].name);
         piece pc = {b, (size_t)got};
         w_section(&w, nm, 0, &pc, 1);
-        free(b);
+        SS_BIG_FREE(b);
     }
 
     /* statics: the range table, then the bytes */
@@ -317,7 +346,7 @@ int rg_ss_save(const char *path, const rg_ss_meta *meta, char *err, size_t cap)
         }
         piece pt = {(const uint8_t *)tab, sizeof(uint32_t) * (1 + 2 * (size_t)nr)};
         w_section(&w, "statics.map", 0, &pt, 1);
-        uint8_t *flat = (uint8_t *)malloc(total ? total : 1);
+        uint8_t *flat = (uint8_t *)SS_BIG_ALLOC(total ? total : 1);
         size_t o = 0;
         for (int i = 0; i < nr; i++) {
             memcpy(flat + o, (const void *)rr[i].lo, rr[i].hi - rr[i].lo);
@@ -325,7 +354,7 @@ int rg_ss_save(const char *path, const rg_ss_meta *meta, char *err, size_t cap)
         }
         piece pd = {flat, total};
         w_section(&w, "statics", 0, &pd, 1);
-        free(flat);
+        SS_BIG_FREE(flat);
         free(tab);
     }
 

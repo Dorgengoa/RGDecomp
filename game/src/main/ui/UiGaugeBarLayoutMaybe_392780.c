@@ -5,7 +5,7 @@
 #include "types.h"
 #pragma opt_propagation off
 
-extern s16 D_00464178[0x100];
+extern s16 D_00464178[4];
 extern s16 D_00464180[0x100];
 
 typedef struct {

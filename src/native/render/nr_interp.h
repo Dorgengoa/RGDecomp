@@ -36,6 +36,11 @@
  * strips) get their pose interpolated: bones only, the copy moved and widened (nr_iprec.cpp
  * "composite poses", $RG_INTERP_ZSCALE in nr_interp.c).
  *
+ * Who asks for passes (docs/NATIVE-RENDER.md "Interpolation throughput (2026-10-30)"): by
+ * default the worker itself (runtime.c's nr_q tick at the frame cap's slots: nr_ip_w_present, the
+ * frame presented on the host's present thread); RG_INTERP_THREAD=0: the EE requests them
+ * (nr_ip_queue_present), asynchronously unless RG_INTERP_ASYNC=0.
+ *
  * Off unless enabled (display.interpolation = on, or RG_INTERP=1): no log, no copies, no
  * passes; the Original preset is unchanged.  RG_NATIVE_ONLY builds with the D3D11 device only
  * (stubs elsewhere). */
@@ -72,6 +77,22 @@ void nr_ip_stats(FILE *f);
  * interpolation); the caller compares the display before and after: equal = the frame is
  * self-contained (re-executing it reproduces it). */
 int nr_ip_queue_exact(void);
+
+/* ---- worker: presents made by the worker itself (runtime.c's nr_q tick, docs/NATIVE-RENDER.md
+ * "Interpolation throughput (2026-10-30)") -------------------------------------------------- */
+/* the interpolated pass for host time tau (phases) now, at whatever point of the GS input the
+ * worker is (the device then holds the in-between image until nr_ip_w_settle); 1 = a pass ran */
+int nr_ip_w_present(double tau);
+void nr_ip_w_settle(void);   /* the targets back as the GS input left them (exact) */
+int nr_ip_w_ready(void);     /* interpolation on and a log recorded */
+/* what the last nr_ip_w_present showed (measurement: the present log, tools/native/interp_sync.py):
+ * code as RG_INTERP_TRACE (0 pass, 1 no log, 2 no previous, 3 cut, 4 alpha 1), the shown /
+ * previous log's frame number, alpha, and the displayed content time in phases
+ * S = vis - iv + alpha * iv (NAN when no log) */
+typedef struct nr_ip_wlast { int code; uint32_t frame, prev; double alpha, S; } nr_ip_wlast;
+void nr_ip_w_last(nr_ip_wlast *out);
+/* 1: requests show the newest frame without a pass (runtime.c's pass budget, overloaded) */
+void nr_ip_w_nopass(int on);
 
 /* ---- worker (GS input, nr_gs.c / nr_hw.c) ---------------------------------- */
 void nr_ip_w_rec(uint32_t id);                       /* before the record runs */

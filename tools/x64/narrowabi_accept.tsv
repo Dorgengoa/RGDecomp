@@ -1,0 +1,8 @@
+# tools/x64/narrowabi.py --check exceptions: REAL / INSPECT rows triaged by hand (x64e, 2026-11-02).
+# func	pos	view	definition	category	reason   (view / definition as the census prints them;
+# a row whose view or definition changes no longer matches and fails the check again)
+CharaGetId_214a80	ret	ptr	s16	ptr-view-narrow-ret	the only call (EvCmdEventStartMaybe_248450) casts the result to (short): only the 16 bits the callee defines are read
+MapDataGetId_1e7bd0	ret	ptr	s16	ptr-view-narrow-ret	the only call (MapAreaRelease_1d9ee0) casts the result to (short): only the 16 bits the callee defines are read
+IosGetFlags_1a1f30	ret	ptr	s16	ptr-view-narrow-ret	the only call (OstreamWriteCStr_1a1dd0) casts the result to (short): only the 16 bits the callee defines are read
+ObjRecHasFlags6_1c3eb0	ret	ptr	u8	ptr-view-narrow-ret	the only call (EventSysUpdate_26ac10) casts the result to (unsigned char): only the 8 bits the callee defines are read
+NumPutPadOutput_1a4610	arg1	struct:It	ptr	rec-for-ptr-arg	It = {void * RG_P32 p} (4 bytes) for a pointer parameter: the x64 call site loads it with a 32-bit mov (upper RDX zero; checked in rg-game.exe of x64e); iostream float output only

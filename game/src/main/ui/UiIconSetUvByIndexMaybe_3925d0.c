@@ -4,7 +4,7 @@
 #line 1
 #include "types.h"
 
-extern u8 D_00464188[0x400];
+extern u8 D_00464188[0x10];
 extern u8 D_00464198[0x400];
 
 #pragma opt_propagation off

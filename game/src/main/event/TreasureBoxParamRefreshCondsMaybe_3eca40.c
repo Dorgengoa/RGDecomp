@@ -70,7 +70,7 @@ typedef struct Self {
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern s32 D_004644A0[4];
+extern s32 D_004644A0[2];
 extern s32 D_004644A8[4];
 
 static inline Ent *getEnt(Tbl *t, s32 k, s32 lim) {

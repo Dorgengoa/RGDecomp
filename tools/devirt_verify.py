@@ -583,6 +583,36 @@ def rdata_sections(text: str) -> list[bytes]:
     return [bytes(s) for s in secs]
 
 
+def undo_interior(text: str, labels: dict) -> str:
+    """The ingest stage `interior` (tools/stages/interior.py) spells an interior label as its
+    root + offset, so a known-vtable address `$D_vtbl + S` comes out as `$D_root + (off + S)`.
+    labels = {root symbol: [label offsets]} of the unit (game/INTERIOR.tsv): an instruction whose
+    DIR32 relocation names a root gets its first constant >= the smallest label offset reduced by
+    the largest label offset <= it (back to `D_vtbl + S`, the retail spelling)."""
+    if not labels:
+        return text
+    out = text.splitlines()
+    last = None
+    for i, ln in enumerate(out):
+        if "IMAGE_REL_I386_DIR32" in ln:
+            sym = ln.split()[-1].lstrip("_")
+            offs = labels.get(sym)
+            if offs and last is not None:
+                def fix(m, offs=offs):
+                    v = int(m.group(1), 16)
+                    best = max((o for o in offs if o <= v), default=None)
+                    if best is None:
+                        return m.group(0)
+                    return ("$" if m.group(0).startswith("$") else "") + f"0x{v - best:x}"
+                ln0 = out[last]
+                head, sep, tail = ln0.partition("<")
+                out[last] = re.sub(r"\$?0x([0-9a-f]+)", fix, head, count=1) + sep + tail
+            continue
+        if "IMAGE_REL_" not in ln and INSN.match(ln):
+            last = i
+    return "\n".join(out)
+
+
 def objdump(path: Path) -> str:
     r = subprocess.run([str(OBJDUMP), "-d", "-r", "--no-show-raw-insn", str(path)],
                        capture_output=True, text=True, encoding="utf-8", errors="replace")
@@ -721,12 +751,21 @@ def main() -> int:
             if src.exists() and rx.search(src.read_text(encoding="utf-8", errors="replace")):
                 thunk_files.add(r[0])
 
+    # interior labels respelled as root + offset (ingest stage `interior`), per unit
+    interior: dict[str, dict] = {}
+    it = a.game / "INTERIOR.tsv"
+    if it.exists():
+        for ln in it.read_text(encoding="utf-8").splitlines()[1:]:
+            f = ln.split("\t")
+            if len(f) == 4:
+                interior.setdefault(f[0], {}).setdefault(f[2], []).append(int(f[3], 16))
+
     def work(r):
         rel, image, kind, syms = r
         op = obj_path(a.objdir, image, rel)
         if not op.exists():
             return rel, image, syms, None
-        return rel, image, syms, port_sites(objdump(op))
+        return rel, image, syms, port_sites(undo_interior(objdump(op), interior.get(rel)))
     with ThreadPoolExecutor(a.jobs) as ex:
         results = list(ex.map(work, rows))
     if not any(r[3] is not None for r in results):

@@ -296,6 +296,19 @@ class Cli(unittest.TestCase):
         img = os.path.join(self.d, "fixture.ps2")
         self.assertEqual(P.main(["export", img, "--format", "--saves", self.saves]), 0)
         self.assertEqual(P.main(["import", img, "--saves", saves]), 0)
+        # PCSX2 cards for padmc.mc_import (the exe's import, src/native/saves/mc_import.c):
+        # an ECC image, a raw image, a folder card
+        shutil.copyfile(img, os.path.join(base, "padmc_import.ps2"))
+        raw = os.path.join(base, "padmc_import_raw.ps2")
+        if os.path.exists(raw):
+            os.remove(raw)
+        self.assertEqual(P.main(["format", raw, "--no-ecc"]), 0)
+        self.assertEqual(P.main(["export", raw, "--saves", self.saves]), 0)
+        fc = os.path.join(base, "padmc_import_folder")
+        shutil.rmtree(fc, ignore_errors=True)
+        os.makedirs(fc)
+        open(os.path.join(fc, "_pcsx2_superblock"), "wb").close()
+        self.assertEqual(P.main(["export", fc, "--save", "BASCUS-97490LV5RG_00", "--saves", self.saves]), 0)
 
     def test_list_titles(self):
         self.assertEqual(P.icon_title(iconsys(line2="Rosa")), "Rogue Galaxy / Rosa")

@@ -19,12 +19,12 @@ extern "C" {
 extern s32 ModelResGetMeshClass_14cea0(s32);
 extern s32 ModelResGetMeshMode_14cec0(void *);
 extern void *MemStackNew_14e230(s32, s32);
-extern u8 D_0046FFE0[0x400];
-extern u8 D_0046FFF0[0x400];
-extern u8 D_00470000[0x400];
-extern u8 D_00470010[0x400];
-extern u8 D_00470040[0x400];
-extern u8 D_00470070[0x400];
+extern u8 D_0046FFE0[0x10];
+extern u8 D_0046FFF0[0x10];
+extern u8 D_00470000[0x10];
+extern u8 D_00470010[0x30];
+extern u8 D_00470040[0x30];
+extern u8 D_00470070[0x20];
 extern u8 D_004701C0[0x400];
 }
 

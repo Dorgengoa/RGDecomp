@@ -69,6 +69,21 @@ static void *heap_alloc(void)
     }
     return NULL;
 #else
+    /* The Windows i686 exe is not large-address-aware: every address it sees is below 2 GB, and
+     * code tests bit 31 of host pointers (libdma_native.c rejects a DMA tag / data address with
+     * it set; the game itself keeps PS2 kseg rules).  An i686 process under an x86-64 kernel
+     * maps top-down from ~4 GB (the heap landed at 0xEEA3E000: every GIF chain from the heap was
+     * dropped, run hash off from field 97).  Place the heap below 2 GB, starting at 512 MB so
+     * glibc's brk heap above the image keeps room (docs/LINUX.md "Address space").  A hint is
+     * only taken when the range is free; each result is checked. */
+    for (uintptr_t hint = 0x20000000u; hint + HEAP_MAP_SIZE <= 0x80000000u; hint += 0x01000000u) {
+        void *p = mmap((void *)hint, HEAP_MAP_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        if (p == MAP_FAILED)
+            return NULL;
+        if ((uintptr_t)p + HEAP_MAP_SIZE <= 0x80000000u)
+            return p;
+        munmap(p, HEAP_MAP_SIZE);
+    }
     void *p = mmap(NULL, HEAP_MAP_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     return p == MAP_FAILED ? NULL : p;
 #endif

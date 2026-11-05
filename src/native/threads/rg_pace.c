@@ -57,7 +57,28 @@ void rg_pace_reset(rg_pace *p)
     p->next_present_ns = 0;
 }
 
-static uint64_t cap_ns(const rg_pace *p) { return p->cfg.cap_fps ? 1000000000ull / p->cfg.cap_fps : 0; }
+static uint64_t speed_q16(const rg_pace *p) { return p->speed_q16 ? p->speed_q16 : 65536u; }
+
+void rg_pace_set_speed(rg_pace *p, double speed)
+{
+    if (!(speed >= 1.0)) speed = 1.0;
+    if (speed > 8.0) speed = 8.0;
+    p->speed_q16 = (uint32_t)(speed * 65536.0 + 0.5);
+}
+
+/* the frame cap in effect: with no cap a sped-up battle (gameplay.battle_speed) presents at most
+ * at speed_cap_fps (display.frame_rate original: 60, once per host phase-time, not per phase) */
+static uint32_t cap_fps(const rg_pace *p)
+{
+    /* (with VSync the display paces the presents) */
+    return p->cfg.cap_fps ? p->cfg.cap_fps : speed_q16(p) > 65536u && !p->cfg.vsync ? p->cfg.speed_cap_fps : 0u;
+}
+/* phase counts that bound a batch scale with the battle speed: k phases (and the catch-up
+ * threshold) per host phase-time of debt, so a sped-up battle on a 60 Hz present grid is not
+ * cut back to max_ticks phases per present */
+static uint32_t scaled(const rg_pace *p, uint32_t n) { return (uint32_t)(((uint64_t)n * speed_q16(p) + 65535u) / 65536u); }
+
+static uint64_t cap_ns(const rg_pace *p) { return cap_fps(p) ? 1000000000ull / cap_fps(p) : 0; }
 
 /* a present slot counts as come this close before it (sleep / wake jitter) */
 static uint64_t slack_ns(const rg_pace *p)
@@ -77,10 +98,18 @@ static void accumulate(rg_pace *p, uint64_t now_ns)
         return;
     }
     if (now_ns > p->last_ns) {
-        p->acc += (now_ns - p->last_ns) * NS_U;
+        uint64_t d = now_ns - p->last_ns;
+        if (speed_q16(p) == 65536u) {
+            p->acc += d * NS_U;
+        } else {
+            /* gameplay.battle_speed: host time owes phases faster (a long hitch is capped
+             * before scaling; the debt beyond k phases is dropped below anyway) */
+            if (d > 1000000000ull) d = 1000000000ull;
+            p->acc += d * NS_U / 65536u * speed_q16(p) + (d * NS_U % 65536u) * speed_q16(p) / 65536u;
+        }
         p->last_ns = now_ns;
     }
-    uint64_t lim = (uint64_t)p->cfg.max_ticks * RG_PACE_FIELD_U;
+    uint64_t lim = (uint64_t)scaled(p, p->cfg.max_ticks) * RG_PACE_FIELD_U;
     if (p->acc > lim) {
         /* a hitch longer than k phases (debugger, load, window drag): the older debt is
          * dropped; logic never runs faster than k phases back to back */
@@ -102,7 +131,8 @@ uint64_t rg_pace_until_tick(rg_pace *p, uint64_t now_ns)
         p->phase_start_ns = now_ns;
         return 0;
     }
-    return (RG_PACE_FIELD_U - p->acc + NS_U - 1) / NS_U;
+    uint64_t ns = (RG_PACE_FIELD_U - p->acc + NS_U - 1) / NS_U;
+    return speed_q16(p) == 65536u ? ns : (ns * 65536u + speed_q16(p) - 1) / speed_q16(p) + 1;
 }
 
 void rg_pace_take_tick(rg_pace *p)
@@ -140,9 +170,20 @@ int rg_pace_present_now(rg_pace *p, uint64_t now_ns)
     accumulate(p, now_ns);
     if (!p->cost_ext)
         cost_sample(p, now_ns); /* no rg_pace_phase_done caller: start -> this decision */
+    /* a sped-up battle (gameplay.battle_speed): run the phases already owed before a present
+     * (several per present by design) */
+    if (speed_q16(p) > 65536u) {
+        /* at most ceil(speed) phases per present: a host that cannot keep the full speed runs the
+         * battle slower but keeps presenting (the debt beyond is dropped), instead of batches
+         * of k x speed phases that are never shown */
+        if (p->acc >= RG_PACE_FIELD_U && p->batch < scaled(p, 1))
+            return 0;
+        if (p->batch >= scaled(p, 1))
+            goto cap;
+    }
     if (p->acc >= (uint64_t)p->cfg.catchup * RG_PACE_FIELD_U) { /* well behind: catch up first */
         /* only when skipping presents can win the time back: a phase costs < 90 % of one */
-        int can = p->cost_ns * 10 < 9 * (RG_PACE_FIELD_U / NS_U);
+        int can = p->cost_ns * 10 * speed_q16(p) / 65536u < 9 * (RG_PACE_FIELD_U / NS_U);
         if (!can && p->cfg.catchup > 1) {
             p->skipped_slow++;
         } else {
@@ -151,7 +192,11 @@ int rg_pace_present_now(rg_pace *p, uint64_t now_ns)
             p->forced++; /* k phases without a present: show one anyway */
         }
     }
-    if (p->cfg.cap_fps && p->next_present_ns && now_ns + slack_ns(p) < p->next_present_ns)
+cap:
+    /* (phase-rate presents: the cap must keep up with the phases, 59.94 Hz x battle speed) */
+    if (cap_fps(p) && !(p->cfg.phase_rate && (uint64_t)cap_fps(p) * 65536u >= 60u * speed_q16(p)) &&
+        p->next_present_ns &&
+        now_ns + slack_ns(p) < p->next_present_ns)
         return 0;
     return 1;
 }
@@ -184,7 +229,7 @@ int rg_pace_between(rg_pace *p, uint64_t now_ns, uint32_t *alpha)
         return 0; /* a phase is owed: run it first */
     if (alpha)
         *alpha = (uint32_t)((p->acc >> 16) * 65536ull / (RG_PACE_FIELD_U >> 16));
-    if (p->cfg.cap_fps && p->next_present_ns && now_ns + slack_ns(p) < p->next_present_ns)
+    if (cap_fps(p) && p->next_present_ns && now_ns + slack_ns(p) < p->next_present_ns)
         return 0;
     return 1;
 }
@@ -193,7 +238,7 @@ uint64_t rg_pace_sleep_ns(const rg_pace *p, uint64_t until_tick_ns, uint64_t now
 {
     if (!between || p->cfg.mode != RG_PACE_HOST)
         return until_tick_ns;
-    if (!p->cfg.cap_fps)
+    if (!cap_fps(p))
         return p->cfg.vsync ? until_tick_ns : 0; /* uncapped: present as fast as the presenter can */
     if (p->next_present_ns > now_ns && p->next_present_ns - now_ns < until_tick_ns)
         return p->next_present_ns - now_ns;

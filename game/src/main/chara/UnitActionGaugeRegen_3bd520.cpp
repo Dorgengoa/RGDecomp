@@ -2,8 +2,8 @@
 #undef NULL
 #define NULL 0
 extern "C" {
-extern s32 D_00465D10[0x100];
-extern s32 D_00465D18[0x100];
+extern s32 D_00465D10[2];
+extern s32 D_00465D18[2];
 extern s32 D_00465D20[0x100];
 }
 class VC {

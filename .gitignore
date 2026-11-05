@@ -7,3 +7,6 @@
 # memory cards and save backups (RG_SAVES default; docs/SAVES.md): player data
 /saves/
 *.ps2
+
+# native.texrep ctest output (written to the working directory)
+/rg-texrep-test-*/

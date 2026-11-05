@@ -6,7 +6,7 @@
 
 /*rgp*/
 /*rgp*/
-extern u8 D_0049D4E4[0x400];
+extern u8 D_0049D4E4[4];
 extern u8 D_0049D4E8[0x400];
 
 s32 ParamScriptMotionCmd_1afac0(s64 *self, s32 n)

@@ -12,7 +12,7 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern s32 D_004659F0[4];
+extern s32 D_004659F0[2];
 extern s32 D_004659F8[4];
 extern f32 D_0047D278;
 extern f32 D_0047D454;

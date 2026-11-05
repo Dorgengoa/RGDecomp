@@ -8,7 +8,7 @@ s32 CdDiskReadyNewMaybe_12a508(s32);                                  /* extern 
 s32 sceCdGetError_12aa98();                                 /* extern */
 s32 sceCdReadDvdDualInfo_12acd0(s32 *, s32 *);                           /* extern */
 /*rgp*/                     /* extern */
-extern s8 D_00459770[0x10];
+extern s8 D_00459770[8];
 extern s8 D_00459778[0x10];
 extern s32 D_004811B8;
 extern s32 D_004811CC;

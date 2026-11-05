@@ -1,4 +1,4 @@
-/* rg-override: replaces game/src/main/movie/MoviePlayerStart_1d5b50.c sha256 d52a145d82406f381600c578496d1d4bc02497d24b14b2bcd751259e230a29ea
+/* rg-override: replaces game/src/main/movie/MoviePlayerStart_1d5b50.c sha256 4388e3ee33175f855616b7e3241be77e1f530080e8e2a3355c844e9c7bbe57ae
  * why: movie layer replaced by the port's movie service (docs/MOVIE.md "Override list"):
  * no movie threads, no VBLANK/DMAC handlers; builds the GS upload packets that
  * VideoDecDecodeBs_1d29e0 built at the first picture. */
@@ -11,6 +11,7 @@
 extern s32 D_004817E4;
 extern u8 D_004B3210[0x400];
 extern u8 D_004B3330[0x20];
+#define D_004B3330 (*(__typeof__(D_004B3330) *)((u8 *)&D_004B3210 + 0x120))   /* rg-interior */
 
 void MoviePlayerStart_1d5b50(u8 *arg0, s32 arg1)
 {

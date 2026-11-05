@@ -27,7 +27,7 @@ typedef struct {
 /*rgp*/
 extern void *memset(void *, s32, u32);
 extern s32 D_004823D8;
-extern u8 D_004E8E50[0x400];
+extern u8 D_004E8E50[0xF0];
 extern u8 D_004E8F40[0x400];
 
 #define W (*(volatile s32 *)(arg0 + 0x274))

@@ -22,7 +22,7 @@ typedef struct {
 /*rgp*/
 /*rgp*/
 extern u8 D_00472250[0x400];
-extern u8 D_004794D0[0x400];
+extern u8 D_004794D0[0x20];
 extern u8 D_00479650[0x400];
 
 void **RowRangeIterCtor_40f4e0(void **arg0, A1 *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6)

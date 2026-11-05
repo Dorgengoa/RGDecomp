@@ -76,7 +76,7 @@ extern s8 D_004823F0;
 extern s32 D_004823F8;
 extern s32 D_00482410;
 extern s8 D_0048241C;
-extern u8 D_004DB220[0x400];
+extern u8 D_004DB220[0x1B];
 extern u8 D_004DB240[0x400];
 
 void MenuSysInitMaybe_297640(void)

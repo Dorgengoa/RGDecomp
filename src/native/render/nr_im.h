@@ -44,6 +44,10 @@ int nr_im_end_prim(uint32_t pkt);
  * rg_layout_packet): the next nr_im_end_prim record draws its upscaled point sprites without
  * snapping X to native pixels (gpu_set_im_xfree), so no texel column is dropped */
 void nr_im_note_xscaled(void);
+/* ... and scaled in Y (accessibility.ui_scale, docs/WIDESCREEN.md "UI scale"): its point
+ * sprites are not snapped in Y either and point-sampled glyphs are sharp-bilinear in Y too
+ * (nr_draw.hlsl PF_SHARPY), so a 1.25x glyph has even rows at any internal resolution */
+void nr_im_note_yscaled(void);
 
 /* EE: a bare GIF stream (PACKED / REGLIST / IMAGE tags; the native VU1 programs' XGKICK
  * packets, nr_vux.c) decoded into a record like a sub-chain's GIF data.  Returns 1 and the

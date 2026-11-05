@@ -17,14 +17,15 @@ src/main/effect/EffObjStepChannels_1a9b50.cpp	vcall-lane-reorder	VE::v5: (f32, s
 src/main/effect/EffectEntryBuildChr_2dc0f0.cpp	fn-made-extern-c	EffectEntryBuildChr_2dc0f0
 src/main/event/EventCastObjStartStopMaybe_24a2b0.cpp	vcall-lane-reorder	Obj::start: (f32, s32) called as (s32, f32)
 src/main/file/SaveHeaderBuild_3e5520.cpp	virtual-macros-expanded	VS
-src/main/map/MapEntryShow_1e0c70.cpp	vcall-lane-reorder	C_001e0c70::v4: (f32, int, int, int) called as (int, int, int, f32)
+src/main/map/MapEntryShow_1e0c70.cpp	vcall-lane-target	C_001e0c70::v4: called as (f32, int, int, int)
 src/main/map/TaskStepMap_200d70.cpp	virtual-macros-expanded	V4
-src/main/menu/MenuItemModelDraw_2a7090.cpp	vcall-lane-reorder	C432::v15: (f32, int, int, int) called as (int, int, int, f32)
+src/main/menu/MenuItemModelDraw_2a7090.cpp	vcall-lane-target	C432::v15: called as (f32, int, int, int)
 src/main/menu/MenuModelPageOpenState_358840.cpp	virtual-macros-expanded	V1,V16,V4
+src/main/obj/AttackObjBaseSetPosVec_317340.cpp	vcall-lane-target	V317340::v19: called as (f32, f32, f32, struct Vec317340 *)
 src/main/obj/SceneObjApplyWind_1c47e0.cpp	vcall-lane-reorder	Rec1C47E0::v11: (f32, void *) called as (void *, f32)
 src/main/script/ScriptFnPartyReviveAll_3d7930.cpp	vcall-lane-reorder	VE7930::act: (f32, s32) called as (s32, f32)
 src/main/sys/SysMsgPostMaybe_1c3560.cpp	fn-made-extern-c	SysMsgPostMaybe_1c3560
 src/overlays/factory/model/factory_ModelCtor_504520.cpp	fn-made-extern-c	factory_ModelCtor_504520
 src/overlays/factory/model/factory_ModelObjBaseCtor_504590.cpp	fn-made-extern-c	factory_ModelObjBaseCtor_504590
-src/overlays/insect/insect/insect_InsectBattleEffectNodeStep_51e0b0.cpp	vcall-lane-reorder	VE::s15: (f32, int, int, int) called as (int, int, int, f32)
+src/overlays/insect/insect/insect_InsectBattleEffectNodeStep_51e0b0.cpp	vcall-lane-target	VE::s15: called as (f32, int, int, int)
 src/overlays/normal/menu/normal_ShopMenuSellQtyPanelLayout_50ecc0.cpp	fn-made-extern-c	normal_ShopMenuSellQtyPanelLayout_50ecc0

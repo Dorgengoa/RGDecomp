@@ -24,6 +24,10 @@
 #include "libpad.h"
 #include "libsif.h"
 #include "mccard.h"
+#include "mc_import.h"
+#include "mc_menu.h"
+#include "rg_menu.h"
+#include "rg_settings.h"
 #include "mcserv.h"
 #include "padman.h"
 #include "ps2k.h"
@@ -2038,6 +2042,282 @@ static void t_mc_pyimport(void)
     mccard_shutdown();
 }
 
+/* --- 8b. PCSX2 import in the exe, named slots, save metadata (docs/SAVES.md) -------------- *
+ * padmc.ps2card leaves PCSX2 cards made by tools/saves/ps2card.py (an ECC image and a raw
+ * image with BASCUS-97490LV5RG_00 and _03, a folder card with _00); src/native/saves/mc_import.c
+ * must read them, import into a port card through the card model, skip / back up on a second
+ * import, and never change the source card. */
+static uint8_t *read_all(const char *path, size_t *n)
+{
+    *n = 0;
+    FILE *f = fopen(path, "rb");
+    if (!f)
+        return NULL;
+    fseek(f, 0, SEEK_END);
+    long len = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    uint8_t *b = (uint8_t *)malloc(len > 0 ? (size_t)len : 1);
+    if (b && len > 0 && fread(b, 1, (size_t)len, f) != (size_t)len) {
+        free(b);
+        b = NULL;
+    }
+    fclose(f);
+    *n = b ? (size_t)len : 0;
+    return b;
+}
+static void t_mc_import(void)
+{
+    char img[1024], raw[1024], fold[1024], dir[1024], p[1200];
+    snprintf(img, sizeof img, "%s/padmc_import.ps2", g_tmp);
+    snprintf(raw, sizeof raw, "%s/padmc_import_raw.ps2", g_tmp);
+    snprintf(fold, sizeof fold, "%s/padmc_import_folder", g_tmp);
+    size_t n0;
+    uint8_t *before = read_all(img, &n0);
+    CHECK(before && n0 == 8650752);
+    mc_src_card c, r, f;
+    char err[256];
+    CHECK(mc_src_open(img, &c, err, sizeof err) == 0);
+    CHECK(c.kind == 1 && c.ecc == 1 && c.ndirs == 2);
+    CHECK(mc_src_open(raw, &r, err, sizeof err) == 0 && r.kind == 1 && r.ecc == 0 && r.ndirs == 2);
+    CHECK(mc_src_open(fold, &f, err, sizeof err) == 0 && f.kind == 2 && f.ndirs == 1);
+    if (c.ndirs != 2 || r.ndirs != 2 || f.ndirs != 1)
+        return;
+    const mc_src_dir *d = &c.dirs[1];
+    CHECK(!strcmp(c.dirs[0].name, "BASCUS-97490LV5RG_00") && !strcmp(d->name, "BASCUS-97490LV5RG_03"));
+    CHECK(d->nfiles == 3 && !strcmp(d->files[0].name, "icon.sys") && !strcmp(d->files[1].name, "RG.ICO") &&
+          d->files[1].len == 23000 && d->files[2].len == 0x1BC00);
+    CHECK(d->has_time && d->ctime.year == 2006 && d->ctime.month == 5 && d->ctime.day == 4 && d->ctime.sec == 1);
+    CHECK(!strcmp(d->title, "Rogue Galaxy / Slot 3"));
+    for (int k = 0; k < 3 && k < d->nfiles && k < r.dirs[1].nfiles; k++)
+        CHECK(r.dirs[1].files[k].len == d->files[k].len &&
+              !memcmp(r.dirs[1].files[k].data, d->files[k].data, d->files[k].len));
+    CHECK(f.dirs[0].nfiles == 3 && !strcmp(f.dirs[0].files[2].name, "BASCUS-97490LV5RG_00") &&
+          f.dirs[0].files[2].len == 0x1BC00 && !memcmp(f.dirs[0].files[2].data, c.dirs[0].files[2].data, 0x1BC00));
+    /* not cards */
+    mc_src_card x;
+    CHECK(mc_src_open(g_tmp, &x, err, sizeof err) < 0);   /* a folder without _pcsx2_superblock */
+    static uint8_t blank[8388608];
+    memset(blank, 0xFF, sizeof blank);
+    CHECK(mc_src_open_image(blank, sizeof blank, &x, err, sizeof err) < 0 && strstr(err, "not formatted"));
+    CHECK(mc_src_open_image(blank, 1000, &x, err, sizeof err) < 0);
+    CHECK(mc_glob("BASCUS-97490LV5RG_*", "BASCUS-97490LV5RG_03") && !mc_glob("BASCUS-97490LV5RG_?", "BASCUS-97490LV5RG_03"));
+    /* import into a fresh port card */
+    mc_boot("import", 0, MC_SLOT_AUTO, MC_SLOT_EMPTY, 1);
+    tmpdir("import", dir, sizeof dir, 0);
+    CHECK(mc_src_import(&c, 0, 0, 0, err, sizeof err) == 0);
+    CHECK(mc_src_import(&c, 1, 0, 0, err, sizeof err) == 0);
+    CHECK(mc_src_import(&c, 1, 0, 0, err, sizeof err) == 1);          /* there: skipped */
+    CHECK(mccard_backup_count(0, "/BASCUS-97490LV5RG_03") == 0);
+    CHECK(mc_src_import(&r, 1, 0, 1, err, sizeof err) == 0);          /* forced: backed up first */
+    CHECK(mccard_backup_count(0, "/BASCUS-97490LV5RG_03") == 1);
+    snprintf(p, sizeof p, "%s/card1/BASCUS-97490LV5RG_03/RG.ICO", dir);
+    size_t n;
+    uint8_t *ico = read_all(p, &n);
+    CHECK(ico && n == 23000 && !memcmp(ico, c.dirs[1].files[1].data, n));
+    free(ico);
+    mc_dirent e[2];
+    CHECK(mccard_getdir(0, "/BASCUS-97490LV5RG_03", 0, 1, e) == 1);
+    CHECK(e[0].created.year == 2006 && e[0].created.month == 5 && e[0].modified.month == 10 && e[0].attr == 0x8427);
+    /* names and metadata */
+    mc_save_info info[4];
+    CHECK(mccard_list_saves(0, info, 4) == 2 && !info[0].name[0] && info[1].has_meta);
+    CHECK(mccard_set_save_name(0, "BASCUS-97490LV5RG_03", "  Before the boss\t") == 0);
+    char nm[MC_SAVE_NAME_MAX];
+    CHECK(mccard_save_name(0, "/BASCUS-97490LV5RG_03", nm, sizeof nm) == 1 && !strcmp(nm, "Before the boss"));
+    CHECK(mccard_set_save_name(0, "BASCUS-97490LV5RG_00", "First") == 0);
+    CHECK(mccard_set_save_name(0, "BASCUS-97490LV5RG_03", "Boss = done") == 0);   /* replaced */
+    CHECK(mccard_list_saves(0, info, 4) == 2 && !strcmp(info[0].name, "First") && !strcmp(info[1].name, "Boss = done"));
+    CHECK(mccard_set_save_name(0, "BASCUS-97490LV5RG_00", "") == 0);              /* removed */
+    CHECK(mccard_save_name(0, "BASCUS-97490LV5RG_00", nm, sizeof nm) == 0);
+    CHECK(mccard_set_save_name(0, "bad/dir", "x") < 0 && mccard_set_save_name(0, "", "x") < 0);
+    snprintf(p, sizeof p, "%s/card1.txt", dir);
+    uint8_t *txt = read_all(p, &n);
+    CHECK(txt && n && strstr((char *)txt, "    Boss = done | ") && strstr((char *)txt, "Rogue Galaxy / Slot 3"));
+    free(txt);
+    mccard_shutdown();
+    /* the source card is never written */
+    size_t n1;
+    uint8_t *after = read_all(img, &n1);
+    CHECK(after && n1 == n0 && before && !memcmp(before, after, n0));
+    free(before);
+    free(after);
+    /* the summary parser on a known summary */
+    static uint8_t sv[0x350];
+    memset(sv, 0, sizeof sv);
+    sv[4] = 0x25;
+    double pt = 216000.0 + 61 * 60;
+    memcpy(sv + 0x50, &pt, 8);
+    memcpy(sv + 0x64, "Jaster", 6);
+    sv[0x64 + 20] = 9;
+    sv[0x20C] = 2;
+    memcpy(sv + 0x214, "Ch. 2: The Jungle Planet", 24);
+    memcpy(sv + 0x29A, "Juraika: Creekside", 18);
+    mc_save_meta sm;
+    char line[400];
+    CHECK(mc_save_meta_parse(sv, sizeof sv, &sm) == 0 && sm.play_seconds == 3661 && sm.chapter == 2);
+    mc_save_meta_line(&sm, line, sizeof line);
+    CHECK(!strcmp(line, "Ch. 2: The Jungle Planet | Juraika: Creekside | Jaster Lv 9 | 1:01:01"));
+    sv[4] = 0x24;
+    CHECK(mc_save_meta_parse(sv, sizeof sv, &sm) < 0);
+    /* the command line: list a card (exit 0), an import that finds the saves there (exit 1) */
+    mc_cli_opts o;
+    memset(&o, 0, sizeof o);
+    o.import_card = img;
+    o.import_list = 1;
+    FILE *out = tmpfile();
+    CHECK(out && mc_cli_run(&o, dir, 5, out) == 0);
+    o.import_list = 0;
+    CHECK(out && mc_cli_run(&o, dir, 5, out) == 1);
+    if (out)
+        fclose(out);
+    mc_src_free(&c);
+    mc_src_free(&r);
+    mc_src_free(&f);
+}
+
+/* --- 8c. the settings overlay's save manager on the card model (src/native/saves/mc_menu.c,
+ * docs/SAVES.md "Saves in the settings overlay"): the real rg_menu driven by commands over the
+ * PCSX2 cards padmc.ps2card leaves -- picker, import all, replace with one backup, the busy
+ * refusal, the changed-card signal, names; the source card never written. */
+static int mm_sel_has(const rg_menu *m, const char *needle)
+{
+    rg_menu_line l[RG_MENU_MAX_ROWS + 16];
+    int n = rg_menu_render(m, 0, l, RG_MENU_MAX_ROWS + 16);
+    for (int i = 0; i < n; i++)
+        if (l[i].selected && strstr(l[i].text, needle))
+            return 1;
+    return 0;
+}
+static int mm_row(const rg_menu *m)
+{
+    int rows[RG_MENU_MAX_ROWS];
+    int n = rg_menu_rows(m, rows, RG_MENU_MAX_ROWS);
+    return m->cursor < n ? rows[m->cursor] : 0;
+}
+static void t_mc_menu(void)
+{
+    char img[1024], fold[1024], dir[1024], p[1200];
+    snprintf(img, sizeof img, "%s/padmc_import.ps2", g_tmp);
+    snprintf(fold, sizeof fold, "%s/padmc_import_folder", g_tmp);
+    size_t n0;
+    uint8_t *before = read_all(img, &n0);
+    CHECK(before && n0 == 8650752);
+    mc_boot("menu", 0, MC_SLOT_AUTO, MC_SLOT_AUTO, 1);
+    tmpdir("menu", dir, sizeof dir, 0);
+    rg_settings *s = rg_settings_create();
+    CHECK(rg_settings_register_core(s) == 0);
+    static rg_menu m;
+    rg_menu_init(&m, s);
+    rg_menu_set_saves(&m, mc_menu_ops());
+    rg_menu_command(&m, RG_MENU_TOGGLE, 0);
+    for (int i = 0; i < RG_MENU_MAX_PAGES && strcmp(m.pages[m.page], "saves"); i++)
+        rg_menu_command(&m, RG_MENU_PAGE_NEXT, 0);
+    for (int i = 0; i < 8 && mm_row(&m) != -1 - RG_ROW_SAVES_IMPORT; i++)
+        rg_menu_command(&m, RG_MENU_DOWN, 0);
+    CHECK(mm_row(&m) == -1 - RG_ROW_SAVES_IMPORT);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(m.view == RG_MENU_VIEW_IMPORT);
+    /* the picker, started in $RG_IMPORT_DIR (the test dir): pick the ECC image */
+#ifdef _WIN32
+    _putenv_s("RG_IMPORT_DIR", g_tmp);
+#else
+    setenv("RG_IMPORT_DIR", g_tmp, 1);
+#endif
+    rg_menu_command(&m, RG_MENU_DOWN, 0);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(m.view == RG_MENU_VIEW_BROWSE && m.br_n > 2);
+    int found = 0;
+    for (int i = 0; i < m.br_n; i++) {
+        if (!strcmp(m.br[i].name, "padmc_import.ps2"))
+            found |= m.br[i].kind == RG_FILE_CARD;
+        if (!strcmp(m.br[i].name, "padmc_import_folder"))
+            found |= (m.br[i].kind == RG_FILE_FOLDER_CARD) << 1;
+    }
+    CHECK(found == 3);
+    for (int i = 0; i < m.br_n && !mm_sel_has(&m, "padmc_import.ps2"); i++)
+        rg_menu_command(&m, RG_MENU_DOWN, 0);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(m.view == RG_MENU_VIEW_IMPORT && m.imp_n == 2);
+    CHECK(m.imp_n == 2 && strstr(m.imp[1].title, "Slot 3") && m.imp[1].game && !m.imp[1].exists);
+    /* a card file the game is writing: refused, nothing imported */
+    int fd = mccard_open(0, "/busy", MC_O_MKDIR);
+    CHECK(fd == 0);
+    fd = mccard_open(0, "/busy/f", MC_O_CREAT | MC_O_WRONLY);
+    CHECK(fd >= 0);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(strstr(m.status, "using a memory card") != NULL);
+    CHECK(mccard_close(fd) == 0);
+    CHECK(mccard_delete(0, "/busy/f") == 0 && mccard_delete(0, "/busy") == 0);
+    int t, fr, fm;
+    mccard_getinfo(0, &t, &fr, &fm);   /* clears the boot-time "changed" */
+    CHECK(mccard_getinfo(0, &t, &fr, &fm) == MC_RES_SUCCEED);
+    /* import every game save */
+    for (int i = 0; i < 8 && !mm_sel_has(&m, "Import every"); i++)
+        rg_menu_command(&m, RG_MENU_DOWN, 0);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(strstr(m.status, "Imported 2 saves into card 1") != NULL);
+    CHECK(mccard_list_saves(0, NULL, 0) == 2);
+    CHECK(mccard_getinfo(0, &t, &fr, &fm) == MC_RES_CHANGEDCARD);   /* the game rescans */
+    /* replace _03: asks, then one backup */
+    for (int i = 0; i < 8 && !mm_sel_has(&m, "BASCUS-97490LV5RG_03"); i++)
+        rg_menu_command(&m, RG_MENU_UP, 0);
+    CHECK(mm_sel_has(&m, "[card 1 has one"));
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(m.imp_confirm[0] && mccard_backup_count(0, "/BASCUS-97490LV5RG_03") == 0);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(!m.imp_confirm[0] && strstr(m.status, "replaced on card 1"));
+    CHECK(mccard_backup_count(0, "/BASCUS-97490LV5RG_03") == 1);
+    /* a PCSX2 folder card by typed path, into card 2 */
+    rg_menu_command(&m, RG_MENU_UP, 0);
+    while (m.sub != 2)
+        rg_menu_command(&m, RG_MENU_UP, 0);
+    rg_menu_command(&m, RG_MENU_RIGHT, 0);
+    CHECK(m.sv_card == 1);
+    while (m.sub != 0)
+        rg_menu_command(&m, RG_MENU_UP, 0);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(rg_menu_text_editing(&m));
+    rg_menu_text_key(&m, RG_TEXT_HOME);
+    for (int i = 0; i < 1100; i++)
+        rg_menu_text_key(&m, RG_TEXT_DELETE);
+    rg_menu_text_input(&m, fold);
+    rg_menu_text_key(&m, RG_TEXT_COMMIT);
+    CHECK(m.imp_n == 1 && m.sub == 3);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(strstr(m.status, "imported into card 2") != NULL);
+    CHECK(mccard_list_saves(1, NULL, 0) == 1);
+    rg_menu_command(&m, RG_MENU_BACK, 0);
+    /* names */
+    rg_menu_command(&m, RG_MENU_UP, 0);
+    CHECK(mm_row(&m) == -1 - RG_ROW_SAVES_MANAGE);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    CHECK(m.view == RG_MENU_VIEW_SAVES && m.sv_card == 1 && m.sv_n == 1);
+    rg_menu_command(&m, RG_MENU_LEFT, 0);
+    CHECK(m.sv_card == 0 && m.sv_n == 2 && m.sv[1].meta[0]);
+    rg_menu_command(&m, RG_MENU_DOWN, 0);
+    rg_menu_command(&m, RG_MENU_DOWN, 0);
+    rg_menu_command(&m, RG_MENU_ACCEPT, 0);
+    rg_menu_text_input(&m, "Before the boss");
+    rg_menu_text_key(&m, RG_TEXT_COMMIT);
+    char nm[MC_SAVE_NAME_MAX];
+    CHECK(mccard_save_name(0, "BASCUS-97490LV5RG_03", nm, sizeof nm) == 1 && !strcmp(nm, "Before the boss"));
+    CHECK(mm_sel_has(&m, "\"Before the boss\""));
+    snprintf(p, sizeof p, "%s/card1.names", dir);
+    size_t n;
+    uint8_t *names = read_all(p, &n);
+    CHECK(names && strstr((char *)names, "BASCUS-97490LV5RG_03 = Before the boss"));
+    free(names);
+    rg_menu_command(&m, RG_MENU_TOGGLE, 0);
+    rg_settings_destroy(s);
+    mccard_shutdown();
+    /* the source card is never written */
+    size_t n1;
+    uint8_t *after = read_all(img, &n1);
+    CHECK(after && n1 == n0 && before && !memcmp(before, after, n0));
+    free(before);
+    free(after);
+}
+
 /* --- 9. the game's own save state machines on this card model ----------------------------- *
  * McGetInfoStep / McSaveCreateStep / McSaveStep / McSaveDirScan + McSaveSlotScanStep /
  * McLoadStep / McFormatStep and the result mapping McSetErrorResult, compiled from game/
@@ -2353,6 +2633,8 @@ static const struct {
     {"mc_crash_write", t_mc_crash_write},
     {"mc_crash_read", t_mc_crash_read},
     {"mc_pyimport", t_mc_pyimport},
+    {"mc_import", t_mc_import},
+    {"mc_menu", t_mc_menu},
 #ifdef RG_PADMC_GAME_MC
     {"mc_game", t_mc_game},
 #endif
@@ -2377,7 +2659,8 @@ int main(int argc, char **argv)
         int want = argc < 2 || strcmp(argv[1], tests[i].name) == 0;
         int want_ctl = argc >= 2 && strcmp(argv[1], ctl) == 0;
         if (argc < 2 && (!strcmp(tests[i].name, "mc_persist_write") || !strcmp(tests[i].name, "mc_persist_read") ||
-                         !strncmp(tests[i].name, "mc_crash_", 9) || !strcmp(tests[i].name, "mc_pyimport")))
+                         !strncmp(tests[i].name, "mc_crash_", 9) || !strcmp(tests[i].name, "mc_pyimport") ||
+                         !strcmp(tests[i].name, "mc_import")))
             want = 0; /* the two-process pairs run only by name */
         if (!want && !want_ctl)
             continue;

@@ -9,17 +9,17 @@ extern s32 D_00465A78[4],D_00465AE8[4],D_00465B00[4];
 
 /*rgp*/
 extern s32 D_004659F0[4];
-extern s32 D_00465A00[4];
+extern s32 D_00465A00[2];
 extern s32 D_00465A08[4];
 extern s32 D_00465A20[4];
-extern s32 D_00465A30[4];
+extern s32 D_00465A30[2];
 extern s32 D_00465A38[4];
 extern s32 D_00465A48[4];
 extern s32 D_00465A60[4];
 extern s32 D_00465AB8[4];
 extern s32 D_00465AD0[4];
 extern s32 D_00465B18[4];
-extern s32 D_00465B28[4];
+extern s32 D_00465B28[2];
 extern s32 D_00465B30[4];
 
 s32 InvIdGetMinorIndex_3d5440(s32 arg0)

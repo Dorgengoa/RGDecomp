@@ -149,7 +149,10 @@ endif()
 # Windows).  Without it nothing defines RG_HAVE_GPU and rg-game gets the headless renderer
 # (runtime.c gpu_start: the native frame-chain walker into the software GS model; no
 # window-quality output).  docs/LINUX.md "Headless renderer" / "A Linux renderer backend".
-if(NOT TARGET rg_gpu)
+get_property(_rg_gl_nd GLOBAL PROPERTY RG_NATIVE_DEVICE)
+if(NOT TARGET rg_gpu AND _rg_gl_nd AND RG_NATIVE_ONLY)
+  message(STATUS "rg-game: native device on the Vulkan backend (docs/LINUX.md \"Windowed build\")")
+elseif(NOT TARGET rg_gpu)
   message(STATUS "rg-game: no GPU backend for ${CMAKE_SYSTEM_NAME}: headless renderer "
                  "(frame-chain walker -> software GS; docs/LINUX.md)")
 endif()

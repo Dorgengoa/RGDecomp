@@ -962,6 +962,8 @@ def cmd_patch(a):
         s.add_items(a.add_item)
     for sid in a.section_insects:
         s.add_section_insects(sid, strong=a.strong_insects, limit=a.insect_limit)
+    if a.money is not None:
+        s.set_money(a.money)
     for spec in a.add_insect:
         f, _, nm = spec.partition(":")
         s.add_insect(parse_int(f), name=nm or None, strong=a.strong_insects)
@@ -1036,12 +1038,30 @@ RECIPES = {
                                "--var", "5=1", "--var", "6=1", "--var", "7=4"]),
     "insect_final_s": ("save2", ["--section", "13020", "--spawn", INSECT_DESK, "--no-help", "--section-insects", "115",
                                  "--strong-insects", "--var", "5=1", "--var", "6=1", "--var", "7=4"]),
+    # optgate lane (2026-10-31, coverage "ranks above E" / "rank-menu entry"): the final of
+    # Rank D (var 5 = 2 unlocked, var 6 = 2 entered, battle var 7 = 4 -> reward key 2) and of
+    # Rank S (key 6, the only row with three reward items), and the receptionist's entry path
+    # (var 6 = 0: "Would you like to enter the tournament?" -> rank menu -> fee var 29; 5,000 z:
+    # the section leaves 100 z, under Rank E's 400 z fee)
+    "insect_final_d_s": ("save2", ["--section", "13020", "--spawn", INSECT_DESK, "--no-help", "--section-insects", "115",
+                                   "--strong-insects", "--var", "5=2", "--var", "6=2", "--var", "7=4"]),
+    "insect_final_s6_s": ("save2", ["--section", "13020", "--spawn", INSECT_DESK, "--no-help", "--section-insects", "115",
+                                    "--strong-insects", "--var", "5=6", "--var", "6=6", "--var", "7=4"]),
+    "insect_entry_s": ("save2", ["--section", "13020", "--spawn", INSECT_DESK, "--no-help", "--section-insects", "115",
+                                 "--strong-insects", "--var", "5=1", "--var", "6=0", "--var", "7=0",
+                                 "--money", "5000"]),
     "insectron": ("save2", ["--var", "5=3", "--insect-team", "0:ALPHA:0,1,2,3,4",
                             "--insect-team", "1:BRAVO:5,6,7,8,9"]),
     # insectrun.py: the same two teams with their formation fields, so a Watch Battle is
     # played to the end (rematch prompt)
     "insectron_play": ("save2", ["--var", "5=3", "--insect-formation", "--insect-team", "0:ALPHA:0,1,2,3,4",
                                  "--insect-team", "1:BRAVO:5,6,7,8,9"]),
+    # insecthash lane (2026-11-01): save2 + 3 each of the battle stat items (item_param cat 5:
+    # Strength Star 16602, Guardian Sphere 16603, Attack Seal 16606, Guard Seal 16607), so
+    # tools/trace/goldens/battle_buff.input.txt can use them in battle 2 and show the btl_st01
+    # stat arrows (docs/ACCESSIBILITY.md "Stat arrows in battle")
+    "save2_buff": ("save2", ["--add-item", "16602:3", "--add-item", "16603:3", "--add-item", "16606:3",
+                             "--add-item", "16607:3"]),
 }
 
 
@@ -1091,6 +1111,7 @@ def main(argv=None) -> int:
     p.add_argument("--clear-flag", action="append", default=[])
     p.add_argument("--var", action="append", default=[], help="I=V")
     p.add_argument("--chapter", type=int)
+    p.add_argument("--money", type=int, help="party money (after --section)")
     p.add_argument("--summary-var5", type=int, help="only the summary's copy of var 5 (title INSECTRON row)")
     p.add_argument("--no-summary-sync", action="store_true")
     p.add_argument("--location", type=lambda x: int(x, 0),

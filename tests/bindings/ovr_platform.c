@@ -178,7 +178,13 @@ static void guest(void *arg)
 }
 
 /* ---- RegisterGlobalObject + DestroyGlobalChain ---- */
+#if defined(_WIN64)
+extern struct { void * RG_P32 head; s32 pad[3]; } D_004853D0; /* x64: game words (docs/X64-PLAN.md 0.8) */
+#else
+#line 181
 extern struct { void *head; s32 pad[3]; } D_004853D0;
+#endif
+#line 182
 static int dtor_log[4], dtor_n, dtor_flag;
 
 static void dtor_rec(void *obj, s32 flag)
@@ -235,7 +241,13 @@ int bt_ovr_platform(void)
 
     /* RegisterGlobalObject pushes {next, dtor, obj} at D_004853D0 */
     {
+#if defined(_WIN64)
+        static struct { void * RG_P32 next; s32 b, a; } n1, n2;
+#else
+#line 238
         static struct { void *next; s32 b, a; } n1, n2;
+#endif
+#line 239
         static s32 o1 = 11, o2 = 22;
         D_004853D0.head = 0;
         BT_EQ(f, RegisterGlobalObject_100dc0((s32)(unsigned long)&o1, (s32)(unsigned long)dtor_rec, &n1),
@@ -315,7 +327,13 @@ int bt_ovr_platform(void)
         static u32 sbuf[4];
         static u8 ios[0x48];
         static u8 ios2[0x48];
+#if defined(_WIN64)
+        static void * RG_P32 os[1], * RG_P32 os2[1], * RG_P32 os_null[1];
+#else
+#line 318
         static void *os[1], *os2[1], *os_null[1];
+#endif
+#line 319
         u8 sentry[8];
         vtbl[6] = (u32)(unsigned long)bt_pubsync; /* +0x18 */
         sbuf[0] = (u32)(unsigned long)vtbl;

@@ -112,6 +112,12 @@ typedef struct nr_frame {
 const nr_frame *nr_frame_last(void);
 /* DrawListFrameBegin_1425d0 (override): a draw context starts a frame */
 void nr_frame_begin(uint32_t ctx);
+/* EE, between fields (rg_game_main.c aspect_apply): the horizontal squeeze of the 3D frame
+ * (rg_hud_xscale_world() while the game draws the anamorphic WIDE frame, else 1).  Records
+ * keep it; at an internal scale > 1 the line strands' x offsets and x thickness are narrowed
+ * by it so the outlines are as thick across as down once the frame is stretched to the canvas
+ * (docs/NATIVE-RENDER.md "Line strands", "Outlines on a wide canvas") */
+void nr_set_frame_xscale(float xs);
 
 /* ---- runtime wiring --------------------------------------------------- */
 struct vif_state;

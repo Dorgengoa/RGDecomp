@@ -14,10 +14,10 @@
 /*rgp*/
 extern s32 strcmp(void *, void *);
 extern char *strcpy(void *, void *);
-extern u8 D_0045EE48[0x400];
-extern u8 D_0045EE50[0x400];
-extern u8 D_0045EE58[0x400];
-extern u8 D_0045EE60[0x400];
+extern u8 D_0045EE48[8];
+extern u8 D_0045EE50[8];
+extern u8 D_0045EE58[8];
+extern u8 D_0045EE60[8];
 extern u8 D_0045EE68[0x400];
 
 s32 EvCmdCharaLinkedPlayMotion_259f70(s64 *arg0, s32 arg1)

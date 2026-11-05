@@ -14,6 +14,7 @@
 /*rgp*/
 extern u8 D_00450D30[0x400];
 extern u8 D_00450E30[0x400];
+#define D_00450E30 (*(__typeof__(D_00450E30) *)((u8 *)&D_00450D30 + 0x100))   /* rg-interior */
 
 s32 MenuItemUseTargetReserveFaceSprites_2a2230(s32 *arg0, s32 arg1)
 {

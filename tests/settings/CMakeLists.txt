@@ -17,7 +17,8 @@ set(RG_SETTINGS_TESTS
   registry_types ini_parse ini_roundtrip presets cmdline change_tracking
   display_trial save_load core_defs menu_keyboard menu_gamepad
   menu_rebind_keyboard menu_rebind_gamepad menu_text_entry menu_flags
-  menu_device_guard_keyboard menu_device_guard_gamepad menu_wrap screenshot_dir_live fps_counter)
+  menu_device_guard_keyboard menu_device_guard_gamepad menu_wrap screenshot_dir_live fps_counter
+  display_modes menu_saves)
 foreach(t IN LISTS RG_SETTINGS_TESTS)
   add_test(NAME settings.${t} COMMAND rg-settings-tests ${t} ${_out})
   set_tests_properties(settings.${t} PROPERTIES TIMEOUT 60 LABELS settings)
@@ -111,5 +112,29 @@ if(RG_PYTHON)
             --exe $<TARGET_FILE:rg-prompts-tests> --data ${CMAKE_SOURCE_DIR}/data
             --out ${_out}/prompts_atlas)
   set_tests_properties(prompts.vs_gaiji_py PROPERTIES TIMEOUT 600 LABELS "prompts;settings"
+                       SKIP_RETURN_CODE 77)
+endif()
+
+# Upload-time texture patches: prompts baked into game textures, colour-blind markers
+# (src/settings/rg_texpatch.h, docs/ACCESSIBILITY.md; lane p6a11y): ctest -L prompts
+add_executable(rg-texpatch-tests texpatch_tests.c)
+target_link_libraries(rg-texpatch-tests PRIVATE rg_settings rg_flags)
+if(WIN32)
+  target_compile_definitions(rg-texpatch-tests PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
+if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
+  target_compile_options(rg-texpatch-tests PRIVATE -Wall -Wextra)
+endif()
+foreach(t sites marks switch pad_button)
+  add_test(NAME prompts.texpatch_${t} COMMAND rg-texpatch-tests ${t})
+  set_tests_properties(prompts.texpatch_${t} PROPERTIES TIMEOUT 60 LABELS "prompts;settings")
+endforeach()
+# the generated target table is current and every target builds as specified on the real
+# textures (skipped without data/)
+if(RG_PYTHON)
+  add_test(NAME prompts.texpatch_real
+    COMMAND ${RG_PYTHON} -I ${CMAKE_SOURCE_DIR}/tools/p6/texpatch_gen.py --verify
+            --exe $<TARGET_FILE:rg-texpatch-tests> --out ${CMAKE_BINARY_DIR}/texpatch_real)
+  set_tests_properties(prompts.texpatch_real PROPERTIES TIMEOUT 900 LABELS "prompts;settings"
                        SKIP_RETURN_CODE 77)
 endif()

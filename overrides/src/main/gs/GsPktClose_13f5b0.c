@@ -7,6 +7,8 @@ extern s32 MemStackAllocQw_14d950(void *stack, s32 nqw);
    2D packet is handed to the layout transform; a no-op unless a wide canvas is active */
 extern int rg_layout_packet(void *pkt, const void *caller);
 extern void nr_im_note_xscaled(void); /* src/native/render/nr_im.c */
+extern void nr_im_note_yscaled(void);
+extern float rg_layout_ui_scale(void); /* accessibility.ui_scale: Y scaled too */
 
 /* Packet layout used here (byte offsets; pointers are 32-bit host pointers):
      +0x00 memory stack   +0xE8 "not open" flag   +0xEC packet base
@@ -39,8 +41,11 @@ void GsPktClose_13f5b0(void *pkt)
         *(u32 *)PK_PTR(pkt, 0x104) = (u32)ndma | 0x10000000u; /* DMAtag cnt, QWC */
         *(u32 *)PK_PTR(pkt, 0x108) = (u32)nvif | 0x50000000u; /* VIF DIRECT, size */
         *(u32 *)PK_PTR(pkt, 0x100) = (u32)ngif | 0x8000u;     /* GIFtag NLOOP|EOP */
-        if (rg_layout_packet(pkt, __builtin_return_address(0)))
+        if (rg_layout_packet(pkt, __builtin_return_address(0))) {
             nr_im_note_xscaled(); /* squeezed 2D: upscaled point sprites unsnapped in X */
+            if (rg_layout_ui_scale() != 1.0f)
+                nr_im_note_yscaled(); /* UI scale: and in Y (sharp rows, nr_draw.hlsl PF_SHARPY) */
+        }
     } else {
         PK_PTR(pkt, 0xF4) = base; /* nothing drawn: rewind */
     }

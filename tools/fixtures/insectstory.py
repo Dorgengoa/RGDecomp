@@ -425,8 +425,14 @@ def cmd_run(a) -> int:
         return finish(out, res, drv, boot, t0, tsv)
     phase("talk", f, f"INSECT from {next(r[0] for r in rows if r[1] == 5)}; vars {m and m['vars']}")
     res["vars_before"] = m and m["vars"]
-    rc, log, state, m, d = drv.seg(state, f, TEAM, TEAM_LEN, "team", shots=(TEAM_LEN,))
-    f += TEAM_LEN
+    # --team-delay: ranks whose final has an opponent intro ("Well, you're up against me next."
+    # .. "Here we go!" .. Final Match; Rank D: the auto-select prompt ~650 fields later than
+    # Rank E's): CROSS through the intro, then the same team keys that much later
+    dl = a.team_delay
+    intro = [(320, "CROSS"), (440, "CROSS")] if not a.intro_until else         [(k, "CROSS") for k in range(50, a.intro_until, 120)]
+    team = TEAM if not dl else intro + [(r + dl, b) for r, b in TEAM]
+    rc, log, state, m, d = drv.seg(state, f, team, TEAM_LEN + dl, "team", shots=(TEAM_LEN + dl,))
+    f += TEAM_LEN + dl
     phase("team", f, f"board {board_text(m) if m and m['battle'] else '-'}")
     return battle(a, exe, out, res, drv, boot, state, f, m, ctl, t0, tsv, phase)
 
@@ -502,6 +508,9 @@ def battle(a, exe, out, res, drv, boot, state, f, m, ctl, t0, tsv, phase):
                 drv.cur_piece = None
         else:
             idle += 1
+            if idle > a.max_idle:
+                verdict = f"stuck (page {m['page']} state {m['state']} step {m['step']})"
+                break
             keys, n, act = ([(10, "CROSS")] if idle % 4 == 0 else []), 120, f"wait (page {m['page']} state {m['state']} step {m['step']})"
         if keys or "wait" not in act:
             idle = 0
@@ -511,6 +520,10 @@ def battle(a, exe, out, res, drv, boot, state, f, m, ctl, t0, tsv, phase):
         rows = fac.status_rows(log)
         if "TIMEOUT" in log:
             verdict = "hang"
+        elif "input script too long" in log:
+            # the input script is limited to 32,636 VBlanks from power-on (src/host/host_script.c);
+            # a battle still running there is stuck, not crashed (the Rank D victory-pose hang)
+            verdict = f"stuck at the input-script limit (state {m and m.get('state')} step {m and m.get('step')})"
         elif fxlib.crash_report(log, exe) or rc != 0 or nstate is None:
             verdict, res["crash"] = "crash", fxlib.crash_report(log, exe)
         elif rows and rows[-1][1] != 5:
@@ -518,6 +531,14 @@ def battle(a, exe, out, res, drv, boot, state, f, m, ctl, t0, tsv, phase):
             state, m = nstate, nm
             break
         state, m = nstate, nm
+        vb = res.get("vars_before") or {}
+        if m and m.get("vars") and vb and m["vars"].get(7, 0) > vb.get(7, 0):
+            # a battle before the final won: the tournament goes on to the next one in the same
+            # INSECT session (battle var 7 + 1, no reward); stop here
+            verdict = "won (not the final)"
+            res["vars_after"] = m["vars"]
+            phase("battle", f, f"battle {vb.get(7, 0) + 1} won: vars {m['vars']}")
+            break
     res["turns"] = turns
     if verdict is None:
         # after: results, announcer, the warp back.  A press in the field would talk to the
@@ -550,6 +571,11 @@ def battle(a, exe, out, res, drv, boot, state, f, m, ctl, t0, tsv, phase):
         if verdict is None:
             if va.get(115, 0) > 0 and va.get(116, 0) > 0:
                 verdict = "won"
+                res["reward_expected"] = expected_reward(vb)
+                if res["reward_expected"] and (va.get(115), va.get(116)) != res["reward_expected"]:
+                    verdict = f"won, wrong reward {va.get(115)} x{va.get(116)} (table {res['reward_expected']})"
+            elif vb.get(7, 0) < 4 and va.get(7) == vb.get(7, 0) + 1 and va.get(6) == vb.get(6):
+                verdict = "won (not the final)"   # a battle before the final: next battle, no reward
             elif va.get(7) == 0 and va.get(5) == vb.get(5):
                 verdict = "lost"
             else:
@@ -558,6 +584,25 @@ def battle(a, exe, out, res, drv, boot, state, f, m, ctl, t0, tsv, phase):
     res["verdict"] = verdict
     res["field"] = f
     return finish(out, res, drv, boot, t0, tsv)
+
+
+def expected_reward(vb: dict):
+    """(item, count) retail's table gives for the entered rank (var 6) on a first clear (var 6 >=
+    var 5: pair 0; InsectBattleMatchUpdateMaybe_319800): insectron_param_EN #100 {rank key,
+    3 x (item, count)}; None when the table cannot be read."""
+    try:
+        import cfgdump
+        import gamedata
+        pac = gamedata.Archive().get("rc/param/purpose/insectron_2_en.pac")
+        b = next(pac[o:o + n] for nm, o, n in gamedata.pac_members(pac) if nm.lower() == "insectron_param_en.cfg.bin")
+        rows = [ar for cid, ar in cfgdump.parse(b) if cid == 100]
+    except Exception:   # noqa: BLE001 (diagnostic only)
+        return None
+    rank = vb.get(6)
+    row = next((r for r in rows if r and r[0] == rank), None)
+    if row is None or vb.get(6, 0) < vb.get(5, 0):
+        return None
+    return (row[1], row[2])
 
 
 def finish(out, res, drv, boot, t0, tsv):
@@ -597,6 +642,13 @@ def main(argv=None) -> int:
     r.add_argument("--card", default=CARD)
     r.add_argument("--out")
     r.add_argument("--max-fields", type=int, default=60000)
+    r.add_argument("--team-delay", type=int, default=0,
+                   help="fields the team prompts come later than Rank E's (opponent intro; Rank D final: 650)")
+    r.add_argument("--intro-until", type=int, default=0,
+                   help="with --team-delay: CROSS every 120 fields from 50 up to this (a long intro, e.g. the "
+                        "first round's opening ceremony after the rank menu: --team-delay 1500 --intro-until 1250)")
+    r.add_argument("--max-idle", type=int, default=40,
+                   help="give up after this many decisions without a battle command page (verdict 'stuck')")
     r.add_argument("--battle-state", help="debug: start the battle loop at this team-phase state (no boot route)")
     r.set_defaults(fn=cmd_run)
     p = sp.add_parser("replay")

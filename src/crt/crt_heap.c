@@ -34,7 +34,7 @@
  * Single host thread (the EE scheduler is cooperative): no locking. */
 #include "crt.h"
 /* x64 (docs/X64-PLAN.md): size parameters from the game are 32-bit values */
-#if defined(_WIN64)
+#if defined(__x86_64__)
 #define RG_GSIZE(x) ((x) = (size_t)(uint32_t)(x))
 #else
 #define RG_GSIZE(x) ((void)0)

@@ -7,16 +7,16 @@
 typedef rg_u128 u128;
 
 extern s32 D_004BD980[8];
-extern s32 D_004BD9A0[8];
-extern s32 D_004BD9A4[8];
-extern s32 D_004BD9B0[8];
-extern s32 D_004BD9B4[8];
-extern s32 D_004BD9B8[8];
+extern s32 D_004BD9A0[1];
+extern s32 D_004BD9A4[3];
+extern s32 D_004BD9B0[1];
+extern s32 D_004BD9B4[1];
+extern s32 D_004BD9B8[2];
 extern u128 D_004BD9C0;
 extern u128 D_004BD9D0;
-extern s32 D_004BD9E0[8];
+extern s32 D_004BD9E0[1];
 extern s32 D_004BD9E4[8];
-extern s32 D_004BDA20[8];
+extern s32 D_004BDA20[1];
 extern s32 D_004BDA24[8];
 
 void EventStateResetMaybe_26b780(void)

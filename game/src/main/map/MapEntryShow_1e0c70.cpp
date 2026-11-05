@@ -11,7 +11,7 @@ struct C_001e0c70 : public B_001e0c70 {
     
     
     
-    void v4(f32 a0, int rgp_fwd2 = 0, int rgp_fwd3 = 0, int rgp_fwd4 = 0) { VCM(void, (void *, int, int, int, f32), 0x18, rgp_fwd2, rgp_fwd3, rgp_fwd4, a0); }
+    void v4(f32 a0, int rgp_fwd2 = 0, int rgp_fwd3 = 0, int rgp_fwd4 = 0) { VCM(void, (void *, f32, int, int, int), 0x18, a0, rgp_fwd2, rgp_fwd3, rgp_fwd4); }
     
     
     void v7() { VCM0(void, 0x24); }

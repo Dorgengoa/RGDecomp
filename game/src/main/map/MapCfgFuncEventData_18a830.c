@@ -22,11 +22,11 @@ char *strcpy(char *, const char *);
 u32 strlen(const char *);
 char *strncpy(char *, const char *, u32);
 
-extern char D_00459C70[0x400];
-extern char D_00459C78[0x400];
-extern char D_00459C80[0x400];
-extern char D_00459C88[0x400];
-extern char D_00459C90[0x400];
+extern char D_00459C70[8];
+extern char D_00459C78[8];
+extern char D_00459C80[8];
+extern char D_00459C88[8];
+extern char D_00459C90[0x10];
 extern char D_00459CA0[0x400];
 extern Big *D_004812DC;
 

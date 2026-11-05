@@ -9,7 +9,7 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_00461D28[0x400];
+extern u8 D_00461D28[0x10];
 extern u8 D_00461D38[0x400];
 
 void GlareWorkTexRegister_2f6be0(void)

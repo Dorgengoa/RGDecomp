@@ -25,11 +25,11 @@ extern Sub *DataTableCtor_421ee0(Sub *);
 extern Sub *DataTableCtor_422320(Sub *);
 extern Sub *DataTableCtor_422760(Sub *);
 extern Sub *DataTableCtor_423460(Sub *);
-extern s32 D_00465658[0x100];
-extern s32 D_00465660[0x100];
-extern s32 D_00465668[0x100];
-extern s32 D_00465670[0x100];
-extern s32 D_00465678[0x100];
+extern s32 D_00465658[2];
+extern s32 D_00465660[2];
+extern s32 D_00465668[2];
+extern s32 D_00465670[2];
+extern s32 D_00465678[2];
 extern s32 D_00465680[0x100];
 }
 

@@ -83,6 +83,29 @@ target_compile_options(rg_game_flags INTERFACE
   -fno-strict-float-cast-overflow -fwrapv-pointer -fno-finite-loops
   "$<$<COMPILE_LANGUAGE:C>:${RG_GAME_C_FLAGS}>"
   "$<$<COMPILE_LANGUAGE:CXX>:-Wno-c++11-narrowing;-fno-strict-return>")
+# Non-Windows C++ game sources: -fms-extensions, which the MSVC target has on by default.  The
+# decomp's C++ casts a pointer to a narrower integer (`(short)CharaGetId_214a80(sub)`): an error
+# in standard C++, a Microsoft extension (truncation, as on Windows) with it.  docs/LINUX.md.
+if(NOT WIN32)
+  target_compile_options(rg_game_flags INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:-fms-extensions>")
+  # -freg-struct-return: 1/2/4/8-byte structs come back in EAX(:EDX) as on the MSVC target (i386
+  # SysV returns every struct through a hidden pointer the callee pops).  Game declarations of one
+  # function disagree on struct-vs-scalar returns (tools/linux/sretscan.py); with the MSVC rule
+  # the Linux exe behaves as the Windows one.  Larger structs: tools/linux/sretfix.py overrides.
+  # docs/LINUX.md "Struct returns".
+  # -malign-double: 64-bit members (u64 / s64 / f64) 8-aligned inside structs as on the MSVC
+  # target (and the EE); the i386 SysV rule (4) moved game struct fields: GIF packets the
+  # game builds came out short, the GS input stalled ("sceGsSyncPath: time out"), no movie
+  # frames, garbage title (docs/LINUX.md "64-bit member alignment"; tools/linux/layoutdiff.py:
+  # the port headers shared with the game keep their sizes and offsets).
+  # x64 Linux: neither applies (x86-64 SysV aligns 64-bit members to 8 already; struct returns
+  # follow the x86-64 rules, docs/LINUX.md "x64 Linux"; sqrtf comes from port/x64.h)
+  if(RG_ARCH STREQUAL "i686")
+    target_compile_options(rg_game_flags INTERFACE -freg-struct-return -malign-double)
+    # float sqrt rounded to nearest as the Windows exe's CRT sqrtf (port/sqrtf_map.h)
+    target_compile_options(rg_game_flags INTERFACE "SHELL:-include port/sqrtf_map.h")
+  endif()
+endif()
 
 # RG_GAME_OPT: the optimisation level of the game objects (game/, overrides/,
 # missing/: the rg_game_<image> sources).  docs/UB-AUDIT.md.  CMake keeps only
@@ -154,3 +177,23 @@ foreach(img ${RG_GAME_IMAGES})
   target_link_libraries(rg_game_${img} PRIVATE rg_game_flags)
   add_dependencies(rg_game_objs rg_game_${img})
 endforeach()
+
+# RG_EE_FPU_EXACT=ON: parity build with the exact EE float model (docs/TEST-FIXTURES.md
+# "Retail parity", "Exact EE float build").  Every game object (rg_game_<image>) and the
+# retail libm (src/crt/crt_eelibm.c of rg_crt) is compiled through
+# tools/parity/eediv/eediv_cc.py: float add / sub / div become the EE adder (dropped bits)
+# and PCSX2's round-to-nearest DIV.S.  i686 only; NEVER the shipping default (PLAN.md D9).
+option(RG_EE_FPU_EXACT "parity build: exact EE float add/sub/div in game objects + libm (tools/parity/eediv)" OFF)
+if(RG_EE_FPU_EXACT)
+  if(NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+    message(FATAL_ERROR "RG_EE_FPU_EXACT: i686 builds only (eediv_cc.py compiles with -m32)")
+  endif()
+  # (also read by src/crt/CMakeLists.txt, added after this file, for crt_eelibm.c)
+  set(RG_EE_FPU_EXACT_LAUNCHER
+    "${RG_PYTHON};${CMAKE_SOURCE_DIR}/tools/parity/eediv/eediv_cc.py;--cache=${CMAKE_BINARY_DIR}/eediv")
+  foreach(img ${RG_GAME_IMAGES})
+    set_target_properties(rg_game_${img} PROPERTIES
+      C_COMPILER_LAUNCHER "${RG_EE_FPU_EXACT_LAUNCHER}" CXX_COMPILER_LAUNCHER "${RG_EE_FPU_EXACT_LAUNCHER}")
+  endforeach()
+  message(STATUS "RG_EE_FPU_EXACT: exact EE float model in rg_game_* and crt_eelibm.c (parity build)")
+endif()

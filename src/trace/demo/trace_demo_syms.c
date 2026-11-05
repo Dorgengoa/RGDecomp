@@ -8,7 +8,13 @@
 #include "trace_demo_syms.h"
 
 /* Host pointers in 32-bit slots, as game structs hold them on i686. */
+#if defined(__x86_64__)
+static void *__ptr32 __uptr g_ptrs[3]; /* x64: 4-byte pointer words as in game memory (docs/X64-PLAN.md 0.8) */
+#else
+#line 11
 static void *g_ptrs[3];
+#endif
+#line 12
 
 static void after_init(void *user)
 {

@@ -235,6 +235,7 @@ typedef struct rg_pacer {
     uint64_t (*now_ns)(void *user);          /* default: SDL_GetTicksNS */
     void (*sleep_ns)(void *user, uint64_t ns); /* default: SDL_DelayPrecise */
     void *clock_user;
+    double speed;                 /* virtual time per wall time (1; gameplay.battle_speed: >1) */
 } rg_pacer;
 
 void rg_pacer_init(rg_pacer *p, int throttle);
@@ -244,6 +245,8 @@ void rg_pacer_reset(rg_pacer *p);
  * jump virtual time from `from` to `to`; user = rg_pacer*.  Sleeps until the
  * wall clock reaches the time that `to` maps to. */
 void rg_pacer_hook(uint64_t from_cycles, uint64_t to_cycles, void *user);
+/* Virtual seconds per wall second from now on (gameplay.battle_speed; 1 = retail): re-anchors. */
+void rg_pacer_set_speed(rg_pacer *p, double speed);
 
 /* =============================================================== window */
 #define RG_AUDIO_RATE 48000
@@ -304,6 +307,25 @@ int rg_host_present(rg_host *h, const uint32_t *rgba, uint32_t w, uint32_t hgt);
  * and the caller presents with rg_host_present instead.  The frame stays on
  * the GPU: rg_host_last_frame has none, and F12 then saves the window. */
 int rg_host_present_shared(rg_host *h, void *handle, uint32_t w, uint32_t hgt);
+/* The present thread (docs/NATIVE-RENDER.md "Interpolation throughput (2026-10-30)"): window
+ * presents of shared frames (as rg_host_present_shared) on a thread of their own, so a present
+ * that waits for the display or the GPU never holds up its producer.  One posted frame at a time:
+ * rg_host_present_post returns 0 posted, 1 busy (the previous one is not presented yet: post it
+ * again later), -1 no thread.  cb (optional) runs on the present thread after each present with
+ * the post's tag and rg_host_present_shared's result.  A frame is taken as the thread starts
+ * presenting it: the next may be posted while it waits for the display (rg_host_present_pending:
+ * a posted frame not taken yet; rg_host_present_wait: until none is posted or being presented).  Every use of the window's renderer is
+ * serialised with it; rg_host_pump skips a field rather than wait for a present in progress. */
+int rg_host_present_thread(rg_host *h, int on);
+int rg_host_present_thread_on(const rg_host *h);
+void rg_host_present_callback(rg_host *h, void (*cb)(void *arg, uint64_t tag, int rc), void *arg);
+int rg_host_present_post(rg_host *h, void *handle, uint32_t w, uint32_t hgt, uint64_t tag);
+int rg_host_present_pending(rg_host *h);
+/* a frame posted and not taken, or being presented (the window's present or its GPU wait) */
+int rg_host_present_busy(rg_host *h);
+void rg_host_present_wait(rg_host *h);
+/* posted, presented, failed, pumps skipped, pumps without the lock */
+void rg_host_present_thread_stats(const rg_host *h, uint64_t out[5]);
 /* display.fps_counter (docs/SETTINGS.md): the mode applied (0 off, 1 fps, 2 detailed), the
  * text last drawn, and the game-logic tick count the detailed line's rate is taken from (the
  * runtime reports it every field; presentation only) */
@@ -409,6 +431,9 @@ bool rg_host_port_connected(const rg_host *h, int port);
 int rg_host_active_device(const rg_host *h, char *name, size_t cap);
 /* While the overlay is open, live pad reads are neutral (scripts unaffected). */
 bool rg_host_overlay_open(const rg_host *h);
+/* The overlay's menu model (rg_menu.h; e.g. rg_menu_set_saves after rg_host_attach_settings,
+ * which re-initialises it). */
+struct rg_menu *rg_host_settings_menu(rg_host *h);
 /* Open / close the overlay from code (no-op without attached settings). */
 void rg_host_set_overlay(rg_host *h, bool open);
 /* Drives the overlay from code (smoke runs: rg-host-demo --menu).  A
@@ -423,9 +448,13 @@ void rg_host_set_vsync(rg_host *h, int on);
  * (0 = first, clamped to the displays present). */
 void rg_host_set_monitor(rg_host *h, int mon);
 /* display.window_mode fullscreen flavour for the next/current fullscreen:
- * 0 borderless at the desktop mode, 1 exclusive at the display mode closest
- * to the window size. */
+ * 0 borderless at the desktop mode, 1 exclusive at display.fullscreen_mode
+ * (WxH[@Hz]; empty = the display mode closest to the window size). */
 void rg_host_set_fullscreen_mode(rg_host *h, int exclusive);
+/* The refresh rate of the window's display (in exclusive fullscreen: of its
+ * mode), cached by the window's thread on display events; 0 = unknown
+ * (headless).  display.frame_rate "display" (rg_frame_cap_fps). */
+double rg_host_display_hz(const rg_host *h);
 void rg_host_set_window_size(rg_host *h, int w, int hgt);
 
 /* ---- audio: 48 kHz, stereo, s16 interleaved ---- */
@@ -435,6 +464,10 @@ float rg_host_volume(const rg_host *h);
 /* Queue `frames` frames.  Headless or without a device the data is counted
  * and dropped.  Returns 0 or -1. */
 int rg_host_audio_push(rg_host *h, const int16_t *lr, uint32_t frames);
+/* gameplay.battle_speed: pushed audio is game time played `speed` times as fast (rg_tstretch.h:
+ * pitch kept).  0 = no stage at all (the option is off: pushes go to the device unchanged);
+ * >= 1 = the stage is on (1 = as is, one window of delay). */
+void rg_host_audio_set_speed(rg_host *h, double speed);
 /* Frames queued and not yet played (0 headless). */
 uint32_t rg_host_audio_queued(const rg_host *h);
 uint64_t rg_host_audio_pushed_total(const rg_host *h);

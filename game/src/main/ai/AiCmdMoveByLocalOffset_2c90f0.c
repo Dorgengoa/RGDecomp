@@ -17,8 +17,8 @@ typedef struct Mtx { f32 m[4][4]; } __attribute__((aligned(16))) Mtx;
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern s32 D_004DB920[4];
-extern s32 D_004DB928[4];
+extern s32 D_004DB920[1];
+extern s32 D_004DB928[1];
 extern s32 D_004DB92C[4];
 
 s32 AiCmdMoveByLocalOffset_2c90f0(Arg *p)

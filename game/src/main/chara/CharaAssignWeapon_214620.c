@@ -8,9 +8,9 @@
 /*rgp*/
 /*rgp*/
 
-extern u8 D_0045CAB0[0x400];
-extern u8 D_0045CAC0[0x400];
-extern u8 D_0045CAD0[0x400];
+extern u8 D_0045CAB0[0x10];
+extern u8 D_0045CAC0[0x10];
+extern u8 D_0045CAD0[0x10];
 extern u8 D_0045CAE0[0x400];
 
 void CharaAssignWeapon_214620(void *arg0, s32 arg1) {

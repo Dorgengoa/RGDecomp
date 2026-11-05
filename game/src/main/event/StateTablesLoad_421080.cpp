@@ -29,11 +29,11 @@ void DataTableSetOwnerHandle_421c30(Sub *, s32);
 void DataTableSetOwnerHandle_422070(Sub *, s32);
 void DataTableSetOwnerHandle_4224b0(Sub *, s32);
 void DataTableSetOwnerHandle_4229f0(Sub *, s32);
-extern s32 D_00465658[0x400];
-extern s32 D_00465660[0x400];
-extern s32 D_00465668[0x400];
-extern s32 D_00465670[0x400];
-extern s32 D_00465678[0x400];
+extern s32 D_00465658[2];
+extern s32 D_00465660[2];
+extern s32 D_00465668[2];
+extern s32 D_00465670[2];
+extern s32 D_00465678[2];
 extern s32 D_00465680[0x400];
 }
 

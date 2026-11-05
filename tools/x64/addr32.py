@@ -115,9 +115,10 @@ def convert(text: str) -> tuple[str, int, list[str]]:
         if len(ops) > count:
             probs.append(f"{m.group('name')}: {len(ops)} initializers for [{count}]")
             continue
-        flags = "dr" if m.group("const") else "dw"
+        # section flags by object format (port/x64.h): COFF "dr" / "dw", ELF "a" / "aw"
+        flags = "RG_ASM_SECF_RO" if m.group("const") else "RG_ASM_SECF_RW"
         name = m.group("name")
-        lines = [f'".section {sec},\\"{flags}\\"\\n"']
+        lines = [f'".section {sec}," {flags} "\\n"']
         if al:
             lines.append(f'".p2align {al.bit_length() - 1}\\n"')
         elif esz > 1:

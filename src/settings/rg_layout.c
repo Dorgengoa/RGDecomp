@@ -11,6 +11,7 @@
  * widget's first frame) uses the anchor of its own rectangle. */
 #include "rg_layout.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,9 +30,25 @@ static uintptr_t image_base(void) { return 0; }
 #define PK_ZTEST  0x32    /* env (+0x10) test byte +0x22: bit0 ZTE, bits 1-2 ZTST */
 #define PK_CX     0x128   /* screen centre X, 12.4 GS units (GsPktSetOriginMode_13e2f0) */
 #define PK_W      0x130   /* screen width, 12.4 */
+#define PK_CY     0x12C   /* screen centre Y, 12.4 */
+#define PK_H      0x134   /* screen height, 12.4 */
+/* pointer words of the game's packet and memory-stack objects: 4 bytes in game memory, on
+ * x64 too (strategy A: every host address is below 2 GB; docs/X64-PLAN.md 0.8) */
+#if defined(__x86_64__)
+#define PK_PTR(T, p, off) ((T *)(uintptr_t)*(const uint32_t *)((const uint8_t *)(p) + (off)))
+#define PK_SET(p, off, v) (*(uint32_t *)((uint8_t *)(p) + (off)) = (uint32_t)(uintptr_t)(v))
+#else
+#define PK_PTR(T, p, off) (*(T **)((uint8_t *)(p) + (off)))
+#define PK_SET(p, off, v) (*(uint8_t **)((uint8_t *)(p) + (off)) = (v))
+#endif
 
 static float g_s = 1.0f;
-static int g_active;
+static int g_active;   /* the transform runs: an X squeeze (g_s < 1) and / or a UI scale */
+/* accessibility.ui_scale (rg_layout_set_ui_scale): every laid-out group is scaled by g_u in
+ * X and Y about its anchor (x: left / centre / right, y: top / middle / bottom), limited per
+ * group so it stays on the screen; 1 = off (nothing below changes) */
+static float g_u = 1.0f;
+static int g_uon;
 static int g_detect;
 static int g_screen_fbp, g_screen_known;   /* this frame's draw buffer (FRAME FBP) */          /* wide canvas: watch for full-screen menus even when pillarboxed */
 static unsigned g_cover_now, g_cover_last;   /* menu backgrounds this / the last drawn frame */
@@ -52,14 +69,20 @@ static strip_band g_strip[2][MAXSTRIP];
 static int g_nstrip[2];
 static uintptr_t g_pk_task;   /* the packet's drawing function */
 static float g_strip_L, g_strip_R;   /* the screen's edges (12.4) for strip_emit */
-static int g_strip_mode = -1;   /* RG_LAYOUT_STRIPS: 0 mirror (default), 1 smear (edge band stretched) */
+static int g_strip_mode = -1;   /* RG_LAYOUT_STRIPS: 0 mirror (default), 1 smear (edge band stretched),
+                                 * 2 stretch (before 2026-10-31: mirror up to the cap, then the
+                                 * last texel stretched; default now mirrors back and forth) */
+static int g_menu_vignette = -1;   /* RG_LAYOUT_VIGNETTE=0: a menu's shading layer squeezed with the
+                                    * menu (before 2026-10-31) instead of covering the canvas */
 static int g_strip_fade = -1;   /* RG_LAYOUT_STRIP_FADE: % darker at the canvas edge (default 75) */
 static void strip_opts(void)
 {
     if (g_strip_mode >= 0)
         return;
     const char *e = getenv("RG_LAYOUT_STRIPS");
-    g_strip_mode = e && e[0] == 's' ? 1 : 0;
+    g_strip_mode = e && e[0] == 's' && e[1] == 'm' ? 1 : e && e[0] == 's' && e[1] == 't' ? 2 : 0;
+    e = getenv("RG_LAYOUT_VIGNETTE");
+    g_menu_vignette = !(e && *e == '0');
     e = getenv("RG_LAYOUT_STRIP_FADE");
     g_strip_fade = e && *e ? atoi(e) : 75;
     if (g_strip_fade < 0) g_strip_fade = 0;
@@ -187,7 +210,19 @@ static void log_open(void)
         g_log = fopen(p, "w");
 }
 
-int rg_layout_active(void) { return g_active; }
+/* the X squeeze (the WIDE-aware sites draw at full width while it runs); a UI scale alone
+ * (4:3, or the stretch layout) leaves them as they were */
+int rg_layout_active(void) { return g_active && g_s < 0.999f; }
+void rg_layout_set_ui_scale(float u)
+{
+    if (!(u >= 0.5f && u <= 2.0f))
+        u = 1.0f;
+    g_u = u;
+    g_uon = fabsf(u - 1.0f) > 0.001f;
+    if (!g_uon)
+        g_u = 1.0f;
+}
+float rg_layout_ui_scale(void) { return g_uon ? g_u : 1.0f; }
 void rg_layout_set_detect(int on) { g_detect = on; }
 static unsigned g_roll_packets;   /* g_st.packets at the last frame roll */
 /* asked between fields, before rg_layout_set_frame: the frame just drawn decides (a field
@@ -213,8 +248,24 @@ void rg_layout_suppress(int on) { g_suppress += on ? 1 : -1; if (g_suppress < 0)
 int rg_layout_suppressed(void) { return g_suppress > 0; }
 static int g_about, g_about_px;
 static float g_about_x;
-void rg_layout_about_begin(float ax, int screen_px) { g_about = 1; g_about_x = ax; g_about_px = screen_px; }
-void rg_layout_about_end(void) { g_about = 0; }
+static int g_about_xy;          /* rg_layout_about_xy_begin: explicit centre and factors */
+static float g_about_y, g_about_kx, g_about_ky;
+void rg_layout_about_begin(float ax, int screen_px) { g_about = 1; g_about_x = ax; g_about_px = screen_px; g_about_xy = 0; }
+void rg_layout_about_xy_begin(float ax_px, float ay_px, float kx, float ky)
+{
+    g_about = 1;
+    g_about_px = 1;
+    g_about_x = ax_px;
+    g_about_xy = 1;
+    g_about_y = ay_px;
+    g_about_kx = kx;
+    g_about_ky = ky;
+}
+void rg_layout_about_end(void) { g_about = 0; g_about_xy = 0; }
+static int g_elem;              /* rg_layout_elem_begin: an element extent is set */
+static float g_elem_x0, g_elem_x1;   /* (screen pixels) */
+void rg_layout_elem_begin(float x0_px, float x1_px) { g_elem = x1_px >= x0_px; g_elem_x0 = x0_px; g_elem_x1 = x1_px; }
+void rg_layout_elem_end(void) { g_elem = 0; }
 void rg_layout_get_stats(rg_layout_stats *st) { *st = g_st; }
 
 int rg_layout_anchor(float x0, float x1, float left, float width)
@@ -249,6 +300,38 @@ float rg_layout_map(float x, int anchor, float left, float width, float s)
     default: return x;
     }
     return a + (x - a) * s;
+}
+
+static float anchor_pos(int anchor, float left, float width)
+{
+    return anchor == RG_ANCHOR_LEFT ? left : anchor == RG_ANCHOR_RIGHT ? left + width : left + 0.5f * width;
+}
+
+/* the largest k <= want with a + (v - a) * k inside [lo, hi] for v = v0, v1 (v0..v1 inside
+ * at k = 1); want itself when nothing limits it */
+static float fit_axis(float want, float a, float v0, float v1, float lo, float hi)
+{
+    float k = want;
+    if (v1 > a + 1.0f && (hi - a) / (v1 - a) < k) k = (hi - a) / (v1 - a);
+    if (v0 < a - 1.0f && (a - lo) / (a - v0) < k) k = (a - lo) / (a - v0);
+    return k;
+}
+
+float rg_layout_fit_scale(float u, int ax, int ay, float x0, float x1, float y0, float y1,
+                          float left, float w, float top, float h, float s)
+{
+    if (!(u > 1.0f))
+        return u;                       /* shrinking always fits */
+    float k = u;
+    if (ax != RG_ANCHOR_NONE && s > 0.0f) {
+        float kx = fit_axis(u * s, anchor_pos(ax, left, w), x0, x1, left, left + w) / s;
+        if (kx < k) k = kx;
+    }
+    if (ay != RG_ANCHOR_NONE) {
+        float ky = fit_axis(u, anchor_pos(ay, top, h), y0, y1, top, top + h);
+        if (ky < k) k = ky;
+    }
+    return k < 1.0f ? 1.0f : k;         /* already past an edge at 1: left as drawn */
 }
 
 /* PSMT8 / PSMT4 / PSMT8H / PSMT4HL / PSMT4HH: indexed-colour UI art */
@@ -486,7 +569,7 @@ static int scan_packet(uint8_t *base, uint8_t *end, rg_layout_xref *out, int max
 
 /* ---- anchors from the last frame: identity -> anchor ---- */
 #define TAB 16384                       /* power of two */
-typedef struct aent { uint32_t key; uint8_t anchor; } aent;
+typedef struct aent { uint32_t key; uint8_t anchor, yanchor; float u; } aent;
 static aent g_prev[TAB], g_next[TAB];
 
 static uint32_t mix(uint32_t h, uint32_t v)
@@ -496,21 +579,27 @@ static uint32_t mix(uint32_t h, uint32_t v)
     return h;
 }
 
-static void tab_put(aent *t, uint32_t key, int anchor)
+static void tab_put(aent *t, uint32_t key, int anchor, int yanchor, float u)
 {
     for (uint32_t i = key & (TAB - 1), n = 0; n < TAB; i = (i + 1) & (TAB - 1), n++)
         if (t[i].key == 0 || t[i].key == key) {
             t[i].key = key;
             t[i].anchor = (uint8_t)anchor;
+            t[i].yanchor = (uint8_t)yanchor;
+            t[i].u = u;
             return;
         }
 }
 
-static int tab_get(const aent *t, uint32_t key)
+/* the anchor (-1: none filed); *ya / *u: the UI-scale Y anchor and the group's scale */
+static int tab_get(const aent *t, uint32_t key, int *ya, float *u)
 {
     for (uint32_t i = key & (TAB - 1), n = 0; n < TAB; i = (i + 1) & (TAB - 1), n++) {
-        if (t[i].key == key)
+        if (t[i].key == key) {
+            *ya = t[i].yanchor;
+            *u = t[i].u;
             return t[i].anchor;
+        }
         if (t[i].key == 0)
             return -1;
     }
@@ -538,6 +627,10 @@ typedef struct pkrec {
     uint32_t key;
     float x0, x1, y0, y1;     /* original rectangle, 12.4 */
     float left, w;            /* screen, 12.4 */
+    float top, h;             /*   (Y) */
+    int anchor;               /* the anchor it was drawn with this frame */
+    int yanchor;              /* UI scale: its Y anchor and its group's scale */
+    float u;
 } pkrec;
 static pkrec g_pk[MAXPK];
 static int g_npk;
@@ -557,7 +650,7 @@ static int find(int *par, int i)
 static void cluster(int first)
 {
     static int par[MAXPK];
-    static float gx0[MAXPK], gx1[MAXPK];
+    static float gx0[MAXPK], gx1[MAXPK], gy0[MAXPK], gy1[MAXPK];
     const float slack = 4.0f * 16.0f;
     for (int i = first; i < g_npk; i++)
         par[i] = i;
@@ -569,18 +662,27 @@ static void cluster(int first)
                 par[find(par, i)] = find(par, j);
         }
     for (int i = first; i < g_npk; i++) {
-        gx0[i] = 1e30f;
-        gx1[i] = -1e30f;
+        gx0[i] = gy0[i] = 1e30f;
+        gx1[i] = gy1[i] = -1e30f;
     }
     for (int i = first; i < g_npk; i++) {
         int r = find(par, i);
         if (g_pk[i].x0 < gx0[r]) gx0[r] = g_pk[i].x0;
         if (g_pk[i].x1 > gx1[r]) gx1[r] = g_pk[i].x1;
+        if (g_pk[i].y0 < gy0[r]) gy0[r] = g_pk[i].y0;
+        if (g_pk[i].y1 > gy1[r]) gy1[r] = g_pk[i].y1;
     }
     for (int i = first; i < g_npk; i++) {
         int r = find(par, i);
-        int a = rg_layout_cluster_anchor(gx0[r], gx1[r], g_pk[i].left, g_pk[i].w);
-        tab_put(g_next, g_pk[i].key, a);
+        const pkrec *k = &g_pk[i];
+        int a = rg_layout_cluster_anchor(gx0[r], gx1[r], k->left, k->w);
+        int ya = RG_ANCHOR_NONE;
+        float u = 1.0f;
+        if (g_uon) {
+            ya = rg_layout_cluster_anchor(gy0[r], gy1[r], k->top, k->h);
+            u = rg_layout_fit_scale(g_u, a, ya, gx0[r], gx1[r], gy0[r], gy1[r], k->left, k->w, k->top, k->h, g_s);
+        }
+        tab_put(g_next, g_pk[i].key, a, ya, u);
         if (r == i)
             g_st.groups++;
     }
@@ -632,7 +734,7 @@ void rg_layout_set_frame(float s, int field)
     if (e && *e == '0')
         s = 1.0f;
     g_s = s;
-    g_active = s < 0.999f;
+    g_active = s < 0.999f || (g_uon && !(e && *e == '0'));
     if (g_active || g_detect) {
         log_open();
         if (g_log)
@@ -679,12 +781,12 @@ static const char *aname(int a)
 #define MS_OFF  0x20    /*   non-zero: allocation refused */
 static int append_ad(void *pkt, const uint64_t *val, const uint8_t *reg, int k)
 {
-    uint8_t *ms = *(uint8_t **)pkt;
-    uint8_t *base = *(uint8_t **)((uint8_t *)pkt + PK_BASE);
-    uint8_t *cur = *(uint8_t **)((uint8_t *)pkt + PK_CUR);
-    uint8_t *tag = *(uint8_t **)((uint8_t *)pkt + 0x100);
-    uint32_t *dma = *(uint32_t **)((uint8_t *)pkt + 0x104);
-    uint32_t *vif = *(uint32_t **)((uint8_t *)pkt + 0x108);
+    uint8_t *ms = PK_PTR(uint8_t, pkt, 0);
+    uint8_t *base = PK_PTR(uint8_t, pkt, PK_BASE);
+    uint8_t *cur = PK_PTR(uint8_t, pkt, PK_CUR);
+    uint8_t *tag = PK_PTR(uint8_t, pkt, 0x100);
+    uint32_t *dma = PK_PTR(uint32_t, pkt, 0x104);
+    uint32_t *vif = PK_PTR(uint32_t, pkt, 0x108);
     if (!ms || !base || !cur || !tag || !dma || !vif || k <= 0)
         return 0;
     int32_t used = *(int32_t *)(ms + MS_USED), cap = *(int32_t *)(ms + MS_CAP);
@@ -720,7 +822,7 @@ static int append_ad(void *pkt, const uint64_t *val, const uint8_t *reg, int k)
     *(uint32_t *)tag = (uint32_t)(((lo & 0x7FFF) + (uint64_t)k) | 0x8000u);
     dma[0] = (dma[0] & 0xFFFF0000u) | ((dma[0] & 0xFFFF) + (uint32_t)k);
     vif[0] = (vif[0] & 0xFFFF0000u) | ((vif[0] & 0xFFFF) + (uint32_t)k);
-    *(uint8_t **)((uint8_t *)pkt + PK_CUR) = cur + 16 * k;
+    PK_SET(pkt, PK_CUR, cur + 16 * k);
     return 1;
 }
 
@@ -759,8 +861,21 @@ static void set_x(rg_layout_xref *x, float v)
 typedef struct strip_job {
     rg_layout_xref *a, *l, *r;     /* first-written vertex, left / right vertex */
     float ml, mr, uin, uout, y0, y1;
+    float cap;                     /* > 0: the strip mirrors back and forth within this many
+                                    * texels of uin (uout is then the unbounded end) */
     int side;
 } strip_job;
+
+/* the U of a strip at texel distance d from its seam: straight (as before) or, with a cap,
+ * mirrored back and forth within the cap (a triangle wave: no stretched last texel) */
+static int strip_turns(const strip_job *j)
+{
+    float dist = j->uout > j->uin ? j->uout - j->uin : j->uin - j->uout;
+    if (j->cap <= 0.0f || dist <= j->cap)
+        return 0;
+    int n = (int)(dist / j->cap);
+    return (float)n * j->cap < dist - 1e-3f ? n : n - 1;
+}
 
 /* the A+D qwords of nst strips, nb colour bands each (nb 1: no colour writes); -1 too long */
 static int strip_emit(const strip_job *sj, int nst, int nb, uint64_t *val, uint8_t *reg)
@@ -781,12 +896,13 @@ static int strip_emit(const strip_job *sj, int nst, int nb, uint64_t *val, uint8
         uint64_t cs = 0;
         if (nb > 1)
             memcpy(&cs, kv->col, 8);
+        float dist = j->uout > j->uin ? j->uout - j->uin : j->uin - j->uout;
+        float sgn = j->uout >= j->uin ? 1.0f : -1.0f;
+        int pp = strip_turns(j) > 0;
         for (int bnd = 0; bnd < nb; bnd++) {
             if (k + 7 > MAXAD)
                 return -1;
             float t0 = (float)bnd / (float)nb, t1 = (float)(bnd + 1) / (float)nb;
-            float xa = seam + (edge - seam) * t0, xb = seam + (edge - seam) * t1;
-            float ua = j->uin + (j->uout - j->uin) * t0, ub = j->uin + (j->uout - j->uin) * t1;
             if (nb > 1) {
                 float tc = 0.5f * (t0 + t1);
                 float f = 1.0f - 0.01f * (float)g_strip_fade * tc * tc * (3.0f - 2.0f * tc);
@@ -799,20 +915,45 @@ static int strip_emit(const strip_job *sj, int nst, int nb, uint64_t *val, uint8
                 val[k] = c;
                 reg[k++] = 0x01;
             }
-            float xlv = xa < xb ? xa : xb, xrv = xa < xb ? xb : xa;
-            float ulv = xa < xb ? ua : ub, urv = xa < xb ? ub : ua;
-            for (int e = 0; e < 2; e++) {     /* the original write order: a first */
-                rg_layout_xref *s0 = e == 0 ? j->a : (j->a == j->l ? j->r : j->l);
-                float xv = s0 == j->l ? xlv : xrv, uv = s0 == j->l ? ulv : urv;
-                uint64_t t, xyz;
-                memcpy(&t, s0->tc, 8);
-                memcpy(&xyz, s0->x, 8);
-                t = (t & ~(uint64_t)0x3FFF) | ((unsigned)(uv * 16.0f + 0.5f) & 0x3FFF);
-                xyz = (xyz & ~(uint64_t)0xFFFF) | ((unsigned)(xv + 0.5f) & 0xFFFF);
-                val[k] = t;
-                reg[k++] = ((uint8_t *)s0->tc)[8];
-                val[k] = xyz;
-                reg[k++] = ((uint8_t *)s0->x)[8];
+            /* the band as one sprite, or (mirroring back and forth) split where U turns */
+            float d0 = t0 * dist, d1 = t1 * dist;
+            for (int once = 1; once || d0 < d1 - 1e-4f; once = 0) {
+                float dn = d1, fa, fb;
+                if (pp) {
+                    int seg = (int)(d0 / j->cap + 1e-4f);
+                    float tn = (float)(seg + 1) * j->cap;
+                    if (tn < dn) dn = tn;
+                    fa = d0 - (float)seg * j->cap;
+                    fb = dn - (float)seg * j->cap;
+                    if (seg & 1) {
+                        fa = j->cap - fa;
+                        fb = j->cap - fb;
+                    }
+                } else {
+                    fa = d0;
+                    fb = dn;
+                }
+                if (k + 6 > MAXAD)
+                    return -1;
+                float xa = seam + (edge - seam) * (dist > 0.0f ? d0 / dist : t0);
+                float xb = seam + (edge - seam) * (dist > 0.0f ? dn / dist : t1);
+                float ua = j->uin + sgn * fa, ub = j->uin + sgn * fb;
+                float xlv = xa < xb ? xa : xb, xrv = xa < xb ? xb : xa;
+                float ulv = xa < xb ? ua : ub, urv = xa < xb ? ub : ua;
+                for (int e = 0; e < 2; e++) {     /* the original write order: a first */
+                    rg_layout_xref *s0 = e == 0 ? j->a : (j->a == j->l ? j->r : j->l);
+                    float xv = s0 == j->l ? xlv : xrv, uv = s0 == j->l ? ulv : urv;
+                    uint64_t t, xyz;
+                    memcpy(&t, s0->tc, 8);
+                    memcpy(&xyz, s0->x, 8);
+                    t = (t & ~(uint64_t)0x3FFF) | ((unsigned)(uv * 16.0f + 0.5f) & 0x3FFF);
+                    xyz = (xyz & ~(uint64_t)0xFFFF) | ((unsigned)(xv + 0.5f) & 0xFFFF);
+                    val[k] = t;
+                    reg[k++] = ((uint8_t *)s0->tc)[8];
+                    val[k] = xyz;
+                    reg[k++] = ((uint8_t *)s0->x)[8];
+                }
+                d0 = dn;
             }
         }
     }
@@ -823,23 +964,186 @@ static int strip_emit(const strip_job *sj, int nst, int nb, uint64_t *val, uint8
     return k;
 }
 
+/* (2026-10-31) Repeated frame strips.  A menu frame's long bars are drawn as a row of
+ * identical tiles (the top frame strip of the main menu and its sub-screens: 7 columns of 64
+ * px, two rows, u 106..170 each, from x 111 to 559, past the right edge of the screen).
+ * Tile by tile they were small sprites, so the one across the screen edge was clipped and
+ * the ones beyond hidden: the bar stopped at the old 4:3 edge while the header bar under it
+ * (one wide sprite) was pinned to the canvas edge.  A row of at least two abutting tiles
+ * with the same size, rows and texture range, together at least a quarter of the screen
+ * wide, mostly on it and running past an edge, is laid out whole (no clip / hide) and
+ * continued to the canvas edge with more copies of its outermost tile (appended to the
+ * packet like the strips): the bar keeps its art at its own scale instead of a stretch.
+ * rep[j] (j: the sprite's first vertex) = 1 tile of such a row; the copies are emitted by
+ * rep_emit.  RG_LAYOUT_REPEAT=0: as before. */
+typedef struct rep_spr {
+    int j;
+    float xl, xr, y0, y1, ul, ur;
+} rep_spr;
+typedef struct rep_job {
+    int o;          /* xs index of the outermost tile's first vertex */
+    int side;       /* 0 left, 1 right */
+} rep_job;
+static int g_repeat = -1;
+
+static int rep_find(rg_layout_xref *xs, int n, float L, float w, uint8_t *rep, rep_job *jobs, int maxjobs)
+{
+    static rep_spr sp[4096];
+    static uint8_t used[4096];
+    const float R = L + w, px = 16.0f;
+    int ns = 0, nj = 0;
+    if (g_repeat < 0) {
+        const char *e = getenv("RG_LAYOUT_REPEAT");
+        g_repeat = !(e && *e == '0');
+    }
+    if (!g_repeat)
+        return 0;
+    for (int j = 0; j + 1 < n && ns < 4096; j++) {
+        rg_layout_xref *a = &xs[j], *b = &xs[j + 1];
+        if (a->kind || b->kind || a->prim != 6 || b->prim != 6 || (a->vix & 1) || b->vix != a->vix + 1)
+            continue;
+        rg_layout_xref *l = (float)*a->x <= (float)*b->x ? a : b, *r = l == a ? b : a;
+        if (l->tck == 1 && r->tck == 1 && l->ad && r->ad && *r->x > *l->x) {
+            float ya = (float)*a->y, yb = (float)*b->y;
+            sp[ns++] = (rep_spr){ j, (float)*l->x, (float)*r->x, ya < yb ? ya : yb, ya < yb ? yb : ya,
+                                  tc_get(l), tc_get(r) };
+        }
+        j++;
+    }
+    memset(used, 0, (size_t)ns);
+    for (int i = 0; i < ns; i++) {
+        if (used[i])
+            continue;
+        /* the row of tiles like sp[i]: same rows, width and texture range */
+        static int mem[4096];
+        int nm = 0;
+        for (int k = i; k < ns; k++)
+            if (!used[k] && fabsf(sp[k].y0 - sp[i].y0) <= px && fabsf(sp[k].y1 - sp[i].y1) <= px &&
+                fabsf((sp[k].xr - sp[k].xl) - (sp[i].xr - sp[i].xl)) <= px &&
+                fabsf(sp[k].ul - sp[i].ul) < 0.5f && fabsf(sp[k].ur - sp[i].ur) < 0.5f) {
+                used[k] = 1;
+                mem[nm++] = k;
+            }
+        if (nm < 2)
+            continue;
+        for (int p = 1; p < nm; p++)                 /* by x (insertion sort: short rows) */
+            for (int q = p; q > 0 && sp[mem[q]].xl < sp[mem[q - 1]].xl; q--) {
+                int t = mem[q];
+                mem[q] = mem[q - 1];
+                mem[q - 1] = t;
+            }
+        /* abutting; a tile may be drawn twice in place (the main menu's frame strips are:
+         * two passes over the same rectangles) */
+        int ok = 1, nu = 1;
+        for (int p = 1; p < nm && ok; p++) {
+            if (fabsf(sp[mem[p]].xl - sp[mem[p - 1]].xl) <= px)
+                continue;
+            ok = fabsf(sp[mem[p]].xl - sp[mem[p - 1]].xr) <= px;
+            nu++;
+        }
+        if (nu < 2)
+            continue;
+        float x0 = sp[mem[0]].xl, x1 = sp[mem[nm - 1]].xr;
+        float vis = ((x1 < R ? x1 : R) - (x0 > L ? x0 : L)) / (x1 - x0);
+        int out0 = x0 < L - px, out1 = x1 > R + px;
+        if (g_log && (out0 || out1))
+            fprintf(g_log, "  repeat?: %d tiles x=%.1f..%.1f abut %d vis %.2f\n", nm, (x0 - L) / 16.0f,
+                    (x1 - L) / 16.0f, ok, vis);
+        if (!ok || x1 - x0 < 0.25f * w || vis < 0.5f || !(out0 || out1))
+            continue;
+        for (int p = 0; p < nm; p++)
+            rep[sp[mem[p]].j] = 1;
+        /* every sprite of the outermost tile continues (each pass of a doubly drawn one) */
+        for (int p = 0; out0 && p < nm && fabsf(sp[mem[p]].xl - x0) <= px; p++)
+            if (nj < maxjobs)
+                jobs[nj++] = (rep_job){ sp[mem[p]].j, 0 };
+        for (int p = nm - 1; out1 && p >= 0 && fabsf(sp[mem[p]].xr - x1) <= px; p--)
+            if (nj < maxjobs)
+                jobs[nj++] = (rep_job){ sp[mem[p]].j, 1 };
+    }
+    return nj;
+}
+
+/* the A+D qwords continuing each job's row to the canvas edge (after the layout: the
+ * outermost tile's vertices are already mapped); 0 none, -1 too long */
+static int rep_emit(rg_layout_xref *xs, const rep_job *jobs, int nj, float L, float R, uint64_t *val, uint8_t *reg)
+{
+    int k = 0, ncol = 0;
+    if (g_scan_primq) {
+        memcpy(&val[k], g_scan_primq, 8);
+        reg[k++] = 0x00;
+    }
+    for (int i = 0; i < nj; i++) {
+        rg_layout_xref *a = &xs[jobs[i].o], *b = &xs[jobs[i].o + 1];
+        rg_layout_xref *l = (float)*a->x <= (float)*b->x ? a : b, *r = l == a ? b : a;
+        rg_layout_xref *kv = b;                      /* a sprite takes its second vertex's colour */
+        float ml = (float)*l->x, mr = (float)*r->x, tw = mr - ml;
+        if (tw < 16.0f)
+            continue;
+        if (kv->col && g_scan_rgbaq) {
+            if (k + 1 > MAXAD)
+                return -1;
+            memcpy(&val[k], kv->col, 8);
+            reg[k++] = 0x01;
+            ncol++;
+        }
+        for (int c = 1; c < 64; c++) {
+            float xa = jobs[i].side ? mr + (float)(c - 1) * tw : ml - (float)c * tw;
+            if (jobs[i].side ? xa >= R : xa + tw <= L)
+                break;
+            if (k + 4 + 1 > MAXAD)
+                return -1;
+            for (int e = 0; e < 2; e++) {            /* the original write order: a first */
+                rg_layout_xref *s0 = e == 0 ? a : b;
+                float xv = s0 == l ? xa : xa + tw;
+                uint64_t t, xyz;
+                memcpy(&t, s0->tc, 8);
+                memcpy(&xyz, s0->x, 8);
+                xyz = (xyz & ~(uint64_t)0xFFFF) | ((unsigned)(xv < 0.0f ? 0.0f : xv > 65535.0f ? 65535.0f : xv + 0.5f) & 0xFFFF);
+                val[k] = t;
+                reg[k++] = ((uint8_t *)s0->tc)[8];
+                val[k] = xyz;
+                reg[k++] = ((uint8_t *)s0->x)[8];
+            }
+        }
+    }
+    if (ncol) {                                      /* the packet's last colour, as it was */
+        memcpy(&val[k], g_scan_rgbaq, 8);
+        reg[k++] = 0x01;
+    }
+    return k > (g_scan_primq ? 1 : 0) ? k : 0;
+}
+
 static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float w, int bg, uint8_t *done)
 {
     const float L = left, R = left + w, px = 16.0f;
     const float top = 1824.0f * 16.0f, bot = (1824.0f + RG_LAYOUT_FRAME_H) * 16.0f;
     static uint64_t val[MAXAD];
     static uint8_t reg[MAXAD];
+    static uint8_t rep[8192];
+    rep_job rj[8];
     strip_job sj[MAXSTRIPS];
     int nst = 0, sides = 0;
     int nstrip0[2] = { g_nstrip[0], g_nstrip[1] };
     strip_opts();
     g_strip_L = L;
     g_strip_R = R;
+    int nrj = 0;
+    if (!bg && n <= 8192) {
+        memset(rep, 0, (size_t)n);
+        nrj = rep_find(xs, n, L, w, rep, rj, 8);
+    }
     for (int j = 0; j + 1 < n; j++) {
         rg_layout_xref *a = &xs[j], *b = &xs[j + 1];
         if (a->kind || b->kind || a->prim != 6 || b->prim != 6 || (a->vix & 1) || b->vix != a->vix + 1)
             continue;
         done[j] = done[j + 1] = 1;
+        if (nrj && rep[j]) {                         /* a tile of a repeated frame strip: whole */
+            set_x(a, rg_layout_map((float)*a->x, RG_ANCHOR_CENTER, left, w, g_s));
+            set_x(b, rg_layout_map((float)*b->x, RG_ANCHOR_CENTER, left, w, g_s));
+            j++;
+            continue;
+        }
         j++;
         rg_layout_xref *l = (float)*a->x <= (float)*b->x ? a : b, *r = l == a ? b : a;
         float xl = (float)*l->x, xr = (float)*r->x;
@@ -849,6 +1153,23 @@ static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float
         float mr = rg_layout_map(xr, RG_ANCHOR_CENTER, left, w, g_s);
         /* a background tile: at least an eighth of the screen each way */
         int sbg = bg && xr - xl >= 0.125f * w && sy1 - sy0 >= 0.125f * (bot - top);
+        int tck1 = l->tck == 1 && r->tck == 1;
+        /* (2026-10-31) the menu's shading layer: one sprite covering exactly the 4:3 screen,
+         * drawn over the backdrop with a low-detail texture magnified about 4-5x (every
+         * full-screen menu has one: 103..129 texels over the 512-pixel screen; it darkens
+         * the screen's edges).  Squeezed with the menu it stopped at the old 4:3 edge, and
+         * the brighter backdrop / strips beyond it showed a seam down the whole height
+         * (tools/wide/seamscan.py).  It has no cut-outs to keep on the panels, so it is laid
+         * over the whole canvas instead: left where it is (the frame is the canvas), it
+         * shades the canvas edges as it shaded the 4:3 screen's.  RG_LAYOUT_VIGNETTE=0: as
+         * before. */
+        if (sbg && bg == 1 && g_menu_vignette && tck1 && xl <= L + px && xr >= R - px && sy0 <= top + px &&
+            sy1 >= bot - px && xr - xl <= w + 2.0f * px &&
+            16.0f * fabsf(tc_get(r) - tc_get(l)) <= 0.3f * (xr - xl)) {
+            if (g_log)
+                fprintf(g_log, "  vignette: u=%g..%g over the canvas\n", tc_get(l), tc_get(r));
+            continue;
+        }
         if (!sbg && (xr <= L + px || xl >= R - px)) { /* hidden at 4:3: keep it hidden */
             set_x(l, ml);
             set_x(r, ml);
@@ -898,15 +1219,24 @@ static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float
             /* at most the outer 30 % of the art is mirrored (stretched beyond, at 32:9):
              * deeper in, art has cut-outs (the main menu's portrait circle) that would
              * show the clear through the strip */
-            float cap = 0.3f * (umax - umin);
-            if (g * dir > cap || g * dir < -cap)
-                uout = uin + (dir > 0 ? cap : -cap);
+            /* Beyond the cap the strip mirrors back and forth within it (2026-10-31: it
+             * used to stretch the cap's last texel, horizontal streaks over half the side at
+             * 21:9; RG_LAYOUT_STRIPS=stretch for that) */
+            float cap = 0.3f * (umax - umin), pcap = 0.0f;
             if (bg == 2)   /* an overlay (over a scene capture): its edge column stretched */
                 uout = uin + 0.5f * (dir > 0 ? 1.0f : -1.0f);
             else if (g_strip_mode == 1 && (g * dir > 6.0f || g * dir < -6.0f))
                 uout = uin + (dir > 0 ? 6.0f : -6.0f);             /* smear: the outer 6 texels */
-            if (uout < umin) uout = umin;
-            if (uout > umax) uout = umax;
+            else if (g * dir > cap || g * dir < -cap) {
+                if (g_strip_mode == 0 && cap >= 4.0f)
+                    pcap = cap;                                    /* uout stays unbounded */
+                else
+                    uout = uin + (dir > 0 ? cap : -cap);
+            }
+            if (pcap <= 0.0f) {
+                if (uout < umin) uout = umin;
+                if (uout > umax) uout = umax;
+            }
             /* a sprite of this packet drawn over an earlier one's rows replaces its strip
              * (the main menu's backdrop: a translucent black shadow sprite, then the art) */
             for (int q = 0; q < nst; q++) {
@@ -914,8 +1244,14 @@ static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float
                 if (sj[q].side == side && o1 - o0 >= 0.5f * (sj[q].y1 - sj[q].y0))
                     sj[q--] = sj[--nst];
             }
-            sj[nst++] = (strip_job){ a, l, r, ml, mr, uin, uout, vy0, vy1, side };
+            sj[nst++] = (strip_job){ a, l, r, ml, mr, uin, uout, vy0, vy1, pcap, side };
         }
+    }
+    if (nrj) {
+        int kr = rep_emit(xs, rj, nrj, L, R, val, reg);
+        int okr = kr > 0 && append_ad(pkt, val, reg, kr);
+        if (g_log)
+            fprintf(g_log, "  repeat: %d row ends continued, %d qwords%s\n", nrj, kr, okr ? "" : " (not appended)");
     }
     if (!nst)
         return;
@@ -929,7 +1265,10 @@ static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float
         if (!(sj[i].a == sj[i].l ? sj[i].r : sj[i].l)->col)
             fade = 0;
     /* bands: as many as fit (up to 16: steps of ~4 % at the default fade) */
-    int nb = (MAXAD - 2) / (5 * nst);
+    int turns = 0;
+    for (int i = 0; i < nst; i++)
+        turns += strip_turns(&sj[i]);
+    int nb = (MAXAD - 2 - 4 * turns) / (5 * nst);
     if (nb > 16) nb = 16;
     if (nb < 4) fade = 0;
     int k = fade ? strip_emit(sj, nst, nb, val, reg) : -1;
@@ -964,8 +1303,8 @@ int rg_layout_packet(void *pkt, const void *caller)
     if (!g_active && !g_detect)
         return 0;
     log_open();
-    uint8_t *base = *(uint8_t **)((uint8_t *)pkt + PK_BASE);
-    uint8_t *cur = *(uint8_t **)((uint8_t *)pkt + PK_CUR);
+    uint8_t *base = PK_PTR(uint8_t, pkt, PK_BASE);
+    uint8_t *cur = PK_PTR(uint8_t, pkt, PK_CUR);
     if (!base || cur <= base)
         return 0;
     g_st.packets++;
@@ -976,6 +1315,13 @@ int rg_layout_packet(void *pkt, const void *caller)
         cx = 2048.0f * 16.0f;
     }
     float left = cx - 0.5f * w;
+    float cy = (float)*(int32_t *)((uint8_t *)pkt + PK_CY);
+    float h = (float)*(int32_t *)((uint8_t *)pkt + PK_H);
+    if (h <= 0.0f) {
+        h = RG_LAYOUT_FRAME_H * 16.0f;
+        cy = 2048.0f * 16.0f;
+    }
+    float top = cy - 0.5f * h;
     g_scan_psm = -1;
     g_scan_fbp = g_scan_fbw = -1;
     g_scan_tbp = -1;
@@ -1043,7 +1389,11 @@ int rg_layout_packet(void *pkt, const void *caller)
     } else if (g_suppress) {
         why = "suppressed";
         g_st.suppressed++;
-    } else if ((zt & 1) && ((zt >> 1) & 3) >= 2) {
+    } else if (nv > 0 && (zt & 1) && ((zt >> 1) & 3) >= 2) {
+        /* (not for a scissor-only packet: it draws nothing, its Z state is whatever the
+         * shared GsPkt last had -- the item grid's selection-frame scissor
+         * (GsPktSetScissor_28c2e0 after a Z-tested draw) was left unmoved while the frame's
+         * dashes were laid out, so they were clipped to the wrong cell: USER 1030a) */
         why = "ztest";
         g_st.ztest++;
     } else if ((x0 <= left + edge && x1 >= left + w - edge) ||
@@ -1082,12 +1432,16 @@ int rg_layout_packet(void *pkt, const void *caller)
     }
     if (!g_active)
         return 0;                            /* detection only (pillarboxed screen) */
+    /* a UI scale without the X squeeze (4:3, the stretch layout): full-screen menus fill
+     * the height already and keep their size (nor is their frame clear touched) */
+    if (menu && !(g_s < 0.999f))
+        return 0;
     /* stage 3: on a full-screen menu the frame clear (an untextured packet covering the
      * screen, drawn outside any task: DrawListClearScreen) is drawn black.  At 4:3 the
      * menu covers it entirely; on the wide canvas it shows only where the centred menu's
      * background does not reach (the edges of the canvas at 21:9), black like a
      * pillarbox instead of the field's clear colour. */
-    if (!g_clear_done && !task && g_scan_psm < 0 && g_cover_last > 0 && x0 <= left + edge && x1 >= left + w - edge &&
+    if (g_s < 0.999f && !g_clear_done && !task && g_scan_psm < 0 && g_cover_last > 0 && x0 <= left + edge && x1 >= left + w - edge &&
         (y1 - y0) >= 0.9f * RG_LAYOUT_FRAME_H * 16.0f) {
         for (int j = 0; j < g_scan_ncol; j++) {
             uint8_t *c = g_scan_col[j];
@@ -1100,6 +1454,8 @@ int rg_layout_packet(void *pkt, const void *caller)
         g_clear_done = 1;
     }
     int anchor = RG_ANCHOR_NONE;
+    int yanchor = RG_ANCHOR_NONE;   /* UI scale (g_uon): Y anchor, the group's scale */
+    float ue = 1.0f;
     int from_prev = 0;
     if (task && (menu || !why))
         drawn_add((const void *)task);
@@ -1109,15 +1465,61 @@ int rg_layout_packet(void *pkt, const void *caller)
         from_prev = 1;
         g_st.menu++;
     } else if (!why) {
-        anchor = tab_get(g_prev, key);
+        /* the element's extent when known ahead (rg_layout_elem_begin: a message window's
+         * text block): a partly typed-out line is anchored and grouped as the whole block; a
+         * scissor-only packet (the window's clip before any glyph shows) stands for it alone */
+        float ex0 = x0, ex1 = x1;
+        if (g_elem) {
+            float h0 = left + 16.0f * g_elem_x0, h1 = left + 16.0f * g_elem_x1;
+            if (nv < 0) {
+                ex0 = h0;
+                ex1 = h1;
+            }
+            if (h0 < ex0) ex0 = h0;
+            if (h1 > ex1) ex1 = h1;
+        }
+        anchor = tab_get(g_prev, key, &yanchor, &ue);
         from_prev = anchor >= 0;
-        if (anchor < 0)
-            anchor = rg_layout_anchor(x0, x1, left, w);
+        if (anchor < 0) {
+            /* a packet new this frame (no anchor filed under its identity): the anchor of a
+             * packet of its group drawn before it this frame that it overlaps (a new line
+             * under the lines of a paragraph, text in a window drawn just before), which is
+             * what the group's anchor will be next frame; else its own rectangle */
+            const float slack = 4.0f * 16.0f;
+            int first = g_depth > 0 && g_depth <= MAXDEPTH ? g_mark[g_depth - 1] : 0;
+            for (int i = g_npk - 1; i >= first && anchor < 0; i--) {
+                const pkrec *b = &g_pk[i];
+                if (ex0 <= b->x1 + slack && b->x0 <= ex1 + slack && y0 <= b->y1 + slack && b->y0 <= y1 + slack &&
+                    b->anchor > RG_ANCHOR_NONE) {
+                    anchor = b->anchor;
+                    yanchor = b->yanchor;
+                    ue = b->u;
+                    g_st.inherited++;
+                }
+            }
+            if (anchor < 0) {
+                anchor = rg_layout_anchor(ex0, ex1, left, w);
+                yanchor = RG_ANCHOR_NONE;
+                ue = 1.0f;
+                if (g_uon) {
+                    yanchor = rg_layout_cluster_anchor(y0, y1, top, h);
+                    ue = rg_layout_fit_scale(g_u, anchor, yanchor, ex0, ex1, y0, y1, left, w, top, h, g_s);
+                }
+            }
+        }
+        if (!g_uon) {
+            yanchor = RG_ANCHOR_NONE;
+            ue = 1.0f;
+        }
         if (g_npk < MAXPK) {
             pkrec *k = &g_pk[g_npk++];
             k->key = key;
-            k->x0 = x0; k->x1 = x1; k->y0 = y0; k->y1 = y1;
+            k->x0 = ex0; k->x1 = ex1; k->y0 = y0; k->y1 = y1;
             k->left = left; k->w = w;
+            k->top = top; k->h = h;
+            k->anchor = anchor;
+            k->yanchor = yanchor;
+            k->u = ue;
         }
     }
     float u0 = 1e30f, u1 = -1e30f;   /* texture coordinate range (U texels / S) */
@@ -1128,28 +1530,42 @@ int rg_layout_packet(void *pkt, const void *caller)
             if (u > u1) u1 = u;
         }
     if (g_log)
-        fprintf(g_log, "%d pk task=%08lx caller=%08lx x=%.1f..%.1f y=%.1f..%.1f n=%d psm=%d fbp=%d/%d %s%s tbp=%d u=%g..%g\n", g_field,
+        fprintf(g_log, "%d pk task=%08lx caller=%08lx x=%.1f..%.1f y=%.1f..%.1f n=%d psm=%d fbp=%d/%d %s%s tbp=%d u=%g..%g%s\n", g_field,
                 (unsigned long)(task ? task - image_base() : 0), (unsigned long)((uintptr_t)caller - image_base()),
                 (x0 - left) / 16.0f, (x1 - left) / 16.0f, y0 / 16.0f, y1 / 16.0f, nv, g_scan_psm, g_scan_fbp, g_scan_fbw,
                 why ? why : aname(anchor), menu ? " (menu)" : why || from_prev ? "" : " (own)", g_scan_tbp,
-                u0 < 1e29f ? u0 : -1.0f, u0 < 1e29f ? u1 : -1.0f);
+                u0 < 1e29f ? u0 : -1.0f, u0 < 1e29f ? u1 : -1.0f, g_elem && !why ? " elem" : "");
     if (g_about && why && why[0] == 'a') {
         /* world-anchored text: about its own projected point (no grouping, no scissor) */
         float a = g_about_px ? left + 16.0f * g_about_x : g_about_x;
+        float k = g_about_xy ? g_about_kx : g_uon ? g_s * g_u : g_s;
+        float ym = g_about_xy ? top + 16.0f * g_about_y : 0.5f * (y0 + y1);   /* UI scale: Y about the packet's own middle */
+        float ky = g_about_xy ? g_about_ky : g_u;
+        int doy = g_about_xy ? ky != 1.0f : g_uon;
         g_st.moved++;
         for (int j = 0; j < n; j++)
             if (xs[j].kind == 0) {
-                float v = a + ((float)*xs[j].x - a) * g_s;
+                float v = a + ((float)*xs[j].x - a) * k;
                 if (v < 0.0f) v = 0.0f;
                 if (v > 65535.0f) v = 65535.0f;
                 *xs[j].x = (uint16_t)(v + 0.5f);
+                if (doy && nv > 0) {
+                    float q = ym + ((float)*xs[j].y - ym) * ky;
+                    if (q < 0.0f) q = 0.0f;
+                    if (q > 65535.0f) q = 65535.0f;
+                    *xs[j].y = (uint16_t)(q + 0.5f);
+                }
             }
-        return g_s != 1.0f;
+        return k != 1.0f;
     }
     if (anchor == RG_ANCHOR_NONE)
         return 0;
     g_st.moved++;
     float wpx = w / 16.0f;
+    /* the X scale: the squeeze times the group's UI scale (exactly g_s without one) */
+    float sx = ue != 1.0f ? g_s * ue : g_s;
+    int ysc = ue != 1.0f && yanchor != RG_ANCHOR_NONE;
+    float hpx = h / 16.0f;
     int tall = (y1 - y0) >= 0.5f * RG_LAYOUT_FRAME_H * 16.0f;
     int pin = !tall;
     /* only a piece mostly on the screen is pinned (one mostly off it, slid out, is not
@@ -1170,7 +1586,7 @@ int rg_layout_packet(void *pkt, const void *caller)
             continue;
         if (x->kind == 0) {
             float o = (float)*x->x;
-            float v = rg_layout_map(o, anchor, left, w, g_s);
+            float v = rg_layout_map(o, anchor, left, w, sx);
             /* stage 3: a menu piece that bleeds off the screen (title bars, frame
              * strips) keeps reaching the canvas edge: its vertices outside the screen
              * are pinned there (a slight stretch of that piece instead of a gap).  Not
@@ -1183,18 +1599,34 @@ int rg_layout_packet(void *pkt, const void *caller)
             if (v < 0.0f) v = 0.0f;
             if (v > 65535.0f) v = 65535.0f;
             *x->x = (uint16_t)(v + 0.5f);
+            if (ysc) {
+                float q = rg_layout_map((float)*x->y, yanchor, top, h, ue);
+                if (q < 0.0f) q = 0.0f;
+                if (q > 65535.0f) q = 65535.0f;
+                *x->y = (uint16_t)(q + 0.5f);
+            }
         } else {
             /* scissor (window pixels): only a rectangle narrower than the screen moves */
             uint64_t sc = *x->sc;
             float a0 = (float)(sc & 0x7FF), a1 = (float)((sc >> 16) & 0x7FF);
             if (a1 - a0 + 1.0f >= RG_LAYOUT_FULL * wpx)
                 continue;
-            float b0 = rg_layout_map(a0, anchor, 0.0f, wpx, g_s);
-            float b1 = rg_layout_map(a1 + 1.0f, anchor, 0.0f, wpx, g_s) - 1.0f;
+            float b0 = rg_layout_map(a0, anchor, 0.0f, wpx, sx);
+            float b1 = rg_layout_map(a1 + 1.0f, anchor, 0.0f, wpx, sx) - 1.0f;
             if (b0 < 0.0f) b0 = 0.0f;
             if (b1 < b0) b1 = b0;
             sc &= ~((uint64_t)0x7FF | ((uint64_t)0x7FF << 16));
             sc |= (uint64_t)((unsigned)(b0 + 0.5f) & 0x7FF) | ((uint64_t)((unsigned)(b1 + 0.5f) & 0x7FF) << 16);
+            if (ysc) {
+                /* (window pixels from the frame's top) */
+                float c0 = (float)((sc >> 32) & 0x7FF), c1 = (float)((sc >> 48) & 0x7FF);
+                float d0 = rg_layout_map(c0, yanchor, 0.0f, hpx, ue);
+                float d1 = rg_layout_map(c1 + 1.0f, yanchor, 0.0f, hpx, ue) - 1.0f;
+                if (d0 < 0.0f) d0 = 0.0f;
+                if (d1 < d0) d1 = d0;
+                sc &= ~(((uint64_t)0x7FF << 32) | ((uint64_t)0x7FF << 48));
+                sc |= ((uint64_t)((unsigned)(d0 + 0.5f) & 0x7FF) << 32) | ((uint64_t)((unsigned)(d1 + 0.5f) & 0x7FF) << 48);
+            }
             *x->sc = sc;
         }
     }
@@ -1205,7 +1637,7 @@ int rg_layout_packet(void *pkt, const void *caller)
                 fprintf(g_log, " %.1f%s", ((float)*xs[j].x - left) / 16.0f, xs[j].prim == 6 ? "s" : "");
         fprintf(g_log, "\n");
     }
-    return g_s != 1.0f;
+    return sx != 1.0f;
 }
 
 /* stage 3: the main menu's portrait circle (MenuCaptureScreenTex_298810 override).  The

@@ -24,11 +24,17 @@ extern u8 D_00482A38;
 extern u8 D_00482A40;
 extern u8 D_004E7BF0[0x400];
 extern void *D_004E7CD0[0x10];
-extern void *D_004E7D90[0x10];
-extern void *D_004E7DA0[0x10];
-extern u8 D_004E7DA4[0x100];
-extern u8 D_004E7E70[0x100];
+#define D_004E7CD0 (*(__typeof__(D_004E7CD0) *)((u8 *)&D_004E7BF0 + 0xE0))   /* rg-interior */
+extern void *D_004E7D90[4];
+#define D_004E7D90 (*(__typeof__(D_004E7D90) *)((u8 *)&D_004E7BF0 + 0x1A0))   /* rg-interior */
+extern void *D_004E7DA0[1];
+#define D_004E7DA0 (*(__typeof__(D_004E7DA0) *)((u8 *)&D_004E7BF0 + 0x1B0))   /* rg-interior */
+extern u8 D_004E7DA4[0xBC];
+#define D_004E7DA4 (*(__typeof__(D_004E7DA4) *)((u8 *)&D_004E7BF0 + 0x1B4))   /* rg-interior */
+extern u8 D_004E7E70[0xB0];
+#define D_004E7E70 (*(__typeof__(D_004E7E70) *)((u8 *)&D_004E7BF0 + 0x280))   /* rg-interior */
 extern u8 D_004E7F20[0x100];
+#define D_004E7F20 (*(__typeof__(D_004E7F20) *)((u8 *)&D_004E7BF0 + 0x330))   /* rg-interior */
 extern void IosBaseInitDtor_102ee0(void);
 extern void WIosBaseInitDtor_103420(void);
 extern void HandleHeapDtor_312950(void);

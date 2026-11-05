@@ -47,9 +47,18 @@ enum { RG_ANCHOR_NONE = 0, RG_ANCHOR_LEFT, RG_ANCHOR_CENTER, RG_ANCHOR_RIGHT };
 /* graphics.ui_layout values */
 enum { RG_UI_LAYOUT_KEEP = 0, RG_UI_LAYOUT_STRETCH = 1 };
 
-/* per field (between fields): s < 1 activates, s >= 1 deactivates */
+/* per field (between fields): s < 1 activates, s >= 1 deactivates (unless a UI scale is set) */
 void rg_layout_set_frame(float s, int field);
+/* the X squeeze runs (s < 1): the WIDE-aware HUD sites then draw at full width */
 int rg_layout_active(void);
+/* accessibility.ui_scale (docs/WIDESCREEN.md "UI scale"): u != 1 (0.5 .. 2) also activates
+ * the transform, on any canvas (4:3 included), before rg_layout_set_frame.  Every laid-out
+ * group (in-field windows, message text, the HUD) is scaled by u in X (times s) and Y about
+ * its anchor (x: left / centre / right edge, y: top / middle / bottom), limited per group so
+ * it stays on the screen; world-anchored text (rg_layout_about_begin) about its own point;
+ * full-screen menus (stage 3) keep their size.  1 = off: nothing changes (Original). */
+void rg_layout_set_ui_scale(float u);
+float rg_layout_ui_scale(void);
 /* full-screen menus (an indexed-colour UI background covering the screen, drawn by a
  * game task): detection runs on any wide canvas.  Stage 3 (USER 2026-10-19, no aspect
  * switch for menus): the canvas, the WIDE flag and the 3D stay wide; everything the
@@ -79,7 +88,18 @@ int rg_layout_suppressed(void);
  * and gets 4:3 glyph widths.  screen_px: ax in pixels from the screen's left edge, else
  * 12.4 GS units (offset included).  Wins over suppress / the Z test; not nested. */
 void rg_layout_about_begin(float ax, int screen_px);
+/* the same about an explicit centre (screen pixels from the top-left) with explicit X / Y
+ * factors (no squeeze added): the world-anchored HP gauges under the UI scale
+ * (HpGaugeDrawBar* overrides, tools/p6/gauge_about_override.py).  Ended by about_end. */
+void rg_layout_about_xy_begin(float ax_px, float ay_px, float kx, float ky);
 void rg_layout_about_end(void);
+/* an element's extent known ahead of its packets (message windows: MesWinDraw_270cb0 override,
+ * the text block [x, x + the page's widest line] in screen pixels): while set, the packets'
+ * rectangles are widened to it for the anchor and the grouping, so a line of text being typed
+ * out from the left of a centred block is centred from its first glyph (docs/WIDESCREEN.md
+ * "Anchor snaps (2026-10-31)").  Not nested. */
+void rg_layout_elem_begin(float x0_px, float x1_px);
+void rg_layout_elem_end(void);
 /* stage 3: the main menu's portrait-circle copy of the field frame
  * (MenuCaptureScreenTex_298810 override): resampled from the wide frame so it holds what
  * the 4:3 copy holds.  src = the frame download at row 106 (512 RGBA32 pixels a row),
@@ -93,6 +113,11 @@ int rg_layout_anchor(float x0, float x1, float left, float width);
 int rg_layout_cluster_anchor(float x0, float x1, float left, float width);
 /* transformed coordinate */
 float rg_layout_map(float x, int anchor, float left, float width, float s);
+/* UI scale: the largest k in [1, u] (u when u <= 1) that keeps the group [x0, x1] x [y0, y1]
+ * (anchors ax / ay, X squeeze s) inside the screen [left, left + w] x [top, top + h]; 1 when
+ * it is already past an edge unscaled */
+float rg_layout_fit_scale(float u, int ax, int ay, float x0, float x1, float y0, float y1,
+                          float left, float w, float top, float h, float s);
 
 /* A GIF-tagged packet scan: every vertex X (u16 at *x) and scissor X pair.
  * buf points at the first GIF tag, qwc qwords long.  Returns the number of X
@@ -114,7 +139,7 @@ int rg_layout_scan_gif(uint8_t *buf, int qwc, rg_layout_xref *out, int max);
 
 /* counters for logs / tests */
 typedef struct rg_layout_stats {
-    unsigned packets, groups, moved, full, ztest, suppressed, verts, about, menu, capture, strips;
+    unsigned packets, groups, moved, full, ztest, suppressed, verts, about, menu, capture, strips, inherited;
 } rg_layout_stats;
 void rg_layout_get_stats(rg_layout_stats *st);
 

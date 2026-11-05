@@ -8,7 +8,7 @@
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_0044B020[0x400];
+extern u8 D_0044B020[0x250];
 extern u8 D_0044B270[0x400];
 extern u8 D_004B2C80[0x400];
 

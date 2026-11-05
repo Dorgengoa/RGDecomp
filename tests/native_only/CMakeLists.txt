@@ -39,6 +39,15 @@ if(RG_PYTHON)
   # dereference reviewed (tools/native/gameptr_census.py; docs/NATIVE-RENDER.md "Remembered packets")
   add_test(NAME native_only.gameptr_census COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/native/gameptr_census.py --check)
   set_tests_properties(native_only.gameptr_census PROPERTIES LABELS native_only TIMEOUT 60)
+  # renderer -> game-logic doors (GS read-backs, register reads, waits): every site classified, and
+  # the read-backs served in renderless builds too (tools/native/readback_census.py; docs/NATIVE-RENDER.md
+  # "Renderer -> logic data flows")
+  set(_rb ${CMAKE_SOURCE_DIR}/tools/native/readback_census.py)
+  add_test(NAME native_only.readback_census COMMAND ${RG_PYTHON} ${_rb} --check)
+  add_test(NAME native_only.readback_census_control COMMAND ${RG_PYTHON} ${_rb} --check --inject)
+  set_tests_properties(native_only.readback_census_control PROPERTIES WILL_FAIL TRUE)
+  set_tests_properties(native_only.readback_census native_only.readback_census_control
+                       PROPERTIES LABELS native_only TIMEOUT 120)
 endif()
 if(NOT TARGET rg-game OR NOT RG_PYTHON)
   return()

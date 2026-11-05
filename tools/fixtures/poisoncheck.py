@@ -4,7 +4,7 @@
 packets"; history 2026-10-26 (rpkt)).
 
     python tools/fixtures/poisoncheck.py --exe EXE [--suite shop,boot,drivers,soak] [--out DIR]
-                                         [--mode 1|2] [--soak-fields N] [--skip-missing] [--control]
+                                         [--mode 1|2] [--soak-fields N] [--cards C,..] [--skip-missing] [--control]
 
 RG_NR_POISON=1 makes DrawListFrameBegin fill a frame packet stack's dead contents with a poison
 pattern before the game resets it, and every native-renderer walker (nr_const, nr_fx, nr_mesh,
@@ -79,8 +79,9 @@ def suite(name, a, out: Path):
         rc, t = run([PY, "tools/fixtures/soak.py", "drivers", "--exe", exe, "--out", str(d / "run")], d / "tool.txt")
         ok = rc == 0 and not re.search(r"\bFAIL\b", t)
     elif name == "soak":
-        rc, t = run([PY, "tools/fixtures/soak.py", "run", "--exe", exe, "--out", str(d / "run"), "--all",
-                     "--fields", str(a.soak_fields)], d / "tool.txt")
+        cards = a.cards.split(",") if a.cards else ["--all"]
+        rc, t = run([PY, "tools/fixtures/soak.py", "run", "--exe", exe, "--out", str(d / "run")] + cards +
+                    ["--fields", str(a.soak_fields)], d / "tool.txt")
         ok = rc == 0
     else:
         raise SystemExit(f"unknown suite {name}")
@@ -96,6 +97,8 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default="out/poisoncheck")
     ap.add_argument("--mode", default="1", choices=["1", "2"])
     ap.add_argument("--soak-fields", type=int, default=1500)
+    ap.add_argument("--cards", help="soak suite: comma list of cards instead of --all (split a long pass into "
+                                    "chunks under the 2 h background limit; give each chunk its own --out)")
     ap.add_argument("--skip-missing", action="store_true")
     ap.add_argument("--control", action="store_true", help="RG_NR_NOTE_COPY=0: expect poisoned / refused reads")
     a = ap.parse_args(argv)

@@ -41,11 +41,11 @@ s32 Sprintf_1343b8();
 /*rgp*/
 char *strcpy(s32, char *);
 u32 strlen(char *);
-extern u8 D_00452EC0[0x400];
+extern u8 D_00452EC0[0x80];
 extern u8 D_00452F40[0x400];
 extern char D_004626E8[0x10];
 extern char D_004626F8[0x10];
-extern char D_00462708[0x10];
+extern char D_00462708[8];
 extern char D_00462710[0x10];
 extern u8 *D_00482CB0;
 

@@ -36,7 +36,7 @@ def main(argv=None):
     ap.add_argument('--data', default=os.path.join(PORT, 'data'))
     ap.add_argument('--out', default=os.path.join(PORT, 'out', 'prompts', 'atlas'))
     ap.add_argument('--bindings', help='settings .ini for the keyboard labels')
-    ap.add_argument('--styles', default='xbox,nintendo,keyboard')
+    ap.add_argument('--styles', default='xbox,nintendo,keyboard,keyboard_wide')
     args = ap.parse_args(argv)
     if not os.path.exists(os.path.join(args.data, 'SCUS_974.90')):
         print('no game data in %s: skipped' % args.data)
@@ -66,25 +66,44 @@ def main(argv=None):
         with open(src, 'wb') as f:
             f.write(img)
         for style in [s for s in args.styles.split(',') if s]:
-            _layer, ind, _used = gaiji.build_style(style, orig, metrics, binding, False)
+            wide = style == 'keyboard_wide'
+            _layer, ind, used = gaiji.build_style('keyboard' if wide else style, orig, metrics, binding, wide)
             ref = ind.rgba()
             dst = os.path.join(tmp, style + '.img')
             cmd = [args.exe, 'build_img', src, style, dst]
-            if style == 'keyboard':
+            if style.startswith('keyboard'):
                 cmd += keys
-            subprocess.run(cmd, check=True)
+            out = subprocess.run(cmd, check=True, capture_output=True, text=True).stdout
+            inside_s = inside
+            if wide:
+                # (lane p6a11y) the wide copies: same rects as gaiji.py --wide's metrics, and
+                # their pixels count as redrawn
+                want = {m['code']: (m['u'], m['v'], m['w'], m['h']) for m in used if m['code'] in gaiji.BUTTONS}
+                got_r = {}
+                for line in out.splitlines():
+                    p_ = line.split()
+                    if p_ and p_[0] == 'WIDE':
+                        got_r[int(p_[1], 16)] = tuple(int(v) for v in p_[2:6])
+                if got_r != want:
+                    print('FAIL: wide rects C %r, gaiji.py %r' % (got_r, want))
+                    bad += 1
+                inside_s = list(inside)
+                for (u, v, w, h) in want.values():
+                    for y in range(v, v + h):
+                        for x in range(u, u + w):
+                            inside_s[y * 256 + x] = True
             c_img = open(dst, 'rb').read()
             got_ind = gaiji.decode(c_img)
             got = got_ind.rgba()
             gaiji.write_png(os.path.join(args.out, 'gaiji2_%s.png' % style), 256, 256, got)
             diff = [i for i in range(256 * 256) if ref[4 * i:4 * i + 4] != got[4 * i:4 * i + 4]]
             moved = sum(1 for i in range(256 * 256)
-                        if not inside[i] and got_ind.idx[i] != orig.idx[i])
+                        if not inside_s[i] and got_ind.idx[i] != orig.idx[i])
             hdr_same = c_img[:0x90] == img[:0x90] and len(c_img) == len(img)
             worst = 0
             for i in diff:
                 worst = max(worst, max(abs(ref[4 * i + k] - got[4 * i + k]) for k in range(4)))
-            print('%-9s %5d / 65536 pixels differ from gaiji.py (worst channel %d); '
+            print('%-13s %5d / 65536 pixels differ from gaiji.py (worst channel %d); '
                   '%d index bytes moved outside the rects; headers %s'
                   % (style, len(diff), worst, moved, 'same' if hdr_same else 'DIFFERENT'))
             if diff or moved or not hdr_same:

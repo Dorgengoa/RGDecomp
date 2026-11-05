@@ -32,16 +32,16 @@ typedef struct Obj { void *vt; void *vt2; } Obj;
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_00471FE0[0x400];
-extern u8 D_004721F0[0x400];
-extern u8 D_00472250[0x400];
-extern u8 D_00472260[0x400];
+extern u8 D_00471FE0[0x20];
+extern u8 D_004721F0[0x20];
+extern u8 D_00472250[0x10];
+extern u8 D_00472260[0x1C];
 extern u8 D_0047227C[0x400];
-extern u8 D_00474680[0x400];
+extern u8 D_00474680[0x20];
 extern u8 D_004746A0[0x400];
-extern u8 D_00475840[0x400];
+extern u8 D_00475840[0x30];
 extern u8 D_00475870[0x400];
-extern u8 D_00476160[0x400];
+extern u8 D_00476160[0x20];
 extern u8 D_004761A0[0x400];
 extern u8 D_0047CD10[0x400];
 

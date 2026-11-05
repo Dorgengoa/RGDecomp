@@ -27,15 +27,62 @@ typedef enum rg_menu_cmd {
 #define RG_MENU_MAX_ROWS 128
 
 /* Row kinds on a page (rg_menu_rows encodes them as -1 - (kind + 8 * i)). */
-enum { RG_ROW_SETTING, RG_ROW_PRESET, RG_ROW_SAVE, RG_ROW_RESET_PAGE, RG_ROW_RESET_BINDINGS };
+enum { RG_ROW_SETTING, RG_ROW_PRESET, RG_ROW_SAVE, RG_ROW_RESET_PAGE, RG_ROW_RESET_BINDINGS,
+       RG_ROW_SAVES_MANAGE, RG_ROW_SAVES_IMPORT };   /* the last two: the "saves" page, with rg_menu_set_saves */
 #define RG_ROW_STRIDE 8
 
 /* What the menu shows. */
 enum {
     RG_MENU_VIEW_PAGE = 0,    /* a settings page (or presets) */
     RG_MENU_VIEW_BINDINGS,    /* one action's binding editor */
-    RG_MENU_VIEW_TEXT         /* text entry for a STRING setting */
+    RG_MENU_VIEW_TEXT,        /* text entry for a STRING setting (or a save name / card path) */
+    RG_MENU_VIEW_SAVES,       /* the save list of a card: names (rg_menu_set_saves) */
+    RG_MENU_VIEW_IMPORT,      /* import from a PCSX2 card */
+    RG_MENU_VIEW_BROWSE       /* file picker for the import */
 };
+
+/* ---- save manager (docs/SAVES.md "Saves in the settings overlay") ----
+ * The menu stays pure: the host hands it these operations (src/native/saves/mc_menu.c
+ * implements them on the card model and mc_import).  NULL = the Saves page has no
+ * "Manage saves" / "Import" rows. */
+#define RG_MENU_MAX_SAVES 64
+#define RG_MENU_MAX_FILES 192
+#define RG_MENU_PATH_MAX 512
+typedef struct rg_menu_save {
+    char dir[32];             /* BASCUS-97490LV5RG_03 */
+    char name[64];            /* the player's name for it ("" none) */
+    char title[96];           /* icon.sys title */
+    char meta[200];           /* "Ch. 2: ... | Jaster Lv 9 | 1:19:37" ("" unknown) */
+    char when[24];            /* "2026-10-30 21:05" ("" unknown) */
+    int exists;               /* import list: the target card has a directory of that name */
+    int game;                 /* a Rogue Galaxy save (BASCUS-97490LV5RG_*) */
+} rg_menu_save;
+enum { RG_FILE_UP, RG_FILE_DIR, RG_FILE_CARD, RG_FILE_FOLDER_CARD, RG_FILE_DRIVE };
+typedef struct rg_menu_file {
+    char name[128];
+    int kind;                 /* RG_FILE_* */
+} rg_menu_file;
+typedef struct rg_menu_saves_ops {
+    void *user;
+    /* saves of card (0, 1): count (out[] gets at most cap), -1 with msg (no card, ...) */
+    int (*list)(void *user, int card, rg_menu_save *out, int cap, char *msg, size_t msgcap);
+    /* name a save directory ("" removes the name): 0 ok, -1 with msg */
+    int (*rename)(void *user, int card, const char *dir, const char *name, char *msg, size_t msgcap);
+    /* open the PCSX2 card at path read-only and list its saves (exists = card `card` has
+     * one of that name): count, -1 with msg */
+    int (*src_list)(void *user, const char *path, int card, rg_menu_save *out, int cap, char *msg, size_t msgcap);
+    /* import save directory `dir` of the card at path into card `card` (crash-safe; force
+     * replaces an existing one after backing it up): 0 imported, 1 exists (not forced),
+     * -1 failed; msg says what happened */
+    int (*src_import)(void *user, const char *path, int card, const char *dir, int force, char *msg, size_t msgcap);
+    /* list folder `dir` ("" = the start folder, ":drives" = the drives) for the picker:
+     * count (folders, card images, PCSX2 folder cards; an "up" entry first), -1 with msg;
+     * `resolved` gets the folder's full path */
+    int (*browse)(void *user, const char *dir, rg_menu_file *out, int cap, char *resolved, size_t rcap,
+                  char *msg, size_t msgcap);
+    /* the full path of entry `name` of folder `dir` (a drive: its root) */
+    void (*join)(void *user, const char *dir, const char *name, int kind, char *out, size_t cap);
+} rg_menu_saves_ops;
 
 /* Editing keys for text entry (keyboard; the gamepad uses the on-screen
  * selector through ordinary commands). */
@@ -65,9 +112,11 @@ typedef enum rg_menu_prompt {
 /* Choices for a STRING setting (e.g. the audio devices for audio.device): fills out[]
  * with up to cap strings (they must stay valid until the next call) and returns the
  * count; 0 = free text only.  LEFT / RIGHT on the row then steps through them; ACCEPT
- * still opens the text editor. */
+ * still opens the text editor.  For an INT setting the list names the values 0 .. n-1
+ * (display.monitor: the connected displays); the row shows the name, LEFT / RIGHT
+ * wraps within the list. */
 typedef int (*rg_menu_choices_fn)(const char *id, const char **out, int cap, void *user);
-#define RG_MENU_MAX_CHOICES 32
+#define RG_MENU_MAX_CHOICES 96
 
 typedef struct rg_menu {
     rg_settings *s;
@@ -103,7 +152,22 @@ typedef struct rg_menu {
     /* choice lists for STRING settings (rg_menu_set_choices; NULL = none) */
     rg_menu_choices_fn choices;
     void *choices_user;
+    /* save manager (rg_menu_set_saves; NULL = none) */
+    const rg_menu_saves_ops *saves;
+    int text_target;                        /* RG_MENU_TEXT_* : what the text editor commits to */
+    int sv_card;                            /* card shown / imported into (0, 1) */
+    int sv_n;                               /* -1: the list failed (status says why) */
+    rg_menu_save sv[RG_MENU_MAX_SAVES];
+    char sv_dir[32];                        /* the save being renamed */
+    char imp_path[RG_MENU_PATH_MAX];        /* the PCSX2 card ("" none) */
+    int imp_n;                              /* its saves (-1: could not be read) */
+    rg_menu_save imp[RG_MENU_MAX_SAVES];
+    char imp_confirm[32];                   /* a save waiting for "replace?" */
+    char br_dir[RG_MENU_PATH_MAX];          /* picker folder */
+    int br_n;
+    rg_menu_file br[RG_MENU_MAX_FILES];
 } rg_menu;
+enum { RG_MENU_TEXT_SETTING, RG_MENU_TEXT_SAVE_NAME, RG_MENU_TEXT_IMPORT_PATH };
 
 typedef struct rg_menu_line {
     char text[320];
@@ -178,6 +242,15 @@ const char *rg_menu_prompt_text(const rg_menu *m, rg_menu_prompt p);
  * [toggle] [start] [select] [dpad] [ls] [rs] [cancel] in `in`; anything else
  * (including other bracketed text) is copied.  Returns the full length. */
 size_t rg_menu_expand(const rg_menu *m, const char *in, char *out, size_t cap);
+
+/* The save manager's operations (after rg_menu_init; NULL hides its rows).  The Saves
+ * page then ends with "Manage saves (names)" and "Import saves from a PCSX2 memory card".
+ * Manage: LEFT / RIGHT on the card row picks the card, ACCEPT on a save renames it (text
+ * entry; empty = no name).  Import: the card file is typed (text entry) or picked
+ * (RG_MENU_VIEW_BROWSE: ACCEPT enters a folder or picks a card, BACK returns, PAGE_PREV /
+ * PAGE_NEXT move 10 rows), LEFT / RIGHT picks the target card, ACCEPT on a save imports it;
+ * a save the card already has asks first ([accept] replaces after a backup, [back] keeps). */
+void rg_menu_set_saves(rg_menu *m, const rg_menu_saves_ops *ops);
 
 bool rg_menu_text_editing(const rg_menu *m);
 void rg_menu_text_input(rg_menu *m, const char *utf8);

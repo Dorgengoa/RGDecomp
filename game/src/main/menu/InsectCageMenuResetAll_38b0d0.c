@@ -20,9 +20,9 @@ extern u8 *D_004832A8;
 extern s32 D_004832AC;
 extern u8 D_004832D0;
 extern s32 D_004832D8;
-extern u8 D_004E9380[0x400];
-extern u8 D_004E94A0[0x400];
-extern u8 D_004E9510[0x400];
+extern u8 D_004E9380[0x60];
+extern u8 D_004E94A0[0x20];
+extern u8 D_004E9510[0x10];
 extern u8 D_004E9530[0x400];
 
 void InsectCageMenuResetAll_38b0d0(void) {

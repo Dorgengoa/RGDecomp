@@ -2,8 +2,8 @@
 #pragma usefloatacc off
 extern "C" {
 
-extern s32 D_00465CF8[8];
-extern s32 D_00465D00[8];
+extern s32 D_00465CF8[2];
+extern s32 D_00465D00[2];
 extern s32 D_00465D08[8];
 
 class VC_0 {

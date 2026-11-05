@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
+#include <string>
 #include <unordered_map>
 #include <tuple>
 #include <vector>
@@ -22,6 +23,7 @@
 #include "nr_gs.h"
 #include "nr_gsmem.h"
 #include "nr_interp.h"
+#include "nr_texrep.h"
 
 #define gs_pixel_addr nr_px_addr
 #define gs_psm_bpp nr_psm_bpp
@@ -67,7 +69,31 @@ static void page_geom(int psm, uint32_t bw, int *pw, int *ph, uint32_t *bwp)
 /* Pages touched by the rectangle [x0,x1) x [y0,y1) of buffer (bp, bw, psm).
  * Exact at page granularity (a non-page-aligned bp spills into the next
  * page, which is included). */
+static Pages pages_of_calc(uint32_t bp, uint32_t bw, int psm, int x0, int y0, int x1, int y1);
+/* pages_of is a pure function of its arguments and the same rectangles come every frame (CLUT
+ * loads, textures, targets): a small per-thread memo (docs/NATIVE-RENDER.md "Throughput";
+ * $RG_NR_PAGEMEMO=0 off) */
 static Pages pages_of(uint32_t bp, uint32_t bw, int psm, int x0, int y0, int x1, int y1)
+{
+    static int on = -1;
+    if (on < 0) { const char *e = getenv("RG_NR_PAGEMEMO"); on = !(e && e[0] == '0'); }
+    if (!on) return pages_of_calc(bp, bw, psm, x0, y0, x1, y1);
+    struct M { uint32_t k[4]; Pages p; bool ok; };
+    static thread_local M memo[256];
+    uint32_t k[4] = { bp | ((uint32_t)psm << 24), bw, (uint32_t)(x0 & 0xFFFF) | ((uint32_t)y0 << 16),
+                      (uint32_t)(x1 & 0xFFFF) | ((uint32_t)y1 << 16) };
+    if (x0 < -32768 || y0 < -32768 || x1 > 32767 || y1 > 32767 || x0 > 32767 || y0 > 32767 || x1 < -32768 ||
+        y1 < -32768 || bp > 0xFFFFFF || psm < 0 || psm > 255)
+        return pages_of_calc(bp, bw, psm, x0, y0, x1, y1);
+    uint32_t h = (k[0] * 0x9E3779B1u) ^ (k[1] * 0x85EBCA77u) ^ (k[2] * 0xC2B2AE3Du) ^ (k[3] * 0x27D4EB2Fu);
+    M &m = memo[(h ^ (h >> 15)) & 255u];
+    if (m.ok && !memcmp(m.k, k, sizeof k)) return m.p;
+    m.p = pages_of_calc(bp, bw, psm, x0, y0, x1, y1);
+    memcpy(m.k, k, sizeof k);
+    m.ok = true;
+    return m.p;
+}
+static Pages pages_of_calc(uint32_t bp, uint32_t bw, int psm, int x0, int y0, int x1, int y1)
 {
     Pages p;
     p.clear();
@@ -126,12 +152,28 @@ struct Rt {
     uint32_t bp, bw;
     int psm;
     int w, h;          /* native: w = bw*64, h = rows owned (multiple of page height) */
-    int h_alloc;
+    int h_alloc;       /* rows of the backend target (rt_alloc_rows) */
+    int h_vp;          /* rows the draws' viewport is made for: 1024 / 2048 as before the rows
+                          change (NDC and the rasterizer's positions unchanged) */
     Pages pages;
     int has_dirty;
     GpuRect dirty;     /* newer than the mirror */
     int stale;         /* the mirror is newer than the target */
     Pages stale_pages; /* ... in these pages (the rest still current: rt_copy_pages) */
+};
+
+/* A work buffer's twin at the frame's internal resolution (gpu_set_im_hires, screen effects
+ * "enhanced"): a backend target (w x h native units at the backend's scale) holding what the
+ * effect chain drew into the work buffer (bp, bw, psm), its coordinates scaled by (sx, sy).
+ * Never in local memory; drawn and read only by the chain's draws. */
+struct Twin {
+    int id;
+    uint32_t bp, bw;
+    int psm;
+    int w, h;
+    float sx, sy;
+    uint32_t frame;    /* the EE frame the chain last drew it in */
+    int valid;         /* every draw into it this frame could be reproduced */
 };
 
 /* ------------------------------------------------------- batched state */
@@ -230,6 +272,8 @@ struct Elide {
     int used;
 };
 
+struct gpu_renderer;
+static void twins_free(gpu_renderer *r);
 struct gpu_renderer {
     gpu_config cfg;
     int scale;
@@ -322,7 +366,16 @@ struct gpu_renderer {
     const uint32_t *im_runs;   /* gpu_nr_im_submit_swap: the runs of the draw being made */
     int im_nruns;
     int im_crov;               /* gpu_nr_im_submit: the draw goes through the colour target's ordered view */
-    int im_xfree;              /* gpu_set_im_xfree: squeezed 2D, sprites not snapped in X when upscaled */
+    int im_xfree;              /* gpu_set_im_xfree: squeezed 2D, sprites not snapped in X when upscaled
+                                * (bit 0); bit 1: scaled in Y too (UI scale): not snapped in Y, PF_SHARPY */
+    float im_line_xs;          /* gpu_set_im_line_xs (0 = 1): y-major lines' x thickness in native pixels */
+    int im_box;                /* gpu_set_im_box: a screen-effect pass's minifying read of a live target
+                                * box-filtered over the footprint (nr_sfx.c "enhanced", nr_draw.hlsl PF_BOX) */
+    /* gpu_set_im_hires: screen-effect chains at the internal resolution (work buffers' twins) */
+    int im_hires;
+    float im_hsx, im_hsy, im_hbox;
+    uint32_t im_hframe;
+    std::vector<Twin> twins;
     /* $RG_NR_IMFB_CENSUS=1: approximated immediate states by (reason, FRAME, TEX0), primitives */
     int fb_census;
     std::map<std::tuple<int, uint64_t, uint64_t>, uint64_t> fbc;
@@ -390,7 +443,7 @@ static inline void blk_release(gpu_renderer *r, uint32_t b) { r->blk_owner[b] = 
 static inline uint32_t mix32(uint32_t h, uint32_t v) { return (h ^ v) * 16777619u; }
 /* a GPU write (target write-back, local->local copy) of rectangle d of buffer (bp, bw, psm):
  * every block it touches gets a new epoch, no kept transfer, a unique content key */
-static void blk_write_gpu(gpu_renderer *r, uint32_t bp, uint32_t bw, int psm, GpuRect d)
+static void blk_write_gpu(gpu_renderer *r, uint32_t bp, uint32_t bw, int psm, GpuRect d, int texrep = 0)
 {
     int bwk, bhk;
     if (d.x0 < 0) d.x0 = 0;
@@ -401,6 +454,9 @@ static void blk_write_gpu(gpu_renderer *r, uint32_t bp, uint32_t bw, int psm, Gp
     uint32_t e = ++r->epoch;
     if (!blk_dims(psm, &bwk, &bhk)) bwk = bhk = 8;
     if (bw == 0) bw = 1;
+    /* (docs/TEXTURES.md; texrep: 0 a target write-back, 1 a local copy done on the CPU copy too,
+     * 2 a local copy from blocks it does not know) */
+    if (nr_texrep_on() && texrep != 1) nr_texrep_gpu_write(bp, bw, psm, d.x0, d.y0, d.x1, d.y1, texrep == 2);
     for (int by = d.y0 / bhk; by <= (d.y1 - 1) / bhk; by++)
         for (int bx = d.x0 / bwk; bx <= (d.x1 - 1) / bwk; bx++) {
             uint32_t b = (gs_pixel_addr(psm, bp, bw, (uint32_t)(bx * bwk), (uint32_t)(by * bhk), NULL) >> 8) & 16383u;
@@ -474,8 +530,11 @@ static void rt_drop(gpu_renderer *r, size_t i)
 
 
 
+static char g_be_notice[160];   /* (rt4) a backend fallback the player should see (gpu_nr_backend_notice) */
 static volatile uint32_t g_filt_frame;   /* $RG_NR_FILTLOG: EE frame (gpu_nr_filtlog_frame) */
 extern "C" void gpu_nr_filtlog_frame(uint32_t frame) { g_filt_frame = frame; }
+struct ShCount { uint64_t n = 0; uint32_t first = 0, last = 0; };
+static std::map<std::string, ShCount> g_shcount;   /* (rt5) $RG_NR_SHCOUNT=1 */
 static void clut_resolve(gpu_renderer *r);
 
 /* the mirror is written (a transfer, a copy): early copies of those pages are void */
@@ -621,6 +680,22 @@ static int reint_level()
 static int reint_on() { return reint_level() >= 1; }
 static int reint_fmt(int psm) { return psm == GS_PSMCT32 || psm == GS_PSMCT24 || psm == GS_PSMCT16 || psm == GS_PSMCT16S; }
 
+/* Rows a target with h owned rows is allocated with (docs/NATIVE-RENDER.md "Target rows"): the
+ * next power of two above h (at least one row past the owned ones, as the 1024 / 2048 rows always
+ * had: bilinear and clamped reads at the bottom edge see the same zero rows), at most h_vp.  Powers
+ * of two keep the sampling scale of a target read directly ((1 << th) / rows) exact.  The game's
+ * frame targets own 448 rows (512 allocated, was 1024), work targets 64-384: every clear, clone,
+ * copy and snapshot of a whole target shrinks with it.  $RG_NR_RTROWS=0: 1024 / 2048 (before). */
+static int rt_alloc_rows(int h, int h_vp)
+{
+    static int on = -1;
+    if (on < 0) { const char *e = getenv("RG_NR_RTROWS"); on = !(e && e[0] == '0'); }
+    if (!on) return h_vp;
+    int a = 64;
+    while (a < h + 1) a <<= 1;
+    return a < h_vp ? a : h_vp;
+}
+
 /* Find or create the target (bp,bw,psm), owning at least rows [0, need_h).
  * Other targets overlapping its pages are written back and dropped
  * (`keep` = the partner bound in the same draw). */
@@ -688,7 +763,8 @@ static Rt *rt_bind(gpu_renderer *r, int depth, uint32_t bp, uint32_t bw, int psm
         n.depth = depth; n.bp = bp; n.bw = bw; n.psm = psm;
         n.w = (int)bw * 64;
         n.h = 0;
-        n.h_alloc = new_h <= 1024 ? 1024 : 2048;
+        n.h_vp = new_h <= 1024 ? 1024 : 2048;
+        n.h_alloc = rt_alloc_rows(new_h, n.h_vp);
         n.id = r->be->rt_create(depth, n.w, n.h_alloc);
         if (n.id < 0) return NULL;
         r->rts.push_back(n);
@@ -711,8 +787,13 @@ static Rt *rt_bind(gpu_renderer *r, int depth, uint32_t bp, uint32_t bw, int psm
         t->stale_pages.clear();
     }
     if (new_h > old_h) {
-        if (new_h > t->h_alloc) {
-            t->h_alloc = 2048;
+        if (new_h > t->h_vp) t->h_vp = 2048;
+        int a = rt_alloc_rows(new_h, t->h_vp);
+        if (a > t->h_alloc) {
+            if (r->rt_log)
+                fprintf(r->rt_log, "G %d bp %u bw %u psm %02x h %d -> %d rows %d -> %d\n", t->depth, t->bp, t->bw, t->psm,
+                        old_h, new_h, t->h_alloc, a);
+            t->h_alloc = a;
             r->be->rt_resize(t->id, t->w, t->h_alloc);
         }
         t->h = new_h;
@@ -1434,6 +1515,7 @@ static void mem_xfer(gpu_renderer *r, const gs_mem_rect *rc0, const uint8_t *dat
         }
     }
     double tB = now_us(); r->x_t[0] += tB - t0;
+    if (nr_texrep_on()) nr_texrep_xfer(&rc, data, npx);   /* texture dump / replacement: the CPU copy (docs/TEXTURES.md) */
     /* targets holding newer pixels there go to the mirror first (the transfer's bits then land
      * over them) */
     for (Rt &t : r->rts)
@@ -1849,7 +1931,9 @@ static void mem_copy(gpu_renderer *r, const gs_mem_rect *s, uint32_t dbp, uint32
     mem_flush(r);
     if (!r->be->mem_copy(u)) return;
     GpuRect dr = { (int)dx, (int)dy, (int)(dx + s->w), (int)(dy + s->h) };
-    blk_write_gpu(r, dbp, d.bw, dpsm, dr);
+    /* texture dump / replacement: the copy on the CPU copy of local memory too (docs/TEXTURES.md) */
+    int cpu = nr_texrep_on() ? (nr_texrep_copy(s, dbp, d.bw, dpsm, dx, dy) ? 1 : 2) : 0;
+    blk_write_gpu(r, dbp, d.bw, dpsm, dr, cpu);
     mirror_written(r, dp);
     r->l2l_n++;
 }
@@ -1882,6 +1966,8 @@ gpu_renderer *gpu_create(const gpu_config *cfg, char *err, size_t errcap)
         if (pl && (pl[0] == '0' || pl[0] == '1')) c.probe_lag = pl[0] == '1';
         const char *nz = getenv("RG_GPU_NO_ZROV");
         if (nz && nz[0] == '1') c.no_zrov = 1;
+        const char *rt = getenv("RG_RT");   /* graphics.raytracing (docs/RAYTRACING.md) */
+        if (rt && rt[0] >= '0' && rt[0] <= '4') c.raytracing = rt[0] - '0';   /* (3: shadows + AO; 4: + reflections, rt5) */
     }
     if (c.no_rov) c.no_zrov = 1;
     GpuBackend *be = NULL;
@@ -1905,8 +1991,26 @@ gpu_renderer *gpu_create(const gpu_config *cfg, char *err, size_t errcap)
         }
     }
 #endif
+#if !defined(RG_HAVE_VULKAN)
+    {
+        /* (rt4, lane integ2's find) an exe built without the Vulkan backend (no dxc at configure
+         * time) used to run Direct3D 11 silently when Vulkan or ray tracing was asked for: say so
+         * once on stderr and in the settings overlay (gpu_nr_backend_notice) */
+        const char *api = getenv("RG_GPU_API");
+        int want_vk = c.api == 1 || (api && (!strcmp(api, "vulkan") || !strcmp(api, "vk")));
+        if ((want_vk || c.raytracing) && !g_be_notice[0]) {
+            snprintf(g_be_notice, sizeof g_be_notice, "Vulkan backend not built into this exe; using Direct3D 11%s",
+                     c.raytracing ? " (ray tracing off)" : "");
+            fprintf(stderr, "rg gpu: %s\n", g_be_notice);
+        }
+    }
+#endif
 #if defined(_WIN32)
-    if (!be) be = gpu_backend_d3d11_create(&c, c.scale, err, errcap);
+    if (!be) {
+        if (c.raytracing) fprintf(stderr, "rg gpu: ray tracing needs the Vulkan backend (display.backend=vulkan); off\n");
+        c.raytracing = 0;
+        be = gpu_backend_d3d11_create(&c, c.scale, err, errcap);
+    }
 #endif
     RG_X64_VA_FENCE(0);
     if (!be) return NULL;
@@ -1986,9 +2090,12 @@ void gpu_destroy(gpu_renderer *r)
                     std::get<0>(v[i].second), (unsigned long long)std::get<1>(v[i].second), (unsigned long long)std::get<2>(v[i].second));
     }
     gpu_mem_stats(r, stderr);
+    nr_texrep_stats(stderr);   /* (also when turned off mid-game: stops its threads; silent if never on) */
+    nr_texrep_set_reader(NULL, NULL);
     if (r->trace) fclose(r->trace);
     if (r->rt_log) fclose(r->rt_log);
     if (r->filt_log) fclose(r->filt_log);
+    twins_free(r);
     for (Rt &t : r->rts) r->be->rt_destroy(t.id);
     for (uint32_t b = 0; b < 16384; b++) delete r->kblk[b];
     replay_free(r);
@@ -1999,6 +2106,9 @@ void gpu_destroy(gpu_renderer *r)
 void gpu_mem_stats(const gpu_renderer *r, FILE *f)
 {
     if (!r || !f) return;
+    for (auto &e : g_shcount)
+        fprintf(f, "native device shadow-map census: %s: %llu draws, frames %u..%u\n", e.first.c_str(), (unsigned long long)e.second.n,
+                e.second.first, e.second.last);
     fprintf(f, "native device memory: transfers %llu (%llu KB), elided %llu (%llu KB), words kept %llu, merged %llu KB, %.1f ms; "
                "CLUT loads from transfer bytes %llu, on the GPU %llu (dry %llu); local->local %llu, local->host %llu "
                "(early %llu, read-backs %llu, %.1f ms wait)\n",
@@ -2045,6 +2155,7 @@ int gpu_ordered_depth(const gpu_renderer *r) { return r->zrov; }
 void gpu_attach(gpu_renderer *r, gpu_gs *gs)
 {
     r->gs = gs;
+    twins_free(r);
     for (Rt &t : r->rts) r->be->rt_destroy(t.id);
     r->rts.clear();
     r->clut_valid = 0;
@@ -2077,6 +2188,7 @@ void gpu_mem_copy(gpu_renderer *r, const gs_mem_rect *src, uint32_t dbp, uint32_
 }
 
 int gpu_mem_read(gpu_renderer *r, const gs_mem_rect *rc, uint8_t *out, uint32_t bytes) { return mem_read(r, rc, out, bytes); }
+int gpu_probe_lag_on(const gpu_renderer *r) { return r && r->probe_lag; }   /* (nr_scene.c: probe reads off the EE's wait) */
 
 int gpu_clut_load(gpu_renderer *r, gpu_gs *gs, const gs_mem_rect *rc, int csm, uint32_t csa, int cpsm, uint32_t n, int dry)
 {
@@ -2095,10 +2207,12 @@ int gpu_mem_save(gpu_renderer *r, uint8_t *out)
 
 void gpu_mem_load(gpu_renderer *r, const uint8_t *in)
 {
+    twins_free(r);
     for (Rt &t : r->rts) r->be->rt_destroy(t.id);
     r->rts.clear();
     mem_flush(r);
     r->be->mirror_upload(0, GS_VRAM_BYTES, in);
+    if (nr_texrep_on()) nr_texrep_load_all(in);
     for (Elide &e : r->elide) e.used = 0;
     uint32_t e = ++r->epoch;
     for (uint32_t b = 0; b < 16384; b++) {
@@ -2121,10 +2235,30 @@ void gpu_mem_load(gpu_renderer *r, const uint8_t *in)
     r->clut_own_any = 0;
 }
 
-const gpu_stats *gpu_get_stats(const gpu_renderer *r) { return &r->stats; }
+const gpu_stats *gpu_get_stats(const gpu_renderer *r)
+{
+    ((gpu_renderer *)r)->stats.rt_pool_hits = r->be->n_rt_pool_hits;   /* (gpu_core.cpp does the same) */
+    return &r->stats;
+}
 
 int gpu_get_scale(const gpu_renderer *r) { return r->scale; }
-void gpu_set_im_xfree(gpu_renderer *r, int on) { if (r) r->im_xfree = on != 0; }
+void gpu_set_im_xfree(gpu_renderer *r, int on) { if (r) r->im_xfree = on & 1 ? on & 3 : 0; }
+void gpu_set_im_box(gpu_renderer *r, int on) { if (r) r->im_box = on != 0; }
+void gpu_set_im_hires(gpu_renderer *r, int mode, float sx, float sy, float box, uint32_t frame)
+{
+    if (!r) return;
+    r->im_hires = mode == 1 && sx >= 1.0f && sy >= 1.0f && sx <= 16.0f && sy <= 16.0f;
+    r->im_hsx = sx;
+    r->im_hsy = sy;
+    r->im_hbox = box > 0.0f && box < 16.0f ? box : 0.0f;
+    r->im_hframe = frame;
+}
+static void twins_free(gpu_renderer *r)
+{
+    for (Twin &t : r->twins) r->be->rt_destroy(t.id);
+    r->twins.clear();
+}
+void gpu_set_im_line_xs(gpu_renderer *r, float xs) { if (r) r->im_line_xs = xs > 0.0f && xs < 1.0f ? xs : 0.0f; }
 
 int gpu_read_target(gpu_renderer *r, uint32_t bp, uint32_t bw, int psm, int x, int y, int w,
                     int h, uint32_t *out)
@@ -2403,6 +2537,7 @@ int gpu_set_scale(gpu_renderer *r, int scale)
     if (scale < 1) scale = 1;
     if (scale > 8) scale = 8;
     if (scale == r->scale) return r->scale;
+    twins_free(r);
     if (r->gs) {
         /* every target back to the mirror, then gone: they reload from local
          * memory at the new scale on their next use */
@@ -2420,6 +2555,15 @@ int gpu_set_scale(gpu_renderer *r, int scale)
 
 void gpu_enhance_default(gpu_enhance *e) { memset(e, 0, sizeof *e); }
 
+/* nr_texrep's mirror read (nr_texrep_set_reader): pending transfers first, then the runs */
+static int texrep_read(void *user, const uint32_t *runs, int nruns, uint8_t *vram)
+{
+    gpu_renderer *r = (gpu_renderer *)user;
+    mem_flush(r);
+    r->be->mirror_download(runs, nruns, vram);
+    return 1;
+}
+
 void gpu_set_enhance(gpu_renderer *r, const gpu_enhance *e)
 {
     gpu_enhance n;
@@ -2427,6 +2571,19 @@ void gpu_set_enhance(gpu_renderer *r, const gpu_enhance *e)
     else gpu_enhance_default(&n);
     if (memcmp(&n, &r->enh, sizeof n) == 0) return;
     if (r->gs) {
+    }
+    if (n.tex_dump != r->enh.tex_dump || n.tex_replace != r->enh.tex_replace) {
+        /* texture dump / replacement (nr_texrep.h): a new CPU copy of local memory starts as the
+         * mirror holds it now */
+        if (!n.tex_replace && r->enh.tex_replace) r->be->nr_rep_clear();   /* (the GPU copies of the replacements) */
+        nr_texrep_set_reader(texrep_read, r);
+        if (nr_texrep_config(n.tex_dump, n.tex_replace)) {
+            std::vector<uint8_t> v(GS_VRAM_BYTES);
+            uint32_t runs[2] = { 0, GS_VRAM_BYTES };
+            mem_flush(r);
+            r->be->mirror_download(runs, 1, v.data());
+            nr_texrep_load_all(v.data());
+        }
     }
     r->enh = n;
 }
@@ -2437,6 +2594,13 @@ void gpu_get_enhance(const gpu_renderer *r, gpu_enhance *e) { *e = r->enh; }
  * docs/NATIVE-RENDER.md: a mesh drawn by the native pipeline at the marker's
  * place in the GS stream.  Targets, coherence and the texture follow the same
  * rules as a batch (flush_batch); the state is the GS registers in force. */
+extern "C" const char *gpu_nr_backend_notice(void) { return g_be_notice; }
+extern "C" int gpu_nr_rt_chars_shadow(gpu_renderer *r)
+{
+    static int keep = -1;
+    if (keep < 0) { const char *e = getenv("RG_RT_BLOB"); keep = e && e[0] == '1'; }
+    return !keep && r && r->be ? r->be->rt_chars_shadow() : 0;
+}
 void gpu_nr_prims_begin(gpu_renderer *r) { (void)r; }   /* (no GS draw path natively) */
 void gpu_nr_prims_alpha_swap(gpu_renderer *r, int on) { (void)r; (void)on; }
 void gpu_nr_prims_end(gpu_renderer *r) { (void)r; }
@@ -2598,10 +2762,178 @@ static int reint_view(gpu_renderer *r, const Derived &d, const GpuRect &tr, cons
     out->w = w;
     out->h = rows;
     out->h_alloc = rows;
+    out->h_vp = rows;
     out->pages = vp;
     g_reint.last_src = t->id;
     g_reint.views++;
     return id;
+}
+
+/* ---- screen-effect chains at the internal resolution (gpu_set_im_hires, nr_sfx.c "enhanced") --
+ * The game's bloom passes work in 192x192 buffers (glare, chest glow: the frame minified 2.67 x
+ * 2.33 by point samples, a bright pass, streaks, the result magnified over the frame).  With the
+ * chain marked (nr_sfx.c), every draw into such a work buffer is drawn as the game asks (local
+ * memory and the work buffer stay exactly as they were) and drawn again into the buffer's twin:
+ * a target of the frame's size at the internal resolution, coordinates scaled by (sx, sy) (row
+ * 11), reading the frame at the internal resolution or the twins of the work buffers it reads,
+ * bilinear (the GS's own taps and snaps off).  The pass's draw over the frame then reads the
+ * twin: the effect of the full-resolution picture, no point-sample flicker, no magnified texels.
+ * A twin counts only in the EE frame its chain drew it, and only while every draw into its
+ * work buffer that frame could be reproduced (otherwise the frame draw reads the work buffer). */
+static Twin *twin_find(gpu_renderer *r, uint32_t bp, uint32_t bw, int psm)
+{
+    for (Twin &x : r->twins)
+        if (x.bp == bp && x.bw == bw && x.psm == psm) return &x;
+    return NULL;
+}
+static Twin *twin_get(gpu_renderer *r, const Rt *t, float sx, float sy)
+{
+    int w = (int)ceilf((float)t->w * sx - 0.01f), h = (int)ceilf((float)t->h_alloc * sy - 0.01f);
+    for (size_t i = 0; i < r->twins.size(); i++) {
+        Twin &x = r->twins[i];
+        if (x.bp != t->bp || x.bw != t->bw || x.psm != t->psm) continue;
+        if (x.w == w && x.h == h && x.sx == sx && x.sy == sy) return &x;
+        r->be->rt_destroy(x.id);
+        r->twins.erase(r->twins.begin() + (std::ptrdiff_t)i);
+        break;
+    }
+    if (w < 1 || h < 1 || w > 2048 || h > 2048 || r->twins.size() >= 8) return NULL;
+    int id = r->be->rt_create(0, w, h);
+    if (id < 0) return NULL;
+    Twin x;
+    x.id = id; x.bp = t->bp; x.bw = t->bw; x.psm = t->psm; x.w = w; x.h = h; x.sx = sx; x.sy = sy;
+    x.frame = 0xFFFFFFFFu; x.valid = 0;
+    r->twins.push_back(x);
+    r->nrs.hires_twins++;
+    return &r->twins.back();
+}
+/* g reads a work buffer directly: read its twin instead (normalised coordinates: the same) */
+static void twin_tex(GpuNrDraw &g, const Twin &tw, const Key &k)
+{
+    int tw0 = (int)BITS(k.tex0, 26, 4), th0 = (int)BITS(k.tex0, 30, 4);
+    if (tw0 > 10) tw0 = 10;
+    if (th0 > 10) th0 = 10;
+    g.tex_rt = tw.id;
+    g.cb[12][0] = (float)(1 << tw0) / ((float)tw.w / tw.sx);
+    g.cb[12][1] = (float)(1 << th0) / ((float)tw.h / tw.sy);
+    g.cb[13][0] = (float)tw.w;
+    g.cb[13][1] = (float)tw.h;
+    GpuRect &tr = g.tex_rect;
+    tr.x0 = std::max(0, (int)floorf((float)tr.x0 * tw.sx) - 1);
+    tr.y0 = std::max(0, (int)floorf((float)tr.y0 * tw.sy) - 1);
+    tr.x1 = std::min(tw.w, (int)ceilf((float)tr.x1 * tw.sx) + 1);
+    tr.y1 = std::min(tw.h, (int)ceilf((float)tr.y1 * tw.sy) + 1);
+}
+/* a twin draw's texture read: the hardware bilinear filter at the internal resolution (none of
+ * the GS's snaps / taps, the GS's point / bilinear choice kept); box > 0 (bilinear reads without an
+ * alpha test only): a box `box` work pixels wide (bx, by: source texels per work
+ * pixel), colour and alpha averaged apart as the GS's own minifying taps average them (the
+ * bright pass Cs * As of the averages: the PS2's strength; nr_draw.hlsl PF_BOX, R[22].z /
+ * -R[13].w) */
+static void twin_filter(GpuNrDraw &g, float box, float bx, float by)
+{
+    uint32_t fl;
+    memcpy(&fl, &g.cb[23][0], 4);
+    fl &= ~(0x400u | 0x800u | 0x1000u | 0x4000u | 0x8000u | 0x10000u | 0x2000000u | 0x4000000u);
+    g.cb[22][2] = 0.0f;
+    g.cb[13][3] = 0.0f;
+    /* (the GS's own filter choice is kept: a point-sampled copy at the twin's resolution reads each
+     * texel whole; a box or bilinear read would mix alpha across edges, and the chest glow's copy
+     * alpha-tests it: edge pixels would pass that never pass on the GS) */
+    if (box > 0.0f && g.lin && !(fl & 4u)) {
+        fl |= 0x4000000u;
+        g.cb[22][2] = box * bx;
+        g.cb[13][3] = -box * by;   /* (negative: colour and alpha averaged apart, as the GS's taps do) */
+    }
+    memcpy(&g.cb[23][0], &fl, 4);
+    g.clamp_u = g.clamp_v = 1;
+}
+/* g: the draw into ct as built.  Returns 1 when g2 (into ct's twin) is to be drawn after g;
+ * g itself may have been redirected to read a twin (a draw into the frame) */
+static int hires_draw(gpu_renderer *r, const Key &k, const Derived &d, const Rt *ct, const Rt *zt, int reint_tmp, GpuNrDraw &g,
+                      GpuNrDraw &g2)
+{
+    const Rt *src = NULL;
+    if (g.tex_rt >= 0 && reint_tmp < 0) src = rt_find_id(r, g.tex_rt);
+    int ct_work = !ct->depth && ct->w < 512;
+    if (!ct_work) {
+        /* the pass's draw over the frame */
+        if (!src || src->w >= 512) return 0;
+        Twin *tw = twin_find(r, src->bp, src->bw, src->psm);
+        if (!tw) return 0;
+        if (!tw->valid || tw->frame != r->im_hframe) { r->nrs.hires_refused++; return 0; }
+        twin_tex(g, *tw, k);
+        g.tex_snap = 0;
+        twin_filter(g, 0.0f, 1.0f, 1.0f);
+        r->nrs.hires_reads++;
+        return 0;
+    }
+    /* the twin's resolution: the frame's internal resolution up to 3x ($RG_NR_SFX_HIRES_CAP=N: up
+     * to Nx; at 5x the full-size chain cost 4.1 ms GPU per frame, 1.8 ms at 3x, p6fx2) */
+    static float cap = -1.0f;
+    if (cap < 0.0f) { const char *e = getenv("RG_NR_SFX_HIRES_CAP"); cap = e && atof(e) >= 1.0 ? (float)atof(e) : 3.0f; }
+    float kc = (float)r->scale > cap ? cap / (float)r->scale : 1.0f;
+    float kmin = 1.0f / std::min(r->im_hsx, r->im_hsy);   /* (never coarser than the work buffer itself) */
+    if (kc < kmin) kc = kmin;
+    Twin *dt = twin_get(r, ct, r->im_hsx * kc, r->im_hsy * kc);
+    if (!dt) return 0;
+    if (dt->frame != r->im_hframe) { dt->frame = r->im_hframe; dt->valid = 1; }
+    if (zt || (g.tex_rt >= 0 && !src) || !dt->valid) {
+        static int lg = -1;
+        if (lg < 0) { const char *e = getenv("RG_NR_HIRES_LOG"); lg = e ? atoi(e) : 0; }
+        if (lg > 0) {
+            lg--;
+            fprintf(stderr, "nr hires: refused into %u/%u: zt %d crov %d tex_rt %d src %d valid %d tme %d\n", ct->bp, ct->bw,
+                    zt != NULL, g.crov, g.tex_rt, src != NULL, dt->valid, g.tme);
+        }
+        dt->valid = 0;
+        r->nrs.hires_refused++;
+        return 0;
+    }
+    const Twin *stw = NULL;
+    if (src && src->w < 512) {
+        stw = twin_find(r, src->bp, src->bw, src->psm);
+        if (!stw || !stw->valid || stw->frame != r->im_hframe) { dt->valid = 0; r->nrs.hires_refused++; return 0; }
+    }
+    float sx = dt->sx, sy = dt->sy;
+    g2 = g;
+    g2.color_rt = dt->id;
+    g2.depth_rt = -1;
+    g2.zfunc = GZ_OFF;
+    g2.zwrite = 0;
+    {
+        static int nc = -1;
+        if (nc < 0) { const char *e = getenv("RG_NR_HIRES_NOCROV"); nc = e && e[0] == '1'; }
+        if (nc && g2.crov) { g2.crov = 0; g2.cmask = d.pass[0].cmask; }
+    }
+    g2.rt_w = dt->w;
+    g2.rt_h = dt->h;
+    g2.vp_w = 1; while (g2.vp_w < g2.rt_w) g2.vp_w <<= 1;
+    g2.vp_h = 1; while (g2.vp_h < g2.rt_h) g2.vp_h <<= 1;
+    g2.scissor.x0 = (int)floorf((float)g.scissor.x0 * sx);
+    g2.scissor.y0 = (int)floorf((float)g.scissor.y0 * sy);
+    g2.scissor.x1 = std::min(dt->w, (int)ceilf((float)g.scissor.x1 * sx - 0.01f));
+    g2.scissor.y1 = std::min(dt->h, (int)ceilf((float)g.scissor.y1 * sy - 0.01f));
+    /* row 11: (x - OFX) * sx + 1/2 twin pixels (the half native pixel of the GS's sampling
+     * point, at the twin's pixel size) */
+    float ofx = g.cb[11][0] + 0.5f, ofy = g.cb[11][1] + 0.5f;
+    g2.cb[11][0] = ofx - 0.5f / sx;
+    g2.cb[11][1] = ofy - 0.5f / sy;
+    g2.cb[11][2] = 2.0f * sx / (float)g2.vp_w;
+    g2.cb[11][3] = 2.0f * sy / (float)g2.vp_h;
+    if (src) {
+        if (stw) {
+            twin_tex(g2, *stw, k);
+            g2.tex_snap = stw == dt;
+            twin_filter(g2, 0.0f, 1.0f, 1.0f);
+        } else {
+            g2.tex_snap = 0;   /* (the frame at the internal resolution) */
+            /* (box: the footprint of one work pixel in the frame's internal-resolution texels) */
+            twin_filter(g2, r->im_hbox, r->im_hsx * (float)r->scale, r->im_hsy * (float)r->scale);
+        }
+    }
+    r->nrs.hires_draws++;
+    return 1;
 }
 
 static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, const gpu_nr_draw *nd,
@@ -2609,18 +2941,55 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
 {
     gpu_gs *gs = r->gs;
     {
-        /* RG_NR_DBGSKIP=K:F:T (investigation): native draws of kind K (m mesh, i immediate,
-         * * any) into FBP F with TBP T (-1: any) are not drawn */
-        static int sk = -2, sf, st;
+        /* RG_NR_DBGSKIP=K:F:T[:A] (investigation): native draws of kind K (m mesh, i immediate,
+         * * any) into FBP F with TBP T (-1: any) [and ALPHA bits 0-7 = A, hex] are not drawn */
+        static int sk = -2, sf, st, sa = -1;
         static char skk;
         if (sk == -2) {
             const char *e = getenv("RG_NR_DBGSKIP");
             sk = -1;
-            if (e && sscanf(e, "%c:%d:%d", &skk, &sf, &st) == 3) sk = 1;
+            if (e && sscanf(e, "%c:%d:%d:%x", &skk, &sf, &st, &sa) >= 3) sk = 1;
         }
         if (sk == 1 && (skk == '*' || (skk == 'm') == (iv == NULL)) && (sf < 0 || (uint32_t)sf == d.fbp) &&
-            (st < 0 || (d.tme && (uint32_t)st == (uint32_t)BITS(k.tex0, 0, 14))))
+            (st < 0 || (d.tme && (uint32_t)st == (uint32_t)BITS(k.tex0, 0, 14))) &&
+            (sa < 0 || (d.abe && (int)BITS(k.alpha, 0, 8) == sa)))
             return 1;
+    }
+    {
+        /* RG_NR_DRAWLOG=FRAME[:A] (investigation, lane floorx2): from EE frame FRAME on, one
+         * stderr line per textured native mesh draw [with ALPHA bits 0-7 = A, hex]: registers,
+         * CLUT generation / hash / a few CT32 entries (as the GS model holds them) */
+        static long dl = -2;
+        static int dla = -1;
+        if (dl == -2) {
+            const char *e = getenv("RG_NR_DRAWLOG");
+            dl = -1;
+            if (e) { dl = atol(e); const char *c = strchr(e, ':'); if (c) dla = (int)strtol(c + 1, NULL, 16); }
+        }
+        if (dl >= 0 && g_filt_frame >= (uint32_t)dl && !iv && d.tme && (dla < 0 || (int)BITS(k.alpha, 0, 8) == dla)) {
+            uint32_t h = 2166136261u;
+            for (int i = 0; i < 512; i++) h = (h ^ r->clut_copy[i]) * 16777619u;
+            const uint16_t *cl = r->gs ? r->gs->clut : r->clut_copy;
+            fprintf(stderr, "nr drawlog %u: mesh %u fbp %u ALPHA %llX TEX0 %016llX (reg %016llX) TEX1 %llX TEXA %llX FOGCOL %06llX gen %llu hash %08x own %d c0 %08X c64 %08X c128 %08X c200 %08X c255 %08X\n",
+                    (unsigned)g_filt_frame, nd ? nd->mesh.id : 0u, d.fbp, (unsigned long long)k.alpha, (unsigned long long)k.tex0,
+                    r->gs ? (unsigned long long)r->gs->reg[GS_TEX0_1 + d.ctx] : 0ull, (unsigned long long)k.tex1,
+                    (unsigned long long)k.texa, (unsigned long long)k.fogcol, (unsigned long long)k.clut_gen, h, r->clut_own_any,
+                    cl[0] | ((uint32_t)cl[256] << 16), cl[64] | ((uint32_t)cl[320] << 16), cl[128] | ((uint32_t)cl[384] << 16),
+                    cl[200] | ((uint32_t)cl[456] << 16), cl[255] | ((uint32_t)cl[511] << 16));
+        }
+    }
+    {
+        /* RG_NR_SHLOG=FRAME (investigation, lane rt4: which draw is the game's soft character
+         * shadow): EE frames FRAME, FRAME + 1: one stderr line per textured native draw into a
+         * target 512+ wide that samples a narrow buffer (TBW <= 4) */
+        static long sl = -2;
+        if (sl == -2) { const char *e = getenv("RG_NR_SHLOG"); sl = e ? atol(e) : -1; }
+        if (sl >= 0 && g_filt_frame >= (uint32_t)sl && g_filt_frame <= (uint32_t)sl + 1 && d.tme && d.fbw >= 8 &&
+            BITS(k.tex0, 14, 6) <= 4)
+            fprintf(stderr, "nr shlog %u: %s mesh %u fbp %u tbp %u tbw %u psm %u tw %u th %u ALPHA %02X abe %d n %u\n",
+                    (unsigned)g_filt_frame, iv ? "im" : "mesh", nd ? nd->mesh.id : 0u, d.fbp, (unsigned)BITS(k.tex0, 0, 14),
+                    (unsigned)BITS(k.tex0, 14, 6), (unsigned)BITS(k.tex0, 20, 6), 1u << BITS(k.tex0, 26, 4), 1u << BITS(k.tex0, 30, 4),
+                    (unsigned)BITS(k.alpha, 0, 8), (int)d.abe, (unsigned)niv);
     }
     int fbw = (int)(d.fbw ? d.fbw : 1);
     int need_h = d.scy1;
@@ -2633,13 +3002,17 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
         if (!ct) zt = NULL;
     }
     if (!ct) { r->nrs.skipped++; return 1; }
-    if (zt && zt->h_alloc != ct->h_alloc) {
+    if (zt && zt->h_vp != ct->h_vp) {
+        Rt *small = zt->h_vp < ct->h_vp ? zt : ct;
+        small->h_vp = 2048;
+    }
+    if (zt && zt->h_alloc != ct->h_alloc) {   /* (colour and depth targets of one size) */
         Rt *small = zt->h_alloc < ct->h_alloc ? zt : ct;
-        small->h_alloc = 2048;
+        small->h_alloc = zt->h_alloc < ct->h_alloc ? ct->h_alloc : zt->h_alloc;
         r->be->rt_resize(small->id, small->w, small->h_alloc);
     }
     GpuNrDraw g;
-    nr_fill(r, k, d, gs->reg[GS_XYOFFSET_1 + d.ctx], nd, ct->id, ct->w, ct->h, ct->h_alloc, zt ? zt->id : -1, g);
+    nr_fill(r, k, d, gs->reg[GS_XYOFFSET_1 + d.ctx], nd, ct->id, ct->w, ct->h, ct->h_vp, zt ? zt->id : -1, g);
     g.im = iv;
     g.nim = niv;
     if (iv && r->im_nruns > 0) { g.runs = r->im_runs; g.nruns = r->im_nruns; }
@@ -2709,6 +3082,18 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
     }
     if (d.ate && d.afail != 0) r->nrs.unsupported_state++;   /* AFAIL modes: drawn as KEEP */
     if (d.date || d.merge) r->nrs.unsupported_state++;
+    {
+        /* RG_NR_UNSUP_LOG=N (investigation): the first N native draws with an unsupported
+         * pixel state, one stderr line each (which state, frame / texture base) */
+        static long ul = -2;
+        if (ul == -2) { const char *e = getenv("RG_NR_UNSUP_LOG"); ul = e ? atol(e) : -1; }
+        if (ul > 0 && ((d.ate && d.afail != 0) || d.date || d.merge)) {
+            ul--;
+            fprintf(stderr, "nr unsupported: %s afail %d atst %d aref %u date %d merge %d fbp %u tbp %u abe %d alpha %llx\n",
+                    nd ? "mesh" : "im", d.ate ? d.afail : -1, d.atst, (unsigned)BITS(k.test, 4, 8), d.date, d.merge,
+                    d.fbp, d.tme ? (unsigned)BITS(k.tex0, 0, 14) : 0u, d.abe, (unsigned long long)k.alpha);
+        }
+    }
     if (keep_gs_filter && r->scale > 1 && d.tme && g.lin) {
         /* RG_NR_SNAPLIN=0 (experiment): bilinear sprites' coordinates per sub-sample instead
          * of at the native pixel centre (no gain measured: 8,280 x3 unchanged, save2 x3 -0.3 dB) */
@@ -2877,7 +3262,27 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
         uint32_t fl;
         memcpy(&fl, &g.cb[23][0], 4);
         fl |= 0x8000u;
+        if (g.cb[22][3] >= 2.0f) fl |= 0x10000u;   /* scaled in Y too (UI scale): PF_SHARPY */
         memcpy(&g.cb[23][0], &fl, 4);
+    }
+    if (r->enh.aniso > 1 && d.tme && g.tex_rt < 0 && g.lin && !keep_gs_filter && nr_tex_ordinary(r, d)) {
+        /* graphics.anisotropic: 3D textures the GS (or the texture-filter override) filters
+         * bilinearly, from ordinary memory, sampled by the shader's plain Sample path (none of
+         * PF_NATTAP / PF_SUBPH / PF_GSLIN / PF_SHARPX, which tap texels themselves): the
+         * backend's anisotropic sampler.  Off / Original: the plain samplers, unchanged */
+        uint32_t fl;
+        memcpy(&fl, &g.cb[23][0], 4);
+        if (!(fl & (0x800u | 0x1000u | 0x4000u | 0x8000u))) g.aniso = r->enh.aniso > 16 ? 16 : r->enh.aniso;
+    }
+    if (r->im_box && iv && d.tme && g.tex_rt >= 0) {
+        /* screen effects "enhanced" (gpu_set_im_box, nr_sfx.c): the pass minifies the frame into its
+         * reduced work buffer; every internal-resolution texel under the footprint is averaged
+         * (PF_BOX) instead of the GS's taps (PF_SNAP / PF_NATTAP / PF_SUBPH / PF_GSLIN off) */
+        uint32_t fl;
+        memcpy(&fl, &g.cb[23][0], 4);
+        fl = (fl & ~(0x400u | 0x800u | 0x1000u | 0x4000u)) | 0x4000000u;
+        memcpy(&g.cb[23][0], &fl, 4);
+        r->nrs.im_box++;
     }
     /* texture: the level-0 wrap rect, decoded once (key: registers, CLUT
      * content, content of the pages read) */
@@ -2929,11 +3334,87 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
         g.dec_key[4] = (uint32_t)(cg >> 32);
         g.dec_key[5] = newest;
         memcpy(r->nr_last_key, g.dec_key, sizeof r->nr_last_key);
+        if ((r->enh.tex_dump || r->enh.tex_replace) && nr_tex_ordinary(r, d)) {
+            /* texture dump / HD replacement (nr_texrep.h, docs/TEXTURES.md): named from the CPU
+             * copy of local memory once per content key; a loaded replacement is drawn through the
+             * plain sampler path (its own texels, mips: no GS-exact taps, no native-pixel snap) */
+            g.rep = nr_texrep_draw(g.dec_key, k.tex0, k.texa, d.indexed ? r->clut_copy : NULL,
+                                   d.indexed ? !clut_tex_gpu(r, k) : 1);
+            if (g.rep) {
+                uint32_t fl;
+                memcpy(&fl, &g.cb[23][0], 4);
+                fl &= ~(0x400u | 0x4000u | 0x8000u | 0x10000u);   /* PF_SNAP PF_GSLIN PF_SHARPX PF_SHARPY */
+                memcpy(&g.cb[23][0], &fl, 4);
+            }
+        }
     }
     if (!r->pend.empty() && g.tme && g.tex_rt < 0 && !r->be->nr_tex_cached(g.dec_key, g.dec_rect))
         mem_flush(r);   /* (the decode reads the mirror) */
+    /* screen-effect chains at the internal resolution (gpu_set_im_hires): a work buffer drawn by
+     * anything else no longer matches its twin */
+    GpuNrDraw g2;
+    int twin2 = 0;
+    if (!r->twins.empty() && !(iv && r->im_hires))
+        for (Twin &t : r->twins)
+            if (t.bp == ct->bp && t.bw == ct->bw && t.psm == ct->psm) t.valid = 0;
+    if (iv && r->im_hires) twin2 = hires_draw(r, k, d, ct, zt, reint_tmp, g, g2);
     {
+        /* (rt5) $RG_NR_SHCOUNT=1 (tools/rt/rt_census.sh): draws into a frame-wide target (512+)
+         * that sample a small live render target (narrower than 512: the shadow map's 192-wide
+         * buffer, TaskDrawShadowMap_1f70f0), counted per kind over the run; exit lines
+         * "native device shadow-map census" (gpu_mem_stats) */
+        static int sc = -1;
+        if (sc < 0) { const char *e = getenv("RG_NR_SHCOUNT"); sc = e && e[0] == '1'; }
+        if (sc && !iv && ct->w < 512) {   /* (mesh draws into a small target: the shadow map's own render, ShadowMapRender_146680) */
+            char key[96];
+            snprintf(key, sizeof key, "mesh into %dx%d fbp %u", ct->w, ct->h, d.fbp);
+            ShCount &c = g_shcount[key];
+            if (!c.n) c.first = g_filt_frame;
+            c.n++;
+            c.last = g_filt_frame;
+        }
+        if (sc && g.tex_rt >= 0 && ct->w >= 512) {
+            const Rt *src = rt_find_id(r, g.tex_rt);
+            if (src && src->w < 512) {
+                char key[128];
+                snprintf(key, sizeof key, "%s src %dx%d fbp %u tbp %u ALPHA %02X abe %d", iv ? "im" : "mesh", src->w, src->h,
+                         d.fbp, src->bp, (unsigned)BITS(k.alpha, 0, 8), (int)d.abe);
+                ShCount &c = g_shcount[key];
+                if (!c.n) c.first = g_filt_frame;
+                c.n++;
+                c.last = g_filt_frame;
+            }
+        }
         bool drawn = r->be->nr_draw(g);
+        if (drawn && twin2 && !r->be->nr_draw(g2))
+            if (Twin *t = twin_find(r, ct->bp, ct->bw, ct->psm)) t->valid = 0;   /* (the twin no longer matches) */
+        if (drawn && twin2) {
+            /* RG_NR_HIRES_DUMP=FRAME:DIR (investigation): after each twin draw of EE frame FRAME, the
+             * twin as DIR/tw_SEQ_fbFBP.pam (RGBA at the internal resolution) */
+            static int hd = -2, hn;
+            static unsigned hf;
+            static char hdir[260];
+            if (hd == -2) { const char *e = getenv("RG_NR_HIRES_DUMP"); hd = e && sscanf(e, "%u:%259s", &hf, hdir) == 2 ? 0 : -1; }
+            if (hd == 0 && r->im_hframe == hf && hn < 64) {
+                const Twin *t = twin_find(r, ct->bp, ct->bw, ct->psm);
+                int s = r->scale > 0 ? r->scale : 1;
+                if (t) {
+                    std::vector<uint32_t> px((size_t)t->w * s * t->h * s);
+                    GpuRect fr = { 0, 0, t->w, t->h };
+                    if (r->be->rt_read(t->id, fr, px.data()) >= 0) {
+                        char fn[400];
+                        snprintf(fn, sizeof fn, "%s/tw_%04d_fb%u_a%02x_t%d.pam", hdir, hn, ct->bp, (unsigned)BITS(k.alpha, 0, 8), g2.tex_rt);
+                        FILE *f = fopen(fn, "wb");
+                        if (f) {
+                            fprintf(f, "P7\nWIDTH %d\nHEIGHT %d\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n", t->w * s, t->h * s);
+                            fwrite(px.data(), 4, px.size(), f);
+                            fclose(f);
+                        }
+                    }
+                }
+                hn++;
+            }
+        }
         if (reint_tmp >= 0) r->be->rt_destroy(reint_tmp);
         if (!drawn) { r->nrs.skipped++; return -1; }
     }
@@ -2956,6 +3437,20 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
                     rd, (unsigned)g_filt_frame, (unsigned long long)k.frame, (unsigned long long)k.tex0,
                     (unsigned long long)k.tex1, (unsigned long long)k.alpha, (unsigned long long)k.test, g.tex_rt,
                     *(const uint32_t *)&g.cb[23][0], niv);
+            if (r->gs) {
+                int amA = 0, amB = 0, nA = 0, nB = 0;
+                for (int e = 0; e < 256; e++) {
+                    int aA = r->gs->clut[e + 256] >> 8, aB = r->gs->clut[2 * e + 1] >> 8;
+                    if (aA > amA) amA = aA;
+                    if (aB > amB) amB = aB;
+                    nA += aA > 0x80;
+                    nB += aB > 0x80;
+                }
+                fprintf(stderr, "  clut alpha max %02X (%d > 0x80) / interleaved %02X (%d) | var %08X r7 %g %g %g %g r9 %g %g %g %g r21 %g %g %g %g FOGCOL %06llX\n",
+                        amA, nA, amB, nB, *(const uint32_t *)&g.cb[22][0], g.cb[7][0], g.cb[7][1], g.cb[7][2], g.cb[7][3],
+                        g.cb[9][0], g.cb[9][1], g.cb[9][2], g.cb[9][3], g.cb[21][0], g.cb[21][1], g.cb[21][2], g.cb[21][3],
+                        (unsigned long long)k.fogcol);
+            }
             for (uint32_t q = 0; iv && q < niv && q < 12; q++)
                 fprintf(stderr, "  v%u %.3f %.3f s %.6f t %.6f q %.6f\n", q, iv[q].x, iv[q].y, iv[q].s, iv[q].t, iv[q].q);
             if (rdt >= 0) {
@@ -3262,7 +3757,8 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
     memset(&nd, 0, sizeof nd);
     uint32_t var = NRV_IM_BIT;
     memcpy(&nd.cb[22][0], &var, 4);
-    nd.cb[22][3] = r->im_xfree && type == GS_PRIM_SPRITE ? 1.0f : 0.0f;   /* PF_SNAP: Y only */
+    /* PF_SNAP: Y only (1); 2: neither (scaled in Y by the UI scale) */
+    nd.cb[22][3] = r->im_xfree && type == GS_PRIM_SPRITE ? (r->im_xfree & 2 ? 2.0f : 1.0f) : 0.0f;
     nd.cb[12][0] = nd.cb[12][1] = 1.0f;   /* texture coordinate scale (direct target sampling) */
     nd.has_box = 1;
     memset(r->nr_last_key, 0, sizeof r->nr_last_key);
@@ -3329,6 +3825,8 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
             if (ddx == 0.0f && ddy == 0.0f) continue;
             int xmaj = fabsf(ddx) >= fabsf(ddy);
             float hx = xmaj ? 0.0f : 0.5f, hy = xmaj ? 0.5f : 0.0f;
+            if (!xmaj && r->im_line_xs > 0.0f && r->scale > 1)   /* gpu_set_im_line_xs: >= one upscaled pixel */
+                hx = fmaxf(0.5f * r->im_line_xs, 0.5f / (float)r->scale);
             GpuImVtx c0, c1, c2, c3;
             put(c0, a, ax - hx, ay - hy, a);
             put(c1, b, bx - hx, by - hy, b);
@@ -3360,6 +3858,7 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
                 auto snap = [](float x, float of) { return ceilf(x - of) - 0.5f + of; };
                 float sax = snap(ax, ofx), sbx = snap(bx, ofx), say = snap(ay, ofy), sby = snap(by, ofy);
                 if (r->im_xfree) { sax = ax; sbx = bx; }   /* squeezed 2D: X at the upscaled pixel */
+                if (r->im_xfree & 2) { say = ay; sby = by; }   /* UI-scaled 2D: Y too */
                 float kx = bx != ax ? 1.0f / (bx - ax) : 0.0f, ky = by != ay ? 1.0f / (by - ay) : 0.0f;
                 float fa = (sax - ax) * kx, fb = (sbx - ax) * kx, ga = (say - ay) * ky, gb = (sby - ay) * ky;
                 float s0 = c00.s, s1 = c10.s, t0 = c00.t, t1 = c01.t;

@@ -13,7 +13,10 @@ option(RG_GPU_VULKAN "build the Vulkan backend of the native renderer (needs a S
 if(NOT RG_GPU_VULKAN)
   return()
 endif()
-set(_rg_dxc_hints "${PROJECT_SOURCE_DIR}/../tools/dxc/bin/x64")
+set(_rg_dxc_hints "${PROJECT_SOURCE_DIR}/../tools/dxc/bin/x64" "${PROJECT_SOURCE_DIR}/../tools/dxc/bin")   # bin/: the linux archive (fetch_dxc.py --linux)
+if(DEFINED ENV{RG_TOOLS})   # builds from a source copy (build/<lane>-src): <source>/../tools is not the tools dir (integ3)
+  list(APPEND _rg_dxc_hints "$ENV{RG_TOOLS}/dxc/bin/x64" "$ENV{RG_TOOLS}/dxc/bin")
+endif()
 if(DEFINED ENV{VULKAN_SDK})
   list(APPEND _rg_dxc_hints "$ENV{VULKAN_SDK}/Bin" "$ENV{VULKAN_SDK}/bin")
 endif()
@@ -56,6 +59,7 @@ file(MAKE_DIRECTORY ${_rg_vk_gen})
 set(_rg_vk_entries
   "VS_quad|vs|gs_util.hlsl"
   "PS_load_color|ps|gs_util.hlsl"
+  "CS_load_phase|cs|gs_util.hlsl"
   "PS_load_depth|ps|gs_util.hlsl"
   "PS_load_depth|ps|gs_util.hlsl|GS_DEPTH_RT=1|PS_load_depth_rt"
   "PS_copy_depth|ps|gs_util.hlsl"
@@ -74,10 +78,17 @@ set(_rg_vk_entries
   "PS_final|ps|gs_post.hlsl"
   "VS_nr|vs|nr_draw.hlsl"
   "VS_im|vs|nr_draw.hlsl"
+  "GS_nr|gs|nr_draw.hlsl"
   "PS_nr|ps|nr_draw.hlsl"
   "PS_nr|ps|nr_draw.hlsl|NR_ZROV=1|PS_nr_z"
   "PS_nr|ps|nr_draw.hlsl|NR_CROV=1|PS_nr_c"
-  "PS_nr|ps|nr_draw.hlsl|NR_CROV=1 NR_ZROV=1|PS_nr_cz")
+  "PS_nr|ps|nr_draw.hlsl|NR_CROV=1 NR_ZROV=1|PS_nr_cz"
+  # ray tracing (docs/RAYTRACING.md): the mesh pipeline with a world position and a ray-query shadow
+  # term (SM 6.5, SPV_KHR_ray_query); used only with graphics.raytracing on a capable device
+  "VS_nr|vs|nr_draw.hlsl|NR_RT=1|VS_nr_rt"
+  "GS_nr|gs|nr_draw.hlsl|NR_RT=1|GS_nr_rt"
+  "PS_nr|ps|nr_draw.hlsl|NR_RT=1|PS_nr_rt"
+  "PS_nr|ps|nr_draw.hlsl|NR_RT=1 NR_ZROV=1|PS_nr_zrt")
 set(_rg_vk_headers)
 foreach(e IN LISTS _rg_vk_entries)
   string(REPLACE "|" ";" _l "${e}")
@@ -100,15 +111,19 @@ foreach(e IN LISTS _rg_vk_entries)
   # one descriptor set; binding = register + 0 (b), 16 (t), 32 (s), 48 (u) (nr_vulkan.cpp
   # "Bindings"); vertex shaders flip Y so the framebuffer matches D3D's (SV_Position y down)
   set(_extra)
-  if(_stage STREQUAL "vs")
+  if(_stage STREQUAL "vs" OR _stage STREQUAL "gs")
     set(_extra -fvk-invert-y)
+  endif()
+  set(_sm 6_0)
+  if(_defs MATCHES "NR_RT")
+    set(_sm 6_5)   # RayQuery
   endif()
   set(_out ${_rg_vk_gen}/vk_${_name}.h)
   add_custom_command(
     OUTPUT ${_out}
     COMMAND ${RG_DXC} -nologo -spirv -fspv-target-env=vulkan1.3 -fvk-use-dx-layout
             -fvk-b-shift 0 all -fvk-t-shift 16 all -fvk-s-shift 32 all -fvk-u-shift 48 all
-            -Wno-ambig-lit-shift ${_extra} -O3 -T ${_stage}_6_0 -E ${_entry} ${_defs} -Vn g_spv_${_name} -Fh ${_out}
+            -Wno-ambig-lit-shift ${_extra} -O3 -T ${_stage}_${_sm} -E ${_entry} ${_defs} -Vn g_spv_${_name} -Fh ${_out}
             ${_rg_vk_src}/${_src}
     DEPENDS ${_rg_vk_src}/${_src} ${_rg_vk_src}/gs_common.hlsli
     COMMENT "dxc -spirv ${_name}"

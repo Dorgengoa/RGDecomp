@@ -19,7 +19,7 @@
 /*rgp*/
 extern u8 D_004834F0;
 extern s32 D_00483530;
-extern u8 D_004E95C0[0x400];
+extern u8 D_004E95C0[8];
 extern u8 D_004E95E0[0x400];
 
 typedef struct {

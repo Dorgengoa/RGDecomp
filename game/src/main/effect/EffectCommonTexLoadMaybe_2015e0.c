@@ -27,10 +27,10 @@ typedef struct {
 extern void *memcpy(void *, const void *, u32);
 extern void strcpy(void *, void *);
 
-extern u8 D_0045C0D0[0x400];
-extern u8 D_0045C0F0[0x400];
-extern u8 D_0045C108[0x400];
-extern u8 D_0045C110[0x400];
+extern u8 D_0045C0D0[0x20];
+extern u8 D_0045C0F0[0x18];
+extern u8 D_0045C108[8];
+extern u8 D_0045C110[0x10];
 extern u8 D_0045C120[0x400];
 
 void EffectCommonTexLoadMaybe_2015e0(void) {

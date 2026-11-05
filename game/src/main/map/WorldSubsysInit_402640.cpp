@@ -41,9 +41,9 @@ extern s32 MemStackNew_14e0b0(s32, s32);
 extern Cur *ConstructNewArray_100710(s32, void *, s32, s32, s32);
 extern VObj *DataTableCtor_4033b0(void *);
 extern VObj *DataTableCtor_404840(void *);
-extern s32 D_004657D0[4];
-extern s32 D_004657D8[4];
-extern s32 D_004657E0[4];
+extern s32 D_004657D0[2];
+extern s32 D_004657D8[2];
+extern s32 D_004657E0[2];
 extern void DataTableCtor_404190(void);
 }
 

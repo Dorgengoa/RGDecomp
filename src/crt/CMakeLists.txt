@@ -19,3 +19,8 @@ endif()
 if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
   target_compile_options(rg_crt PRIVATE -Wall -Wextra)
 endif()
+# RG_EE_FPU_EXACT (cmake/game.cmake, parity build only): the retail libm through the exact
+# EE float model; the other rg_crt sources are compiled by the plain command (--only)
+if(RG_EE_FPU_EXACT)
+  set_target_properties(rg_crt PROPERTIES C_COMPILER_LAUNCHER "${RG_EE_FPU_EXACT_LAUNCHER};--only=crt_eelibm[.]c$")
+endif()

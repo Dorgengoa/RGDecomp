@@ -34,7 +34,7 @@ extern void *memset(void *, s32, u32);
 extern f32 D_0047D288;
 extern u8 D_00483690;
 extern u8 D_004B2570[0x400];
-extern u8 D_004E96B0[0x400];
+extern u8 D_004E96B0[8];
 extern u8 D_004E96D0[0x400];
 
 s32 CompleteCheckCategoryMsgState_39e0b0(s32 unused, s32 flag) {

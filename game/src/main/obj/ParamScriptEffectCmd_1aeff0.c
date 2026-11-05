@@ -22,9 +22,9 @@ typedef struct {
 extern void strcpy(s8 *, void *);
 extern s32 strlen(void *);
 extern u8 D_0045A818[0x400];
-extern u8 D_0049D450[0x400];
-extern u8 D_0049D45C[0x400];
-extern u8 D_0049D4E0[0x400];
+extern u8 D_0049D450[0xC];
+extern u8 D_0049D45C[0x20];
+extern u8 D_0049D4E0[4];
 extern u8 D_0049D4E4[0x400];
 
 s32 ParamScriptEffectCmd_1aeff0(s32 arg0, s32 arg1)

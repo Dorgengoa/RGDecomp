@@ -20,7 +20,7 @@ void sceMcRename_12db48(s16, s32, Buf00373160 *, Buf00373160 *); /* extern */
 /*rgp*/                                /* extern */
 /*rgp*/              /* extern */
 /*rgp*/              /* extern */
-extern u8 D_004638C8[0x400];
+extern u8 D_004638C8[8];
 extern u8 D_004638D0[0x400];
 
 s32 SaveDirRenameJpToUs_373160(Obj00373160 *arg0) {

@@ -26,7 +26,7 @@ typedef struct {
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_004659F0[0x400];
+extern u8 D_004659F0[8];
 extern u8 D_004659F8[0x400];
 extern f32 D_0047D240;
 extern f32 D_0047D288;

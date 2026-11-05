@@ -359,9 +359,11 @@ static int h_build_img(int argc, char **argv)
     uint8_t *img = read_file(argv[2], &n);
     rg_gaiji_layout L;
     if (!img || rg_gaiji_layout_of(img, n, &L)) { fprintf(stderr, "bad image %s\n", argv[2]); return 1; }
-    static const char *const names[] = { "playstation", "xbox", "nintendo", "keyboard" };
+    static const char *const names[] = { "playstation", "xbox", "nintendo", "keyboard", "keyboard_wide" };
     int st = -1;
-    for (int i = 0; i < 4; i++) if (!strcmp(argv[3], names[i])) st = i;
+    for (int i = 0; i < 5; i++) if (!strcmp(argv[3], names[i])) st = i;
+    int wide = st == 4;
+    if (wide) st = RG_GAIJI_KEYBOARD;
     const char *keys[RG_GAIJI_BUTTONS];
     const char *const *kp = NULL;
     if (argc >= 6 + RG_GAIJI_BUTTONS - 1) {
@@ -369,7 +371,13 @@ static int h_build_img(int argc, char **argv)
         kp = keys;
     }
     static uint8_t out[RG_GAIJI_SWAP_BYTES];
-    if (rg_gaiji_build(img + L.pixels, st, kp, out)) { fprintf(stderr, "build failed\n"); return 1; }
+    rg_gaiji_rect wr[RG_GAIJI_BUTTONS];
+    if (wide ? rg_gaiji_build_wide(img + L.pixels, kp, out, wr) : rg_gaiji_build(img + L.pixels, st, kp, out)) {
+        fprintf(stderr, "build failed\n");
+        return 1;
+    }
+    for (int b = 0; wide && b < RG_GAIJI_BUTTONS; b++)
+        printf("WIDE %04X %d %d %d %d\n", rg_gaiji_button_rects[b].code, wr[b].u, wr[b].v, wr[b].w, wr[b].h);
     memcpy(img + L.pixels, out, sizeof out);
     FILE *f = fopen(argv[4], "wb");
     if (!f) return 1;

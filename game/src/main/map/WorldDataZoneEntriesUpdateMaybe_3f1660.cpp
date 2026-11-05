@@ -40,7 +40,7 @@ extern void HandleEntryInit_3f4160(Ent *);
 extern void HandleEntryRelease_3f1d80(Obj *, Ent *, s32);
 extern s32 HandleEntryFindFreeSlot_3f22f0(Obj *);
 extern void HandleEntryRequest_3f22a0(Obj *, Ent *);
-extern s32 D_004644A0[4];
+extern s32 D_004644A0[2];
 extern s32 D_004644A8[4];
 extern s32 D_004644B8[4];
 

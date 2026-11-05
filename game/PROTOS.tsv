@@ -3312,6 +3312,7 @@ src/main/chara/CharaAimUpdate_20a780.c	18	CharaAimCtrlUpdate_1d81b0	drop-extra	2
 src/main/chara/CharaApplyDamage_3b1ed0.cpp	210	CharaApplyDamage_3b1ed0	def-widen	first call passes incoming register(s) through: added int rgp_a3
 src/main/chara/CharaApplyDamage_3b1ed0.cpp	210	CharaApplyDamage_3b1ed0	vcall-widen	retail's jalr (v_46) receives the untouched incoming register(s) of rgp_a3, which the C never declared -> parameter(s) added
 src/main/chara/CharaApplyDamage_3b1ed0.cpp	214	v_46	vcall-forward	CharaApplyDamage_3b1ed0: retail's jalr gets the untouched entry register(s) of arg1, arg2, rgp_a3 -> passed
+src/main/chara/CharaApplyDamage_3b1ed0.cpp	222	v_202	manual-vcall-x87-return	CharaApplyDamage_3b1ed0: slot 0x330 reaches x87 returns (ModelObjDistanceToCamera_186c50) and integer returns (CharaOnDamagedByMaybe_3aa3f0, UnitBaseOnDamagedByMaybe_3b1390)
 src/main/chara/CharaApplyStatModsMaybe_3ae450.cpp	262	CharaApplyStatModsMaybe_3ae450	info-vcall-unpaired	2 jalr in the listing, 1 virtual member calls in the C
 src/main/chara/CharaApplyStatModsThunk_3a9460.c	13	CharaApplyStatModsThunk_3a9930	ret-cast	(s32) over unsigned char
 src/main/chara/CharaApplyStatModsThunk_3a9460.c	13	CharaApplyStatModsThunk_3a9930	ret-narrow	definition returns u8, caller reads s32: result cast to unsigned char (i686 leaves EAX's upper bits undefined)
@@ -4198,6 +4199,7 @@ src/main/chara/CharaResetBattleStateMaybe_212f20.cpp	329	IsInBattle_288420	ret-n
 src/main/chara/CharaResetBattleStateMaybe_212f20.cpp	375	CharaAimCtrlUpdate_1d81b0	drop-extra	2 args (gg) -> def 1 (g); dropped 'c0'
 src/main/chara/CharaResetBattleVars_3aa9f0.cpp	5	CharaIsPartyMember_3ae110	decl-patched	count 0 vs 1: extern s32 CharaIsPartyMember_3ae110(void); -> extern s32 CharaIsPartyMember_3ae110(void *);
 src/main/chara/CharaResetBattleVars_3aa9f0.cpp	400	CharaIsPartyMember_3ae110	missing-passthrough	0 args () -> def 1 (g); passed o
+src/main/chara/CharaResetBattleVars_3aa9f0.cpp	425	h	manual-vcall-x87-return	CharaResetBattleVars_3aa9f0: slot 0x60 reaches x87 returns (ModelObjDistanceToCamera_186c50) and integer returns (CharaGetDataName_25e440, EquipSlotClearUseOutOfBattleThunk_39f010, EquipSlotClearUseOutOfBattleThunk_39f660, EquipSlotClearUseOutOfBattle_39fe20, ItemGetGrowthZero_2a0a50, ItemWeaponGetGrowth_3d5bc0, UnitBaseGetDataNameNone_31bcd0, UnitGetDataName_3bef80)
 src/main/chara/CharaResetStateMaybe_212c50.c	6	CharaReleaseHeldTarget_2116b0	decl-removed	param2 float vs int: void CharaReleaseHeldTarget_2116b0(void *, f32 , f32 , f32 , s32);
 src/main/chara/CharaResetStateMaybe_212c50.c	31	CharaReleaseHeldTarget_2116b0	reorder	5 args (gfffg) -> def 5 (ggfff)
 src/main/chara/CharaResetStateMaybe_212c50.c	64	GetEffectMgr_2d9040	ret-cast	(s32) over void *
@@ -5397,6 +5399,7 @@ src/main/container/DataTableBuildSortedIndex_413eb0.c	34	MemStackNew_14e0b0	ret-
 src/main/container/DataTableClear_368390.cpp	35	DataTableClear_368390	def-widen	first call passes incoming register(s) through: added int rgp_a1, int rgp_a2, int rgp_a3
 src/main/container/DataTableClear_368390.cpp	35	DataTableClear_368390	vcall-widen	retail's jalr (v6C) receives the untouched incoming register(s) of rgp_a1, rgp_a2, rgp_a3, which the C never declared -> parameter(s) added
 src/main/container/DataTableClear_368390.cpp	37	v6C	vcall-forward	DataTableClear_368390: retail's jalr gets the untouched entry register(s) of rgp_a1, rgp_a2, rgp_a3 -> passed
+src/main/container/DataTableClear_368390.cpp	38	v60	manual-vcall-x87-return	DataTableClear_368390: slot 0x60 reaches x87 returns (ModelObjDistanceToCamera_186c50) and integer returns (CharaGetDataName_25e440, EquipSlotClearUseOutOfBattleThunk_39f010, EquipSlotClearUseOutOfBattleThunk_39f660, EquipSlotClearUseOutOfBattle_39fe20, ItemGetGrowthZero_2a0a50, ItemWeaponGetGrowth_3d5bc0, UnitBaseGetDataNameNone_31bcd0, UnitGetDataName_3bef80)
 src/main/container/DataTableCmdAllocAuxEntries_424e10.c	15	VariantGetInt_15f780	decl-removed	count 0 vs 1: extern s32 VariantGetInt_15f780(void);
 src/main/container/DataTableCmdAllocAuxEntries_424e10.c	18	DataTableCmdAllocAuxEntries_424e10	def-widen	first call passes incoming register(s) through: added void *rgp_a0
 src/main/container/DataTableCmdAllocAuxEntries_424e10.c	23	VariantGetInt_15f780	missing-passthrough	0 args () -> def 1 (g); passed rgp_a0
@@ -12731,6 +12734,7 @@ src/main/map/MapEntryReset_1e1350.cpp	46	v18	vcall-forward	MapEntryReset_1e1350:
 src/main/map/MapEntryShow_1e0c70.cpp	18	MapEntryShow_1e0c70	def-widen	first call passes incoming register(s) through: added int rgp_a1, int rgp_a2, int rgp_a3
 src/main/map/MapEntryShow_1e0c70.cpp	18	MapEntryShow_1e0c70	vcall-widen	retail's jalr (v4) receives the untouched incoming register(s) of rgp_a1, rgp_a2, rgp_a3, which the C never declared -> parameter(s) added
 src/main/map/MapEntryShow_1e0c70.cpp	25	v4	vcall-forward	MapEntryShow_1e0c70: retail's jalr gets the untouched entry register(s) of rgp_a1, rgp_a2, rgp_a3 -> passed
+src/main/map/MapEntryShow_1e0c70.cpp	25	v4	vcall-target-lanes	MapEntryShow_1e0c70: slot 0x18 (vptr +0x1b0) reaches ModelObjDistanceFadeUpdate_186b60; i686 argument order a0,rgp_fwd2,rgp_fwd3,rgp_fwd4 (devirt default rgp_fwd2,rgp_fwd3,rgp_fwd4,a0)
 src/main/map/MapEntryUpdateMaybe_1e0cd0.cpp	101	MapEntryUpdateMaybe_1e0cd0	info-stack-block-unresolved	MapDataCollectCollTrisMaybe_1e6c80 arg 1 `hits` = sp-0x6050: extent >= 0x58 (incomplete)
 src/main/map/MapEntryUpdateMaybe_1e0cd0.cpp	140	CollTriGetAttr_1ce5b0	ret-cast	(s32) over unsigned short
 src/main/map/MapEntryUpdateMaybe_1e0cd0.cpp	140	CollTriGetAttr_1ce5b0	ret-narrow	definition returns u16, caller reads s32: result cast to unsigned short (i686 leaves EAX's upper bits undefined)
@@ -15530,6 +15534,7 @@ src/main/menu/MenuItemModelDraw_2a7090.cpp	37	CameraSetViewFromCameraBase_142dd0
 src/main/menu/MenuItemModelDraw_2a7090.cpp	44	MenuItemModelDraw_2a7090	def-widen	first call passes incoming register(s) through: added int rgp_a0, int rgp_a1, int rgp_a2, int rgp_a3
 src/main/menu/MenuItemModelDraw_2a7090.cpp	44	MenuItemModelDraw_2a7090	vcall-widen	retail's jalr (v15) receives the untouched incoming register(s) of rgp_a0, rgp_a1, rgp_a2, rgp_a3, which the C never declared -> parameter(s) added
 src/main/menu/MenuItemModelDraw_2a7090.cpp	46	v15	vcall-forward	MenuItemModelDraw_2a7090: retail's jalr gets the untouched entry register(s) of rgp_a1, rgp_a2, rgp_a3 -> passed
+src/main/menu/MenuItemModelDraw_2a7090.cpp	46	v15	vcall-target-lanes	MenuItemModelDraw_2a7090: slot 0x44 (vptr +0x1b0) reaches ModelObjExUpdate_1b02c0, ModelObjUpdate_1adf90; i686 argument order a,rgp_fwd2,rgp_fwd3,rgp_fwd4 (devirt default rgp_fwd2,rgp_fwd3,rgp_fwd4,a)
 src/main/menu/MenuItemModelDraw_2a7090.cpp	48	CameraSetViewFromCameraBase_142dd0	missing-dead	2 args (gg) -> def 4 (gggg); g2 $6 = CLOBBER(GetDrawCtx_15de80): a dead caller-saved register; g3 $7 = CLOBBER(GetDrawCtx_15de80): a dead caller-saved register
 src/main/menu/MenuItemModelLoadState_2a8250.cpp	168	LoadHandleIsPending_28b210	ret-cast	(s32) over unsigned char
 src/main/menu/MenuItemModelLoadState_2a8250.cpp	168	LoadHandleIsPending_28b210	ret-narrow	definition returns u8, caller reads s32: result cast to unsigned char (i686 leaves EAX's upper bits undefined)
@@ -17178,6 +17183,7 @@ src/main/obj/AttackObjBaseAssign_22e710.c	25	JudgeObjectAssignBase_2289d0	missin
 src/main/obj/AttackObjBaseBuildHitSphere_318090.cpp	28	AttackObjBaseBuildHitSphere_318090	def-widen	first call passes incoming register(s) through: added int rgp_a2, int rgp_a3
 src/main/obj/AttackObjBaseBuildHitSphere_318090.cpp	28	AttackObjBaseBuildHitSphere_318090	vcall-widen	retail's jalr (v3) receives the untouched incoming register(s) of rgp_a2, rgp_a3, which the C never declared -> parameter(s) added
 src/main/obj/AttackObjBaseBuildHitSphere_318090.cpp	33	v3	vcall-forward	AttackObjBaseBuildHitSphere_318090: retail's jalr gets the untouched entry register(s) of rgp_a2, rgp_a3 -> passed
+src/main/obj/AttackObjBaseSetPosVec_317340.cpp	32	v19	vcall-target-lanes	AttackObjBaseSetPosVec_317340: slot 0x54 (vptr +0xb0) reaches AttackObjBaseSetPos_27a1e0, ProjectileSetPos_228e50; i686 argument order x,y,z,v (devirt default v,x,y,z)
 src/main/obj/AttackObjBuildWorldHitSphere_3174a0.cpp	28	AttackObjBuildWorldHitSphere_3174a0	def-widen	first call passes incoming register(s) through: added int rgp_a2, int rgp_a3
 src/main/obj/AttackObjBuildWorldHitSphere_3174a0.cpp	28	AttackObjBuildWorldHitSphere_3174a0	vcall-widen	retail's jalr (v3) receives the untouched incoming register(s) of rgp_a2, rgp_a3, which the C never declared -> parameter(s) added
 src/main/obj/AttackObjBuildWorldHitSphere_3174a0.cpp	33	v3	vcall-forward	AttackObjBuildWorldHitSphere_3174a0: retail's jalr gets the untouched entry register(s) of rgp_a2, rgp_a3 -> passed
@@ -33461,6 +33467,7 @@ src/overlays/insect/insect/insect_InsectBattleEffectNodeDraw_51e080.cpp	23	s07	v
 src/overlays/insect/insect/insect_InsectBattleEffectNodeStep_51e0b0.cpp	23	insect_InsectBattleEffectNodeStep_51e0b0	def-widen	first call passes incoming register(s) through: added int rgp_a1, int rgp_a2, int rgp_a3
 src/overlays/insect/insect/insect_InsectBattleEffectNodeStep_51e0b0.cpp	23	insect_InsectBattleEffectNodeStep_51e0b0	vcall-widen	retail's jalr (s15) receives the untouched incoming register(s) of rgp_a1, rgp_a2, rgp_a3, which the C never declared -> parameter(s) added
 src/overlays/insect/insect/insect_InsectBattleEffectNodeStep_51e0b0.cpp	29	s15	vcall-forward	insect_InsectBattleEffectNodeStep_51e0b0: retail's jalr gets the untouched entry register(s) of rgp_a1, rgp_a2, rgp_a3 -> passed
+src/overlays/insect/insect/insect_InsectBattleEffectNodeStep_51e0b0.cpp	29	s15	vcall-target-lanes	insect_InsectBattleEffectNodeStep_51e0b0: slot 0x44 (vptr +0x1b0) reaches ModelObjExUpdate_1b02c0, ModelObjUpdate_1adf90; i686 argument order t,rgp_fwd2,rgp_fwd3,rgp_fwd4 (devirt default rgp_fwd2,rgp_fwd3,rgp_fwd4,t)
 src/overlays/insect/insect/insect_InsectBattleEffectsDraw_51d410.c	19	insect_InsectBattleEffectNodeDraw_51e080	decl-removed	count 1 vs 4: extern void insect_InsectBattleEffectNodeDraw_51e080(Ent *e);
 src/overlays/insect/insect/insect_InsectBattleEffectsDraw_51d410.c	33	insect_InsectBattleEffectNodeDraw_51e080	missing-dead	1 args (g) -> def 4 (gggg); g1 $5 = CLOBBER(func_1418C0): a dead caller-saved register; g2 $6 = CLOBBER(func_1418C0): a dead caller-saved register; g3 $7 = CLOBBER(func_1418C0): a dead caller-saved register
 src/overlays/insect/insect/insect_InsectBattleEffectsSpawn_51dc30.cpp	0	func_1867A0	addr-alias	-> ModelObjPlayMotionByName_1867a0 (C definition); 9 file(s)

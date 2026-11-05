@@ -37,7 +37,7 @@ void *MemStackNew_14e230(s32, s32);
 s32 ModelMeshCreate_14e4d0(Info *, s32, s32);
 void FrameInitFromRes_14e710(u8 *, s32, s32);
 s32 GetDrawCtx_15de80();
-extern u8 D_0046FF90[0x40];
+extern u8 D_0046FF90[0x10];
 extern u8 D_0046FFA0[0x40];
 }
 

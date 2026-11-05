@@ -4,7 +4,7 @@
 extern "C" {
 extern void CharaEffEntrySetAutoDelOff_230200(s32, bool);
 extern s32 ScriptArgGetInt_23fc00(s32);
-extern s32 D_004BCE60[0x10];
+extern s32 D_004BCE60[1];
 extern s16 D_004BCE8C[0x10];
 
 s32 CharaEffEntrySetAutoDelOffCmd_23e180(s32 arg0, s32 arg1)

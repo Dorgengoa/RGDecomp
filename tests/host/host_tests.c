@@ -4,7 +4,7 @@
  * Unit tests: pad_report, input_mapping, input_config, input_script,
  *             script_determinism, scaling, png_roundtrip, png_corrupt_control,
  *             pacing, audio_reg, audio_device, audio_focus, wide_fit, wide_present, wide_present_control,
- *             wide_policy, wide_any, wide_host, wide_layout, wide_menu, wide_strips.
+ *             wide_policy, wide_any, wide_host, wide_layout, wide_menu, ui_scale, wide_strips, wide_sides.
  * Helpers used by the CTest scripts:
  *   script_dump <script> <out.bin>   input.py PINE blob (u32 count, u16 words)
  *   png_write <out.png>              a fixed test image (for pngcheck.py)
@@ -18,7 +18,9 @@
 #include <SDL3/SDL.h>
 
 #include "host.h"
+#include "rg_tstretch.h"
 #include "rg_aspect.h"
+#include "rg_display.h"
 #include "rg_layout.h"
 #include "rg_menu.h"
 #include "rg_settings.h"
@@ -1173,6 +1175,17 @@ static void wide_policy(void)
 
 /* Widescreen stage 2 (src/settings/rg_layout.h): anchors, the map, the GIF scan
  * and the packet hook on a hand-built GsPkt (A+D sprite + scissor, PACKED quad). */
+#if defined(_WIN64)
+/* x64 (docs/X64-PLAN.md 0.8): the packet object's pointer words are 4 bytes (game memory) */
+#define LPKT_PUT(off, v) do { uint32_t w_ = (uint32_t)(uintptr_t)(v); memcpy(g_lpkt + (off), &w_, 4); } while (0)
+#define LPKT_GET(v, off) do { uint32_t w_; memcpy(&w_, g_lpkt + (off), 4); (v) = (void *)(uintptr_t)w_; } while (0)
+#define LPKT_PTR(off) ((uint8_t *)(uintptr_t)*(uint32_t *)(g_lpkt + (off)))
+#else
+#define LPKT_PUT(off, v) memcpy(g_lpkt + (off), &(v), sizeof (v))
+#define LPKT_GET(v, off) memcpy(&(v), g_lpkt + (off), sizeof (v))
+#define LPKT_PTR(off) (*(uint8_t **)(g_lpkt + (off)))
+#endif
+#line 1176
 static uint8_t g_lpkt[0x140];
 static uint64_t g_lbuf[64] __attribute__((aligned(16)));
 static int lpkt_build(int x0, int x1, int ztest, int scx0, int scx1)
@@ -1200,8 +1213,8 @@ static int lpkt_build(int x0, int x1, int ztest, int scx0, int scx1)
     t[0] = (uint32_t)(q - 1) | 0x10000000u;
     t[3] = (uint32_t)(q - 1) | 0x50000000u;
     uint8_t *base = (uint8_t *)g_lbuf, *cur = base + 16 * q;
-    memcpy(g_lpkt + 0xEC, &base, sizeof base);
-    memcpy(g_lpkt + 0xF4, &cur, sizeof cur);
+    LPKT_PUT(0xEC, base);
+    LPKT_PUT(0xF4, cur);
     int32_t c = C, w = W;
     memcpy(g_lpkt + 0x128, &c, 4);
     memcpy(g_lpkt + 0x130, &w, 4);
@@ -1269,8 +1282,10 @@ static void wide_layout(void)
     CHECK_EQ(lpkt_x(0), 20);
     /* two overlapping packets of one task share one anchor: a window across the
      * centre third and its text in the left third both centre-anchor.  The grouping is
-     * one frame behind (packets are consumed as they close): the first frame lays the
-     * text out by its own rectangle (left), the next by the group (centre). */
+     * one frame behind (packets are consumed as they close): in the first frame the text
+     * (new, no anchor filed) takes the anchor of the window drawn before it that it
+     * overlaps (centre; before 2026-10-31 its own rectangle: left, then a snap to the
+     * centre), the next frame the group's (centre). */
     static uint8_t pk1[0x140];
     static uint64_t b1[64] __attribute__((aligned(16)));
     rg_layout_set_frame(1.0f, 9);              /* inactive: forget earlier anchors */
@@ -1279,7 +1294,7 @@ static void wide_layout(void)
         lpkt_build(100, 400, 0, 0, 511);
         memcpy(pk1, g_lpkt, sizeof pk1);
         memcpy(b1, g_lbuf, sizeof b1);
-        uint8_t *bb = (uint8_t *)b1, *cc = bb + ((uint8_t *)*(uint8_t **)(g_lpkt + 0xF4) - (uint8_t *)g_lbuf);
+        uint8_t *bb = (uint8_t *)b1, *cc = bb + ((uint8_t *)LPKT_PTR(0xF4) - (uint8_t *)g_lbuf);
         memcpy(pk1 + 0xEC, &bb, sizeof bb);
         memcpy(pk1 + 0xF4, &cc, sizeof cc);
         lpkt_build(110, 150, 0, 0, 511);
@@ -1287,9 +1302,26 @@ static void wide_layout(void)
         rg_layout_packet(pk1, NULL);
         rg_layout_packet(g_lpkt, NULL);
         rg_layout_task_end();
-        CHECK_EQ(lpkt_x(0), fr == 0 ? 83 : 147);   /* 110 * 0.75 = 82.5; 256 + (110 - 256) * 0.75 = 146.5 */
+        CHECK_EQ(lpkt_x(0), 147);   /* 256 + (110 - 256) * 0.75 = 146.5 (left would be 82.5) */
     }
     rg_layout_set_frame(1.0f, 12);
+    /* a subtitle line typed out from the left of a centred text block (MesWinDraw_270cb0
+     * override: rg_layout_elem_begin(57, 466)): centre from the first glyph on, every frame
+     * as the line grows; without the extent the short line is left-anchored */
+    rg_layout_set_frame(0.75f, 13);
+    lpkt_build(57, 76, 0, 0, 511);
+    rg_layout_task_begin(NULL); rg_layout_packet(g_lpkt, NULL); rg_layout_task_end();
+    CHECK_EQ(lpkt_x(0), 43);                    /* 57 * 0.75 = 42.75: left */
+    rg_layout_set_frame(1.0f, 14);
+    for (int fr = 0; fr < 4; fr++) {
+        rg_layout_set_frame(0.75f, 15 + fr);
+        lpkt_build(57, 76 + 60 * fr, 0, 0, 511);
+        rg_layout_elem_begin(57.0f, 466.0f);
+        rg_layout_task_begin(NULL); rg_layout_packet(g_lpkt, NULL); rg_layout_task_end();
+        rg_layout_elem_end();
+        CHECK_EQ(lpkt_x(0), 107);               /* 256 + (57 - 256) * 0.75 = 106.75: centre */
+    }
+    rg_layout_set_frame(1.0f, 19);
 }
 
 /* Widescreen stage 3 (USER 2026-10-19: no aspect switch for menus): a full-screen
@@ -1313,8 +1345,8 @@ static int lpkt_cover(int x0, int x1, int y0, int y1, int psm)
     t[0] = (uint32_t)(q - 1) | 0x10000000u;
     t[3] = (uint32_t)(q - 1) | 0x50000000u;
     uint8_t *base = (uint8_t *)g_lbuf, *cur = base + 16 * q;
-    memcpy(g_lpkt + 0xEC, &base, sizeof base);
-    memcpy(g_lpkt + 0xF4, &cur, sizeof cur);
+    LPKT_PUT(0xEC, base);
+    LPKT_PUT(0xF4, cur);
     int32_t c = C, w = W;
     memcpy(g_lpkt + 0x128, &c, 4);
     memcpy(g_lpkt + 0x130, &w, 4);
@@ -1412,7 +1444,7 @@ static void wide_menu(void)
         t[0] = (uint32_t)(q - 1) | 0x10000000u;
         t[3] = (uint32_t)(q - 1) | 0x50000000u;
         uint8_t *cur = (uint8_t *)g_lbuf + 16 * q;
-        memcpy(g_lpkt + 0xF4, &cur, sizeof cur);
+        LPKT_PUT(0xF4, cur);
         rg_layout_packet(g_lpkt, NULL);
         int xa = ((int)(g_lbuf[2 * 4] & 0xFFFF) - L + 8) / 16, xb = ((int)(g_lbuf[2 * 6] & 0xFFFF) - L + 8) / 16;
         if (c == 0) {
@@ -1468,12 +1500,12 @@ static int spkt_build(int x0)
     memcpy(ms + 0x28, &msbase, 4);
     memcpy(ms + 0x2C, &used, 4);
     memcpy(ms + 0x34, &cap, 4);
-    memcpy(g_lpkt + 0x00, &ms, sizeof ms);
-    memcpy(g_lpkt + 0xEC, &base, sizeof base);
-    memcpy(g_lpkt + 0xF4, &cur, sizeof cur);
-    memcpy(g_lpkt + 0x100, &tag, sizeof tag);
-    memcpy(g_lpkt + 0x104, &dma, sizeof dma);
-    memcpy(g_lpkt + 0x108, &vif, sizeof vif);
+    LPKT_PUT(0x00, ms);
+    LPKT_PUT(0xEC, base);
+    LPKT_PUT(0xF4, cur);
+    LPKT_PUT(0x100, tag);
+    LPKT_PUT(0x104, dma);
+    LPKT_PUT(0x108, vif);
     int32_t c = C, w = W;
     memcpy(g_lpkt + 0x128, &c, 4);
     memcpy(g_lpkt + 0x130, &w, 4);
@@ -1483,9 +1515,75 @@ static int spkt_build(int x0)
 static int spkt_qw(void)   /* the packet's length in qwords (its cursor) */
 {
     uint8_t *cur;
-    memcpy(&cur, g_lpkt + 0xF4, sizeof cur);
+    LPKT_GET(cur, 0xF4);
     return (int)((cur - (uint8_t *)g_sbuf) / 16);
 }
+/* accessibility.ui_scale (rg_layout_set_ui_scale): groups scale in X and Y about their
+ * anchors, limited to the screen; at 4:3 without the squeeze too; full-screen menus keep
+ * their size; 1 = off (nothing written) */
+static int lcov_y(int k)
+{
+    return ((int)((g_lbuf[2 * (3 + k)] >> 16) & 0xFFFF) - 1824 * 16 + 8) / 16;
+}
+static void ui_scale(void)
+{
+    static int menu_fn, hud_fn;
+    const int L = RG_ANCHOR_LEFT, R = RG_ANCHOR_RIGHT;
+    CHECK(fabsf(rg_layout_fit_scale(1.25f, L, L, 20, 60, 10, 30, 0, 512, 0, 448, 1.0f) - 1.25f) < 1e-4f);
+    CHECK(fabsf(rg_layout_fit_scale(1.25f, L, L, 20, 480, 10, 30, 0, 512, 0, 448, 1.0f) - 512.0f / 480.0f) < 1e-4f);
+    CHECK(fabsf(rg_layout_fit_scale(1.25f, L, R, 20, 60, 48, 448, 0, 512, 0, 448, 1.0f) - 1.12f) < 1e-4f);   /* to the top */
+    CHECK(fabsf(rg_layout_fit_scale(1.25f, L, L, -10, 60, 10, 30, 0, 512, 0, 448, 1.0f) - 1.0f) < 1e-4f);
+    CHECK(fabsf(rg_layout_fit_scale(0.8f, L, L, 20, 480, 10, 30, 0, 512, 0, 448, 1.0f) - 0.8f) < 1e-4f);
+    rg_layout_set_detect(0);
+    rg_layout_set_ui_scale(1.0f);
+    rg_layout_set_frame(1.0f, 40);
+    /* 4:3, 125%: a bottom-left element grows away from its corner, in X and Y */
+    rg_layout_set_ui_scale(1.25f);
+    CHECK(fabsf(rg_layout_ui_scale() - 1.25f) < 1e-6f);
+    for (int fr = 0; fr < 2; fr++) {
+        rg_layout_set_frame(1.0f, 41 + fr);
+        CHECK(!rg_layout_active());               /* no X squeeze: the WIDE sites unchanged */
+        rg_layout_task_begin(&hud_fn);
+        lpkt_cover(20, 60, 400, 420, 0x13);
+        rg_layout_packet(g_lpkt, NULL);
+        rg_layout_task_end();
+        CHECK_EQ(lcov_x(0), 25);
+        CHECK_EQ(lcov_x(1), 75);
+        CHECK_EQ(lcov_y(0), 388);                 /* 448 - 48 * 1.25 */
+        CHECK_EQ(lcov_y(1), 413);
+    }
+    /* a full-screen menu (indexed background covering the screen) keeps its size */
+    rg_layout_set_frame(1.0f, 43);
+    rg_layout_task_begin(&menu_fn);
+    lpkt_cover(0, 512, 0, 448, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    CHECK(lcov_x(0) == 0 && lcov_x(1) == 512 && lcov_y(1) == 448);
+    lpkt_cover(20, 60, 100, 120, 0x14);
+    rg_layout_packet(g_lpkt, NULL);
+    CHECK(lcov_x(0) == 20 && lcov_x(1) == 60 && lcov_y(0) == 100);
+    rg_layout_task_end();
+    /* 16:9 + 125%: the squeeze times the UI scale in X */
+    rg_layout_set_frame(1.0f, 44);
+    rg_layout_set_frame(0.75f, 45);
+    CHECK(rg_layout_active());
+    rg_layout_task_begin(&hud_fn);
+    lpkt_cover(20, 60, 400, 420, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    rg_layout_task_end();
+    CHECK_EQ(lcov_x(0), 19);                      /* 20 * 0.9375 = 18.75 */
+    CHECK_EQ(lcov_x(1), 56);                      /* 60 * 0.9375 = 56.25 */
+    CHECK_EQ(lcov_y(0), 388);
+    /* off again: inactive at 4:3, nothing written */
+    rg_layout_set_ui_scale(1.0f);
+    rg_layout_set_frame(1.0f, 46);
+    rg_layout_task_begin(&hud_fn);
+    lpkt_cover(20, 60, 400, 420, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    rg_layout_task_end();
+    CHECK(lcov_x(0) == 20 && lcov_y(0) == 400);
+    rg_layout_set_frame(1.0f, 47);
+}
+
 static void wide_strips(void)
 {
     static int menu_fn, other_fn;
@@ -1559,6 +1657,90 @@ static void wide_strips(void)
     }
     rg_layout_set_detect(0);
     rg_layout_set_frame(1.0f, 42);
+}
+
+/* Menu sides (2026-10-31, docs/WIDESCREEN.md "Menu sides"): a menu's shading layer (one
+ * sprite covering the 4:3 screen with a low-detail texture, ~0.2 texels a pixel) is left
+ * over the whole canvas (no squeeze, no strips); at 21:9 a background's strip runs past
+ * the 30 % mirror cap and mirrors back and forth within it (no stretched last texel). */
+static void wide_sides(void)
+{
+    static int menu_fn;
+    const int L = 2048 * 16 - 256 * 16;
+    rg_layout_set_detect(0);
+    rg_layout_set_frame(1.0f, 60);
+    rg_layout_set_detect(1);
+    rg_layout_set_frame(0.75f, 61);
+    rg_layout_task_begin(&menu_fn);
+    int q = spkt_build(0);
+    g_sbuf[2 * 7] = (100 * 16) | ((uint64_t)(448 * 16) << 16);      /* u 0..100 over 512 px */
+    rg_layout_packet(g_lpkt, NULL);
+    CHECK_EQ(((int)(g_sbuf[2 * 6] & 0xFFFF) - L + 8) / 16, 0);       /* left over the canvas */
+    CHECK_EQ(((int)(g_sbuf[2 * 8] & 0xFFFF) - L + 8) / 16, 512);
+    CHECK_EQ(g_sbuf[2 * 10] & 0xFFFF, g_sbuf[2 * 12] & 0xFFFF);       /* small one still hidden */
+    CHECK_EQ(spkt_qw(), q);                                            /* no strips */
+    rg_layout_task_end();
+    /* 21:9 (s 0.5625): the side is 112 px = 99.6 texels of a 256-texel piece; cap 76.8 */
+    rg_layout_set_frame(0.5625f, 62);
+    rg_layout_task_begin(&menu_fn);
+    q = spkt_build(0);
+    rg_layout_packet(g_lpkt, NULL);
+    CHECK_EQ(((int)(g_sbuf[2 * 6] & 0xFFFF) - L + 8) / 16, 112);
+    /* PRIM + 2 sides x (16 bands x 5 + one extra sprite at the turn) + the colour */
+    CHECK_EQ(spkt_qw(), q + 1 + 2 * (16 * 5 + 4) + 1);
+    int umax = -1, uedge = -1, n = 0;
+    for (int k = q + 1; k < spkt_qw() - 1; k++) {
+        if (g_sbuf[2 * k + 1] != 0x03)
+            continue;
+        int u = (int)(g_sbuf[2 * k] & 0x3FFF), x = ((int)(g_sbuf[2 * (k + 1)] & 0xFFFF) - L + 8) / 16;
+        if (x > 112)
+            continue;                                                   /* right side */
+        n++;
+        if (u > umax) umax = u;
+        if (x == 0) uedge = u;
+    }
+    CHECK(n > 0);
+    CHECK(umax >= 76 * 16 && umax <= 77 * 16);                         /* turns at the cap */
+    CHECK(uedge >= 53 * 16 && uedge <= 55 * 16);                       /* 2 x 76.8 - 99.6 = 54 */
+    /* a frame strip of 7 identical 64-px tiles, each drawn twice (as the main menu's),
+     * x 111..559 (past the right edge), in the same menu task: laid out whole (the tile
+     * across the edge is not clipped, the ones beyond not hidden) and continued with copies
+     * of its last tile (both passes) to the canvas edge */
+    q = spkt_build(0);
+    {
+        const int T = 1824 * 16;
+        int r = 2;
+        g_sbuf[2 * r] = 0x13ull << 20; g_sbuf[2 * r + 1] = 0x06; r++;        /* TEX0_1 PSMT8 */
+        g_sbuf[2 * r] = 6; g_sbuf[2 * r + 1] = 0x00; r++;                    /* PRIM sprite */
+        for (int t2 = 0; t2 < 14; t2++) {
+            int xa = 111 + 64 * (t2 / 2);
+            g_sbuf[2 * r] = (106 * 16) | ((uint64_t)(0 * 16) << 16); g_sbuf[2 * r + 1] = 0x03; r++;
+            g_sbuf[2 * r] = (uint64_t)(L + xa * 16) | ((uint64_t)(T + 4 * 16) << 16); g_sbuf[2 * r + 1] = 5; r++;
+            g_sbuf[2 * r] = (170 * 16) | ((uint64_t)(20 * 16) << 16); g_sbuf[2 * r + 1] = 0x03; r++;
+            g_sbuf[2 * r] = (uint64_t)(L + (xa + 64) * 16) | ((uint64_t)(T + 24 * 16) << 16); g_sbuf[2 * r + 1] = 5; r++;
+        }
+        g_sbuf[2 * r] = 0; g_sbuf[2 * r + 1] = 0x3F; r++;                    /* GsPktClose's NOP */
+        g_sbuf[2] = (uint64_t)(r - 2) | 0x8000ull | (1ull << 60);
+        g_sbuf[3] = 0xE;
+        uint32_t *t32 = (uint32_t *)g_sbuf;
+        t32[0] = (uint32_t)(r - 1) | 0x10000000u;
+        t32[3] = (uint32_t)(r - 1) | 0x50000000u;
+        uint8_t *cur = (uint8_t *)g_sbuf + 16 * r;
+        LPKT_PUT(0xF4, cur);
+        q = r;
+    }
+    rg_layout_packet(g_lpkt, &menu_fn);
+    /* tile 6 (x 495..559, across the edge): whole, 256 + (495 - 256) * 0.5625 = 390.4 */
+    CHECK_EQ(((int)(g_sbuf[2 * (4 + 12 * 4 + 1)] & 0xFFFF) - L + 8) / 16, 390);
+    CHECK_EQ(((int)(g_sbuf[2 * (4 + 13 * 4 + 3)] & 0xFFFF) - L + 8) / 16, 426);
+    /* PRIM + 2 passes x 3 copies (426.4, 462.4, 498.4 .. 534.4) x (UV, XYZ, UV, XYZ) */
+    CHECK_EQ(spkt_qw(), q + 1 + 2 * 3 * 4);
+    CHECK_EQ(g_sbuf[2 * q + 1], 0x00ull);
+    CHECK_EQ(((int)(g_sbuf[2 * (q + 1 + 8 + 3)] & 0xFFFF) - L + 8) / 16, 534);
+    CHECK_EQ((int)(g_sbuf[2 * (q + 1 + 8 + 2)] & 0x3FFF), 170 * 16);  /* the tile's own U */
+    rg_layout_task_end();
+    rg_layout_set_detect(0);
+    rg_layout_set_frame(1.0f, 63);
 }
 
 /* Widescreen stage 1: canvas shapes, the projection aspect / HUD x scale for
@@ -1903,7 +2085,99 @@ static void audio_focus(void)
     printf("audio_focus: mute on focus loss follows audio.background (events and registry)\n");
 }
 
+/* display.monitor / display.fullscreen_mode choice lists from SDL (lane p6gfx 2026-11-01):
+ * the dummy video driver's display, driven through the host's own overlay */
+static int menu_row_of(rg_settings *s, const char *id, int *page)
+{
+    rg_menu m;
+    rg_menu_init(&m, s);
+    int idx = rg_settings_find(s, id);
+    for (int pg = 0; pg < m.npages; pg++) {
+        m.page = pg;
+        int rows[RG_MENU_MAX_ROWS];
+        int n = rg_menu_rows(&m, rows, RG_MENU_MAX_ROWS);
+        for (int r = 0; r < n; r++)
+            if (rows[r] == idx) { *page = pg; return r; }
+    }
+    return -1;
+}
+
+static void display_host(void)
+{
+    rg_host *h = dummy_host();
+    if (!h) {
+        printf("display_host: SDL dummy drivers unavailable: skipped\n");
+        return;
+    }
+    rg_settings *s = rg_settings_create();
+    rg_settings_set_warn(s, NULL, NULL);
+    rg_settings_register_core(s);
+    rg_settings_set_int(s, "display.monitor", 3, RG_SRC_FILE);   /* no such display */
+    rg_host_attach_settings(h, s, NULL);
+    rg_host_pump(h);
+    CHECK(rg_host_display_hz(h) >= 0.0);
+    char script[256];
+    int pg = 0, row = menu_row_of(s, "display.monitor", &pg);
+    CHECK(row >= 0);
+    /* open, go to the row, RIGHT: from "not connected" to the first display, keep */
+    int k = snprintf(script, sizeof script, "toggle");
+    for (int i = 0; i < pg; i++) k += snprintf(script + k, sizeof script - k, ",next");
+    for (int i = 0; i < row; i++) k += snprintf(script + k, sizeof script - k, ",down");
+    snprintf(script + k, sizeof script - k, ",right,accept");
+    CHECK(rg_host_menu_script(h, script) > 0);
+    CHECK_EQ(rg_settings_get_int(s, "display.monitor"), 0);
+    /* the exclusive mode: RIGHT picks the display's first mode (a WxH@Hz the parser takes) */
+    int r2 = menu_row_of(s, "display.fullscreen_mode", &pg);
+    CHECK(r2 == row + 1);
+    CHECK(rg_host_menu_script(h, "down,right,accept,toggle") > 0);
+    const char *fm = rg_settings_get_string(s, "display.fullscreen_mode");
+    int w = 0, hh = 0;
+    double hz = 0;
+    CHECK(fm && rg_display_mode_parse(fm, &w, &hh, &hz) == 1 && w > 0 && hh > 0);
+    printf("display_host: monitor 3 -> %d, fullscreen_mode \"%s\", display %.2f Hz\n",
+           rg_settings_get_int(s, "display.monitor"), fm ? fm : "", rg_host_display_hz(h));
+    rg_host_attach_settings(h, NULL, NULL);
+    rg_host_destroy(h);
+    rg_settings_destroy(s);
+}
+
+/* gameplay.battle_speed's audio stage (src/host/rg_tstretch.h): at 1x the input comes out
+ * unchanged (one hop late); at 1.5 / 2 / 3x the length is divided by the speed and a tone keeps
+ * its pitch. */
+static void audio_tstretch(void)
+{
+    enum { NIN = 48000 * 3 };
+    static int16_t in[NIN * 2], out[NIN * 2 + 8192];
+    static rg_tstretch t;
+    for (int i = 0; i < NIN; i++) {
+        in[2 * i] = (int16_t)(8000.0 * sin(2.0 * 3.14159265358979 * 440.0 * i / 48000.0));
+        in[2 * i + 1] = (int16_t)(6000.0 * sin(2.0 * 3.14159265358979 * 660.0 * i / 48000.0));
+    }
+    static const double sp[] = { 1.0, 1.5, 2.0, 3.0 };
+    for (int s = 0; s < 4; s++) {
+        uint32_t o = 0;
+        rg_tstretch_init(&t);
+        for (int i = 0; i < NIN; i += 800)
+            o += rg_tstretch_process(&t, in + 2 * i, 800, sp[s], out + 2 * o, NIN + 4096 - o);
+        double ratio = (double)NIN / o;
+        long zc = 0;
+        for (uint32_t k = 2000; k + 2001 < o; k++)
+            zc += (out[2 * k] < 0) != (out[2 * k + 2] < 0);
+        double hz = zc / 2.0 / ((o - 4001) / 48000.0);
+        fprintf(stderr, "  tstretch %.1fx: %u -> %u frames (x%.3f), tone %.1f Hz\n", sp[s], NIN, o, ratio, hz);
+        CHECK(fabs(ratio - sp[s]) < 0.02 * sp[s]);
+        CHECK(fabs(hz - 440.0) < 3.0);
+        if (s == 0) {
+            long bad = 0;
+            for (uint32_t k = RG_TS_HS; k < o; k++)
+                bad += out[2 * k] != in[2 * (k - RG_TS_HS)] || out[2 * k + 1] != in[2 * (k - RG_TS_HS) + 1];
+            CHECK_EQ(bad, 0);
+        }
+    }
+}
+
 static const test k_tests[] = {
+    { "audio_tstretch", audio_tstretch },
     { "pad_report", pad_report },
     { "input_mapping", input_mapping },
     { "input_config", input_config },
@@ -1916,6 +2190,7 @@ static const test k_tests[] = {
     { "audio_reg", audio_reg },
     { "audio_device", audio_device },
     { "audio_focus", audio_focus },
+    { "display_host", display_host },
     { "wide_fit", wide_fit },
     { "wide_present", wide_present },
     { "wide_present_control", wide_present_control },
@@ -1924,7 +2199,9 @@ static const test k_tests[] = {
     { "wide_host", wide_host },
     { "wide_layout", wide_layout },
     { "wide_menu", wide_menu },
+    { "ui_scale", ui_scale },
     { "wide_strips", wide_strips },
+    { "wide_sides", wide_sides },
 };
 
 int main(int argc, char **argv)

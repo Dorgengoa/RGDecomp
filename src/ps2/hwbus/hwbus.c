@@ -440,7 +440,7 @@ void hw_w32(uint32_t a, uint32_t v)
     write32(a, v);
 }
 
-uint64_t hw_r64(uint32_t a)
+unsigned long long hw_r64(uint32_t a)   /* = uint64_t; spelled as port/hwaccess.h declares it (LP64: uint64_t is unsigned long) */
 {
     uint64_t v;
     int owner;
@@ -465,7 +465,7 @@ uint64_t hw_r64(uint32_t a)
     return v;
 }
 
-void hw_w64(uint32_t a, uint64_t v)
+void hw_w64(uint32_t a, unsigned long long v)
 {
     int owner;
     if (a & 7u) { unknown(a, 64, 1, v); return; }

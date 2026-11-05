@@ -46,8 +46,8 @@ void Sprintf_1343b8(void *, void *, void *);
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_0045B770[0x20];
-extern u8 D_0045B778[0x20];
+extern u8 D_0045B770[8];
+extern u8 D_0045B778[0x18];
 extern u8 D_0045B790[0x10];
 extern u8 D_0045B7A0[0x10];
 

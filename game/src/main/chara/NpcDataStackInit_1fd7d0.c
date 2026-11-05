@@ -16,12 +16,12 @@
 /*rgp*/
 extern void strcpy(void *, void *);
 extern u32 strlen(void *);
-extern u8 D_0045BE70[0x400];
+extern u8 D_0045BE70[0x10];
 extern u8 D_0045BE90[0x400];
 extern s32 D_0047E474;
-extern u8 D_004B6920[0x400];
+extern u8 D_004B6920[0x60];
 extern u8 D_004B69C0[0x400];
-extern u8 D_004B8660[0x400];
+extern u8 D_004B8660[4];
 extern u8 D_004B8700[0x400];
 
 s32 NpcDataStackInit_1fd7d0(s32 arg0) {

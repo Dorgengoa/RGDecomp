@@ -9,7 +9,7 @@
 /*rgp*/
 /*rgp*/
 extern s32 strcmp(const char *, const char *);
-extern u8 D_004DB920[0x400];
+extern u8 D_004DB920[4];
 extern u8 D_004DB928[0x400];
 
 s32 AiCmdObjMotionNameIs_2c9820(s64 *arg0)

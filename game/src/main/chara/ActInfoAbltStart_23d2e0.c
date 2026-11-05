@@ -49,7 +49,7 @@ typedef s64 M2C_UNK64;
 extern u8 D_0044C870[0x400];
 extern s32 D_00481E80;
 extern s32 D_00481E84;
-extern u8 D_004BCE6C[0x400];
+extern u8 D_004BCE6C[4];
 extern s16 D_004BCE92[0x10];
 
 s32 ActInfoAbltStart_23d2e0(s8 *arg0, s32 arg1) {

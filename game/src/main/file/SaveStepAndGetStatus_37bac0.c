@@ -8,7 +8,7 @@
 /*rgp*/
 extern void *memcpy(void *, const void *, s32);
 extern void *D_004831D0;
-extern u8 D_004E90F0[0x400];
+extern u8 D_004E90F0[8];
 extern u8 D_004E910C[0xC];
 extern s32 D_004E9118[4];
 

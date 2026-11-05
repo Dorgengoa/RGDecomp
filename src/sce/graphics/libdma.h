@@ -26,7 +26,7 @@ gs_state *sce_graphics_gs(void);
 /* ---- libdma ---- */
 /* x64 (docs/X64-PLAN.md): SDK structs live in game memory with 4-byte pointers */
 #ifndef SCE_P32
-#if defined(_WIN64)
+#if defined(__x86_64__)
 #define SCE_P32 __ptr32 __uptr
 #else
 #define SCE_P32

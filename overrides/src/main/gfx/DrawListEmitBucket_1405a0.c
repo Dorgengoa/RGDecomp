@@ -51,7 +51,7 @@ typedef struct Ctx {
 /*rgp*/
 extern u128 D_0047DE40 __attribute__((section(".sdata")));
 
-#define ADDR(x) ((u32)(x))   /* DMAtag ADDR: the host pointer (was the PS2_PHYS identity) */
+#define ADDR(x) (((u32)(x)))
 static inline void EMITf(Ctx *o, u32 v) { *(u128 *)o->cur = D_0047DE40; ((u32 *)o->cur)[1] = ADDR(v); o->cur += 0x10; }
 #define EMIT(o, v) EMITf(o, (u32)(v))
 

@@ -81,6 +81,12 @@ void nr_gs_gif_path3(const void *qw, uint32_t nqw);
 void nr_gs_gif_reset(void);     /* GIF_CTRL.RST: open packets dropped */
 int nr_gs_path_idle(int path);  /* no packet open on the path */
 void nr_gs_gif_stats(FILE *f);
+/* a movie is playing (in GS-stream order: rg_runtime_movie_playing queues the change behind the
+ * transfers sent before it); texture dumps skip movie frames (nr_texrep.cpp, docs/TEXTURES.md) */
+extern int nr_gs_movie;
+/* fields so far in GS-stream order (the runtime queues one tick per field): texture uploads are
+ * budgeted per field (nr_texrep.cpp) */
+extern uint32_t nr_gs_fields;
 
 /* ---- the worker (nr_q.c): calls in order on one thread ---- */
 typedef void (*nr_q_fn)(void *user, const void *data);
@@ -96,6 +102,16 @@ uint64_t nr_q_mark(void);
 void nr_q_wait_mark(uint64_t mark);
 /* entries, payload bytes, drains that waited, 0 */
 void nr_q_stats(uint64_t out[4]);
+/* The tick (docs/NATIVE-RENDER.md "Interpolation throughput (2026-10-30)"): fn runs on the worker
+ * between calls and while it is idle, once the time it asked for has come; it returns the ms until
+ * it wants to run again (< 0: only after nr_q_tick_kick).  Never while the producer holds the
+ * device: nr_q_drain holds ticks off (and waits for one in progress) until the next nr_q_call.
+ * NULL turns it off (the call drains).  Idle wait: Windows a high-resolution waitable timer + an
+ * event; elsewhere the work condition with a timeout (pthread_cond_timedwait). */
+typedef double (*nr_q_tick_fn)(void *user);
+void nr_q_set_tick(nr_q_tick_fn fn, void *user);
+void nr_q_tick_kick(void);   /* run the tick at the next chance (any thread) */
+uint64_t nr_q_ticks(void);
 double nr_q_wait_ms(void);
 
 /* ---- privileged registers (nr_hw.c; EE thread) ---- */

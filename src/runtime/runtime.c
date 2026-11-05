@@ -7,9 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>   /* NAN (the present log) */
 
 #include "rg_runtime.h"
 #include "rg_settings.h"
+#include "rg_display.h"   /* display.frame_rate caps (rg_frame_cap_fps) */
 
 #include "cdvd.h"
 #include "dmac.h"
@@ -21,6 +23,7 @@
 #include "libdma.h"
 #include "libsif.h"
 #include "mccard.h"
+#include "mc_menu.h"   /* the overlay's save manager */
 #include "mcserv.h"
 #include "padman.h"
 #include "rg_iop.h"     /* RG_IOP=native|hle (docs/NATIVE-IOP.md) */
@@ -131,11 +134,16 @@ static struct {
      * state only (never saved, never folded into the run hash) */
     rg_pace pace;
     uint64_t pace_gen;
+    double pace_hz, gfx_hz;     /* rg_host_display_hz applied (display.frame_rate "display") */
     int pace_applied;
     FILE *pace_log;            /* $RG_PACE_LOG=path: one TSV row per host second */
     FILE *present_log;         /* $RG_PRESENT_LOG=path: one TSV row per present (tools/native/present_pacing.py) */
     double present_log_t0;
     uint64_t pace_sec, pace_row_ticks, pace_row_presents, pace_row_logic;
+    /* gameplay.battle_speed (rg_runtime_set_speed): requested / applied speed, audio stage */
+    double speed_req, speed;
+    int speed_stage_req, speed_stage;
+    uint64_t speed_fields, speed_changes;  /* statistics: fields run sped up, changes */
     rg_input_script script;
     int have_script;
 
@@ -215,12 +223,22 @@ static struct {
      * passes: the control), $RG_INTERP_DUMP=dir + $RG_INTERP_DUMP_FIELDS=a-b (PNG per present),
      * $RG_INTERP_CHECK=1 (an exact pass per field: is the frame self-contained) */
     uint64_t ip_presents, ip_between;
+    uint64_t ov_at_phase;      /* overlapped presents made at the next phase's start */
+    uint64_t ov_nowait_skips, ov_nowait_drops, ov_posted;   /* (RG_PRESENT_NOWAIT) not waited for, not queued */
     double ip_sim_hz;
     int ip_sim_snap, ip_check;
     char ip_dump[512];
     uint64_t ip_dump_a, ip_dump_b;
     uint64_t ip_sim_n, ip_sim_changed, ip_sim_passes, ip_check_same, ip_check_differ, ip_seq;
     uint64_t ip_last_hash;
+    /* frame-rate gate test hooks (tools/p6/fpsgate.py, docs/TEST-FIXTURES.md "Frame-rate gate"):
+     * $RG_INTERP_SIM_JITTER=seed: the headless simulated presents per field are random (0..8 at
+     * random sorted times in the phase, repeats allowed) instead of a grid; $RG_PACE_JITTER=ms[:seed]
+     * (windowed): a noisy host clock (each reading late by up to ms/2, kept monotonic) and random
+     * host stalls (1 phase in 8 waits up to ms first).  Host state only, never in the run hash. */
+    uint64_t jit_seed, jit_stalls, jit_stall_ns, jit_last;
+    uint32_t pace_jit_ms;
+    int ip_sim_jit;
     /* $RG_GS_REC=path + $RG_GS_REC_FIELDS=first-last: GS input recording */
     FILE *rec;
     char rec_path[512];
@@ -288,9 +306,36 @@ static void say(const char *fmt, const char *a)
  *          and the frame cap allows (0..k phases per present; between-phase presents are the
  *          renderer lane's interpolation, rg_pace_between: none yet).
  * The game sees neither: its state is a function of the inputs per phase. */
-static uint64_t pace_now(void) { return R.pacer.now_ns(R.pacer.clock_user); }
+static uint64_t jit_rand(void)
+{
+    uint64_t x = R.jit_seed ? R.jit_seed : 0x9E3779B97F4A7C15ull;
+    x ^= x << 13; x ^= x >> 7; x ^= x << 17;
+    return R.jit_seed = x;
+}
+static uint64_t pace_now(void)
+{
+    uint64_t t = R.pacer.now_ns(R.pacer.clock_user);
+    if (R.pace_jit_ms) {   /* $RG_PACE_JITTER: a late, noisy reading, never going backwards */
+        t += jit_rand() % ((uint64_t)R.pace_jit_ms * 500000u + 1u);
+        if (t < R.jit_last) t = R.jit_last;
+        R.jit_last = t;
+    }
+    return t;
+}
+#ifdef RG_HAVE_GPU
+static int ov_present_at_phase(void);
+static void ov_present_pending(void);
+#endif
 #if RT_IP
 static int ip_present(double tau);
+static int ipa_on(void);
+static int ipa_busy(void);
+static int ipa_flush(void);
+static int ipa_request(double tau, int plain);
+static int ipw_is_on(void);
+static void ipw_send_anchor(void);
+static void ipw_off(void);
+static void ipw_report(void);
 #endif
 
 static void pace_kernel_hook(uint64_t from, uint64_t to, void *user)
@@ -299,16 +344,19 @@ static void pace_kernel_hook(uint64_t from, uint64_t to, void *user)
         rg_pacer_hook(from, to, user);
 }
 
-static const int k_pace_caps[] = { 0, 30, 60, 120, 144, 0 }; /* display.frame_rate order */
+/* the display's refresh rate for display.frame_rate "display" (0: unknown / headless) */
+static double disp_hz_now(void) { return R.host ? rg_host_display_hz(R.host) : 0.0; }
 
 static void pace_update(void)
 {
     rg_settings *s = R.cfg.settings;
-    if (R.pace_applied && (!s || rg_settings_generation(s) == R.pace_gen))
+    double hz = disp_hz_now();
+    if (R.pace_applied && (!s || rg_settings_generation(s) == R.pace_gen) && hz == R.pace_hz)
         return;
     int first = !R.pace_applied;
     R.pace_applied = 1;
     R.pace_gen = s ? rg_settings_generation(s) : 0;
+    R.pace_hz = hz;
     rg_pace_config c;
     rg_pace_default_config(&c);
     if (s && rg_settings_find(s, "display.pacing") >= 0 && rg_settings_get_enum(s, "display.pacing") == 1)
@@ -319,15 +367,19 @@ static void pace_update(void)
     if (!R.cfg.throttle || R.cfg.headless)
         c.mode = RG_PACE_RETAIL; /* no host clock: the deterministic cadence */
     if (s && rg_settings_find(s, "display.frame_rate") >= 0) {
-        int v = rg_settings_get_enum(s, "display.frame_rate");
-        if (v >= 0 && v < (int)(sizeof k_pace_caps / sizeof k_pace_caps[0]))
-            c.cap_fps = (uint32_t)k_pace_caps[v];
-    }
+        c.cap_fps = (uint32_t)rg_frame_cap_fps(rg_settings_get_enum(s, "display.frame_rate"), hz);
+        /* gameplay.battle_speed with frame_rate original: presents stay at most 60 a second */
+        c.speed_cap_fps = rg_settings_get_enum(s, "display.frame_rate") == 0 ? 60u : 0u;
+    } else
+        c.speed_cap_fps = 60u;
     if (s && rg_settings_find(s, "display.vsync") >= 0)
         c.vsync = rg_settings_get_bool(s, "display.vsync");
 #if RT_IP
     /* display.interpolation (or $RG_INTERP): presents interpolated between game frames */
-    nr_ip_configure(s && rg_settings_find(s, "display.interpolation") >= 0 && rg_settings_get_bool(s, "display.interpolation"));
+    /* (paused while a battle runs sped up: gameplay.battle_speed; the phases come faster than
+     * the interpolation's host-time grid assumes) */
+    nr_ip_configure(s && rg_settings_find(s, "display.interpolation") >= 0 && rg_settings_get_bool(s, "display.interpolation") &&
+                    !(R.speed > 1.0));
 #endif
     e = getenv("RG_PACE_MAX_TICKS");
     if (e && *e)
@@ -340,6 +392,13 @@ static void pace_update(void)
         c.catchup = (uint32_t)strtoul(e, NULL, 0);
     e = getenv("RG_PACE_COST_AT_DECISION"); /* control: phase cost without the GS worker wait */
     c.cost_at_decision = e && e[0] == '1';
+    /* nothing presents between phases: every phase presents (a cap >= 60 paces nothing then);
+     * $RG_PACE_PHASE_RATE=0 = the cap's slots decide as before (control) */
+    e = getenv("RG_PACE_PHASE_RATE");
+    c.phase_rate = !(e && e[0] == '0');
+#if RT_IP
+    if (nr_ip_on()) c.phase_rate = 0;
+#endif
     if (!first && c.mode != R.pace.cfg.mode)
         rg_pacer_reset(&R.pacer); /* re-anchor the idle-jump pacer */
     if ((first || c.mode != R.pace.cfg.mode || c.cap_fps != R.pace.cfg.cap_fps || c.vsync != R.pace.cfg.vsync) &&
@@ -350,10 +409,46 @@ static void pace_update(void)
     rg_pace_configure(&R.pace, &c);
 }
 
+void rg_runtime_set_speed(double speed, int stage)
+{
+    R.speed_req = speed >= 1.0 ? speed : 1.0;
+    R.speed_stage_req = stage;
+}
+
+/* gameplay.battle_speed: the speed asked for since the last field, applied at a phase boundary */
+static void speed_update(void)
+{
+    double sp = R.speed_req >= 1.0 ? R.speed_req : 1.0;
+    if (R.speed == 0.0) R.speed = 1.0;
+    if (sp != R.speed) {
+        int ip_change = (sp > 1.0) != (R.speed > 1.0);
+        R.speed = sp;
+        R.speed_changes++;
+        rg_pace_set_speed(&R.pace, sp);
+        rg_pacer_set_speed(&R.pacer, sp);
+        if (ip_change)
+            R.pace_applied = 0;   /* pace_update again: interpolation paused / resumed */
+        if (getenv("RG_BSPEED_LOG"))
+            fprintf(stderr, "rg_runtime: battle speed %.2f at field %llu\n", sp, (unsigned long long)R.st.fields);
+    }
+    if (R.speed > 1.0) R.speed_fields++;
+    if (R.host && (R.speed_stage_req != R.speed_stage || R.speed_stage)) {
+        R.speed_stage = R.speed_stage_req;
+        rg_host_audio_set_speed(R.host, R.speed_stage ? R.speed : 0.0);
+    }
+}
+
 /* host mode: wait until host time owes the next VBlank phase */
 static void pace_before_field(void)
 {
+    speed_update();
     pace_update();
+    if (R.pace_jit_ms && jit_rand() % 8u == 0) {   /* $RG_PACE_JITTER: a host stall */
+        uint64_t ns = jit_rand() % ((uint64_t)R.pace_jit_ms * 1000000u + 1u);
+        R.jit_stalls++;
+        R.jit_stall_ns += ns;
+        R.pacer.sleep_ns(R.pacer.clock_user, ns);
+    }
     if (R.pace.cfg.mode == RG_PACE_HOST) {
         for (;;) {
             uint64_t now = pace_now();
@@ -364,7 +459,29 @@ static void pace_before_field(void)
              * when rg_pace_between says its slot came, then sleeps rg_pace_sleep_ns(.., between) */
             int between = 0;
 #if RT_IP
-            if (nr_ip_on() && R.cfg.present && !R.cfg.headless) {
+            if (ipw_is_on()) {
+                /* the worker presents between phases: just wait for the phase */
+            } else if (ipa_on()) {
+                /* asynchronous: present a finished request, queue the next at its slot, and
+                 * while one is in flight look again shortly (never wait for it) */
+                uint32_t a16 = 0;
+                if (ipa_flush()) { R.ip_between++; continue; }
+                between = 1;
+                if (!ipa_busy() && rg_pace_between(&R.pace, now, &a16)) {
+                    if (ipa_request((double)R.pace.ticks + (double)a16 / 65536.0, 0)) {
+                        rg_pace_presented(&R.pace, now);
+                        continue;
+                    }
+                    between = 0;   /* nothing to interpolate yet: wait for the phase */
+                }
+                if (ipa_busy()) {
+                    uint64_t sl = w < 500000u ? w : 500000u;
+                    R.pace.waits++;
+                    R.pace.slept_ns += sl;
+                    R.pacer.sleep_ns(R.pacer.clock_user, sl);
+                    continue;
+                }
+            } else if (nr_ip_on() && R.cfg.present && !R.cfg.headless) {
                 uint32_t a16 = 0;
                 between = 1;
                 if (rg_pace_between(&R.pace, now, &a16)) {
@@ -385,9 +502,20 @@ static void pace_before_field(void)
     }
     if (!R.pace.t0_ns)
         R.pace.t0_ns = pace_now(); /* statistics only (retail: the report's wall time) */
+#ifdef RG_HAVE_GPU
+    /* the frame the worker composed at the last field's end goes on screen at this phase's
+     * start (the host clock's grid) instead of after this phase's EE step (whose length varies
+     * from 0.2 to 13 ms in a 30 Hz scene: uneven intervals); when the worker has not finished
+     * it, host_half presents it as before.  $RG_PRESENT_AT_PHASE=0: control */
+    if (R.pace.cfg.mode == RG_PACE_HOST && ov_present_at_phase()) {
+        ov_present_pending();
+        R.ov_at_phase++;
+    }
+#endif
     rg_pace_take_tick(&R.pace);
 #if RT_IP
     nr_ip_tick(R.pace.ticks); /* the phase clock of the frame starts (interpolation weights) */
+    if (R.pace.cfg.mode == RG_PACE_HOST) ipw_send_anchor(); /* (the worker's presents: host time in phases) */
 #endif
 }
 
@@ -429,6 +557,9 @@ static void pace_report(void)
             (unsigned long long)p->between_presents, (unsigned long long)p->waits, p->slept_ns / 1e9,
             (unsigned long long)p->resyncs, (unsigned long long)p->dropped_ticks, (unsigned long long)p->forced,
             p->cfg.catchup, (unsigned long long)p->skipped_slow, p->cost_ns / 1e6);
+    if (R.pace_jit_ms)
+        fprintf(stderr, "jitter=%ums stalls=%llu (%.2fs) ", R.pace_jit_ms, (unsigned long long)R.jit_stalls,
+                R.jit_stall_ns / 1e9);
     for (int i = 0; i < RG_PACE_HIST; i++)
         if (p->hist[i])
             fprintf(stderr, " %d%s:%llu", i, i == RG_PACE_HIST - 1 ? "+" : "", (unsigned long long)p->hist[i]);
@@ -465,6 +596,16 @@ void rg_runtime_config_from_settings(rg_runtime_config *c, struct rg_settings *s
         c->fullscreen = rg_settings_get_enum(s, "display.window_mode") != 0;
     if (rg_settings_find(s, "display.scale") >= 0)
         c->scale = rg_settings_get_enum(s, "display.scale");
+    if (rg_settings_find(s, "saves.dir") >= 0) {
+        /* saves.dir [restart]: below --saves (parsed after this) and $RG_SAVES */
+        static char saves[512];
+        const char *d = rg_settings_get_string(s, "saves.dir");
+        const char *env = getenv("RG_SAVES");
+        if (d && *d && !(env && *env)) {
+            snprintf(saves, sizeof saves, "%s", d);
+            c->saves_dir = saves;
+        }
+    }
 }
 
 static const char *k_step_names[RG_INIT_COUNT] = {
@@ -825,6 +966,8 @@ int rg_runtime_init(const rg_runtime_config *cfg)
             /* cfg fields set after rg_runtime_config_from_settings win */
             rg_host_settings_from_config(R.cfg.settings, &hc);
             rg_host_attach_settings(R.host, R.cfg.settings, R.cfg.settings_path);
+            /* the Saves page's save manager: names, PCSX2 import (docs/SAVES.md 4c) */
+            rg_menu_set_saves(rg_host_settings_menu(R.host), mc_menu_ops());
         }
         rg_pacer_init(&R.pacer, R.cfg.throttle);
         rg_pace_init(&R.pace, NULL);
@@ -1035,6 +1178,8 @@ int rg_runtime_init(const rg_runtime_config *cfg)
         mccard_default_config(&mc);
         mc.root = R.saves_dir;
         mc.clock = (mc_clock_fn)rg_mc_virtual_clock;
+        if (R.cfg.settings && rg_settings_find(R.cfg.settings, "saves.backup_keep") >= 0)
+            mc.backup_keep = rg_settings_get_int(R.cfg.settings, "saves.backup_keep");   /* (0 = none) */
         if (mccard_init(&mc) != 0)
             say("rg_runtime: memory cards under %s unavailable\n", R.saves_dir);
         if (rg_iop_native()) {
@@ -1359,6 +1504,14 @@ static void gpu_choose(void)
     }
     /* RG_WINDOW_SHOT=field:path: a PNG of the window (scaled, as presented)
      * at the end of that field (windowed runs only) */
+    {   /* $RG_PACE_JITTER=ms[:seed]: the frame-rate gate's host clock jitter (R.pace_jit_ms) */
+        const char *pj = getenv("RG_PACE_JITTER");
+        if (pj && *pj) {
+            const char *c = strchr(pj, ':');
+            R.pace_jit_ms = (uint32_t)strtoul(pj, NULL, 0);
+            if (!R.jit_seed || c) R.jit_seed = (c ? strtoull(c + 1, NULL, 0) : 1u) * 0x9E3779B97F4A7C15ull + 7u;
+        }
+    }
     const char *ws = getenv("RG_WINDOW_SHOT");
     if (ws && *ws && strchr(ws, ':')) {
         R.shot_field = strtoull(ws, NULL, 0);
@@ -1370,6 +1523,8 @@ static void gpu_choose(void)
         if (e && *e) R.ip_sim_hz = atof(e);
         e = getenv("RG_INTERP_SIM_SNAP");
         R.ip_sim_snap = e && e[0] == '1';
+        e = getenv("RG_INTERP_SIM_JITTER");
+        if (e && *e) { R.ip_sim_jit = 1; R.jit_seed = strtoull(e, NULL, 0) * 0x9E3779B97F4A7C15ull + 1u; }
         e = getenv("RG_INTERP_CHECK");
         R.ip_check = e && e[0] == '1';
         e = getenv("RG_INTERP_DUMP");
@@ -1438,6 +1593,34 @@ static void gpu_choose(void)
     }
 }
 
+#if !defined(RG_HAVE_GPU) && RG_NATIVE_ONLY && defined(RG_HAVE_NATIVE_RENDER) && !(defined(RG_NATIVE_GS) && RG_NATIVE_GS)
+/* The renderless build's local->host reads (libgraph rg_gs_store_hook; the lens flare's 8x8 Z
+ * probe, GfxEndFrame_141c20, and the menus' screen captures): served by the software GS model
+ * as the FIFO path would (docs/NATIVE-RENDER.md "Renderless builds and the depth probe").  Without
+ * it the probe read nothing (zeros) and the kernel lost the read's two channel-1 completions, so
+ * the run hash left the rendered builds' at the first lens flare (boot_insectron field 11,341). */
+static int sw_store(uint64_t bitblt, uint64_t trxpos, uint64_t trxreg, void *dst, int bytes, int fifo_bytes)
+{
+    static uint8_t *buf;
+    static int cap;
+    if (!R.gs || bytes <= 0 || fifo_bytes < bytes) return -1;
+    if (fifo_bytes > cap) {
+        free(buf);
+        buf = (uint8_t *)malloc((size_t)fifo_bytes);
+        cap = buf ? fifo_bytes : 0;
+        if (!buf) return -1;
+    }
+    gs_async_drain(R.gs);   /* (the frame the probe reads) */
+    gs_write_reg(R.gs, GS_BITBLTBUF, bitblt);
+    gs_write_reg(R.gs, GS_TRXPOS, trxpos);
+    gs_write_reg(R.gs, GS_TRXREG, trxreg);
+    gs_write_reg(R.gs, GS_TRXDIR, 1);
+    if ((int)gs_read_fifo(R.gs, buf, (uint32_t)fifo_bytes) < fifo_bytes) return -1;
+    memcpy(dst, buf, (size_t)bytes);
+    return 0;
+}
+#endif
+
 static void gpu_start(void)
 {
 #if !(defined(RG_NATIVE_GS) && RG_NATIVE_GS)   /* (no GS model natively: nothing to leave unrasterized) */
@@ -1457,6 +1640,12 @@ static void gpu_start(void)
      * software GS model itself, VU1 programs run in nr_vux.c; nr_scene draws nothing (no
      * device, so the game keeps its original MSCAL + CALL); RG_GS_NULL=1 skips rasterizing. */
     rg_vif1_chain_hook = nr_fx_on() ? vif1_chain : NULL;
+#if !(defined(RG_NATIVE_GS) && RG_NATIVE_GS)
+    {
+        extern int (*rg_gs_store_hook)(uint64_t, uint64_t, uint64_t, void *, int, int);
+        rg_gs_store_hook = sw_store;   /* local->host reads from the software GS (above) */
+    }
+#endif
     if (!R.cfg.quiet)
         fprintf(stderr, "rg_runtime: no GPU backend in this build: headless renderer (frame chain "
                         "walker -> software GS%s)\n", R.gs && !R.gs->sw_raster ? ", not rasterized" : "");   /* (no device) */
@@ -1471,6 +1660,11 @@ static void gpu_start(void)
     gc.scale = R.gpu_scale;
     if (R.cfg.settings && rg_settings_find(R.cfg.settings, "display.backend") >= 0)
         gc.api = rg_settings_get_enum(R.cfg.settings, "display.backend");   /* docs/NATIVE-VULKAN.md */
+    if (R.cfg.settings && rg_settings_find(R.cfg.settings, "graphics.raytracing") >= 0)
+        gc.raytracing = rg_settings_get_enum(R.cfg.settings, "graphics.raytracing");   /* docs/RAYTRACING.md */
+    if (gc.raytracing >= 2) gc.raytracing++;   /* (menu "shadows + AO" = 3, "+ reflections" = 4 (rt5); 2 is the debug colours, $RG_RT=2 only) */
+    if (R.cfg.settings && rg_settings_find(R.cfg.settings, "graphics.rt_emissive") >= 0)
+        gc.rt_emissive = rg_settings_get_enum(R.cfg.settings, "graphics.rt_emissive");   /* (rt8) docs/RAYTRACING.md "RT8" */
     /* real-time play only: the lens flare's depth probes are served a frame late instead of
      * waiting on the game thread for the GPU (docs/NATIVE-THREADS.md "3h"); every headless /
      * unthrottled / display-hashed run (tests, traces, save states) reads exactly */
@@ -1494,6 +1688,13 @@ static void gpu_start(void)
         return;
     }
     gpu_attach(R.gpu, R.gs);
+    {
+        /* (rt4) a backend fallback the player asked around (Vulkan / ray tracing in an exe
+         * without the Vulkan backend): the settings overlay's status line says it */
+        const char *nt = gpu_nr_backend_notice();
+        struct rg_menu *m = nt && nt[0] && R.host ? rg_host_settings_menu(R.host) : NULL;
+        if (m) snprintf(m->status, sizeof m->status, "%s", nt);
+    }
 #if defined(RG_NATIVE_GS) && RG_NATIVE_GS
     nr_gs_bind(R.gs, R.gpu);   /* the state block's side effects reach the device */
 #endif
@@ -1605,6 +1806,7 @@ static void gpu_stop(void)
                     (unsigned long long)R.ip_presents, (unsigned long long)R.ip_between, (unsigned long long)R.ip_sim_n,
                     R.ip_sim_hz, (unsigned long long)R.ip_sim_passes, (unsigned long long)R.ip_sim_changed,
                     (unsigned long long)R.ip_check_same, (unsigned long long)R.ip_check_differ);
+        ipw_report();
 #endif
         if (ns->draws || ns->skipped)
             fprintf(stderr, "rg_runtime: native draws %llu tris %llu skipped %llu tex decodes %llu mesh uploads %llu "
@@ -1721,7 +1923,6 @@ static int read_display(uint32_t *w, uint32_t *h)
  * docs/GPU.md "Graphics settings", PLAN.md P6).  Presentation only: the GS
  * model, the game and the virtual clock never see them.  Without a
  * registry (cfg.settings NULL) or at the Original preset nothing changes. */
-static const int k_frame_caps[] = { 0, 30, 60, 120, 144, 0 };   /* display.frame_rate order */
 
 /* audio.music_volume / effects_volume / voice_volume / movie_volume (PLAN.md P6, docs/
  * NATIVE-AUDIO.md "Source volumes"): gains of the engine's presentation mix, which only the
@@ -1745,19 +1946,20 @@ static void audio_mix_update(void)
 #endif
 }
 
+static void field_note(void);   /* (below: one GS-stream tick per field) */
+
 static void gfx_update(void)
 {
     rg_settings *s = R.cfg.settings;
-    if (!s || (R.gfx_applied && rg_settings_generation(s) == R.gfx_gen))
+    double hz = disp_hz_now();
+    if (!s || (R.gfx_applied && rg_settings_generation(s) == R.gfx_gen && hz == R.gfx_hz))
         return;
     R.gfx_applied = 1;
     R.gfx_gen = rg_settings_generation(s);
+    R.gfx_hz = hz;
     R.frame_cap_fps = 0;
-    if (rg_settings_find(s, "display.frame_rate") >= 0) {
-        int v = rg_settings_get_enum(s, "display.frame_rate");
-        if (v >= 0 && v < (int)(sizeof k_frame_caps / sizeof k_frame_caps[0]))
-            R.frame_cap_fps = k_frame_caps[v];
-    }
+    if (rg_settings_find(s, "display.frame_rate") >= 0)
+        R.frame_cap_fps = rg_frame_cap_fps(rg_settings_get_enum(s, "display.frame_rate"), hz);
 #ifdef RG_HAVE_GPU
     gpu_gfx_from_settings(&R.gfx, s);
     if (R.gpu) {
@@ -1955,6 +2157,9 @@ static struct {
     void *handle;
     uint32_t w, h;
     uint32_t queued, presented;   /* main thread */
+    int ip;                       /* the queued request is an interpolated pass (async, kind 3) */
+    double tq;                    /* (present log) wall ms the request was queued */
+    uint64_t tq_ns;               /* pace clock the request was queued (latency estimate) */
 } g_ovp;
 #if defined(RG_NATIVE_GS) && RG_NATIVE_GS
 static void ov_present_worker(void *user, const void *data)
@@ -1982,9 +2187,32 @@ static void ov_present_worker(void *user, gs_state *gs, const void *data)
 }
 /* present the frame the worker composed for the previous field (the worker
  * has run up to it: host_half waited for its mark) */
+static int ov_nowait(void);
+static void ov_presented_cb(void *arg, uint64_t tag, int rc)
+{
+    (void)arg;
+    (void)tag;
+    if (rc != 0) return;
+    if (R.present_log) {
+        double t = wall_ms();
+        fprintf(R.present_log, "%.3f\t%d\t%llu\t%.3f\t%.3f\n", t - R.present_log_t0, 2, (unsigned long long)R.st.fields, 0.0, 0.0);
+    }
+}
 static void ov_present_pending(void)
 {
     if (g_ovp.presented == g_ovp.queued) return;
+    if (ov_nowait() && rg_host_present_thread_on(R.host) && !g_ovp.ip) {
+        /* the present thread presents it (the game thread never waits for the window's present):
+         * only a finished compose, and only when the thread has taken the one before */
+        if (__atomic_load_n(&g_ovp.seq, __ATOMIC_ACQUIRE) != g_ovp.queued) return;
+        if (g_ovp.rc != 0 || !g_ovp.handle || !g_ovp.w || !g_ovp.h) { g_ovp.presented = g_ovp.queued; return; }
+        if (rg_host_present_post(R.host, g_ovp.handle, g_ovp.w, g_ovp.h, 0) != 0) return;   /* (busy: later) */
+        g_ovp.presented = g_ovp.queued;
+        R.st.presents++;
+        R.last_present_ms = wall_ms();
+        R.ov_posted++;
+        return;
+    }
     if (__atomic_load_n(&g_ovp.seq, __ATOMIC_ACQUIRE) != g_ovp.queued) gsq_drain();
     g_ovp.presented = g_ovp.queued;
     if (g_ovp.rc != 0 || !g_ovp.handle) {
@@ -1997,16 +2225,48 @@ static void ov_present_pending(void)
     }
     double t0 = R.field_times ? wall_ms() : 0.0;
     present_start();
+    if (g_ovp.ip && R.present_log) { g_present_t0 = g_ovp.tq; g_present_tw = t0 > 0.0 ? t0 : wall_ms(); }
     if (rg_host_present_shared(R.host, g_ovp.handle, g_ovp.w, g_ovp.h) == 0) {
         R.st.presents++;
         R.last_present_ms = wall_ms();
-        present_mark(2);
+#if RT_IP
+        if (g_ovp.ip) R.ip_presents++;
+#endif
+        present_mark(g_ovp.ip ? 3 : 2);
         if (R.field_times) R.field_present_ms = wall_ms() - t0;
     } else {
         R.no_shared = 1;
         if (!R.cfg.quiet)
             fprintf(stderr, "rg_runtime: zero-copy presentation unavailable, reading frames back\n");
     }
+}
+#endif
+
+#ifdef RG_HAVE_GPU
+/* host pacing: the field present never waits for the worker's compose ($RG_PRESENT_NOWAIT=1;
+ * docs/NATIVE-RENDER.md "Interpolation throughput (2026-10-30)", round 3) */
+static int ov_nowait(void)
+{
+    static int v = -1;
+    if (v < 0) {
+        const char *e = getenv("RG_PRESENT_NOWAIT");
+        v = e && e[0] == '1';
+    }
+    return v && R.pace.cfg.mode == RG_PACE_HOST && R.overlap && !R.no_shared;
+}
+/* the composed frame can go on screen at the phase start (finished, interpolation off) */
+static int ov_present_at_phase(void)
+{
+    static int v = -1;
+    if (v < 0) {
+        const char *e = getenv("RG_PRESENT_AT_PHASE");
+        v = !(e && e[0] == '0');
+    }
+    if (!v || !R.overlap || g_ovp.presented == g_ovp.queued || R.no_shared) return 0;
+#if RT_IP
+    if (nr_ip_on()) return 0;   /* (interpolation schedules its own presents) */
+#endif
+    return __atomic_load_n(&g_ovp.seq, __ATOMIC_ACQUIRE) == g_ovp.queued;
 }
 #endif
 
@@ -2053,6 +2313,440 @@ static int ip_present(double tau)
     R.last_present_ms = wall_ms();
     present_mark(3);
     return 1;
+}
+/* Asynchronous interpolated presentation (default; $RG_INTERP_ASYNC=0 = the synchronous ip_present
+ * above, control).  docs/NATIVE-RENDER.md "Interpolation throughput (2026-10-30)".  The game thread
+ * never waits for an in-between image: a request (the pass for host time tau + the compose into the
+ * shared texture, both on the GS worker behind whatever it has queued) is presented by the first
+ * present opportunity after the worker finished it (ipa_flush, a non-blocking check); at most one
+ * request is in flight, a slot that comes while one is in flight is dropped.  The pass is made for
+ * the time the image is expected on screen: tau + the measured request -> present latency. */
+static double g_ipa_lat;     /* phases, moving average */
+static int ipa_on(void)
+{
+    static int v = -1;
+    if (v < 0) {
+        const char *e = getenv("RG_INTERP_ASYNC");
+        v = !(e && e[0] == '0');
+    }
+    return v && nr_ip_on() && R.overlap && R.gpu && R.host && !R.no_shared && gsq_on() && !R.cfg.headless &&
+           R.cfg.present;
+}
+static int ipa_busy(void) { return g_ovp.presented != g_ovp.queued; }
+static int ipa_done(void) { return __atomic_load_n(&g_ovp.seq, __ATOMIC_ACQUIRE) == g_ovp.queued; }
+/* present the finished request (no wait); 1 when one was presented */
+static int ipa_flush(void)
+{
+    if (!ipa_busy() || !ipa_done()) return 0;
+    uint64_t n = R.st.presents;
+    int ip = g_ovp.ip;
+    uint64_t tq = g_ovp.tq_ns;
+    ov_present_pending();
+    if (ip && R.st.presents != n && R.pace.cfg.mode == RG_PACE_HOST) {
+        double l = (double)(pace_now() - tq) * 2304.0 / (double)RG_PACE_FIELD_U;   /* ns -> phases */
+        if (l > 1.0) l = 1.0;
+        g_ipa_lat = g_ipa_lat > 0.0 ? g_ipa_lat * 0.9 + l * 0.1 : l;
+    }
+    return R.st.presents != n;
+}
+/* queue a request for host time tau (phases): an interpolated pass when there is a frame pair,
+ * else (plain = 1) the latest frame as it is; 0 nothing queued */
+static int ipa_request(double tau, int plain)
+{
+    if (ipa_busy()) return 0;
+    int ip = nr_ip_queue_present(tau + g_ipa_lat, nr_hw_display_regs());
+    if (!ip && !plain) return 0;
+    if (!ip) nr_ip_settle();
+    ov_present_req q;
+    memset(&q, 0, sizeof q);
+    memcpy(q.preg, R.gs->preg, sizeof q.preg);
+    q.post = g_post;
+    q.post_on = g_post_on;
+    q.seq = ++g_ovp.queued;
+    g_ovp.ip = ip;
+    g_ovp.tq = R.present_log ? wall_ms() : 0.0;
+    g_ovp.tq_ns = pace_now();
+    nr_q_call(ov_present_worker, NULL, &q, sizeof q);
+    return 1;
+}
+
+/* Worker-driven interpolated presentation (default when the present thread starts;
+ * $RG_INTERP_THREAD=0: the game-thread requests above).  docs/NATIVE-RENDER.md "Interpolation
+ * throughput (2026-10-30)".  The game thread presents nothing: it hands the worker the phase clock
+ * (ipw_anchor, at each phase start) and the display state (ipw_disp, at each field's end) in its GS
+ * stream.  The worker's tick (nr_q_set_tick) runs at the frame cap's slots between GS calls or while
+ * idle: the pass for the host time the image will be on screen, the compose into the shared texture,
+ * the restore, and hands the frame to the host's present thread (rg_host_present_post), which
+ * waits for the display.  A slot that comes while the present thread still has the previous frame
+ * is dropped; the game never waits for an in-between image, and its state cannot see one. */
+typedef struct ipw_anchor { uint64_t ticks, acc, ns; } ipw_anchor;
+typedef struct ipw_disp { uint64_t preg[16]; gpu_post post; int post_on; } ipw_disp;
+static struct {
+    int on;                       /* (game thread) installed */
+    /* worker */
+    ipw_anchor a;
+    ipw_disp d;
+    int have_a, have_d;
+    uint64_t next_ns;             /* the next slot (pace clock) */
+    uint64_t ticks, passes, posted, busy, fails, notready, nr_a, nr_d;
+    double late_ms;
+    double tick_ms;
+    /* present thread */
+    double lat;                   /* phases from the pass to the present's return (moving average) */
+    uint64_t presents, pfails;
+    double last_ms;
+    /* (present log only) what each posted frame shows, by tag: tools/native/interp_sync.py */
+    struct { uint64_t tag; double tau, S, alpha, age; int code; uint32_t frame; } shown[8];
+    unsigned nshown;
+    /* pass budget ($RG_INTERP_BUDGET, default on): present every k-th slot of the cap */
+    int k;
+    double bl;                    /* the worker's GS backlog (phases), moving average */
+    uint64_t k_ns;                /* when k last changed */
+    uint64_t kmax_seen, k_up, k_down;
+    /* overloaded at the lowest interpolated rate: newest-frame presents, one per field, for a
+     * back-off time, then interpolation again */
+    int snap;
+    uint64_t sn_last, sn_ns;      /* newest-frame mode: the grid time last presented; last anchor time */
+    double sn_peak;               /* the worker's lateness at phase starts (peak, decaying) */
+    uint64_t snap_until, snap_exit, backoff, snaps, snap_presents;
+    /* rate floor ($RG_INTERP_FLOOR, default on; 2026-10-31 pt1031b): interpolated presents are
+     * kept only while they come faster than the plain path's one per phase and without
+     * stalls, measured over 1 s windows of posted frames */
+    uint64_t fw_t0, fw_ticks0, fw_nr0, fw_last;
+    unsigned fw_n, fw_long, fw_bad;
+    double fw_prev;               /* the previous window's rate / plain rate (0: none) */
+    double fw_gprev;              /* (rt4) the previous window's game speed (phases advanced / real-time phases) */
+    uint64_t floor_snaps, backoff_max;
+    uint64_t fw_windows, rt_kups, rt_snaps;   /* (rt4) floor windows measured; slower rate / newest-frame mode for the game's speed */
+} W;
+static void ipw_w_anchor(void *user, const void *data)
+{
+    (void)user;
+    memcpy(&W.a, data, sizeof W.a);
+    W.have_a = 1;
+    {
+        /* how late the worker gets to a phase start (phases): newest-frame mode presents each
+         * field's image at the phase start + this peak (+ a margin), so they come evenly */
+        uint64_t now = pace_now();
+        double la = ((double)W.a.acc + (double)(now - W.a.ns) * 2304.0) / (double)RG_PACE_FIELD_U;
+        double dt = W.sn_ns ? (double)(now - W.sn_ns) * 2304.0 / (double)RG_PACE_FIELD_U : 0.0;
+        W.sn_ns = now;
+        W.sn_peak -= dt * 0.02;
+        if (la > W.sn_peak) W.sn_peak = la;
+    }
+}
+static void ipw_w_disp(void *user, const void *data)
+{
+    (void)user;
+    memcpy(&W.d, data, sizeof W.d);
+    W.have_d = 1;
+}
+static void ipw_presented(void *arg, uint64_t tag, int rc)
+{
+    (void)arg;
+    if (rc != 0) { W.pfails++; nr_q_tick_kick(); return; }
+    uint64_t now = pace_now();
+    double l = (double)(now - (tag >> 1)) * 2304.0 / (double)RG_PACE_FIELD_U;
+    if (l > 1.0) l = 1.0;
+    if (l < 0.0) l = 0.0;
+    W.lat = W.lat > 0.0 ? W.lat * 0.9 + l * 0.1 : l;
+    W.presents++;
+    if (R.present_log) {
+        /* + what the frame shows (column 5: phases since the newest phase start the worker had
+         * seen = its GS backlog; the tick's tau, tau at this present, content time S, alpha,
+         * outcome, shown frame): host time in phases at the present against the content */
+        double t = wall_ms(), tau = NAN, S = NAN, al = NAN, age = NAN;
+        int code = -1;
+        uint32_t fr = 0;
+        for (unsigned i = 0; i < 8; i++)
+            if (W.shown[i].tag == tag) {
+                tau = W.shown[i].tau; S = W.shown[i].S; al = W.shown[i].alpha; code = W.shown[i].code; fr = W.shown[i].frame; age = W.shown[i].age;
+                break;
+            }
+        fprintf(R.present_log, "%.3f\t%d\t%llu\t%.3f\t%.3f\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%u\n", t - R.present_log_t0, (tag & 1) ? 4 : 5,
+                (unsigned long long)R.st.fields, (double)(now - (tag >> 1)) / 1e6, age,
+                tau, tau + (double)(now - (tag >> 1)) * 2304.0 / (double)RG_PACE_FIELD_U, S, al, code, fr);
+    }
+    nr_q_tick_kick();   /* (a slot skipped while this frame was presented may go now) */
+}
+static double ipw_tick(void *user)
+{
+    (void)user;
+    double t0 = wall_ms();
+    uint64_t now = pace_now();
+    if (!W.have_a || !W.have_d || !nr_ip_w_ready() || !R.gpu || !R.host) {
+        W.notready++;
+        if (!W.have_a) W.nr_a++;
+        else if (!W.have_d) W.nr_d++;
+        return 1.0;
+    }
+    if (rg_host_present_pending(R.host)) { W.busy++; return 0.5; }   /* (not taken yet: soon) */
+    /* $RG_INTERP_INFLIGHT (default 1, 2026-10-31 "Present sync"): frames in flight on the present
+     * thread.  1: the next frame is made only once the previous one is on screen (its present,
+     * GPU wait included, has returned), so the time it is made for is the time it shows up
+     * (+ its own pass); 2: as before, one frame made while the previous is presented (it then
+     * waits a variable time behind it: tick -> present 9.6 ms mean, p95 35 ms at 2560x1440) */
+    {
+        static int infl = -1;
+        if (infl < 0) { const char *e = getenv("RG_INTERP_INFLIGHT"); infl = e && *e ? atoi(e) : 1; }
+        if (infl <= 1 && rg_host_present_busy(R.host)) { W.busy++; return 0.25; }
+    }
+    uint64_t per = R.pace.cfg.cap_fps ? 1000000000ull / R.pace.cfg.cap_fps : 0;
+    /* Pass budget (docs/NATIVE-RENDER.md "Present sync (2026-10-31)"; $RG_INTERP_BUDGET=0: off).
+     * A pass costs the GS worker (and its GPU queue) far more at a high internal resolution
+     * (window = 5x at 2560x1440: ~25 passes/s already left the worker 2 phases behind the game,
+     * the game thread waiting 12 ms a field for it); the worker then gets each frame late, the
+     * time runs past it and most presents hold the newest frame (alpha 1) between irregular
+     * interpolated ones.  The backlog (phases since the newest phase start the worker has
+     * seen: ~0.65 when it keeps up) steers k: presents on every k-th slot of the cap, evenly
+     * spaced (144 / k Hz), each one interpolated. */
+    {
+        static int budget = -1;
+        if (budget < 0) { const char *e = getenv("RG_INTERP_BUDGET"); budget = !(e && e[0] == '0'); }
+        if (W.k < 1) W.k = 1;
+        /* (rt4: uncapped too -- k stays 1 there, an overload goes straight to newest-frame
+         * presents; before, an uncapped cap skipped the budget and the floor entirely, so RT +
+         * interpolation at 4x starved the game to ~85 ms a field; $RG_INTERP_RTFLOOR=0 = before) */
+        static int rtfl = -1;
+        if (rtfl < 0) { const char *e = getenv("RG_INTERP_RTFLOOR"); rtfl = !(e && e[0] == '0'); }
+        if (budget && (per || rtfl) && W.have_a) {
+            /* the lowest interpolated rate worth having: above the 59.94 Hz of newest-frame
+             * presents (144 -> every 2nd slot, 120 -> every slot) */
+            int kint = per ? (int)(R.pace.cfg.cap_fps / 66u) : 1;
+            double b = ((double)W.a.acc + (double)(now - W.a.ns) * 2304.0) / (double)RG_PACE_FIELD_U;
+            if (kint < 1) kint = 1;
+            if (kint > 6) kint = 6;
+            /* back-off (pt1031b): 10 s, doubled when the overload comes back within 10 s of a
+             * retry, up to 160 s; back to 10 s after 60 s of kept interpolation */
+            static int fl = -1;
+            static uint64_t bo0 = 0;
+            if (fl < 0) {
+                const char *e = getenv("RG_INTERP_FLOOR");
+                const char *bo = getenv("RG_INTERP_BACKOFF_MS");
+                fl = !(e && e[0] == '0');
+                bo0 = bo && *bo ? (uint64_t)atoi(bo) * 1000000ull : 10000000000ull;
+                if (bo0 < 1000000000ull) bo0 = 1000000000ull;
+            }
+            if (!W.backoff) W.backoff = bo0;
+            W.bl = W.bl * 0.9 + b * 0.1;
+            int over = 0;   /* 1: backlog at the lowest rate, 2: below the rate floor */
+            if (W.snap) {
+                if (now >= W.snap_until) {   /* try interpolation again */
+                    W.snap = 0;
+                    W.snap_exit = now;
+                    W.k = kint;
+                    W.k_ns = now;
+                    W.bl = 0.0;
+                    W.fw_t0 = 0;
+                    nr_ip_w_nopass(0);
+                }
+            } else if (W.bl > 1.4 && now - W.k_ns > 300000000ull) {
+                if (W.k < kint) { W.k++; W.k_ns = now; W.k_up++; W.fw_t0 = 0; }
+                else over = 1;
+            } else if (W.bl < 0.8 && W.k > 1 && now - W.k_ns > 2000000000ull) { W.k--; W.k_ns = now; W.k_down++; W.fw_t0 = 0; }
+            /* Rate floor (pt1031b; $RG_INTERP_FLOOR=0 off).  The backlog alone kept interpolation
+             * on at 5x after the target-rows change while each pass + present took ~17 ms: 54-56
+             * presents/s with uneven steps, worse than the plain path's even one per phase.  Over
+             * 1 s windows of posted frames (from 0.5 s after interpolation starts or k changes):
+             * a window below 0.92 x the plain rate (the phases the game advanced in it), two in a
+             * row below 1.02 x (not faster than the plain path), or 2+ intervals over 2 phases (stalls) -> newest-frame presents */
+            /* Real-time reference (rt4, $RG_INTERP_RTFLOOR=0 = pt1031b's): the plain rate is the
+             * real-time phase rate (59.94/s), not the phases the game advanced -- a game starved
+             * by expensive passes advanced few phases, so pt1031b's "plain rate" collapsed with it
+             * and the floor never tripped (RT + interpolation in a window at 4x: ~12 phases/s).
+             * And the game's own speed (phases advanced / phases expected in real time) must
+             * stay at real time: a window below 0.90, or two in a row below 0.97 -> a cheaper
+             * rate (k + 1) while there is one, else newest-frame presents.  Uncapped too. */
+            if (fl && !W.snap && !over && (R.pace.cfg.cap_fps >= 70u || (rtfl && !per))) {
+                uint64_t win = 1000000000ull;
+                if (!W.fw_t0 || (W.notready != W.fw_nr0 && !rtfl)) {   /* (re)start: settle first (rt4: a "not ready" tick voids only the rate rule of its window) */
+                    W.fw_t0 = now + 500000000ull; W.fw_ticks0 = 0; W.fw_nr0 = W.notready;
+                    W.fw_n = W.fw_long = W.fw_bad = 0; W.fw_prev = 0.0; W.fw_last = 0; W.fw_gprev = 0.0;
+                } else if (now >= W.fw_t0) {
+                    if (!W.fw_ticks0) { W.fw_ticks0 = W.a.ticks + 1; W.fw_n = W.fw_long = 0; W.fw_last = 0; }
+                    else if (now - W.fw_t0 >= win) {
+                        double sec = (double)(now - W.fw_t0) / 1e9;
+                        double ph = (double)(W.a.ticks + 1 - W.fw_ticks0);
+                        double rt = 60000.0 / 1001.0, g = ph / (sec * rt);
+                        double plain = rtfl ? rt : ph / sec, rate = (double)W.fw_n / sec, rel = plain > 1.0 ? rate / plain : 2.0;
+                        int bad = rel < 0.92 || W.fw_long >= 2 || (rel < 1.02 && W.fw_prev > 0.0 && W.fw_prev < 1.02);
+                        int slow = rtfl && (g < 0.90 || (g < 0.97 && W.fw_gprev > 0.0 && W.fw_gprev < 0.97));
+                        if (!per || W.notready != W.fw_nr0) bad = 0;   /* (uncapped: every tick posts; only the game's speed) */
+                        W.fw_windows++;
+                        if (slow && W.k < kint) { W.k++; W.k_ns = now; W.k_up++; W.fw_t0 = 0; W.rt_kups++; }
+                        else if (slow) { over = 2; W.rt_snaps++; }
+                        else if (bad && (rtfl || plain > 30.0)) over = 2;
+                        W.fw_prev = (rtfl || plain > 30.0) ? rel : 0.0;
+                        W.fw_gprev = g;
+                        if (W.fw_t0) { W.fw_t0 = now; W.fw_ticks0 = W.a.ticks + 1; W.fw_n = W.fw_long = 0; W.fw_nr0 = W.notready; }
+                    }
+                }
+            }
+            if (over) {
+                /* overloaded at the lowest rate / too slow for interpolation to pay: newest-frame
+                 * presents for a while (longer each time it comes back soon after a retry) */
+                if (W.snaps && now - W.snap_exit < 10000000000ull) { W.backoff *= 2; if (W.backoff > 16 * bo0) W.backoff = 16 * bo0; }
+                else if (W.snaps && now - W.snap_exit > 60000000000ull) W.backoff = bo0;
+                W.snap = 1;
+                W.snaps++;
+                if (over == 2) W.floor_snaps++;
+                if (W.backoff > W.backoff_max) W.backoff_max = W.backoff;
+                if (W.snaps == 1 && !R.cfg.quiet)
+                    fprintf(stderr, "rg_runtime: interpolated presents %s: newest-frame presents "
+                                    "for now (a lower graphics.internal_res keeps interpolation; docs/NATIVE-RENDER.md \"Present sync\")" "\n",
+                            over == 2 ? "too slow to beat one per phase" : "overload the GS worker");
+                W.snap_until = now + W.backoff;
+                W.sn_last = now;
+                W.fw_t0 = 0;
+                nr_ip_w_nopass(1);
+            }
+            if ((uint64_t)W.k > W.kmax_seen) W.kmax_seen = (uint64_t)W.k;
+            per *= (uint64_t)W.k;
+        }
+        if (W.snap) {
+            /* one present per phase, on the phase grid shifted by the worker's peak lateness
+             * at phase starts (+ a margin): each shows the newest field image the worker has,
+             * evenly spaced even when the worker's progress is not */
+            double D = W.sn_peak + 0.15, ph = (double)RG_PACE_FIELD_U / 2304.0, x;
+            double g;
+            if (D < 0.2) D = 0.2;
+            if (D > 2.0) D = 2.0;
+            x = ((double)now - (double)W.a.ns) / ph - D;
+            g = (double)W.a.ns + (floor(x) + D) * ph;   /* the newest grid time <= now */
+            if (g <= (double)W.sn_last + 0.5 * ph) {
+                double w = ((double)W.sn_last + ph - (double)now) / 1e6;
+                return w > 0.25 ? w : 0.25;
+            }
+            W.sn_last = (uint64_t)g;
+            W.snap_presents++;
+            W.next_ns = 0;
+            per = 0;
+        }
+    }
+    if (per && W.next_ns && now + 250000u < W.next_ns) return (double)(W.next_ns - now) / 1e6;
+    if (W.next_ns && now > W.next_ns) W.late_ms += (double)(now - W.next_ns) / 1e6;
+    /* host time in phases now (the pacer's ticks + owed time), and where the image will be on screen */
+    double tau = (double)W.a.ticks + ((double)W.a.acc + (double)(now - W.a.ns) * 2304.0) / (double)RG_PACE_FIELD_U;
+    if (tau > (double)W.a.ticks + 4.0) tau = (double)W.a.ticks + 4.0;
+    /* $RG_INTERP_LATCOMP=k: the pass is made for tau + k x the measured pass -> present latency;
+     * default 0: with 1 the time runs past the newest frame (alpha 1 holds: the smoothness check
+     * failed, 14 % repeats), and a constant delay does not change the evenness */
+    static double latk = -1.0;
+    if (latk < 0.0) { const char *e = getenv("RG_INTERP_LATCOMP"); latk = e && *e ? atof(e) : 0.0; }
+    int passed = nr_ip_w_present(tau + latk * W.lat);
+    void *hd = NULL;
+    uint32_t w = 0, h = 0;
+    gpu_set_display_regs(R.gpu, W.d.preg);
+    int rc = gpu_present_shared(R.gpu, GS_READ_FRAME, W.d.post_on ? &W.d.post : NULL, &hd, &w, &h);
+    gpu_set_display_regs(R.gpu, NULL);
+    nr_ip_w_settle();
+    W.ticks++;
+    W.passes += passed ? 1 : 0;
+    if (R.present_log) {
+        nr_ip_wlast wl;
+        unsigned k = W.nshown++ & 7u;
+        nr_ip_w_last(&wl);
+        W.shown[k].tag = (now << 1) | (passed ? 1u : 0u);
+        W.shown[k].tau = tau + latk * W.lat;
+        W.shown[k].S = wl.S;
+        W.shown[k].alpha = wl.alpha;
+        W.shown[k].code = wl.code;
+        W.shown[k].frame = wl.frame;
+        W.shown[k].age = ((double)W.a.acc + (double)(now - W.a.ns) * 2304.0) / (double)RG_PACE_FIELD_U;   /* phases since the newest phase start the worker has seen (its GS backlog) */
+    }
+    if (rc == 0 && hd && w && h && rg_host_present_post(R.host, hd, w, h, (now << 1) | (passed ? 1u : 0u)) == 0)
+    {
+        W.posted++;
+        if (!W.snap && W.fw_ticks0) {   /* (rate floor window) */
+            uint64_t tp = pace_now();
+            W.fw_n++;
+            if (W.fw_last && (double)(tp - W.fw_last) * 2304.0 > 2.0 * (double)RG_PACE_FIELD_U) W.fw_long++;
+            W.fw_last = tp;
+        }
+    } else
+        W.fails++;
+    W.tick_ms += wall_ms() - t0;
+    if (W.snap) {   /* (the next grid time) */
+        double w = ((double)W.sn_last + (double)RG_PACE_FIELD_U / 2304.0 - (double)pace_now()) / 1e6;
+        return w > 0.25 ? w : 0.25;
+    }
+    if (!per) { W.next_ns = 0; return -1.0; }   /* uncapped: the next as soon as this one is presented */
+    if (!W.next_ns || now >= W.next_ns + per) W.next_ns = now + per;
+    else W.next_ns += per;
+    now = pace_now();
+    return W.next_ns > now ? (double)(W.next_ns - now) / 1e6 : 0.0;
+}
+static int ipw_is_on(void) { return W.on; }
+static int ipw_want(void)
+{
+    static int v = -1;
+    if (v < 0) {
+        const char *e = getenv("RG_INTERP_THREAD");
+        v = !(e && e[0] == '0');
+    }
+    return v && ipa_on() && R.pace.cfg.mode == RG_PACE_HOST;
+}
+/* (game thread, every field) install / remove with the setting */
+static void ipw_update(void)
+{
+    int want = ipw_want();
+    if (want == W.on) return;
+    if (want) {
+        if (ipa_busy()) return;   /* (an async request in flight: next field) */
+        if (rg_host_present_thread(R.host, 1) != 0) return;
+        rg_host_present_callback(R.host, ipw_presented, NULL);
+        nr_q_drain();
+        W.have_a = W.have_d = 0;
+        W.next_ns = 0;
+        W.on = 1;
+        nr_q_set_tick(ipw_tick, NULL);
+        if (!R.cfg.quiet) fprintf(stderr, "rg_runtime: interpolated presents made by the GS worker, presented on a thread\n");
+    } else
+        ipw_off();
+}
+static void ipw_off(void)
+{
+    if (!W.on) return;
+    nr_q_set_tick(NULL, NULL);
+    rg_host_present_wait(R.host);
+    rg_host_present_thread(R.host, 0);
+    W.on = 0;
+}
+static void ipw_report(void)
+{
+    uint64_t hs[5] = { 0 };
+    if (!W.ticks && !W.presents) return;
+    if (R.host) rg_host_present_thread_stats(R.host, hs);
+    fprintf(stderr, "rg_runtime: worker presents: ticks %llu (%.2f ms each, %.2f ms late; %llu with a pass), posted %llu, present "
+                    "thread busy %llu, not ready %llu (anchor %llu, display %llu), failed %llu; presented %llu (failed %llu), latency %.2f phases; "
+                    "pumps skipped %llu, unlocked %llu; pass budget: every %d. slot at exit (most %llu, up %llu, down %llu), newest-frame mode %llu times (%llu presents; %llu by the rate floor, back-off up to %.0f s); real time: %llu windows, %llu slower rates, %llu newest-frame for the game's speed\n",
+            (unsigned long long)W.ticks, W.ticks ? W.tick_ms / (double)W.ticks : 0.0,
+            W.ticks ? W.late_ms / (double)W.ticks : 0.0, (unsigned long long)W.passes,
+            (unsigned long long)W.posted, (unsigned long long)W.busy, (unsigned long long)W.notready,
+            (unsigned long long)W.nr_a, (unsigned long long)W.nr_d, (unsigned long long)W.fails, (unsigned long long)W.presents, (unsigned long long)W.pfails, W.lat,
+            (unsigned long long)hs[3], (unsigned long long)hs[4], W.k, (unsigned long long)W.kmax_seen,
+            (unsigned long long)W.k_up, (unsigned long long)W.k_down, (unsigned long long)W.snaps, (unsigned long long)W.snap_presents,
+            (unsigned long long)W.floor_snaps, (double)W.backoff_max / 1e9,
+            (unsigned long long)W.fw_windows, (unsigned long long)W.rt_kups, (unsigned long long)W.rt_snaps);
+}
+static void ipw_send_anchor(void)
+{
+    if (!W.on) return;
+    ipw_anchor a;
+    a.ticks = R.pace.ticks;
+    a.acc = R.pace.acc;
+    a.ns = pace_now();
+    nr_q_call(ipw_w_anchor, NULL, &a, sizeof a);
+}
+static void ipw_send_disp(void)
+{
+    if (!W.on) return;
+    ipw_disp d;
+    memset(&d, 0, sizeof d);
+    memcpy(d.preg, R.gs->preg, sizeof d.preg);
+    d.post = g_post;
+    d.post_on = g_post_on;
+    nr_q_call(ipw_w_disp, NULL, &d, sizeof d);
 }
 /* headless measurement ($RG_INTERP_SIM=hz): after the field, the presents a host at hz would
  * make before the next phase (tau in [ticks, ticks + 1)), each a pass + the display read out
@@ -2105,12 +2799,26 @@ static void ip_sim_field(void)
             }
         }
     }
-    if (R.ip_sim_hz <= 0.0) return;
-    double step = (60000.0 / 1001.0) / R.ip_sim_hz, t0 = (double)R.pace.ticks;
-    uint64_t k0 = (uint64_t)(t0 / step);
-    while ((double)k0 * step < t0 - 1e-9) k0++;
-    for (uint64_t k = k0; (double)k * step < t0 + 1.0 - 1e-9; k++) {
-        double tau = (double)k * step;
+    if (R.ip_sim_hz <= 0.0 && !R.ip_sim_jit) return;
+    double taus[64], t0 = (double)R.pace.ticks;
+    int nt = 0;
+    if (R.ip_sim_jit) {
+        /* random presents: none (the next present shows several phases), one, or a burst; random
+         * sorted times in the phase, a time repeated now and then (the same snapshot again) */
+        static const uint8_t cnt[16] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 4, 5, 6, 8};
+        nt = cnt[jit_rand() % 16u];
+        for (int i = 0; i < nt; i++)
+            taus[i] = (i && jit_rand() % 6u == 0) ? taus[i - 1] : t0 + (double)(jit_rand() % 65536u) / 65536.0;
+        for (int i = 1; i < nt; i++)   /* insertion sort: presents go forward in time */
+            for (int j = i; j > 0 && taus[j] < taus[j - 1]; j--) { double x = taus[j]; taus[j] = taus[j - 1]; taus[j - 1] = x; }
+    } else {
+        double step = (60000.0 / 1001.0) / R.ip_sim_hz;
+        uint64_t k0 = (uint64_t)(t0 / step);
+        while ((double)k0 * step < t0 - 1e-9) k0++;
+        for (uint64_t k = k0; (double)k * step < t0 + 1.0 - 1e-9 && nt < 64; k++) taus[nt++] = (double)k * step;
+    }
+    for (int ti = 0; ti < nt; ti++) {
+        double tau = taus[ti];
         int passed = !R.ip_sim_snap && nr_ip_queue_present(tau, nr_hw_display_regs());
         gsq_drain();
         if (read_display(&w, &h) != 0) continue;
@@ -2148,7 +2856,22 @@ static void host_half(void)
         if (R.last_present_ms > 0.0 && now - R.last_present_ms < 1000.0 / R.frame_cap_fps - 0.5)
             want_present = 0;
     }
+#if RT_IP
+    ipw_update();   /* (display.interpolation / the frame cap may have changed) */
+#endif
+#ifdef RG_HAVE_GPU
+    if (ov_nowait() && R.host && !rg_host_present_thread_on(R.host) && rg_host_present_thread(R.host, 1) == 0)
+        rg_host_present_callback(R.host, ov_presented_cb, NULL);   /* (interpolation off: the field presents) */
+#endif
+#if RT_IP
+    if (W.on && !shot_now && !host_needs_sync(want_hash, 0))
+        want_present = 0;   /* the worker presents (ipw_tick) */
+#endif
     int presenting = want_present;
+#if RT_IP
+    uint64_t ipa_mark = 0;
+    int ipa_marked = 0;
+#endif
     int sync = host_needs_sync(want_hash, want_present);
     double th0 = R.field_times ? wall_ms() : 0.0;
     if (sync) {
@@ -2156,6 +2879,7 @@ static void host_half(void)
          * field queued must have run (docs/PERF-3D.md "GS worker thread") */
         gsq_drain();
         if (R.overlap) R.ov_synced++;
+        if (R.host && rg_host_present_thread_on(R.host)) rg_host_present_wait(R.host);   /* (the shared textures stay in order) */
     } else {
         /* overlap: the worker may still draw this field while the next one
          * runs; it must have finished the previous one (bounded lag: the
@@ -2164,7 +2888,20 @@ static void host_half(void)
         R.ov_fields++;
     }
 #ifdef RG_HAVE_GPU
-    ov_present_pending();
+#if RT_IP
+    if (ipa_on() && !sync)
+        ipa_flush();   /* (async interpolated presentation: an unfinished request is not waited for) */
+    else
+#endif
+    if (ov_nowait() && !sync) {
+        /* the frame the worker composed is presented once it is finished; the game thread does
+         * not wait for an unfinished one (it goes on screen at the next phase start or field) */
+        if (g_ovp.presented != g_ovp.queued && __atomic_load_n(&g_ovp.seq, __ATOMIC_ACQUIRE) == g_ovp.queued)
+            ov_present_pending();
+        else if (g_ovp.presented != g_ovp.queued)
+            R.ov_nowait_skips++;
+    } else
+        ov_present_pending();
 #endif
     /* the phase's cost for the catch-up decision includes the GS worker wait above */
     if (R.pace.cfg.mode == RG_PACE_HOST) rg_pace_phase_done(&R.pace, pace_now());
@@ -2187,7 +2924,7 @@ static void host_half(void)
     if (R.alog)
         R.alog_q0 = rg_host_audio_queued(R.host);
     if (R.pace.cfg.mode == RG_PACE_HOST) /* phases owed now = audio a catch-up pushes at once */
-        rg_host_audio_owed(R.host, (uint32_t)(R.pace.acc / RG_PACE_FIELD_U) * 800u);
+        rg_host_audio_owed(R.host, (uint32_t)((double)(R.pace.acc / RG_PACE_FIELD_U) * 800.0 / (R.speed > 1.0 ? R.speed : 1.0)));
     uint32_t got = 0;
     audio_mix_update(); /* audio.*_volume -> the engine's presentation mix */
     for (;;) {
@@ -2249,17 +2986,37 @@ static void host_half(void)
      * always folds the display itself; the presented frame may have gone
      * through the graphics settings' post chain (presentation only). */
     gfx_update();
+    field_note();
 #ifdef RG_HAVE_GPU
     g_post_on = gfx_frame(&g_post);
 #if RT_IP
     /* interpolated presentation: this present from a pass (when there is a frame pair) */
-    if (want_present && nr_ip_on() && ip_present(ip_tau()))
+    if (W.on) {
+        ipw_send_disp();   /* (what the worker's next presents compose with) */
+        /* a field that presents itself (a shot): as before, synchronously */
+        if (want_present && ip_present(ip_tau())) want_present = 0;
+    } else if (want_present && !sync && ipa_on()) {
+        /* asynchronous: queued (pass + compose), presented when finished; a slot that comes
+         * while the previous request is in flight is dropped */
+        ipa_mark = gsq_mark();   /* (the next field waits for this field's input, not the pass) */
+        ipa_marked = 1;
+        if (!ipa_request(ip_tau(), 1)) presenting = 0;
+        want_present = 0;
+    } else if (want_present && nr_ip_on() && ip_present(ip_tau()))
         want_present = 0;
     if (nr_ip_on() && (want_present || want_hash || R.ndump || R.shot_field || R.rec)) {
         nr_ip_settle(); /* the exact frame again before this thread reads the device */
         if (sync) gsq_drain();
     }
 #endif
+    if (want_present && !sync && ov_nowait() &&
+        (g_ovp.presented != g_ovp.queued || (rg_host_present_thread_on(R.host) && rg_host_present_pending(R.host)))) {
+        /* (the previous frame is not on screen yet: no second one behind it -- the shared
+         * textures' keyed mutex would make the worker wait for it; this phase's image is dropped) */
+        want_present = 0;
+        presenting = 0;
+        R.ov_nowait_drops++;
+    }
     if (want_present && !sync) {
         /* composed on the worker after this field's packets, presented by
          * the next field's host_half */
@@ -2362,6 +3119,10 @@ static void host_half(void)
         R.fs_gsq_at_present = aq[1];
     }
     pace_log_row(0);
+#if RT_IP
+    if (!sync && ipa_marked) R.ov_mark = ipa_mark;
+    else
+#endif
     if (!sync) R.ov_mark = gsq_mark();
     if (R.field_times) R.field_post_ms = wall_ms() - th3;
     if (R.alog) {
@@ -2545,7 +3306,7 @@ int rg_runtime_run_field(void)
     if (R.ndump)
         dump_field();
 #if RT_IP
-    if ((R.ip_sim_hz > 0.0 || R.ip_check) && nr_ip_on())
+    if ((R.ip_sim_hz > 0.0 || R.ip_sim_jit || R.ip_check) && nr_ip_on())
         ip_sim_field();
 #endif
     for (int ci = 0; ci < R.ncensus; ci++)
@@ -2597,6 +3358,43 @@ int rg_runtime_run(uint64_t max_fields)
 
 void rg_runtime_request_quit(void) { R.quit = 1; }
 
+#if defined(RG_NATIVE_GS) && RG_NATIVE_GS
+static void field_q(void *user, const void *data)
+{
+    (void)user;
+    (void)data;
+    nr_gs_fields++;
+}
+#endif
+/* one tick per field into the GS stream (the native device's per-field texture-upload budget,
+ * docs/TEXTURES.md) */
+static void field_note(void)
+{
+#if defined(RG_NATIVE_GS) && RG_NATIVE_GS
+    nr_q_call(field_q, NULL, NULL, 0);
+#endif
+}
+#if defined(RG_NATIVE_GS) && RG_NATIVE_GS
+static void movie_q(void *user, const void *data)
+{
+    (void)user;
+    memcpy(&nr_gs_movie, data, sizeof nr_gs_movie);
+}
+#endif
+void rg_runtime_movie_playing(int on)
+{
+#if defined(RG_NATIVE_GS) && RG_NATIVE_GS
+    static int last;
+    on = on != 0;
+    if (on == last)
+        return;
+    last = on;
+    nr_q_call(movie_q, NULL, &on, sizeof on);   /* (in GS-stream order; at once without the worker) */
+#else
+    (void)on;
+#endif
+}
+
 /* ---------------------------------------------------------------- shutdown */
 void rg_runtime_shutdown(void)
 {
@@ -2604,6 +3402,9 @@ void rg_runtime_shutdown(void)
         return;
     if (R.started && !R.finished && ps2k_running())
         ps2k_finish(PS2K_RUN_STOPPED);
+#if RT_IP
+    ipw_off();   /* (no worker present or present thread past this point) */
+#endif
     pace_report();
     if (R.pace_log) {
         fclose(R.pace_log);
@@ -2690,8 +3491,11 @@ void rg_runtime_shutdown(void)
         }
 #endif
         if (!R.cfg.quiet && R.overlap)
-            fprintf(stderr, "rg_runtime: GS overlap: %llu fields overlapped, %llu drained at the field end, %.0f ms waited for the worker\n",
-                    (unsigned long long)R.ov_fields, (unsigned long long)R.ov_synced, gsq_wait_ms());
+            fprintf(stderr, "rg_runtime: GS overlap: %llu fields overlapped, %llu drained at the field end, %.0f ms waited for the worker; "
+                            "%llu presents at the phase start; not waited for %llu, dropped behind an unfinished one %llu\n",
+                    (unsigned long long)R.ov_fields, (unsigned long long)R.ov_synced, gsq_wait_ms(),
+                    (unsigned long long)R.ov_at_phase, (unsigned long long)R.ov_nowait_skips,
+                    (unsigned long long)R.ov_nowait_drops);
         gsq_stop();
     }
     gpu_stop();

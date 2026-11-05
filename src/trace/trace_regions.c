@@ -18,7 +18,7 @@
 /* A 32-bit game-memory word can hold a host pointer: on i686, and on the x64 build, whose
  * whole address space is below 2 GB (strategy A, docs/X64-PLAN.md; without this the x64
  * trace read every stored host pointer as "ptr:?", e.g. sym:RandState). */
-#if defined(_WIN64)
+#if defined(__x86_64__)
 #define RG_TRACE_HOSTPTR32 1
 #else
 #define RG_TRACE_HOSTPTR32 (sizeof(void *) == 4)

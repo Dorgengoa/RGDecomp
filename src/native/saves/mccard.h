@@ -33,6 +33,7 @@
  */
 #ifndef RG_PS2_MCCARD_H
 #define RG_PS2_MCCARD_H
+#include <stddef.h>
 #include <stdint.h>
 #ifdef __cplusplus
 extern "C" {
@@ -154,6 +155,9 @@ void mccard_eject(int port);
  * after <= 0 disarms. */
 void mccard_inject_fault(int port, int after, int result);
 int mccard_present(int port);
+/* the next sceMcGetInfo of `port` reports MC_RES_CHANGEDCARD, as after a card swap (the
+ * overlay's import changed the card under a running game: mc_menu.c) */
+void mccard_mark_changed(int port);
 int mccard_formatted(int port);
 uint32_t mccard_free(int port);  /* free clusters (0 if no card / unformatted) */
 
@@ -202,6 +206,9 @@ int mccard_host_path(int port, const char *card_path, char *out, int outlen);
 int mccard_backup_dir(int port, const char *top, char *out, int outlen);
 /* number of backups currently kept for `top` */
 int mccard_backup_count(int port, const char *top);
+/* no snapshots of `top` while on (an importer rewriting a directory it already backed up:
+ * mc_import.c; its own file-time updates would otherwise snapshot the half-imported save) */
+void mccard_backup_hold(int port, const char *top, int on);
 /* cumulative host I/O done by the card (diagnostics: RG_MC_TRACE in libmc.c) */
 typedef struct mccard_io_stats {
     uint32_t files_written; /* atomic temp+rename writes (save files, metadata, index) */
@@ -213,6 +220,44 @@ typedef struct mccard_io_stats {
 void mccard_get_io_stats(mccard_io_stats *out);
 /* host name of the per-slot card directory: "card1" / "card2" */
 const char *mccard_slot_name(int port);
+
+/* ---- named save slots and metadata (docs/SAVES.md "Named slots and metadata") ----------
+ * A save directory (one of the game's slots, BASCUS-97490LV5RG_NN) can carry a name the
+ * player gives it, kept in <root>/card<N>.names ("DIRECTORY = name" lines, written atomically,
+ * hand-editable while the game is closed); the name belongs to the slot, so a later save
+ * into the same slot keeps it.  The game never sees the names.  The save's summary
+ * (docs/SAVE-FORMAT.md "Summary") gives the metadata shown beside it. */
+/* icon.sys title as printable ASCII ("Rogue Galaxy / Rosa"; "" when not an icon.sys) */
+void mc_icon_title(const uint8_t *iconsys, uint32_t n, char *out, size_t outlen);
+#define MC_SAVE_NAME_MAX 64
+typedef struct mc_save_meta {
+    int valid;                  /* the summary was readable (size, version 0x25) */
+    uint32_t play_seconds;      /* 0x50 f64 VBlank count / 60 */
+    int64_t money;
+    int party_n, chapter, leader_level;
+    char leader[17];
+    char chapter_name[65];
+    char location[129];
+} mc_save_meta;
+/* from the first 0x350 bytes (or more) of a save data file; 0 ok, -1 not a save */
+int mc_save_meta_parse(const uint8_t *data, uint32_t n, mc_save_meta *m);
+/* "Ch. 2: The Jungle Planet | Juraika: ... | Jaster Lv 9 | 1:19:37" */
+void mc_save_meta_line(const mc_save_meta *m, char *out, size_t cap);
+/* 1 and the name when save directory `dir` ("NAME" or "/NAME") of slot `port` is named */
+int mccard_save_name(int port, const char *dir, char *out, int outlen);
+/* name (empty: un-name) a save directory; it need not exist yet.  0 ok, -1 bad input / I/O */
+int mccard_set_save_name(int port, const char *dir, const char *name);
+typedef struct mc_save_info {
+    char dir[MC_NAME_MAX];
+    char title[160];            /* icon.sys title ("" when missing) */
+    char name[MC_SAVE_NAME_MAX];/* "" when not named */
+    mc_datetime mtime;
+    uint32_t kb;
+    int has_meta;
+    mc_save_meta meta;
+} mc_save_info;
+/* the top-level directories of slot `port` in card order: the count (out[] gets at most max) */
+int mccard_list_saves(int port, mc_save_info *out, int max);
 
 #ifdef __cplusplus
 }

@@ -90,6 +90,7 @@ class Method:
     slot: int = -1
     owner: str = ""     # class whose vptr dispatches it
     vq: str = ""        # qualifier for this->Q::__vptr ("" = unqualified)
+    vlanes: list = None  # protos `vcall-target-lanes`: argument order of the slot call
 
 
 @dataclass
@@ -110,6 +111,9 @@ class Klass:
     poly_bases: list = field(default_factory=list)
     ctor: bool = False
     from_header: str = ""
+
+
+VLANES = re.compile(r"/\*rgp:vlanes ([\w,]+)\*/")
 
 
 def split_top(s: str, sep: str = ",") -> list[tuple[int, int]]:
@@ -386,6 +390,9 @@ class DevirtStage:
                     if kind in ("virtual", "method"):
                         k.methods.append(Method(name, ret, params, variadic, quals, key,
                                                 lo, hi, isv))
+                        vl = VLANES.search(text[lo:hi])
+                        if vl:
+                            k.methods[-1].vlanes = vl.group(1).split(",")
                 k.members.append((lo, hi, kind, acc))
             k.bases = [latest.get(b, b) for b in k.bases]
             latest[k.name] = k
@@ -482,7 +489,16 @@ class DevirtStage:
         # `slot20(f32 t, a, b)` -> CameraBaseLookAt_15fae0(c, eye, at, f32 roll).
         isf = lambda p: (re.fullmatch(r"(const\s+)?(f32|float)", p.ptype.strip()) is not None)
         lane = [p for p in m.params if not isf(p)] + [p for p in m.params if isf(p)]
-        if [p.name for p in lane] != [p.name for p in m.params] and not m.variadic:
+        if m.vlanes and not m.variadic and set(m.vlanes) <= {p.name for p in m.params}:
+            # protos `vcall-target-lanes` (docs/PROTOS.md "Virtual calls and float
+            # lanes"): the order the slot's retail targets read the lanes in; the
+            # parameters no target reads follow as trailing cdecl words
+            byn = {p.name: p for p in m.params}
+            lane = [byn[x] for x in m.vlanes] + [p for p in m.params if p.name not in m.vlanes]
+            self._bump("lane_target_order")
+            self.flags.append((path, "vcall-lane-target",
+                               f"{k.name}::{m.name}: called as ({', '.join(p.ptype for p in lane)})"))
+        elif [p.name for p in lane] != [p.name for p in m.params] and not m.variadic:
             self._bump("lane_reordered")
             self.flags.append((path, "vcall-lane-reorder",
                                f"{k.name}::{m.name}: ({', '.join(p.ptype for p in m.params)}) "

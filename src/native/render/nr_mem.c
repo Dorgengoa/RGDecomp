@@ -24,10 +24,37 @@ static struct {
 #define NR_RGN 24
 static _Thread_local struct { long epoch; int n; uintptr_t lo[NR_RGN], hi[NR_RGN]; } t_rg;
 
+/* ranges that stay readable for the whole run (docs/NATIVE-RENDER.md "Throughput (2026-10-30)"):
+ * the exe image and the game heap (nr_game_mem_stable); checked before the per-frame cache, so
+ * the walkers' reads there never reach VirtualQuery (tens of microseconds each in this process) */
+#define NR_STABLE 4
+static uintptr_t g_st_lo[NR_STABLE], g_st_hi[NR_STABLE];
+static volatile long g_nst;
+static int g_img_done;
+
+static void stable_add(uintptr_t lo, uintptr_t hi)
+{
+    long n = g_nst;
+    if (n >= NR_STABLE || hi <= lo) return;
+    g_st_lo[n] = lo;
+    g_st_hi[n] = hi;
+    InterlockedExchange(&g_nst, n + 1);
+}
+
 static int readable_at(uintptr_t a)
 {
     MEMORY_BASIC_INFORMATION mi;
     int i;
+    if (!g_img_done) {
+        const uint8_t *b = (const uint8_t *)GetModuleHandleW(NULL);
+        g_img_done = 1;
+        if (b && b[0] == 'M' && b[1] == 'Z') {
+            const IMAGE_NT_HEADERS *nt = (const IMAGE_NT_HEADERS *)(b + ((const IMAGE_DOS_HEADER *)b)->e_lfanew);
+            if (nt->Signature == IMAGE_NT_SIGNATURE) stable_add((uintptr_t)b, (uintptr_t)b + nt->OptionalHeader.SizeOfImage);
+        }
+    }
+    for (i = 0; i < (int)g_nst; i++)
+        if (a >= g_st_lo[i] && a < g_st_hi[i]) return 1;
     if (t_rg.epoch != g_epoch) { t_rg.epoch = g_epoch; t_rg.n = 0; }
     for (i = 0; i < t_rg.n; i++)
         if (a >= t_rg.lo[i] && a < t_rg.hi[i]) return 1;
@@ -56,6 +83,15 @@ const uint8_t *nr_game_ptr(uint32_t a, uint32_t bytes)
     (void)bytes;
 #endif
     return (const uint8_t *)(uintptr_t)a;
+}
+
+void nr_game_mem_stable(uintptr_t lo, uintptr_t hi)
+{
+#ifdef _WIN32
+    stable_add(lo, hi);
+#else
+    (void)lo; (void)hi;
+#endif
 }
 
 void nr_game_mem_frame(void)
@@ -112,7 +148,7 @@ int nr_poisoned(const uint8_t *p, const char *who, uint32_t a)
 void nr_mem_stats(FILE *f)
 {
     if (!f) return;
-    if (g_ms.rejected || g_nr_poison_mode)
+    if (g_ms.rejected || g_nr_poison_mode || g_ms.queries)
         fprintf(f, "native render game memory: %llu walker reads refused (not readable memory), %llu region queries; "
                    "poison mode %d: %llu qwords poisoned, %llu poisoned reads%s%s%s\n",
                 (unsigned long long)g_ms.rejected, (unsigned long long)g_ms.queries, g_nr_poison_mode,

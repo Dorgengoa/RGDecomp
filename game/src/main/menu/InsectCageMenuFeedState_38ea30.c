@@ -48,13 +48,13 @@ typedef struct { s16 x, y; } P2;
 /*rgp*/
 /*rgp*/
 /*rgp*/
-extern u8 D_004E94FC[0x400];
+extern u8 D_004E94FC[4];
 extern s16 D_00483370;
 extern s16 D_00483374;
 extern u8 D_004E9510[];
 extern s32 D_004832D8;
 extern u8 D_004832A0[8];
-extern u8 D_004E9520[0x400];
+extern u8 D_004E9520[8];
 extern TE D_004542E0[];
 extern s32 D_00483304;
 extern u8 D_004E9528[0x400];

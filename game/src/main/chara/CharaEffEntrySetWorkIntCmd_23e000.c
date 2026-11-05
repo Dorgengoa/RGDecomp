@@ -9,7 +9,7 @@
 /*rgp*/
 /*rgp*/
 extern u8 D_0044C8A0[];
-extern u8 D_004BCE60[0x400];
+extern u8 D_004BCE60[4];
 extern u8 D_004BCE8C[0x400];
 
 s32 CharaEffEntrySetWorkIntCmd_23e000(u8 *arg0, s32 arg1) {

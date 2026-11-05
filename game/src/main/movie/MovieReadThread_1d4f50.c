@@ -45,6 +45,7 @@ extern u8 D_004B32D0[0x60];
 extern u8 D_004B3330[0x20];
 extern u8 D_004B3350[0x10];
 extern u8 D_004B3358[0x10];
+#define D_004B3358 (*(__typeof__(D_004B3358) *)((u8 *)&D_004B3350 + 0x8))   /* rg-interior */
 #define V3358 (*(s32 *)D_004B3358)
 
 static inline s32 on(void) { return D_004817C8 != 0; }

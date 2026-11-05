@@ -48,6 +48,8 @@ add_library(rg_host STATIC
   host_png.c
   host_pace.c
   host_audio.c
+  rg_tstretch.h
+  host_tstretch.c
   host_scale.c
   host_sdl.c)
 target_include_directories(rg_host PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

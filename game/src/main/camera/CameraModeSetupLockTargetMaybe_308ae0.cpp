@@ -65,16 +65,16 @@ void *GetGameData_1fede0(void);
 void CameraModeLockTargetUpdateMaybe_3062e0(void *, s32);
 void CameraResetParams_3090a0(void *);
 s32 CharaSysGetEncounterIdMaybe_3a36d0(s32);
-extern u8 D_004E7270[0x400];
-extern u8 D_004E7280[0x400];
-extern u8 D_004E7290[0x400];
-extern u8 D_004E7294[0x400];
-extern u8 D_004E7298[0x400];
-extern u8 D_004E729C[0x400];
-extern u8 D_004E72A0[0x400];
-extern u8 D_004E72A4[0x400];
-extern u8 D_004E72A8[0x400];
-extern u8 D_004E72A9[0x400];
+extern u8 D_004E7270[0x10];
+extern u8 D_004E7280[0x10];
+extern u8 D_004E7290[4];
+extern u8 D_004E7294[4];
+extern u8 D_004E7298[4];
+extern u8 D_004E729C[4];
+extern u8 D_004E72A0[4];
+extern u8 D_004E72A4[4];
+extern u8 D_004E72A8[1];
+extern u8 D_004E72A9[1];
 extern u8 D_004E72AA[0x400];
 }
 

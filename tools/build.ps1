@@ -10,6 +10,7 @@
   powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Clean
   powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Config RelWithDebInfo
   powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Arch x64 -X64Src build\x64-src
+  powershell -ExecutionPolicy Bypass -File tools\build.ps1 -Game   # + rg-game.exe, play-test options
 
   Tool locations default to $env:RG_TOOLS, else <repo>\..\tools, as
   {llvm,ninja,cmake-*}; override with -LlvmRoot / -Ninja / -CMake or $env:LLVM_ROOT.
@@ -24,6 +25,7 @@ param(
     [ValidateSet("x86", "x64")] [string]$Arch = "x86",
     [string]$X64Src  = "",
     [switch]$Clean,
+    [switch]$Game,
     [switch]$NoSmoke
 )
 $ErrorActionPreference = "Stop"
@@ -77,6 +79,12 @@ if ($Arch -eq "x64") {
     if (-not $X64Src) { $X64Src = Join-Path $Root "build\x64-src" }
     $Extra += "-DRG_X64_SRC=$($X64Src -replace '\\','/')"
 }
+# -Game: the play-test exe's options (tools/playtest/build_playtest.py); the Vulkan backend's
+# dxc from <tools>\dxc (tools/native/fetch_dxc.py)
+if ($Game) {
+    $Extra += @("-DRG_GAME_OPT=-O2", "-DRG_NATIVE_ONLY=ON", "-DRG_NATIVE_OVL=ON", "-DRG_VU0_MODE=native",
+                "-DRG_DXC=$((Join-Path $Tools 'dxc\bin\x64\dxc.exe') -replace '\\','/')")
+}
 & $CMake -S $Root -B $BuildDir -G Ninja `
     "-DCMAKE_MAKE_PROGRAM=$Ninja" `
     "-DCMAKE_TOOLCHAIN_FILE=$Root\cmake\$Toolchain" `
@@ -86,6 +94,10 @@ if ($LASTEXITCODE -ne 0) { throw "cmake configure failed" }
 
 & $CMake --build $BuildDir
 if ($LASTEXITCODE -ne 0) { throw "build failed" }
+if ($Game) {
+    & $CMake --build $BuildDir --target rg-game
+    if ($LASTEXITCODE -ne 0) { throw "rg-game build failed" }
+}
 
 if (-not $NoSmoke) {
     & (Join-Path $BuildDir "rg-smoke.exe")

@@ -19,7 +19,7 @@
 #ifndef SCE_EEKERNEL_H
 #define SCE_EEKERNEL_H
 
-#if defined(_WIN64)
+#if defined(__x86_64__)
 /* x64 (docs/X64-PLAN.md): kernel32's undecorated exports would collide; the game side
  * gets the same renames from include/port/x64.h.  SCE_P32: the SDK structs live in
  * game memory with 4-byte pointers (the ptr32 stage's RG_P32). */
@@ -28,6 +28,7 @@
 #define TerminateThread rg_ee_TerminateThread
 #define SuspendThread   rg_ee_SuspendThread
 #define ResumeThread    rg_ee_ResumeThread
+#define GetThreadId     rg_ee_GetThreadId
 #define SCE_P32 __ptr32 __uptr
 #else
 #define SCE_P32

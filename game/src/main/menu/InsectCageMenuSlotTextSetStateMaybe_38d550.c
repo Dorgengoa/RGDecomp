@@ -6,7 +6,7 @@
 
 /*rgp*/
 /*rgp*/
-extern f32 D_00463E40[8];
+extern f32 D_00463E40[2];
 extern s32 D_00463E48[8];
 extern s32 D_00483308;
 

@@ -22,11 +22,11 @@ extern s32 D_00482060;
 extern s32 D_00482064;
 extern s32 D_00482068;
 extern s32 D_0048206C;
-extern s32 D_004BD9A4[0x100];
+extern s32 D_004BD9A4[3];
 extern s32 D_004BD9E4[0x100];
-extern u8 D_004BDFB0[0x400];
-extern u8 D_004BDFF0[0x400];
-extern u8 D_004BE030[0x400];
+extern u8 D_004BDFB0[0x40];
+extern u8 D_004BDFF0[0x40];
+extern u8 D_004BE030[0x40];
 extern u8 D_004BE070[0x400];
 
 void EventSceneSysResetMaybe_26b080(void)

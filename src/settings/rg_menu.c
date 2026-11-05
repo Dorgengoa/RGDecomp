@@ -7,9 +7,11 @@
 #include <string.h>
 
 #include "rg_menu.h"
+#include "rg_menu_priv.h"
 
 static const char *const k_page_titles[][2] = {
     { "display", "Display" }, { "graphics", "Graphics" }, { "audio", "Audio" },
+    { "accessibility", "Accessibility" }, { "saves", "Saves" },
     { "controls", "Controls" }, { "controls_ui", "Menu controls" }, { "gameplay", "Gameplay" },
     { "system", "System" }, { "presets", "Presets & save" },
 };
@@ -87,6 +89,10 @@ int rg_menu_rows(const rg_menu *m, int *rows, int cap)
         }
     }
     if (bindings && k < cap) rows[k++] = -1 - RG_ROW_RESET_BINDINGS;
+    if (m->saves && !strcmp(cat, "saves")) {   /* the save manager (rg_menu_saves.c) */
+        if (k < cap) rows[k++] = -1 - RG_ROW_SAVES_MANAGE;
+        if (k < cap) rows[k++] = -1 - RG_ROW_SAVES_IMPORT;
+    }
     if (k < cap) rows[k++] = -1 - RG_ROW_RESET_PAGE;
     return k;
 }
@@ -105,6 +111,14 @@ static int cur_row(const rg_menu *m, int *nrows)
 __attribute__((format(printf, 2, 3)))
 #endif
 static void status(rg_menu *m, const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(m->status, sizeof m->status, fmt, ap);
+    va_end(ap);
+}
+
+void rg_menu__status(rg_menu *m, const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -463,6 +477,10 @@ static void text_close(rg_menu *m) { m->view = RG_MENU_VIEW_PAGE; }
 void rg_menu_text_key(rg_menu *m, rg_text_key k)
 {
     if (!rg_menu_text_editing(m)) return;
+    if (m->text_target != RG_MENU_TEXT_SETTING && (k == RG_TEXT_COMMIT || k == RG_TEXT_CANCEL)) {
+        rg_menu__saves_text_done(m, k == RG_TEXT_COMMIT);   /* a save name or a card path */
+        return;
+    }
     int L = (int)strlen(m->text);
     switch (k) {
     case RG_TEXT_BACKSPACE:
@@ -534,9 +552,20 @@ static void text_command(rg_menu *m, rg_menu_cmd cmd)
     if (m->osk_col >= osk_len(m->osk_row)) m->osk_col = osk_len(m->osk_row) - 1;
 }
 
+void rg_menu__open_text(rg_menu *m, int target, const char *initial)
+{
+    m->view = RG_MENU_VIEW_TEXT;
+    m->text_target = target;
+    snprintf(m->text, sizeof m->text, "%s", initial ? initial : "");
+    m->text_cur = (int)strlen(m->text);
+    m->osk_row = m->osk_col = 0;
+    m->status[0] = 0;
+}
+
 static void open_text(rg_menu *m, int idx)
 {
     m->view = RG_MENU_VIEW_TEXT;
+    m->text_target = RG_MENU_TEXT_SETTING;
     m->edit = idx;
     const char *raw = rg_settings_get_string(m->s, rg_settings_def(m->s, idx)->id);
     snprintf(m->text, sizeof m->text, "%s", raw ? raw : "");
@@ -546,15 +575,48 @@ static void open_text(rg_menu *m, int idx)
 }
 
 /* ------------------------------------------------------------ page view */
+static int choice_count(const rg_menu *m, const rg_setting_def *d)
+{
+    const char *list[RG_MENU_MAX_CHOICES];
+    return m->choices ? m->choices(d->id, list, RG_MENU_MAX_CHOICES, m->choices_user) : 0;
+}
+
+/* An INT setting with a choice list shows the list entry of its value; a value past the
+ * list says so (display.monitor: a display that is not connected; the host uses the first) */
+static void int_choice_label(const rg_menu *m, const rg_setting_def *d, char *v, size_t cap)
+{
+    const char *list[RG_MENU_MAX_CHOICES];
+    int n = m->choices ? m->choices(d->id, list, RG_MENU_MAX_CHOICES, m->choices_user) : 0;
+    if (n <= 0) return;
+    if (n > RG_MENU_MAX_CHOICES) n = RG_MENU_MAX_CHOICES;
+    int at = rg_settings_get_int(m->s, d->id);
+    if (at >= 0 && at < n) snprintf(v, cap, "%s", list[at]);
+    else snprintf(v, cap, "%d (not connected: using %s)", at, list[0]);
+}
+
 /* A STRING setting with a choice list (rg_menu_set_choices, e.g. audio.device): LEFT /
- * RIGHT steps through the list (a value not in it steps to the first / last choice). */
-static bool change_choice(rg_menu *m, int idx, int dir)
+ * RIGHT steps through the list (a value not in it steps to the first / last choice).
+ * An INT setting with a choice list (display.monitor): the values are the indexes
+ * 0 .. n-1 of the list, stepped with wrap-around (an index past the list steps to
+ * the first / last). */
+static bool change_choice(rg_menu *m, int idx, int dir, uint64_t now)
 {
     const rg_setting_def *d = rg_settings_def(m->s, idx);
     const char *list[RG_MENU_MAX_CHOICES];
     int n = m->choices ? m->choices(d->id, list, RG_MENU_MAX_CHOICES, m->choices_user) : 0;
     if (n <= 0) return false;
     if (n > RG_MENU_MAX_CHOICES) n = RG_MENU_MAX_CHOICES;
+    if (d->flags & RG_SETF_DISPLAY) rg_settings_trial_begin(m->s, idx, now, m->trial_ms);
+    if (d->type == RG_SET_INT) {
+        int at = rg_settings_get_int(m->s, d->id);
+        int next = at < 0 || at >= n ? (dir > 0 ? 0 : n - 1) : (at + (dir > 0 ? 1 : n - 1)) % n;
+        if (next > d->max_i) next = d->min_i;
+        if (rg_settings_set_int(m->s, d->id, next, RG_SRC_MENU) == RG_SET_OK) {
+            m->dirty = true;
+            m->status[0] = 0;
+        }
+        return true;
+    }
     const char *cur = rg_settings_get_string(m->s, d->id);
     int at = -1;
     for (int i = 0; i < n && at < 0; i++)
@@ -570,7 +632,7 @@ static bool change_choice(rg_menu *m, int idx, int dir)
 static void change(rg_menu *m, int idx, int dir, uint64_t now)
 {
     const rg_setting_def *d = rg_settings_def(m->s, idx);
-    if (d->type == RG_SET_STRING && change_choice(m, idx, dir)) return;
+    if ((d->type == RG_SET_STRING || d->type == RG_SET_INT) && change_choice(m, idx, dir, now)) return;
     if (d->type == RG_SET_STRING || d->type == RG_SET_BINDING) {
         status(m, "%s: press accept to edit", label_of(m, idx));
         return;
@@ -605,6 +667,10 @@ static void activate_action_row(rg_menu *m, int row)
             if (rg_settings_def(m->s, i)->type == RG_SET_BINDING) rg_settings_reset(m->s, i);
         m->dirty = true;
         status(m, "All bindings (game and menu) reset to defaults");
+    } else if (code == RG_ROW_SAVES_MANAGE) {
+        rg_menu__saves_open(m, RG_MENU_VIEW_SAVES);
+    } else if (code == RG_ROW_SAVES_IMPORT) {
+        rg_menu__saves_open(m, RG_MENU_VIEW_IMPORT);
     } else if (code % RG_ROW_STRIDE == RG_ROW_PRESET) {
         int pi = code / RG_ROW_STRIDE;
         const char *name = rg_settings_preset_name(m->s, pi);
@@ -632,7 +698,9 @@ bool rg_menu_command(rg_menu *m, rg_menu_cmd cmd, uint64_t now)
         m->capturing = false;
         m->capture_motion = false;
         m->confirm[0] = m->offer[0] = 0;
+        m->imp_confirm[0] = 0;
         m->view = RG_MENU_VIEW_PAGE;
+        m->text_target = RG_MENU_TEXT_SETTING;
         if (m->open) rg_menu_refresh(m);
         return true;
     }
@@ -640,6 +708,10 @@ bool rg_menu_command(rg_menu *m, rg_menu_cmd cmd, uint64_t now)
     if (m->capturing) return true;   /* the host routes raw input to the capture */
     if (m->view == RG_MENU_VIEW_BINDINGS) { bindings_command(m, cmd, now); return true; }
     if (m->view == RG_MENU_VIEW_TEXT) { text_command(m, cmd); return true; }
+    if (m->view == RG_MENU_VIEW_SAVES || m->view == RG_MENU_VIEW_IMPORT || m->view == RG_MENU_VIEW_BROWSE) {
+        rg_menu__saves_command(m, cmd);
+        return true;
+    }
     int n = 0;
     int row = cur_row(m, &n);
     if (rg_settings_trial_active(m->s)) {
@@ -801,6 +873,26 @@ static void hint(const rg_menu *m, rg_menu_line *l, int *k, int cap, bool sel, c
     (*k)++;
 }
 
+void rg_menu__line(rg_menu_line *l, int *k, int cap, bool sel, bool header, const char *text, int indent)
+{
+    if (*k >= cap) return;
+    snprintf(l[*k].text, sizeof l[*k].text, "%s", text);
+    l[*k].selected = sel;
+    l[*k].header = header;
+    l[*k].indent = indent;
+    (*k)++;
+}
+
+void rg_menu__hint(const rg_menu *m, rg_menu_line *l, int *k, int cap, const char *tmpl)
+{
+    if (*k >= cap) return;
+    expand(m, tmpl, l[*k].text, sizeof l[*k].text, false);
+    l[*k].selected = false;
+    l[*k].header = true;
+    l[*k].indent = 4;
+    (*k)++;
+}
+
 /* The continuation indent of the line just written. */
 static void indent_last(rg_menu_line *l, int k, int cap, int indent)
 {
@@ -916,8 +1008,13 @@ static int render_bindings(const rg_menu *m, uint64_t now, rg_menu_line *l, int 
 static int render_text(const rg_menu *m, rg_menu_line *l, int cap)
 {
     int k = 0;
-    const rg_setting_def *d = rg_settings_def(m->s, m->edit);
-    line(l, &k, cap, false, true, "SETTINGS  %s > %s", page_title(m->pages[m->page]), label_of(m, m->edit));
+    const rg_setting_def *d = m->text_target == RG_MENU_TEXT_SETTING ? rg_settings_def(m->s, m->edit) : NULL;
+    if (d) line(l, &k, cap, false, true, "SETTINGS  %s > %s", page_title(m->pages[m->page]), label_of(m, m->edit));
+    else {
+        char title[160];
+        rg_menu__saves_text_title(m, title, sizeof title);
+        line(l, &k, cap, false, true, "SETTINGS  Saves > %s", title);
+    }
     line(l, &k, cap, false, true, "%s", "keyboard: type, Enter = OK, Esc = cancel");
     hint(m, l, &k, cap, false, "gamepad: [up] / [down] / [left] / [right] + [accept] pick a key, [back] deletes, [prev] / [next] move the cursor");
     char shown[RG_MENU_TEXT_MAX + 2];
@@ -935,10 +1032,12 @@ static int render_text(const rg_menu *m, rg_menu_line *l, int cap)
         }
         line(l, &k, cap, r == m->osk_row, false, "   %s", row);
     }
-    if (d->help) line(l, &k, cap, false, true, "  %s", d->help);
-    char fh[256];
-    flag_help(d, fh, sizeof fh);
-    if (fh[0]) line(l, &k, cap, false, true, "%s", fh);
+    if (d) {
+        if (d->help) line(l, &k, cap, false, true, "  %s", d->help);
+        char fh[256];
+        flag_help(d, fh, sizeof fh);
+        if (fh[0]) line(l, &k, cap, false, true, "%s", fh);
+    }
     if (m->status[0]) line(l, &k, cap, false, true, "%s", m->status);
     return k;
 }
@@ -949,6 +1048,8 @@ int rg_menu_render(const rg_menu *m, uint64_t now, rg_menu_line *l, int cap)
     if (!m->open) return 0;
     if (m->view == RG_MENU_VIEW_BINDINGS) return render_bindings(m, now, l, cap);
     if (m->view == RG_MENU_VIEW_TEXT) return render_text(m, l, cap);
+    if (m->view == RG_MENU_VIEW_SAVES || m->view == RG_MENU_VIEW_IMPORT || m->view == RG_MENU_VIEW_BROWSE)
+        return rg_menu__saves_render(m, l, cap);
     line(l, &k, cap, false, true, "SETTINGS  (%d/%d) %s%s", m->page + 1, m->npages,
          page_title(m->pages[m->page]), m->dirty ? "  [unsaved]" : "");
     hint(m, l, &k, cap, false, "[prev] / [next] pages   [up] / [down] select   [left] / [right] change   [accept] edits   [back] closes   (open / close: [toggle])");
@@ -965,7 +1066,8 @@ int rg_menu_render(const rg_menu *m, uint64_t now, rg_menu_line *l, int cap)
             char v[256];
             rg_settings_display_text(m->s, i, v, sizeof v);
             if (d->type == RG_SET_BINDING && !v[0]) snprintf(v, sizeof v, "(unbound)");
-            if (d->type == RG_SET_STRING && !v[0]) snprintf(v, sizeof v, "(empty)");
+            if (d->type == RG_SET_STRING && !v[0]) snprintf(v, sizeof v, m->choices && choice_count(m, d) > 0 ? "(default)" : "(empty)");
+            if (d->type == RG_SET_INT) int_choice_label(m, d, v, sizeof v);
             const char *mk_pending = "";
             for (int p = 0; p < npend && p < 64; p++)
                 if (pend[p] == i) mk_pending = " (restart pending)";
@@ -983,6 +1085,10 @@ int rg_menu_render(const rg_menu *m, uint64_t now, rg_menu_line *l, int cap)
             else if (code == RG_ROW_RESET_PAGE) line(l, &k, cap, sel, false, "%s Reset this page to defaults", sel ? ">" : " ");
             else if (code == RG_ROW_RESET_BINDINGS)
                 line(l, &k, cap, sel, false, "%s Reset all bindings (game and menu) to defaults", sel ? ">" : " ");
+            else if (code == RG_ROW_SAVES_MANAGE)
+                line(l, &k, cap, sel, false, "%s Manage saves: list, names ...", sel ? ">" : " ");
+            else if (code == RG_ROW_SAVES_IMPORT)
+                line(l, &k, cap, sel, false, "%s Import saves from a PCSX2 memory card ...", sel ? ">" : " ");
             else {
                 int pi = code / RG_ROW_STRIDE;
                 line(l, &k, cap, sel, false, "%s Apply preset: %s%s", sel ? ">" : " ",

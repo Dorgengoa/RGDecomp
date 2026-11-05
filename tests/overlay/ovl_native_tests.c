@@ -35,8 +35,19 @@ static int g_fail, g_control;
 /* ---- two modules: alpha (data 16 words, bss 32 bytes), beta (data 8, bss 64) ---- */
 static unsigned char alpha_seg[64 + 32] __attribute__((aligned(128)));
 static unsigned char beta_seg[32 + 64] __attribute__((aligned(128)));
+#if defined(__x86_64__)
+/* x64 (docs/X64-PLAN.md 0.8): a 32-bit image address is not a constant initializer; the
+ * last word is set at the start of main (the image is below 2 GB) */
+static uint32_t alpha_img[16] = {0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+                                 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0};
+#define RG_X64_ALPHA_IMG() (alpha_img[15] = (uint32_t)(uintptr_t)alpha_seg)
+#else
+#define RG_X64_ALPHA_IMG() ((void)0)
+#line 38
 static const uint32_t alpha_img[16] = {0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
                                        0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, (uint32_t)(uintptr_t)alpha_seg};
+#endif
+#line 40
 static const uint32_t beta_img[8] = {0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7};
 
 static int g_order[16], g_norder;
@@ -240,7 +251,7 @@ static void t_trace_map(void)
 }
 
 int main(int argc, char **argv)
-{
+{   RG_X64_ALPHA_IMG();
     const char *t = argc > 1 ? argv[1] : "";
     size_t n = strlen(t);
     char base[64];
