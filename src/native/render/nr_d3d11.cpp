@@ -2381,7 +2381,7 @@ public:
         ID3D11ShaderResourceView *tsrv = NULL;
         if (g.tme && g.tex_rt >= 0) {
             if (g.tex_snap) {
-                snapshot_rect(ct, g.tex_rect);
+                if (g.tex_snap != 2) snapshot_rect(ct, g.tex_rect);   /* (2: the pass's snapshot, taken by an earlier draw: RG_NR_FBX) */
                 tsrv = ct.snap_srv;
             } else {
                 zsync(targets[g.tex_rt]);

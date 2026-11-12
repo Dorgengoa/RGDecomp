@@ -243,6 +243,12 @@ typedef struct mc_save_meta {
 int mc_save_meta_parse(const uint8_t *data, uint32_t n, mc_save_meta *m);
 /* "Ch. 2: The Jungle Planet | Juraika: ... | Jaster Lv 9 | 1:19:37" */
 void mc_save_meta_line(const mc_save_meta *m, char *out, size_t cap);
+/* Observer of the save the game last wrote (saved = 1, at close of the written data file)
+ * or loaded (saved = 0, when a read reaches the end of a data file larger than the 0x800
+ * bytes the slot scan reads): its summary.  Read-only (Discord activity text,
+ * docs/DISCORD.md); NULL removes it.  Called on the thread that called mccard_*. */
+typedef void (*mccard_meta_hook_fn)(const mc_save_meta *m, int saved, void *user);
+void mccard_set_meta_hook(mccard_meta_hook_fn fn, void *user);
 /* 1 and the name when save directory `dir` ("NAME" or "/NAME") of slot `port` is named */
 int mccard_save_name(int port, const char *dir, char *out, int outlen);
 /* name (empty: un-name) a save directory; it need not exist yet.  0 ok, -1 bad input / I/O */

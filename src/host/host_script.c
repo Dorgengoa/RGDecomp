@@ -3,6 +3,7 @@
  * the same table (parse_script + build_table), so a port run and a PCSX2
  * reference run see the same button word on the same game VBlank. */
 #include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -369,4 +370,100 @@ int rg_input_script_look(const rg_input_script *s, uint32_t vbl, rg_look *out)
         out->pitch = s->look[2 * vbl + 1];
     }
     return 1;
+}
+
+/* ------------------------------------------------------------ live recorder
+ * $RG_INPUT_RECORD=FILE (docs/INPUT.md "Recording live input"): every live port-0 pad read
+ * becomes script lines (buttons + the #!stick channel), one run of equal values per line, at
+ * the game VBlank the read was for.  Replaying FILE with --input gives the game the same pad
+ * on every VBlank (the pressure bytes follow the buttons on both paths).  The first read of a
+ * VBlank is the one kept; a later read of the same VBlank with other values is counted
+ * (reported at the end: such a run does not replay exactly). */
+static struct {
+    FILE *f;
+    int on;               /* 0 untested, 1 recording, -1 off */
+    int have;
+    uint32_t a, b;        /* current run [a, b] */
+    rg_pad p;
+    uint32_t last_vbl;
+    rg_pad last;
+    unsigned long reads, lines, conflicts;
+} g_rec;
+
+static int rec_same(const rg_pad *x, const rg_pad *y)
+{
+    return x->buttons == y->buttons && x->lx == y->lx && x->ly == y->ly && x->rx == y->rx && x->ry == y->ry;
+}
+
+static void rec_flush(void)
+{
+    if (!g_rec.have) return;
+    const rg_pad *p = &g_rec.p;
+    if (p->buttons) {
+        char m[160];
+        size_t o = 0;
+        m[0] = 0;
+        for (size_t i = 0; i < sizeof k_buttons / sizeof k_buttons[0]; i++)
+            if (p->buttons & k_buttons[i].bit) {
+                int w = snprintf(m + o, sizeof m - o, "%s%s", o ? "+" : "", k_buttons[i].name);
+                if (w > 0 && (size_t)w < sizeof m - o) o += (size_t)w;
+            }
+        fprintf(g_rec.f, "%lu %lu %s\n", (unsigned long)g_rec.a, (unsigned long)g_rec.b, m);
+        g_rec.lines++;
+    }
+    if (p->lx != 0x80 || p->ly != 0x80 || p->rx != 0x80 || p->ry != 0x80) {
+        fprintf(g_rec.f, "#!stick %lu %lu %u %u %u %u\n", (unsigned long)g_rec.a, (unsigned long)g_rec.b,
+                p->lx, p->ly, p->rx, p->ry);
+        g_rec.lines++;
+    }
+    fflush(g_rec.f);
+    g_rec.have = 0;
+}
+
+void rg_input_record_pad(uint32_t vbl, const rg_pad *p)
+{
+    if (g_rec.on == 0) {
+        const char *path = getenv("RG_INPUT_RECORD");
+        g_rec.on = -1;
+        if (path && *path) {
+            g_rec.f = fopen(path, "w");
+            if (g_rec.f) {
+                fprintf(g_rec.f, "# rg-game live input (RG_INPUT_RECORD): game VBlank FIRST LAST BUTTONS, inclusive\n"
+                                 "#!stick 1 0\n");
+                fflush(g_rec.f);
+                g_rec.on = 1;
+            } else {
+                fprintf(stderr, "rg-host: RG_INPUT_RECORD %s: cannot write\n", path);
+            }
+        }
+    }
+    if (g_rec.on < 0) return;
+    g_rec.reads++;
+    if (g_rec.reads > 1 && vbl == g_rec.last_vbl) {
+        if (!rec_same(p, &g_rec.last)) g_rec.conflicts++;
+        return;
+    }
+    g_rec.last_vbl = vbl;
+    g_rec.last = *p;
+    if (g_rec.have && vbl == g_rec.b + 1 && rec_same(p, &g_rec.p)) {
+        g_rec.b = vbl;
+        return;
+    }
+    rec_flush();
+    g_rec.have = 1;
+    g_rec.a = g_rec.b = vbl;
+    g_rec.p = *p;
+}
+
+void rg_input_record_close(void)
+{
+    if (g_rec.on <= 0) return;
+    rec_flush();
+    fprintf(g_rec.f, "# reads %lu, lines %lu, same-VBlank reads that differed %lu\n", g_rec.reads, g_rec.lines,
+            g_rec.conflicts);
+    fclose(g_rec.f);
+    fprintf(stderr, "rg-host: RG_INPUT_RECORD: %lu pad reads, %lu lines, %lu same-VBlank conflicts\n",
+            g_rec.reads, g_rec.lines, g_rec.conflicts);
+    g_rec.f = NULL;
+    g_rec.on = -1;
 }

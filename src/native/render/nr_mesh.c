@@ -130,6 +130,8 @@ typedef struct dec {
     const char *err;
     nr_batch_cb on_batch;     /* tests: each batch image at its MSCNT */
     void *on_batch_user;
+    uint32_t nrm_batches;     /* batches that unpacked normals */
+    uint32_t cap_lay, cap_runs;
 } dec;
 
 static void fail(dec *d, const char *why) { if (!d->err) d->err = why; }
@@ -176,6 +178,24 @@ static int written(const dec *d, uint32_t a, uint32_t n)
     return 1;
 }
 
+/* RG_NR_MISSNRM=2 (docs/NATIVE-RENDER.md "Meshes without normals"): a mesh none of whose
+ * batches unpacks normals gets one sign vector (+-127 per axis, a hash of the vertex index)
+ * per vertex; nr_scene.c scales it to the magnitude of the VU's leftover float bit patterns */
+static void missnrm_signs(dec *d)
+{
+    static int k = -1;
+    nr_mesh *m = d->m;
+    uint32_t i;
+    if (k < 0) { const char *e = getenv("RG_NR_MISSNRM"); k = e && e[0] == '2'; }
+    if (!k || !(m->missing & NR_MISS_NRM) || d->nrm_batches || m->bad) return;
+    for (i = 0; i < m->nvtx; i++) {
+        uint32_t h = (i + 1u) * 2654435761u;
+        m->vtx[i].nx = (h >> 7) & 1 ? 127 : -127;
+        m->vtx[i].ny = (h >> 13) & 1 ? 127 : -127;
+        m->vtx[i].nz = (h >> 19) & 1 ? 127 : -127;
+    }
+    m->nrm_signs = 1;
+}
 static int fits16(int32_t v) { return v >= -32768 && v <= 32767; }
 static int fits8s(int32_t v) { return v >= -128 && v <= 127; }
 static int fits8u(int32_t v) { return v >= 0 && v <= 255; }
@@ -203,6 +223,7 @@ static void end_batch(dec *d)
         int have_uv = a_uv + n <= 1024 && written(d, a_uv, n);
         int have_col = a_col + n <= 1024 && written(d, a_col, n);
         if (!have_nrm) m->missing |= NR_MISS_NRM;
+        else d->nrm_batches++;
         if (!have_uv) m->missing |= NR_MISS_UV;
         if (!have_col) m->missing |= NR_MISS_COL;
         if (!have_nrm) a_nrm = 0;
@@ -285,6 +306,49 @@ static void end_batch(dec *d)
     m->prim_mask |= 1u << prim;
 }
 
+/* MSCNT: the batch's layout for nr_lnrm.c (header, first vertex, UNPACK-written runs) */
+static void lay_batch(dec *d)
+{
+    nr_mesh *m = d->m;
+    struct nr_mesh_lay *l;
+    uint32_t a = 0;
+    if (d->err) return;
+    if (m->nlay == d->cap_lay) {
+        void *p;
+        d->cap_lay = d->cap_lay ? d->cap_lay * 2 : 16;
+        p = realloc(m->lay, d->cap_lay * sizeof *m->lay);
+        if (!p) { fail(d, "out of memory"); return; }
+        m->lay = (struct nr_mesh_lay *)p;
+    }
+    l = &m->lay[m->nlay++];
+    memcpy(l->h, d->img[0].u, 16);
+    memcpy(l->h + 4, d->img[1].u, 16);
+    l->vfirst = m->nvtx;
+    l->run0 = m->nlay > 1 ? m->lay[m->nlay - 2].run0 + m->lay[m->nlay - 2].nrun : 0;
+    l->vbase = 0;
+    if (m->nlay > 1) {
+        const struct nr_mesh_lay *p = &m->lay[m->nlay - 2];
+        uint32_t r;
+        l->vbase = p->vbase;
+        for (r = 0; r < p->nrun; r++) l->vbase += (m->runs[p->run0 + r] >> 10) & 0x7FF;
+    }
+    l->nrun = 0;
+    while (a < 1024) {
+        uint32_t b = a, lanes = d->wr[a];
+        if (!lanes) { a++; continue; }
+        while (b < 1024 && d->wr[b] == lanes) b++;
+        if (l->run0 + l->nrun == d->cap_runs) {
+            void *p;
+            d->cap_runs = d->cap_runs ? d->cap_runs * 2 : 64;
+            p = realloc(m->runs, d->cap_runs * sizeof *m->runs);
+            if (!p) { fail(d, "out of memory"); return; }
+            m->runs = (uint32_t *)p;
+        }
+        m->runs[l->run0 + l->nrun++] = a | (b - a) << 10 | lanes << 21;
+        a = b;
+    }
+}
+
 static void do_unpack(dec *d, uint32_t code, const uint32_t *pay)
 {
     uint32_t cmd = (code >> 24) & 0x7F, num = (code >> 16) & 0xFF, imm = code & 0xFFFF;
@@ -331,7 +395,7 @@ static void exec(dec *d, uint32_t code, const uint32_t *pay)
     case 0x01: d->cl = code & 0xFF; d->wl = (code >> 8) & 0xFF; if (d->cl != d->wl) d->m->skipwrite = 1; return;   /* STCYCL */
     case 0x05: if (code & 3) fail(d, "STMOD != 0"); return;
     case 0x20: case 0x30: case 0x31: return;           /* STMASK / STROW / STCOL (masks unsupported anyway) */
-    case 0x17: if (d->on_batch) d->on_batch(d->on_batch_user, d->img, d->wr); end_batch(d); memset(d->img, 0, sizeof d->img); memset(d->wr, 0, sizeof d->wr); return;  /* MSCNT */
+    case 0x17: if (d->on_batch) d->on_batch(d->on_batch_user, d->img, d->wr); lay_batch(d); end_batch(d); memset(d->img, 0, sizeof d->img); memset(d->wr, 0, sizeof d->wr); return;  /* MSCNT */
     default: fail(d, "unexpected VIF command in a mesh packet"); return;  /* MSCAL MPG DIRECT ... */
     }
 }
@@ -389,7 +453,7 @@ static void dump_packet(uint32_t pkt, uint32_t id, int sk)
     fclose(f);
 }
 
-nr_mesh *nr_mesh_decode(uint32_t pkt, int skinned_variant)
+static nr_mesh *decode_pkt(uint32_t pkt, int skinned_variant, nr_batch_cb cb, void *user)
 {
     dec *d = (dec *)calloc(1, sizeof(dec));
     nr_mesh *m = (nr_mesh *)calloc(1, sizeof(nr_mesh));
@@ -397,10 +461,12 @@ nr_mesh *nr_mesh_decode(uint32_t pkt, int skinned_variant)
     uint32_t bytes = 0;
     m->id = g_next_id++;
     m->pkt = pkt;
-    dump_packet(pkt, m->id, skinned_variant);
+    if (!cb) dump_packet(pkt, m->id, skinned_variant);
     d->m = m;
     d->skinned_variant = skinned_variant;
     d->cl = d->wl = 1;
+    d->on_batch = cb;
+    d->on_batch_user = user;
     if (walk(pkt, hash_blk, &hc, &bytes) != 0) {
         m->bad = 1; m->why = "DMA chain not walkable";
     } else {
@@ -417,12 +483,40 @@ nr_mesh *nr_mesh_decode(uint32_t pkt, int skinned_variant)
             m->bad = 1; m->why = "no vertices";
         }
     }
+    if (!cb) missnrm_signs(d);
     free(d);
+    if (cb) return m;
     g_st.decodes++;
     if (m->bad) g_st.bad++;
     if (m->bad && getenv("RG_NR_DEBUG"))
         fprintf(stderr, "nr_mesh: packet %08X (%u bytes) stays emulated: %s\n", pkt, m->pkt_bytes, m->why);
     return m;
+}
+
+nr_mesh *nr_mesh_decode(uint32_t pkt, int skinned_variant) { return decode_pkt(pkt, skinned_variant, NULL, NULL); }
+
+int nr_mesh_images(const nr_mesh *m, int skinned_variant, nr_batch_cb cb, void *user)
+{
+    nr_mesh *t;
+    int rc;
+    if (!m || m->bad || m->derived) return -1;
+    t = decode_pkt(m->pkt, skinned_variant, cb, user);
+    rc = (!t->bad && t->hash == m->hash && t->nlay == m->nlay) ? 0 : -1;
+    nr_mesh_free(t);
+    return rc;
+}
+
+nr_mesh *nr_mesh_derive(const nr_mesh *m)
+{
+    nr_mesh *c = (nr_mesh *)malloc(sizeof *c);
+    if (!c) return NULL;
+    *c = *m;
+    c->vtx = (nr_vtx *)malloc((m->nvtx ? m->nvtx : 1) * sizeof(nr_vtx));
+    if (!c->vtx) { free(c); return NULL; }
+    if (m->nvtx) memcpy(c->vtx, m->vtx, m->nvtx * sizeof(nr_vtx));
+    c->id = g_next_id++;
+    c->derived = 1;
+    return c;
 }
 
 nr_mesh *nr_mesh_decode_words(const uint32_t *w, uint32_t n, int skinned_variant, nr_batch_cb cb, void *user)
@@ -439,6 +533,7 @@ nr_mesh *nr_mesh_decode_words(const uint32_t *w, uint32_t n, int skinned_variant
     for (i = 0; i < n && !d->err; i++) feed(d, w[i]);
     if (d->err) { m->bad = 1; m->why = d->err; }
     else if (d->pend_words) { m->bad = 1; m->why = "VIF command cut off at the end of the stream"; }
+    missnrm_signs(d);
     free(d);
     return m;
 }
@@ -447,7 +542,11 @@ void nr_mesh_free(nr_mesh *m)
 {
     if (!m) return;
     free(m->vtx);
-    free(m->idx);
+    if (!m->derived) {
+        free(m->idx);
+        free(m->lay);
+        free(m->runs);
+    }
     free(m);
 }
 

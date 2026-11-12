@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: CC0-1.0
+# invsort run B (tools/invsort/invsort_test.py play): the card run A saved after sorting.
+# CONTINUE, main menu -> Items (shot 3955: the sorted order loaded from the save), cursor to the
+# Stealth Pills (slot 6 = page 1 row 0 column 6 after the sort of the mkcard inventory; usable
+# in the field at full HP -- the Salgin transporter refills HP on load, so a Heal Potion is
+# refused), context menu -> Use (-> confirm), back to the field, save again.
+1900 1905 CROSS  # title menu: CONTINUE
+2150 2155 CROSS  # MEMORY CARD slot 1
+2350 2355 CROSS  # FILE 01
+2450 2455 CROSS  # "Load the data in file 1?" -> Yes
+2650 2655 CROSS  # "File 1 loaded."
+3700 3705 CROSS  # story recap -> field (on the Salgin transporter)
+3800 3803 TRIANGLE  # main menu
+3900 3905 CROSS  # Items
+3970 3973 RIGHT
+3985 3988 RIGHT
+4000 4003 RIGHT
+4015 4018 RIGHT
+4030 4033 RIGHT
+4045 4048 RIGHT  # row 0 column 6: Stealth Pills
+4130 4133 CROSS  # context menu
+4180 4183 CROSS  # Use
+4260 4263 CROSS  # confirm / target
+4340 4343 CIRCLE
+4400 4403 CIRCLE
+4470 4473 CIRCLE # field
+4580 4583 CROSS  # transporter menu
+4660 4663 CROSS  # Save
+4810 4813 CROSS  # MEMORY CARD slot 1
+4960 4963 CROSS  # FILE 01 -> overwrite? (cursor on No)
+5050 5053 LEFT   # -> Yes
+5090 5093 CROSS  # save
+5430 5433 CROSS  # dismiss "File 1 saved."
+5510 5513 CIRCLE # close the slot list
+5570 5573 CIRCLE # close the transporter menu

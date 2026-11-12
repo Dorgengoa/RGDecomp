@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: CC0-1.0
+# invsort run A (tools/invsort/invsort_test.py play): power-on with a save2 card plus a mixed
+# inventory (invsort_test.py mkcard), CONTINUE -> field on the Salgin transporter, main menu ->
+# Items, R2 = sort by category (overrides/src/main/menu/MenuItemGridState_2b1e10.cpp), back to
+# the field, transporter -> Save over FILE 01.  Shots: 3950 grid before, 4020 after the sort.
+# Keys = fields of a plain rg-game run (headless).
+1900 1905 CROSS  # title menu: CONTINUE
+2150 2155 CROSS  # MEMORY CARD slot 1
+2350 2355 CROSS  # FILE 01
+2450 2455 CROSS  # "Load the data in file 1?" -> Yes
+2650 2655 CROSS  # "File 1 loaded."
+3700 3705 CROSS  # story recap -> field (on the Salgin transporter)
+3800 3803 TRIANGLE  # main menu (game mode 17)
+3900 3905 CROSS  # main menu: Items -> the item grid (list 0, page 1)
+3970 3973 R2     # sort by category
+4060 4063 CIRCLE # back to the main menu
+4140 4143 CIRCLE # back to the field
+4250 4253 CROSS  # transporter menu (Save / Teleport / ...)
+4330 4333 CROSS  # Save
+4480 4483 CROSS  # MEMORY CARD slot 1
+4630 4633 CROSS  # FILE 01 -> "This will overwrite the data in file 1." (cursor on No)
+4720 4723 LEFT   # -> Yes
+4760 4763 CROSS  # save
+5100 5103 CROSS  # dismiss "File 1 saved."
+5180 5183 CIRCLE # close the slot list
+5240 5243 CIRCLE # close the transporter menu

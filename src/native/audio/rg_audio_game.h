@@ -57,6 +57,9 @@ unsigned rg_audio_runtime_read(short *lr, unsigned max);
 const short *rg_audio_runtime_present(const short *lr, unsigned n);
 /* audio.music_volume / effects_volume / voice_volume / movie_volume, percent */
 void rg_audio_runtime_volumes(int music, int effects, int voice, int movie);
+/* audio.master_volume (0..1) applied inside the presentation mix before its s16 clip; 1 = the
+ * host stream gain carries it (docs/NATIVE-AUDIO.md "Master volume headroom") */
+void rg_audio_runtime_headroom(float gain);
 void rg_audio_runtime_shutdown(void);
 
 #ifdef __cplusplus

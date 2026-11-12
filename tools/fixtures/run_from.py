@@ -95,7 +95,7 @@ def main(argv=None) -> int:
     ok, why = fxlib.fresh(d, exe_src, [a.milestone])
     if not ok and a.print:
         fxlib.say(f"run_from: (fixture set {d.name}: {why}; a real run regenerates it first)")
-        man = {"exe": "bin/rg-game.exe", "milestones": {a.milestone: {
+        man = {"exe": "bin/" + fxlib.EXE_NAME, "milestones": {a.milestone: {
             "file": f"{a.milestone}.rgstate", "field": fxlib.MILESTONE_FIELDS[a.milestone], "wall_s": 0}}}
     elif not ok:
         if a.no_regen:

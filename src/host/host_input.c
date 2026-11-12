@@ -46,7 +46,7 @@ static const action_info k_act[RG_ACT_COUNT] = {
     { "camera_turn_left", "Camera left / Previous tab / Accept suggestion (L1)", BIT(L1) },
     { "camera_turn_right", "Camera right / Guard? / Next tab (R1)", BIT(R1) },
     { "decline", "Decline suggestion / Page (L2)", BIT(L2) },
-    { "camera_recentre", "Recentre camera / Zoom (hold) (R2)", BIT(R2) },
+    { "camera_recentre", "Recentre camera / Zoom (hold) / Sort items (R2)", BIT(R2) },
     { "switch_leader", "Switch leader (L3)", BIT(L3) },
     { "first_person", "First-person look (R3)", BIT(R3) },
     { "pause", "Pause / Skip (Start)", BIT(START) },

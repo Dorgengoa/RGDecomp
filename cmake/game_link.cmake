@@ -66,7 +66,10 @@ add_custom_command(
 
 add_executable(rg-game EXCLUDE_FROM_ALL
   ${CMAKE_SOURCE_DIR}/src/game/rg_game_main.c ${CMAKE_SOURCE_DIR}/src/game/rg_slots.c
-  ${CMAKE_SOURCE_DIR}/src/game/rg_game_ss.c ${_rg_unbound} ${_rg_game_objs} ${_rg_game_gen})
+  ${CMAKE_SOURCE_DIR}/src/game/rg_game_ss.c
+  ${CMAKE_SOURCE_DIR}/src/game/rg_invsort_tab.c   # item sort ranks (tools/census/invsort_census.py)
+  ${CMAKE_SOURCE_DIR}/src/game/rg_froglog_tab.c   # Frog Log order ranks (tools/census/froglog_census.py)
+  ${_rg_unbound} ${_rg_game_objs} ${_rg_game_gen})
 target_include_directories(rg-game PRIVATE
   ${CMAKE_SOURCE_DIR}/src/runtime ${CMAKE_SOURCE_DIR}/src/movie
   ${CMAKE_SOURCE_DIR}/src/ps2/overlay ${CMAKE_SOURCE_DIR}/src/trace)
@@ -106,6 +109,14 @@ if(TARGET rg_ubsan_census)   # RG_UBSAN census build (cmake/game.cmake, docs/UB-
 endif()
 if(TARGET rg_sbguard_census)  # RG_SBGUARD census build (cmake/game.cmake, docs/PROTOS.md)
   target_link_libraries(rg-game PRIVATE rg_sbguard_census)
+endif()
+if(RG_ASAN)                    # RG_ASAN check build (cmake/game.cmake, docs/UB-AUDIT.md)
+  target_link_options(rg-game PRIVATE -fsanitize=address)
+  # a clang whose own resource dir has no compiler-rt (the remote's unpacked clang-20):
+  # a private copy with the sanitizer runtime (docs/UB-AUDIT.md "Local-size check")
+  if(RG_ASAN_RESOURCE_DIR)
+    target_link_options(rg-game PRIVATE "-resource-dir=${RG_ASAN_RESOURCE_DIR}")
+  endif()
 endif()
 if(WIN32)
   target_compile_definitions(rg-game PRIVATE _CRT_SECURE_NO_WARNINGS)

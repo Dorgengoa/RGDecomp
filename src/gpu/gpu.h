@@ -112,6 +112,10 @@ typedef struct gpu_config {
                        art's emissive surfaces (lamps, screens, crystals, glow sprites: census/emissive.tsv)
                        light the ray-traced receivers, 2 + the debug overlay (tagged texels magenta).  Only
                        with ray tracing on.  Drawing only.  $RG_EMI=0|1|2 overrides it. */
+    int rt_gi;       /* graphics.rt_gi (docs/RAYTRACING.md "RT10"): 0 off (default, Original), 1 one-bounce
+                       diffuse light (colour bleed / fill) on the ray-traced receivers, 2 the added light
+                       alone (debug overlay).  Only with ray tracing on.  Drawing only.  $RG_RT_GI=0|1|2[,..]
+                       overrides it. */
 } gpu_config;
 
 typedef struct gpu_stats {
@@ -340,6 +344,14 @@ void gpu_set_im_xfree(gpu_renderer *r, int on);
 /* (nr_sfx.c, screen effects "enhanced") the next immediate draws that read a live target read it with
  * a box filter over each pixel's footprint at the internal resolution (nr_draw.hlsl PF_BOX) */
 void gpu_set_im_box(gpu_renderer *r, int on);
+/* (ptbugs3, nr_sfx.c NR_SFX_FOCUSLP) the next immediate draw is the event focus blur's composite over
+ * the frame: at an internal scale > 1 the frame under it is first softened to the PS2's resolution
+ * where the pass marked it (frame alpha > 0): a box of k native pixels (k = on / 100) */
+void gpu_set_im_focus(gpu_renderer *r, int on);
+uint64_t gpu_focus_lp_count(void);   /* the pre-filter draws so far */
+/* (ptbugs3) the focus composite's texels per pixel (GS units): its read of the blurred buffer gets
+ * the PS2's softness at an internal scale > 1 (nr_dev.cpp focus_blur_read) */
+void gpu_set_im_focus_ratio(gpu_renderer *r, float ratio);
 /* (nr_sfx.c, screen effects "enhanced" at the internal resolution; docs/NATIVE-RENDER.md "Screen
  * effects") mode 1: the next immediate draws belong to an effect chain whose reduced work buffers
  * get a twin target at the frame's internal resolution: a draw into a work buffer (narrower than
@@ -347,7 +359,8 @@ void gpu_set_im_box(gpu_renderer *r, int on);
  * (work buffer pixel -> frame pixel), reading the twins of the work buffers it reads; a draw into
  * the frame that reads a work buffer reads its twin instead (when the twin was drawn in EE frame
  * `frame`).  box > 0: the twin draws' reads of a target box-filter a footprint `box` work pixels
- * wide (the work buffer's own blur at the twin's resolution: depth of field).  mode 0: off.  The
+ * wide (the work buffer's own blur at the twin's resolution: depth of field).  mode 0: off; 1: bloom
+ * (twins up to $RG_NR_SFX_HIRES_CAP, 3x); 2: the soft shadow (up to $RG_NR_SFX_SHADOW_CAP, 2x; p6left).  The
  * twins are the device's own targets: nothing in local memory changes. */
 void gpu_set_im_hires(gpu_renderer *r, int mode, float sx, float sy, float box, uint32_t frame);
 /* x thickness factor (0 < xs <= 1, default 1) of the immediate lines being submitted: the
@@ -373,6 +386,13 @@ void gpu_nr_prims_end(gpu_renderer *r);
  * shadows (shadow volumes) are then not drawn -- draw only, every register write kept; 0 otherwise
  * and without ray tracing.  $RG_RT_BLOB=1 keeps them. */
 int gpu_nr_rt_chars_shadow(gpu_renderer *r);
+/* (rtnext, docs/RAYTRACING.md "RT12") the characters' current pose in a game frame's TLAS: at the first native draw of a
+ * game frame (nr_scene.c gs_marker) every skinned record of that frame (built and filled before its chain runs) is handed
+ * here, posed on the CPU, and the frame's TLAS takes those poses instead of the last frame's moved on (rt4 / rt7).
+ * gpu_nr_rt_prepose_on: 1 when wanted (ray tracing on, $RG_RT_PREPOSE=1; default off) */
+struct gpu_nr_draw;
+int gpu_nr_rt_prepose_on(gpu_renderer *r);
+void gpu_nr_rt_prepose(gpu_renderer *r, const struct gpu_nr_draw *d);
 /* (rt4) "" or a backend fallback the player should see once (e.g. "Vulkan backend not built into
  * this exe; using Direct3D 11"): the runtime puts it into the settings overlay's status line */
 const char *gpu_nr_backend_notice(void);
@@ -427,6 +447,14 @@ typedef struct gpu_enhance {
      * pack's textures drawn instead of the decoded ones.  0 = Original.  tex_dump 1 skips movie
      * frames (as PCSX2 does by default), 2 dumps them too (graphics.texture_dump_movies) */
     int tex_dump, tex_replace;
+    /* graphics.shadow_res (p6left, docs/NATIVE-RENDER.md "Screen effects"): 1 = the soft plane
+     * shadows' 192x192 blur buffer drawn at the internal resolution (nr_sfx.c class shadow, twins);
+     * 0 = Original */
+    int shadow_res;
+    /* graphics.rt_char_shadows (rtnext, docs/RAYTRACING.md "RT12"): the game's own character shadows (the plane
+     * shadows' volumes) with ray tracing on: 0 replaced where the ray-traced character shadows show (rt4; Original:
+     * nothing without ray tracing), 1 kept, 2 dropped whenever ray tracing runs (nr_dev.cpp gpu_nr_rt_chars_shadow) */
+    int rt_char_shadows;
 } gpu_enhance;
 
 void gpu_enhance_default(gpu_enhance *e);   /* Original: all zero */

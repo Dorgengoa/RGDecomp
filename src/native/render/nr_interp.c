@@ -13,6 +13,7 @@
 #include "nr_im.h"
 #include "nr_mesh.h"
 #include "nr_vu1.h"
+#include "nr_trig.h"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN 1
@@ -370,7 +371,7 @@ static float view_turn_deg(const nr_qw *ca, const nr_qw *cb)
     if (!isfinite(tr)) return 180.0f;
     if (tr > 1.0f) tr = 1.0f;
     if (tr < -1.0f) tr = -1.0f;
-    return acosf(tr) * (180.0f / 3.14159265f);
+    return NR_ACOSF(tr) * (180.0f / 3.14159265f);
 }
 
 static void match_logs(ip_log *L, ip_log *P)
@@ -594,9 +595,9 @@ static void slerp(const float a[4], const float b0[4], float t, float o[4])
         wa = 1 - t;
         wb = t;
     } else {
-        float th = acosf(d), s = sinf(th);
-        wa = sinf((1 - t) * th) / s;
-        wb = sinf(t * th) / s;
+        float th = NR_ACOSF(d), s = NR_SINF(th);
+        wa = NR_SINF((1 - t) * th) / s;
+        wb = NR_SINF(t * th) / s;
     }
     n = 0;
     for (k = 0; k < 4; k++) { o[k] = wa * a[k] + wb * b[k]; n += o[k] * o[k]; }

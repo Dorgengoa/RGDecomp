@@ -33,7 +33,18 @@
  * Allocator: boundary-tagged chunks (16-byte header, 16-byte aligned
  * payloads), 152 segregated free lists, first fit, coalescing on free, a
  * wilderness top that commits 1 MB at a time.  One lock (a host static).
+ *
+ * Linux (i686 / x86-64 ELF, docs/LINUX.md "Save states on Linux"): the
+ * reservations are PROT_NONE mappings (MAP_FIXED_NOREPLACE, each result
+ * checked), committed with mprotect; malloc & co. defined in the executable
+ * interpose glibc's for every caller (the shared libraries included), and
+ * host allocations go on to glibc's own __libc_malloc & co.  The fixed
+ * addresses sit above 1 GB: an x86-64 kernel starts brk up to 1 GB above a
+ * non-PIE image, at a random place each run.
  */
+#if defined(__linux__) && !defined(_GNU_SOURCE)
+#define _GNU_SOURCE 1
+#endif
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -47,6 +58,10 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#elif defined(__linux__)
+#include <malloc.h>
+#include <pthread.h>
+#include <sys/mman.h>
 #endif
 
 #if defined(_WIN32) && (defined(__i386__) || defined(_M_IX86) || defined(__x86_64__))
@@ -56,6 +71,25 @@ void *__cdecl _malloc_base(size_t);
 void *__cdecl _calloc_base(size_t, size_t);
 void *__cdecl _realloc_base(void *, size_t);
 void __cdecl _free_base(void *);
+#elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
+#define SS_HEAP_SUPPORTED 1
+#define SS_LINUX 1
+/* glibc's own allocator entry points (exported for exactly this: a malloc
+ * that interposes and forwards) */
+extern void *__libc_malloc(size_t);
+extern void *__libc_calloc(size_t, size_t);
+extern void *__libc_realloc(void *, size_t);
+extern void __libc_free(void *);
+#define _malloc_base __libc_malloc
+#define _calloc_base __libc_calloc
+#define _realloc_base __libc_realloc
+#define _free_base __libc_free
+#ifndef __cdecl
+#define __cdecl
+#endif
+#ifndef MAP_FIXED_NOREPLACE
+#define MAP_FIXED_NOREPLACE 0x100000
+#endif
 #else
 #define SS_HEAP_SUPPORTED 0
 #endif
@@ -79,9 +113,17 @@ void __cdecl _free_base(void *);
  * audio) out of them.  With RG_HEAP_DMA_PLACEMENT the game heap must end below
  * 0x10000000 (the emulated DMA path's 28-bit masks) and lie above the PS2 RAM range
  * (rg_runtime.h). */
+#if defined(SS_LINUX)
+/* Linux: above brk's random start (<= image end + 1 GB on x86-64, + 32 MB on i386) and below
+ * 2 GB (game pointers are 4 bytes; DMA tag addresses are 31 bits) */
+#define SS_RAM_AT   0x50000000u
+#define SS_ARENA_AT 0x52000000u
+#define SS_HEAP_AT  0x58000000u
+#else
 #define SS_RAM_AT   0x0A000000u
 #define SS_ARENA_AT 0x0C100000u
 #define SS_HEAP_AT  0x20000000u
+#endif
 
 #define CH_HDR    16u
 #define CH_MIN    32u
@@ -121,6 +163,8 @@ static struct {
     int lock_init;
 #ifdef _WIN32
     CRITICAL_SECTION lock;
+#elif defined(SS_LINUX)
+    pthread_mutex_t lock;
 #endif
     ss_region_info reg;
     hstate *hs;
@@ -168,7 +212,34 @@ static void fp_mix(uint32_t op, uint32_t a, uint32_t b)
 }
 
 /* ------------------------------------------------------------ region */
-#if SS_HEAP_SUPPORTED
+#if defined(SS_LINUX)
+/* [a, a + size) as an inaccessible reservation, exactly there or not at all */
+static uintptr_t reserve_at(uintptr_t a, size_t size)
+{
+    void *p = mmap((void *)a, size, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE | MAP_FIXED_NOREPLACE, -1, 0);
+    if (p == MAP_FAILED)
+        return 0;
+    if ((uintptr_t)p == a)
+        return a;
+    munmap(p, size);   /* an old kernel took the flag as a hint */
+    return 0;
+}
+static uintptr_t reserve_lowest(uintptr_t from, size_t size, uintptr_t below)
+{
+    for (uintptr_t a = (from + 0xFFFFu) & ~(uintptr_t)0xFFFFu; a + size <= below; a += 0x00100000u)
+        if (reserve_at(a, size))
+            return a;
+    return 0;
+}
+static int os_commit(uintptr_t a, size_t n)
+{
+    return mprotect((void *)a, n, PROT_READ | PROT_WRITE) == 0;
+}
+#elif SS_HEAP_SUPPORTED
+static int os_commit(uintptr_t a, size_t n)
+{
+    return VirtualAlloc((void *)a, n, MEM_COMMIT, PAGE_READWRITE) != NULL;
+}
 static uintptr_t reserve_lowest(uintptr_t from, size_t size, uintptr_t below)
 {
     uintptr_t a = from;
@@ -188,7 +259,7 @@ static uintptr_t reserve_lowest(uintptr_t from, size_t size, uintptr_t below)
 }
 #endif
 
-#if SS_HEAP_SUPPORTED
+#if SS_HEAP_SUPPORTED && !defined(SS_LINUX)
 static uintptr_t reserve_at(uintptr_t a, size_t size)
 {
     void *p = VirtualAlloc((void *)a, size, MEM_RESERVE, PAGE_READWRITE);
@@ -205,6 +276,9 @@ static void lock(void)
 #ifdef _WIN32
     if (H.lock_init)
         EnterCriticalSection(&H.lock);
+#elif defined(SS_LINUX)
+    if (H.lock_init)
+        pthread_mutex_lock(&H.lock);
 #endif
 }
 static void unlock(void)
@@ -212,6 +286,9 @@ static void unlock(void)
 #ifdef _WIN32
     if (H.lock_init)
         LeaveCriticalSection(&H.lock);
+#elif defined(SS_LINUX)
+    if (H.lock_init)
+        pthread_mutex_unlock(&H.lock);
 #endif
 }
 void ss_heap_lock(void) { lock(); }
@@ -254,7 +331,7 @@ int rg_ss_init(void)
         return -1;
     }
     H.reg.heap_size = SS_HEAP_SIZE;
-    if (!VirtualAlloc((void *)H.reg.heap, SS_COMMIT_STEP, MEM_COMMIT, PAGE_READWRITE)) {
+    if (!os_commit(H.reg.heap, SS_COMMIT_STEP)) {
         snprintf(H.err, sizeof H.err, "cannot commit the state heap");
         return -1;
     }
@@ -269,14 +346,21 @@ int rg_ss_init(void)
     hs->limit = H.reg.heap + SS_HEAP_SIZE;
     hs->last_inuse = 1;
     H.hs = hs;
+#ifdef SS_LINUX
+    pthread_mutex_init(&H.lock, NULL);
+    /* RG_SS_AUDIT walks glibc's main arena only (ss_hooks.c): keep host threads in it */
+    if (getenv("RG_SS_AUDIT"))
+        mallopt(M_ARENA_MAX, 1);
+#else
     InitializeCriticalSection(&H.lock);
+#endif
     H.lock_init = 1;
     H.fp = 0x5354415445ull;
     H.fp_on = 1;
     H.on = 1;
     return 0;
 #else
-    snprintf(H.err, sizeof H.err, "save states need i686 Windows for now");
+    snprintf(H.err, sizeof H.err, "save states need Windows or Linux on x86");
     return -1;
 #endif
 }
@@ -291,7 +375,7 @@ void *rg_ss_ram_alloc(size_t size)
 #if SS_HEAP_SUPPORTED
     if (!H.on || size > H.reg.ram_size)
         return NULL;
-    return VirtualAlloc((void *)H.reg.ram, size, MEM_COMMIT, PAGE_READWRITE);
+    return os_commit(H.reg.ram, size) ? (void *)H.reg.ram : NULL;
 #else
     (void)size;
     return NULL;
@@ -336,7 +420,7 @@ static int commit_to(uintptr_t end)
     uintptr_t want = (end + SS_COMMIT_STEP - 1) & ~(uintptr_t)(SS_COMMIT_STEP - 1);
     if (want > hs->limit)
         want = hs->limit;
-    if (!VirtualAlloc((void *)H.committed, want - H.committed, MEM_COMMIT, PAGE_READWRITE))
+    if (!os_commit(H.committed, want - H.committed))
         return -1;
     H.committed = want;
     if (want > hs->commit)
@@ -560,7 +644,8 @@ void ss_heap_walk(void (*fn)(void *user, uintptr_t p, uint32_t n, uintptr_t call
 }
 
 /* ------------------------------------------------------------ interposition */
-#if SS_HEAP_SUPPORTED
+/* RG_ASAN (check build, cmake/game.cmake): the sanitizer runtime owns malloc & co. */
+#if SS_HEAP_SUPPORTED && !defined(RG_ASAN)
 
 #if defined(_WIN64)
 /* x64 host-heap census (docs/X64-PLAN.md 0.8): RG_X64_HEAPCENSUS=FILE records every
@@ -785,7 +870,9 @@ static char *dup_for(uintptr_t caller, const char *s)
         memcpy(d, s, n);
     return d;
 }
+#ifdef _WIN32
 char *__cdecl _strdup(const char *s) { return dup_for((uintptr_t)__builtin_return_address(0), s); }
+#endif
 char *__cdecl strdup(const char *s) { return dup_for((uintptr_t)__builtin_return_address(0), s); }
 
 #endif /* SS_HEAP_SUPPORTED */

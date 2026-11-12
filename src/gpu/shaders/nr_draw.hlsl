@@ -25,7 +25,8 @@ cbuffer NrRT : register(b2)
     float4 RTE;         // xyz camera position (world)
     float4 RTM;         // xy (as uint) the material table's device address (RT2b), z rays per pixel, w the light's radius (tangent)
     float4 RTS;         // x the enclosure counters' slot (-1 none), y 1: alpha-tested candidates never hit (RG_RT_ALPHA=3, a control), zw foliage fade near / far
-    float4 RTX;         // x the opaque casters' instance mask, y the cut-out casters' (RT2c: map 1 / 2, characters 4 / 8), z a reflection ray's (rt5)
+    float4 RTX;         // x the opaque casters' instance mask, y the cut-out casters' (RT2c: map 1 / 2, characters 4 / 8), z a reflection ray's (rt5),
+                        // w (as uint, rtalpha) the material table's rows: their bounds follow the rows (nr_rt_row_ok)
     float4 RTH;         // the penumbra filter (RT2f): x 1 on, y internal pixels per GS pixel, z the present's number (mod 1024), w bit 0 half rate ($RG_RT_HALF), bits 1-3 measurement ($RG_RT_FEXP)
     float4 RTQ;         // xyz the previous present's camera position, w 1: its camera is known
     float4 RTV[4];      // the previous present's world -> GS screen (homogeneous) columns
@@ -48,6 +49,22 @@ cbuffer NrRT : register(b2)
     float4 RTO;         // (rt9) x a moving receiver's history clamp margin (RTMV.w bit 4), y its shadow rays per pixel
     float4 RTJ;         // (rt9) emissive cost: xy (as uint) the draw's light mask (bit i: light i reaches its world box),
                         // z bit 0 the 2 x 2 quad shares the light loop and the shadow rays (nr_rt_emi), w 1 no mask (every light)
+    float4 RTGI;        // (rtgi) one-bounce GI (nr_rt_gi): x mode (0 off, 1 on, 2 the added light alone), y strength, z ray length,
+                        // w bits (1 one ray per 2 x 2 quad, 2 the sun's shadow at the hit, 4 emissive lights at the hit, 8 cut-out casters hit (candidate loop),
+                        // 32 cut-out casters hit, traced as solid + one alpha test at the closest hit,
+                        // 16 half rate: settled pixels trace in every other 8 x 8 tile per present)
+    float4 RTGJ;        // (rtgi) x the dark-pixel weight's K (K^2 / (K^2 + Y^2); 0 none), y the history's spatial taps' radius (internal pixels, 0 off),
+                        // z the history's longest length (frames), w rays per pixel (measurement: a converged reference, $RG_RT_GI_RAYS)
+    float4 RTGK;        // (rtgi2) the cut-out cards in bounce rays ($RG_RT_GI_CUT): x bits (1 split: the opaque casters' closest hit first, then the
+                        // cut-out cards' candidate loop only up to it; 2 the first passing cut-out candidate ends the loop; 4 solid mode (RTGI.w 32):
+                        // a texel still see-through after the last peeled layer is a hit, else a miss; 8 / 16 the ray direction's azimuth / both
+                        // values from per-pixel white noise, nr_rt_gi), y solid mode's layers (a see-through texel
+                        // traces on behind it), z the candidate loop's alpha-test budget (0 none; past it the closest passing hit so far stands),
+                        // w split mode: the cut-out cards' reach along the ray (0 the ray's length)
+    float4 RTGS;        // (rtgi2) the sky on a bounce miss / the far fade ($RG_RT_GI_SKY): rgb light units + w x the GS fog colour (open places only)
+    float4 RTGC;        // (rtgi2) characters ($RG_RT_GI_CHR): x bits (1 they block bounce rays, 2 their hit gives its colour (else 0),
+                        // 4 a moving receiver's bounce history clamped to its quad's current samples +- y, 8 no spatial history taps on
+                        // moving receivers), y the clamp margin (light units), z bounce rays per moving-receiver pixel
 };
 cbuffer NrRTPrev : register(b3)   // (rt9) the previous present's bones of a skinned character receiver (RTMV.y)
 {
@@ -62,6 +79,11 @@ RWByteAddressBuffer g_rtstat : register(u6);
 // the eye distance (half float) << 16; written for this present (u7), read from the previous one (u8)
 RWTexture2D<uint> g_rth : register(u7);
 RWTexture2D<uint> g_rthp : register(u8);
+// (rtnext) half-resolution GI (RTGI.w bit 6, nr_rt_gi / CS_rtgi): per 2 x 2 pixel cell the receivers' request (4 words: the
+// world position, the eye distance (half) << 16 | the normal octahedral 8:8; 0 none) and the deferred pass's sample of it (3 words: RGB 11:11:10, the eye
+// distance (half) << 16 | 1 << 8 | the sky's share x 255, the request present (10 bits) | the normal octahedral 11:11 << 10)
+RWTexture2D<uint> g_gireq : register(u9);
+RWTexture2D<uint> g_gismp : register(u10);
 #endif
 
 Texture2D<float4> g_tex : register(t0);
@@ -96,7 +118,14 @@ RasterizerOrderedTexture2D<float> g_zrov : register(u2);
 // Row 1 (immediate draws only: rows 0-10 are mesh constants):
 //   x flags: CR_*; bits 8-9 AFAIL      y FBMSK      z ALPHA A|B<<2|C<<4|D<<6, FIX << 8, FPSM << 16
 // Row 2: xy DIMX (rows 0-1, rows 2-3), z the internal scale
-#ifdef NR_CROV_PLAIN
+#if defined(NR_CLR)
+// (gfxperf9, docs/NATIVE-RENDER.md "GPU throughput 8") Vulkan $RG_VK_CLR: the colour target stays
+// the rendering instance's attachment and is read here as an input attachment
+// (VK_KHR_dynamic_rendering_local_read: earlier draws' output after a by-region barrier); the result
+// leaves through SV_Target0 with blending off.  The draw's primitives cover disjoint pixels
+// (nr_vulkan.cpp clr_*), so no ordering inside the draw is needed for the colour.
+[[vk::input_attachment_index(0)]] [[vk::binding(30, 0)]] SubpassInput<float4> g_cin;
+#elif defined(NR_CROV_PLAIN)
 RWTexture2D<uint> g_crov : register(u3);
 #else
 RasterizerOrderedTexture2D<uint> g_crov : register(u3);
@@ -160,8 +189,12 @@ uint nr_to_stored(uint psm, uint4 c)
 #define PF_SHARPX 0x8000u // squeezed point-sampled 2D (gpu_set_im_xfree): sharp-bilinear in X, nearest in Y
 #define PF_SHARPY 0x10000u // with PF_SHARPX: scaled in Y too (accessibility.ui_scale): sharp-bilinear in Y as well
 #define PF_NOUV16 0x2000000u // CONTROL ONLY ($RG_NR_UV16=0): PF_SNAP without gs_uv16
+#define PF_SHUF16 0x8000000u // (p6left) a shadow twin read after its CT16 channel shuffle: alpha = bits 2-7 of green
+                             // + bits 0-1 of alpha (nr_dev.cpp hires_draw, graphics.shadow_res)
 #define PF_BOX 0x4000000u   // a live target minified (screen-effect "enhanced", nr_sfx.c): box filter over the
                             // pixel's whole footprint in internal-resolution texels (no snap, no native taps)
+#define PF_FOCLP 0x10000000u // (ptbugs3) with PF_BOX: the focus blur's pre-filter (nr_dev.cpp focus_prefilter): the
+                             // snapshot of the frame at this pixel; where its alpha > 0, a box of R[22].z pixels
 #define PS_ATEST asuint(R[23].y)   // bits 0-2 ATST, 8-15 AREF, 16-17 TFX, 24-31 FIX
 #define PS_FOGCOL asuint(R[23].z)
 
@@ -265,7 +298,11 @@ VSOut VS_nr(VSIn v)
     uint var = VARIANT;
     // decode (0x4392C0 / 0x4393B0): itof15 * scale
     float3 p = (float3)v.pos.xyz * (1.0 / 32768.0) * R[4].xyz;
-    float3 n = (float3)v.nrm.xyz * (1.0 / 32768.0) * R[5].xyz;
+    // (missnrm3) 16 bits per lane: the int8 normal is the high byte, nrm.w / pos.w hold low bytes
+    // (x | y, z); zero for every decoded mesh (nr_mesh.c), so n = nrm / 32768 * scale exactly as
+    // before; RG_NR_MISSNRM=3 meshes carry leftover normals there (nr_scene.c lnrm_marker)
+    int3 nl = int3(v.nrm.w & 255, v.pos.w & 255, (v.pos.w >> 8) & 255);
+    float3 n = (float3)(v.nrm.xyz * 256 + nl) * (1.0 / 8388608.0) * R[5].xyz;
 #ifdef NR_RT
     const float3 p0 = p;   // (rt9: posed again with the previous bones below)
 #endif
@@ -532,14 +569,62 @@ float4 nr_expand(float4 t, uint fl)
 //   u7 ATST | AREF << 8 | TFX << 16 | VCOL << 19 | clamp U << 20 | clamp V << 21 | bilinear << 23,
 //   u8-11 UV scale xy, scroll zw (float), u12 material alpha, u13 its clamp (float), u14 mesh id
 uint64_t nr_rt_a64(uint lo, uint hi) { return ((uint64_t)hi << 32) | (uint64_t)lo; }
+// (rtalpha, docs/RAYTRACING.md "RT11") the always-on lookup guard: a hit's instance custom index must name a
+// row of this table (RTX.w rows) and its primitive index a triangle of the row's mesh, the triangle's
+// indices vertices of it (the bounds: 16 bytes a row after the rows, nr_vulkan.cpp rt_mat: triangles,
+// vertices, texels).  A lookup that fails reads nothing (the candidate does not pass / the hit has no
+// colour) and is counted after the enclosure slots of g_rtstat (kind 0 row, 1 triangle, 2 vertex;
+// the last bad lookup's row, triangle, its bound), the exit line `rg rt bounds:`
+#define NR_RT_BAD_AT 512u
+void nr_rt_bad(uint kind, uint inst, uint prim, uint lim)
+{
+    if (RTS.x >= 0.0) {
+        uint o;
+        g_rtstat.InterlockedAdd(NR_RT_BAD_AT + kind * 4u, 1u, o);
+        g_rtstat.InterlockedExchange(NR_RT_BAD_AT + 12u, inst, o);
+        g_rtstat.InterlockedExchange(NR_RT_BAD_AT + 16u, prim, o);
+        g_rtstat.InterlockedExchange(NR_RT_BAD_AT + 20u, lim, o);
+        g_rtstat.InterlockedExchange(NR_RT_BAD_AT + 24u, asuint(RTX.w), o);
+    }
+}
+bool nr_rt_row_ok(uint inst)
+{
+    if ((asuint(RTX.w) & 0x40000000u) != 0u && RTS.x >= 0.0) {   // (bit 30: every lookup counted, $RG_RT_GUARD=3, a measurement)
+        uint o;
+        g_rtstat.InterlockedAdd(NR_RT_BAD_AT + 28u, 1u, o);
+    }
+    if ((inst < (asuint(RTX.w) & 0x3FFFFFFFu)) || (asuint(RTX.w) & 0x80000000u) != 0u) return true;   // (bit 31: unchecked, $RG_RT_GUARD=0, a control)
+    nr_rt_bad(0u, inst, 0u, asuint(RTX.w));
+    return false;
+}
+// the row's triangle prim: false (counted) unless it and its vertices are the mesh's; ix its indices
+bool nr_rt_tri(uint inst, uint prim, uint64_t ib, out uint3 ix)
+{
+    ix = uint3(0u, 0u, 0u);
+    if (!nr_rt_row_ok(inst)) return false;
+    if ((asuint(RTX.w) & 0x80000000u) != 0u) {
+        const uint64_t iq = ib + (uint64_t)prim * 12u;
+        ix = uint3(vk::RawBufferLoad<uint>(iq, 4), vk::RawBufferLoad<uint>(iq + 4u, 4), vk::RawBufferLoad<uint>(iq + 8u, 4));
+        return true;
+    }
+    const uint2 bd = vk::RawBufferLoad<uint2>(nr_rt_a64(asuint(RTM.x), asuint(RTM.y)) + (uint64_t)(asuint(RTX.w) & 0x3FFFFFFFu) * 64u + (uint64_t)inst * 16u, 8);
+    if (prim >= bd.x) { nr_rt_bad(1u, inst, prim, bd.x); return false; }
+    const uint64_t ip = ib + (uint64_t)prim * 12u;
+    ix = uint3(vk::RawBufferLoad<uint>(ip, 4), vk::RawBufferLoad<uint>(ip + 4u, 4), vk::RawBufferLoad<uint>(ip + 8u, 4));
+    if (any(ix >= bd.y)) { nr_rt_bad(2u, inst, max(ix.x, max(ix.y, ix.z)), bd.y); ix = uint3(0u, 0u, 0u); return false; }
+    return true;
+}
 float nr_rt_texa(uint64_t tex, int2 q, int W, int H, uint fl)
 {
     q.x = (fl & 0x100000u) ? clamp(q.x, 0, W - 1) : ((q.x % W) + W) % W;
     q.y = (fl & 0x200000u) ? clamp(q.y, 0, H - 1) : ((q.y % H) + H) % H;
     return (float)(vk::RawBufferLoad<uint>(tex + (uint64_t)(q.y * W + q.x) * 4u, 4) >> 24);
 }
-bool nr_rt_alpha_pass(uint inst, uint prim, float2 bc, out uint flo)
+// (rtnext) _x: the row already checked (nr_rt_row_ok); the triangle's indices checked once and handed back (ixk: ix
+// holds them), so the GI hit's colour and normal reuse them instead of checking the bounds again
+bool nr_rt_alpha_pass_x(uint inst, uint prim, float2 bc, out uint flo, inout uint3 ix, inout bool ixk)
 {
+    flo = 0u;
     uint64_t m = nr_rt_a64(asuint(RTM.x), asuint(RTM.y)) + (uint64_t)inst * 64u;
     uint4 m0 = vk::RawBufferLoad<uint4>(m, 16), m1 = vk::RawBufferLoad<uint4>(m + 16u, 16);
     uint4 m2 = vk::RawBufferLoad<uint4>(m + 32u, 16), m3 = vk::RawBufferLoad<uint4>(m + 48u, 16);
@@ -549,8 +634,10 @@ bool nr_rt_alpha_pass(uint inst, uint prim, float2 bc, out uint flo)
     uint64_t vb = nr_rt_a64(m0.x, m0.y), ib = nr_rt_a64(m0.z, m0.w);
     uint fl = m1.w;
     int W = (int)(m1.z & 0xFFFFu), H = (int)(m1.z >> 16);
-    uint64_t ip = ib + (uint64_t)prim * 12u;
-    uint3 ix = uint3(vk::RawBufferLoad<uint>(ip, 4), vk::RawBufferLoad<uint>(ip + 4u, 4), vk::RawBufferLoad<uint>(ip + 8u, 4));
+    if (!ixk) {
+        if (!nr_rt_tri(inst, prim, ib, ix)) return false;
+        ixk = true;
+    }
     float3 w = float3(1.0 - bc.x - bc.y, bc.x, bc.y);
     uint u0 = vk::RawBufferLoad<uint>(vb + (uint64_t)ix.x * 28u + 12u, 4);
     uint u1 = vk::RawBufferLoad<uint>(vb + (uint64_t)ix.y * 28u + 12u, 4);
@@ -587,6 +674,14 @@ bool nr_rt_alpha_pass(uint inst, uint prim, float2 bc, out uint flo)
     float aref = (float)((fl >> 8) & 255u);
     return atst == 2u ? A < aref : atst == 3u ? A <= aref : atst == 4u ? A == aref : atst == 5u ? A >= aref
          : atst == 6u ? A > aref : atst == 7u ? A != aref : atst == 1u;
+}
+bool nr_rt_alpha_pass(uint inst, uint prim, float2 bc, out uint flo)
+{
+    flo = 0u;
+    if (!nr_rt_row_ok(inst)) return false;
+    uint3 ix = uint3(0u, 0u, 0u);
+    bool ixk = false;
+    return nr_rt_alpha_pass_x(inst, prim, bc, flo, ix, ixk);
 }
 // one shadow ray: true = blocked; wgt = how much (1, or a foliage hit's fade).  Two traces: the
 // opaque casters (instance mask 1) over the whole length, ending at the first hit; then, only when
@@ -647,17 +742,24 @@ float4 nr_rt_texel(uint64_t tex, int2 q, int W, int H, uint fl)
     uint t = vk::RawBufferLoad<uint>(tex + (uint64_t)(q.y * W + q.x) * 4u, 4);
     return float4((float)(t & 255u), (float)((t >> 8) & 255u), (float)((t >> 16) & 255u), (float)(t >> 24));
 }
-float3 nr_rt_hitcol(uint inst, uint prim, float2 bc, out bool ok)
+// (rtnext) _x: the row already checked; ix / ixk as nr_rt_alpha_pass_x (the triangle checked at most once per hit), vb the
+// row's vertex buffer (the GI hit's normal reads its positions)
+float3 nr_rt_hitcol_x(uint inst, uint prim, float2 bc, out bool ok, inout uint3 ix, inout bool ixk, out uint64_t vb)
 {
+    ok = false;
+    vb = 0u;
     uint64_t m = nr_rt_a64(asuint(RTM.x), asuint(RTM.y)) + (uint64_t)inst * 64u;
     uint4 m0 = vk::RawBufferLoad<uint4>(m, 16), m1 = vk::RawBufferLoad<uint4>(m + 16u, 16);
     uint4 m2 = vk::RawBufferLoad<uint4>(m + 32u, 16), m3 = vk::RawBufferLoad<uint4>(m + 48u, 16);
     uint fl = m1.w;
     ok = (fl & 0x2000000u) != 0u;
     if (!ok) return float3(0.0, 0.0, 0.0);
-    uint64_t vb = nr_rt_a64(m0.x, m0.y), ib = nr_rt_a64(m0.z, m0.w), tex = nr_rt_a64(m1.x, m1.y);
-    uint64_t ip = ib + (uint64_t)prim * 12u;
-    uint3 ix = uint3(vk::RawBufferLoad<uint>(ip, 4), vk::RawBufferLoad<uint>(ip + 4u, 4), vk::RawBufferLoad<uint>(ip + 8u, 4));
+    vb = nr_rt_a64(m0.x, m0.y);
+    const uint64_t ib = nr_rt_a64(m0.z, m0.w), tex = nr_rt_a64(m1.x, m1.y);
+    if (!ixk) {
+        if (!nr_rt_tri(inst, prim, ib, ix)) { ok = false; return float3(0.0, 0.0, 0.0); }
+        ixk = true;
+    }
     float3 w = float3(1.0 - bc.x - bc.y, bc.x, bc.y);
     float4 c = float4((float)(m3.w & 255u), (float)((m3.w >> 8) & 255u), (float)((m3.w >> 16) & 255u), (float)(m3.w >> 24));
     if (fl & 0x80000u) {
@@ -683,6 +785,15 @@ float3 nr_rt_hitcol(uint inst, uint prim, float2 bc, out bool ok)
         c.rgb = tfx == 1u ? t.rgb : min(floor(c.rgb * t.rgb / 128.0) + (tfx >= 2u ? c.a : 0.0), 255.0);
     }
     return min(c.rgb, 255.0);
+}
+float3 nr_rt_hitcol(uint inst, uint prim, float2 bc, out bool ok)
+{
+    ok = false;
+    if (!nr_rt_row_ok(inst)) return float3(0.0, 0.0, 0.0);
+    uint3 ix = uint3(0u, 0u, 0u);
+    bool ixk = false;
+    uint64_t vb;
+    return nr_rt_hitcol_x(inst, prim, bc, ok, ix, ixk, vb);
 }
 // a reflection ray from the pixel (mirror: the geometric normal turned to the camera, or (rt6, RTF.z)
 // the interpolated vertex normal `sn` (curved metal reflects smoothly, not in flat facets), turned
@@ -1349,6 +1460,473 @@ float3 nr_rt_emi(float3 wp, float3 gn, float2 px)
 }
 #endif
 
+#ifdef NR_RT
+// (rtgi) RT10, one-bounce diffuse GI (docs/RAYTRACING.md "RT10"; our own, CC0).  One cosine-weighted ray
+// from the receiver (2 x 2 quad rate from RTGI.w bit 0: the tracer rotates per present) against the map's
+// casters (opaque, and the cut-out cards through the alpha candidate loop with bit 3); the hit's colour is
+// the art's own (material x vertex colour x texel: nr_rt_hitcol -- its baked light), darkened by the
+// receivers' shadow multiplier where the sun's ray from the hit is blocked (bit 1; faces turned away from
+// the sun keep the baked shade) and lit by the emissive lights at the hit (bit 2, unshadowed); a miss and
+// the far end of the ray (fade from 60 % of RTGI.z) add nothing (the sky is in the art already).  The
+// samples are accumulated in the penumbra filter's history (words 2-3 of a pixel: RGB / 384 as 11:11:10,
+// dithered; length << 10 | the eye distance), reprojected like the shadow's (moving characters from their
+// previous pose, rt9; a character without motion vectors takes no bounce), the history read as the 2 x 2
+// bilinear taps plus four spatial taps at RTGJ.y pixels (rotated per present: a recursive spatial filter
+// over the frames).  Returns the bounce's light (0..255 units, the art's full light = the texel's colour)
+float3 nr_rt_gi_unpack(uint w)
+{
+    return float3((float)(w & 2047u) * (1.0 / 2047.0), (float)((w >> 11) & 2047u) * (1.0 / 2047.0), (float)(w >> 22) * (1.0 / 1023.0)) * 384.0;
+}
+uint nr_rt_gi_pack(float3 c, float3 r)
+{
+    const float3 q = saturate(c * (1.0 / 384.0)) * float3(2047.0, 2047.0, 1023.0) + r;   // (r: dither in [0, 1): an unbiased mean)
+    const uint3 u = (uint3)clamp(floor(q), float3(0.0, 0.0, 0.0), float3(2047.0, 2047.0, 1023.0));
+    return u.x | (u.y << 11) | (u.z << 22);
+}
+void nr_rt_gi_tap(int2 q, float wt, float dp, float tol, uint W, uint H, uint st, inout float ws, inout float3 a, inout float al)
+{
+    if (q.x < 0 || q.y < 0 || q.x >= (int)W || q.y >= (int)H) return;
+    const uint w3 = g_rthp[uint2((uint)q.x * st + 3u, (uint)q.y)];
+    if (!(abs(f16tof32(w3 >> 16) - dp) < tol) || (w3 & 0xFC00u) == 0u) return;
+    const uint w2 = g_rthp[uint2((uint)q.x * st + 2u, (uint)q.y)];
+    ws += wt;
+    a += wt * nr_rt_gi_unpack(w2);
+    al += wt * (float)((w3 >> 10) & 63u);
+}
+bool nr_rt_gi_hist(float3 wp0, out float3 m, out float len)
+{
+    m = float3(0.0, 0.0, 0.0);
+    len = 0.0;
+    if (RTH.x <= 0.0 || RTQ.w <= 0.0 || RTMV.z > 0.5 || RTA.z < 3.5) return false;
+    const float3 wp = RT_mv ? RT_wq : wp0;
+    const float4 pc = RTV[0] * wp.x + RTV[1] * wp.y + RTV[2] * wp.z + RTV[3];
+    if (!(pc.w > 0.0)) return false;
+    const float2 pp = (pc.xy / pc.w - R[11].xy) * RTH.y - 0.5;
+    const float dp = length(wp - RTQ.xyz), tol = nr_rt_htol(dp);
+    uint W, H;
+    const uint st = (uint)max(RTA.z, 1.0);
+    g_rthp.GetDimensions(W, H);
+    W /= st;
+    const int2 c = (int2)floor(pp);
+    const float2 f = pp - (float2)c;
+    float ws = 0.0, al = 0.0;
+    float3 a = float3(0.0, 0.0, 0.0);
+    [unroll] for (int j = 0; j <= 1; j++)
+        [unroll] for (int i = 0; i <= 1; i++)
+            nr_rt_gi_tap(c + int2(i, j), (i ? f.x : 1.0 - f.x) * (j ? f.y : 1.0 - f.y) + 1e-3, dp, tol, W, H, st, ws, a, al);
+    if (RTGJ.y > 0.0 && !(RT_mv && ((uint)RTGC.x & 8u) != 0u)) {
+        // four spatial taps on a rotated cross (a quarter of the bilinear group's weight each)
+        const float an = 2.39996323 * fmod(RTH.z, 64.0);
+        const float2 e0 = float2(cos(an), sin(an)) * RTGJ.y;
+        [unroll] for (uint k = 0u; k < 4u; k++) {
+            const float2 e = k == 0u ? e0 : k == 1u ? float2(-e0.y, e0.x) : k == 2u ? -e0 : float2(e0.y, -e0.x);
+            nr_rt_gi_tap((int2)floor(pp + 0.5 + e), 0.25, dp, tol, W, H, st, ws, a, al);
+        }
+    }
+    if (ws < 0.05) return false;
+    m = a / ws;
+    len = al / ws;
+    return true;
+}
+// the bounce ray: rgb the hit's light (0 = a miss), w the sky's share (1 a miss, the far fade of a hit; rtgi2)
+// (rtgi2) foliage levers ($RG_RT_GI_CUT, RTGK): the opaque casters' closest hit first and the cut-out cards' candidate loop
+// only up to it (split), the first passing cut-out ends the loop (early), an alpha-test budget; solid mode (RTGI.w 32) peels
+// RTGK.y layers (a see-through texel traces on behind its hit).  (rtgi2) characters (RTGC.x 1, opaque parts, mask 4) block the
+// ray; their hit gives its colour with RTGC.x 2 (material row bit 27: a posed part, its hit faces the ray)
+float4 nr_rt_gi_ray(float3 o, float3 d)
+{
+    const uint bits = (uint)RTGI.w, cb = (uint)RTGK.x;
+    RayDesc r;
+    r.Origin = o;
+    r.Direction = d;
+    r.TMin = 0.0;
+    r.TMax = RTGI.z;
+    const uint mo = ((uint)RTX.x & 1u) | (((uint)RTGC.x & 1u) ? ((uint)RTX.x & 4u) : 0u);
+    const uint mk = mo | ((bits & 40u) ? ((uint)RTX.y & 2u) : 0u);
+    uint inst = 0u, prim = 0u;
+    float2 bc = float2(0.0, 0.0);
+    float t = 0.0;
+    float3x4 hM = (float3x4)0;
+    bool hit = false;
+    uint3 hix = uint3(0u, 0u, 0u);   // (rtnext) the hit triangle's indices once checked (hixk): one bounds check per hit
+    bool hixk = false;
+    if (bits & 32u) {
+        // (bit 5) the cut-out cards traced as solid: the closest triangle, then one alpha test there -- a see-through
+        // texel ends the ray as a miss (no candidate loop, the foliage's cost; darker where light comes through leaves);
+        // (rtgi2) RTGK.y layers: a see-through texel traces on from just behind its hit
+        const uint np = (uint)clamp(RTGK.y, 1.0, 8.0);
+        [loop] for (uint k = 0u; k < np; k++) {
+            RayQuery<RAY_FLAG_FORCE_OPAQUE> q;
+            q.TraceRayInline(g_tlas, RAY_FLAG_NONE, mk, r);
+            q.Proceed();
+            if (q.CommittedStatus() != COMMITTED_TRIANGLE_HIT) break;
+            inst = q.CommittedInstanceID(); prim = q.CommittedPrimitiveIndex(); bc = q.CommittedTriangleBarycentrics(); t = q.CommittedRayT();
+            hM = q.CommittedObjectToWorld3x4();
+            uint mfl;
+            const uint64_t ma = nr_rt_a64(asuint(RTM.x), asuint(RTM.y)) + (uint64_t)inst * 64u;
+            if (!nr_rt_row_ok(inst)) break;
+            hixk = false;
+            if ((vk::RawBufferLoad<uint>(ma + 28u, 4) & 0x1000000u) == 0u || nr_rt_alpha_pass_x(inst, prim, bc, mfl, hix, hixk)) { hit = true; break; }
+            if (k + 1u == np) { hit = (cb & 4u) != 0u; break; }
+            r.TMin = t * 1.0001 + 0.05;
+        }
+    } else if (cb & 1u) {
+        // (rtgi2) split: the opaque casters' closest hit (no candidates), then the cut-out cards up to it
+        {
+            RayQuery<RAY_FLAG_FORCE_OPAQUE> q;
+            q.TraceRayInline(g_tlas, RAY_FLAG_NONE, mo, r);
+            q.Proceed();
+            if (q.CommittedStatus() == COMMITTED_TRIANGLE_HIT) {
+                hit = true;
+                inst = q.CommittedInstanceID(); prim = q.CommittedPrimitiveIndex(); bc = q.CommittedTriangleBarycentrics(); t = q.CommittedRayT();
+                hM = q.CommittedObjectToWorld3x4();
+                r.TMax = t;
+            }
+        }
+        if (bits & 8u) {
+            if (RTGK.w > 0.0) r.TMax = min(r.TMax, RTGK.w);   // (the cut-out cards' reach: farther foliage is not searched)
+            RayQuery<RAY_FLAG_NONE> q;
+            q.TraceRayInline(g_tlas, RAY_FLAG_NONE, (uint)RTX.y & 2u, r);
+            uint nt = 0u;
+            const uint bud = (uint)RTGK.z;
+            while (q.Proceed()) {
+                uint mfl;
+                if (q.CandidateType() == CANDIDATE_NON_OPAQUE_TRIANGLE) {
+                    if (nr_rt_alpha_pass(q.CandidateInstanceID(), q.CandidatePrimitiveIndex(), q.CandidateTriangleBarycentrics(), mfl)) {
+                        q.CommitNonOpaqueTriangleHit();
+                        if (cb & 2u) break;
+                    }
+                    if (bud != 0u && ++nt >= bud) break;
+                }
+            }
+            if (q.CommittedStatus() == COMMITTED_TRIANGLE_HIT) {
+                hit = true;
+                inst = q.CommittedInstanceID(); prim = q.CommittedPrimitiveIndex(); bc = q.CommittedTriangleBarycentrics(); t = q.CommittedRayT();
+                hM = q.CommittedObjectToWorld3x4();
+            }
+        }
+    } else {
+        RayQuery<RAY_FLAG_NONE> q;
+        q.TraceRayInline(g_tlas, RAY_FLAG_NONE, mk, r);
+        uint nt = 0u;
+        const uint bud = (uint)RTGK.z;
+        while (q.Proceed()) {
+            uint mfl;
+            if (q.CandidateType() == CANDIDATE_NON_OPAQUE_TRIANGLE) {
+                if (nr_rt_alpha_pass(q.CandidateInstanceID(), q.CandidatePrimitiveIndex(), q.CandidateTriangleBarycentrics(), mfl)) {
+                    q.CommitNonOpaqueTriangleHit();
+                    if (cb & 2u) break;
+                }
+                if (bud != 0u && ++nt >= bud) break;
+            }
+        }
+        if (q.CommittedStatus() == COMMITTED_TRIANGLE_HIT) {
+            hit = true;
+            inst = q.CommittedInstanceID(); prim = q.CommittedPrimitiveIndex(); bc = q.CommittedTriangleBarycentrics(); t = q.CommittedRayT();
+            hM = q.CommittedObjectToWorld3x4();
+        }
+    }
+    if (!hit || !nr_rt_row_ok(inst)) return float4(0.0, 0.0, 0.0, 1.0);
+    const uint hfl = vk::RawBufferLoad<uint>(nr_rt_a64(asuint(RTM.x), asuint(RTM.y)) + (uint64_t)inst * 64u + 28u, 4);
+    const bool hchr = (hfl & 0x8000000u) != 0u;
+    if (hchr && ((uint)RTGC.x & 2u) == 0u) return float4(0.0, 0.0, 0.0, 0.0);   // (a character blocks, gives nothing)
+    bool ok;
+    uint64_t vb;
+    float3 hc = nr_rt_hitcol_x(inst, prim, bc, ok, hix, hixk, vb);
+    if (!ok) return float4(0.0, 0.0, 0.0, 0.0);   // (ok: the row is a hit row and its triangle / indices passed the bounds)
+    const float3 hp = o + d * t;
+    const float fade = smoothstep(0.6 * RTGI.z, RTGI.z, t);
+    if (hchr) {
+        // (a posed character part: its row's vertex positions are not posed; the hit faces the ray)
+        if ((bits & 2u) && dot(RTL.xyz, RTL.xyz) > 0.5 && dot(-d, RTL.xyz) > 0.0) {
+            RayDesc rs;
+            rs.Origin = hp - d * (RTP.y + RTP.z * length(hp - RTE.xyz));
+            rs.Direction = RTL.xyz;
+            rs.TMin = 0.0;
+            rs.TMax = RTP.x;
+            RayQuery<RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH | RAY_FLAG_FORCE_OPAQUE> qs;
+            qs.TraceRayInline(g_tlas, RAY_FLAG_NONE, (uint)RTX.x & 1u, rs);
+            qs.Proceed();
+            if (qs.CommittedStatus() == COMMITTED_TRIANGLE_HIT) hc *= RTC.rgb;
+        }
+        return float4(min(hc, 384.0) * (1.0 - fade), fade);
+    }
+    if (((bits & 2u) && dot(RTL.xyz, RTL.xyz) > 0.5) || ((bits & 4u) && RTI.z > 0.5)) {
+        // the hit's geometric normal: the triangle's object positions (int16 at +0, stride 28) to world (rtnext: the
+        // indices nr_rt_hitcol_x checked; rtalpha checked them a second time here)
+        float3 p[3];
+        [unroll] for (uint k = 0u; k < 3u; k++) {
+            const uint64_t a = vb + (uint64_t)hix[k] * 28u;
+            const uint w0 = vk::RawBufferLoad<uint>(a, 4), w1 = vk::RawBufferLoad<uint>(a + 4u, 4);
+            p[k] = float3((float)((int)(w0 << 16) >> 16), (float)((int)w0 >> 16), (float)((int)(w1 << 16) >> 16));
+        }
+        const float3x4 M = hM;
+        float3 nh = cross(mul(M, float4(p[1] - p[0], 0.0)), mul(M, float4(p[2] - p[0], 0.0)));
+        const float nl = length(nh);
+        if (nl > 0.0) {
+            nh /= nl;
+            if (dot(nh, d) > 0.0) nh = -nh;
+            const float3 ho = hp + nh * (RTP.y + RTP.z * length(hp - RTE.xyz));
+            const float3 L = RTL.xyz;
+            if ((bits & 2u) && dot(L, L) > 0.5 && dot(nh, L) > 0.0) {
+                RayDesc rs;
+                rs.Origin = ho;
+                rs.Direction = L;
+                rs.TMin = 0.0;
+                rs.TMax = RTP.x;
+                RayQuery<RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH | RAY_FLAG_FORCE_OPAQUE> qs;
+                qs.TraceRayInline(g_tlas, RAY_FLAG_NONE, (uint)RTX.x & 1u, rs);
+                qs.Proceed();
+                if (qs.CommittedStatus() == COMMITTED_TRIANGLE_HIT) hc *= RTC.rgb;
+            }
+            if ((bits & 4u) && RTI.z > 0.5) {
+                const uint64_t base = nr_rt_a64(asuint(RTI.x), asuint(RTI.y));
+                const uint cnt = (uint)RTI.z;
+                float3 e = float3(0.0, 0.0, 0.0);
+                [loop] for (uint i = 0u; i < cnt; i++)
+                    e += nr_rt_emi_one(vk::RawBufferLoad<float4>(base + (uint64_t)i * 32u, 16), vk::RawBufferLoad<float4>(base + (uint64_t)i * 32u + 16u, 16), hp, nh);
+                const float ys = dot(e, float3(0.299, 0.587, 0.114));
+                hc += hc * (e * (160.0 / (160.0 + ys))) / 128.0;
+            }
+        }
+    }
+    return float4(min(hc, 384.0) * (1.0 - fade), fade);
+}
+// (rtnext) half-resolution GI ($RG_RT_GI_HR, RTGI.w bit 6): the map receivers no longer trace the bounce: the tracer lane of
+// each 2 x 2 quad (the one that would trace, rotating per present) leaves its position and normal as the cell's request
+// (g_gireq), a compute pass after the present (CS_rtgi, nr_vulkan.cpp rt_gi_hr_pass) traces one ray per requested cell
+// against the newest TLAS, and the next present's receivers take the sample at their reprojected position from the 2 x 2
+// cells around it, each weighted by bilinear x eye distance x normal agreement (the depth / normal-aware upsample), into the
+// pixel's own history as before.  No sample there (a disocclusion, a first present): the pixel traces itself.  Moving
+// receivers (characters with motion vectors) keep the inline ray
+float2 nr_rt_oct(float3 n)
+{
+    n /= (abs(n.x) + abs(n.y) + abs(n.z));
+    float2 e = n.xy;
+    if (n.z < 0.0) e = (1.0 - abs(e.yx)) * float2(e.x >= 0.0 ? 1.0 : -1.0, e.y >= 0.0 ? 1.0 : -1.0);
+    return e * 0.5 + 0.5;
+}
+float3 nr_rt_unoct(float2 e)
+{
+    e = e * 2.0 - 1.0;
+    float3 n = float3(e, 1.0 - abs(e.x) - abs(e.y));
+    if (n.z < 0.0) n.xy = (1.0 - abs(n.yx)) * float2(n.x >= 0.0 ? 1.0 : -1.0, n.y >= 0.0 ? 1.0 : -1.0);
+    return normalize(n);
+}
+bool nr_rt_gi_hrs(float3 wp, float3 n, bool relaxed, out float3 rgb, out float wsky)
+{
+    rgb = float3(0.0, 0.0, 0.0);
+    wsky = 0.0;
+    if (RTH.x <= 0.0 || RTQ.w <= 0.0) return false;
+    const float4 pc = RTV[0] * wp.x + RTV[1] * wp.y + RTV[2] * wp.z + RTV[3];
+    if (!(pc.w > 0.0)) return false;
+    const float2 pp = (pc.xy / pc.w - R[11].xy) * RTH.y - 0.5;   // (internal pixels of the previous present, centres at integers)
+    const float dp = length(wp - RTQ.xyz), tol = dp * 0.02 + 2.0;
+    const uint pz = ((uint)RTH.z + 1023u) % 1024u;                // the previous present (its requests' samples)
+    const uint qp = (pz + 2u) & 3u;                              // its tracer lane: a cell's sample sits at 2 c + (qp & 1, qp >> 1)
+    uint W, H;
+    g_gismp.GetDimensions(W, H);
+    W /= 3u;
+    const float2 cp = (pp - float2((float)(qp & 1u), (float)(qp >> 1u))) * 0.5;
+    const int2 c = (int2)floor(cp);
+    const float2 f = cp - (float2)c;
+    float ws = 0.0;
+    [unroll] for (int j = 0; j <= 1; j++)
+        [unroll] for (int i = 0; i <= 1; i++) {
+            const int2 q = c + int2(i, j);
+            if (q.x < 0 || q.y < 0 || q.x >= (int)W || q.y >= (int)H) continue;
+            const uint w1 = g_gismp[uint2((uint)q.x * 3u + 1u, (uint)q.y)];
+            const uint w2 = g_gismp[uint2((uint)q.x * 3u + 2u, (uint)q.y)];
+            if ((w1 & 0x100u) == 0u || (w2 & 1023u) != pz) continue;
+            const float3 nn = nr_rt_unoct(float2((float)((w2 >> 10) & 2047u), (float)(w2 >> 21)) * (1.0 / 2047.0));
+            const float nd = dot(nn, n);
+            // (relaxed: a pixel without its own sample or history takes its neighbours' for this present: 4 x the depth tolerance, any normal)
+            if (!(abs(f16tof32(w1 >> 16) - dp) < (relaxed ? 4.0 * tol : tol)) || (!relaxed && nd < 0.8)) continue;
+            const float wt = ((i ? f.x : 1.0 - f.x) * (j ? f.y : 1.0 - f.y) + 1e-3) * (relaxed ? 1.0 : nd - 0.79);
+            ws += wt;
+            rgb += wt * nr_rt_gi_unpack(g_gismp[uint2((uint)q.x * 3u, (uint)q.y)]);
+            wsky += wt * (float)(w1 & 255u) * (1.0 / 255.0);
+        }
+    if (ws < 0.02) return false;
+    rgb /= ws;
+    wsky /= ws;
+    return true;
+}
+float3 nr_rt_gi(float3 wp, float3 gn, float2 px)
+{
+    const float ln = length(gn);
+    const bool ngood = ln > 0.0;
+    float3 n = ngood ? gn / ln : float3(0.0, 1.0, 0.0);
+    const float3 v = RTE.xyz - wp;
+    const float dv = length(v);
+    if (dot(n, v) < 0.0) n = -n;
+    // a character part takes the bounce only with motion vectors (its history follows it, rt9)
+    const bool on = ngood && (RTX.z > 7.5 || RT_mv);
+    float u1, u2;
+    if (RT_mv) {
+        u1 = nr_rt_mvrand(px, 5u, 0.6180340);
+        u2 = nr_rt_mvrand(px, 6u, 0.7548777);
+    } else {
+        const float2 fq = floor(px) + 11.17 * fmod(RTH.z, 64.0);
+        u1 = frac(52.9829189 * frac(dot(fq + float2(29.0, 5.0), float2(0.06711056, 0.00583715))));
+        u2 = frac(52.9829189 * frac(dot(fq + float2(3.0, 41.0), float2(0.06711056, 0.00583715))));
+        // (rtgi2, RTGK.x bit 3) the two interleaved-gradient values of a pixel are linear in each other (the same
+        // gradient at a fixed offset): the (z, azimuth) pairs cover the hemisphere unevenly and the one-ray bounce read
+        // +0.007 brighter than a converged one on the jungle floor (out/rtgi2/charpat/etable.txt r1h1); the azimuth
+        // from the per-pixel white noise (golden-ratio stepped per present) instead; bit 4: both from it
+        if ((uint)RTGK.x & 8u) u2 = nr_rt_mvrand(px, 6u, 0.7548777);
+        if ((uint)RTGK.x & 16u) u1 = nr_rt_mvrand(px, 5u, 0.6180340);
+    }
+    const float z = 2.0 * u1 - 1.0, ph = 6.2831853 * u2, rr = sqrt(max(1.0 - z * z, 0.0));
+    const float3 d = normalize(n + float3(rr * cos(ph), rr * sin(ph), z) * 0.999);
+    const bool quad = ((uint)RTGI.w & 1u) != 0u;
+    const uint ql = ((uint)px.x & 1u) + 2u * ((uint)px.y & 1u), qt = ((uint)RTH.z + 2u) & 3u;
+    // the history first: (RTGI.w bit 4, half rate) in every other 8 x 8 tile (alternating per present) a pixel whose
+    // history has settled (4 presents or more; not a moving receiver) keeps it and traces nothing
+    float3 hm;
+    float hl;
+    const bool hok = on && nr_rt_gi_hist(wp, hm, hl);
+    const uint2 pq = (uint2)px;
+    const bool reuse = ((uint)RTGI.w & 16u) != 0u && hok && hl >= 4.0 && !RT_mv && (((pq.x >> 3u) + (pq.y >> 3u) + (uint)RTH.z) & 1u) != 0u;
+    const bool want = on && !reuse;
+    bool self = want;
+    // (rtnext) half resolution: the deferred pass's sample (none: trace here), and this quad's request for the next one
+    const bool hr = ((uint)RTGI.w & 64u) != 0u && !RT_mv;
+    float3 hsr = float3(0.0, 0.0, 0.0);
+    float hsw = 0.0;
+    bool hs = hr && want && nr_rt_gi_hrs(wp, n, false, hsr, hsw);
+    if (hr && on && ql == qt) {
+        uint GW, GH;
+        g_gireq.GetDimensions(GW, GH);
+        const uint2 cq = (uint2)px >> 1u;
+        if (cq.x * 4u + 3u < GW && cq.y < GH) {
+            // (the receiver's own eye distance: the pass's rows are another receiver's, whose camera may be another context's)
+            const uint2 e = (uint2)floor(saturate(nr_rt_oct(n)) * 255.0 + 0.5);
+            g_gireq[uint2(cq.x * 4u, cq.y)] = asuint(wp.x);
+            g_gireq[uint2(cq.x * 4u + 1u, cq.y)] = asuint(wp.y);
+            g_gireq[uint2(cq.x * 4u + 2u, cq.y)] = asuint(wp.z);
+            g_gireq[uint2(cq.x * 4u + 3u, cq.y)] = (f32tof16(max(dv, 1e-3)) << 16) | e.x | (e.y << 8);
+        }
+    }
+    // no sample: a pixel with a history keeps it this present (as the half-rate reuse); one without takes its neighbour cells'
+    // samples (relaxed: no depth / normal test) or, with RTGI.w 128 ($RG_RT_GI_HR=2), traces itself (a quad shares the ray).  A
+    // fragment that finds neither is mostly one the depth test will drop (no early depth: the shader writes its depth), so
+    // tracing for it costs the whole bounce again (Juraika 3x: 8.0 vs 5.5 ms) for nothing on screen
+    const bool hkeep = hr && want && !hs && hok;
+    if (hr && want && !hs && !hok && ((uint)RTGI.w & 128u) == 0u) hs = nr_rt_gi_hrs(wp, n, true, hsr, hsw);
+    // (the pixels that trace here share a ray per quad as below: in half-resolution mode only those without sample or history)
+    const bool need = hr ? want && !hs && !hkeep && ((uint)RTGI.w & 128u) != 0u : want;
+    self = need;
+    if (quad) {
+        const bool tw = QuadReadLaneAt(need, qt);
+        const float3 wt = QuadReadLaneAt(wp, qt), nt = QuadReadLaneAt(n, qt), dw = wp - wt;
+        const float tl = 0.004 * dv + 0.5;
+        self = need && (ql == qt || !tw || dot(dw, dw) > tl * tl || dot(nt, n) < 0.9);
+    }
+    float3 s = float3(0.0, 0.0, 0.0);
+    if (self) {
+        const float3 o = wp + n * (RTP.y + RTP.z * dv);
+        // (rtgi2) the sky on a miss / the far fade of a hit: RTGS.rgb + RTGS.w x the GS fog colour (zero indoors: host)
+        const uint fc = PS_FOGCOL;
+        const float3 sky = RTGS.rgb + RTGS.w * float3(fc & 255u, (fc >> 8) & 255u, (fc >> 16) & 255u);
+        const float4 h0 = nr_rt_gi_ray(o, d);
+        s = h0.rgb + sky * h0.w;
+        // (measurement: more rays, R2 steps from the pixel's sample; rtgi2: RTGC.z rays on a moving receiver)
+        const uint nk = (uint)clamp(RT_mv && RTGC.z > 0.0 ? RTGC.z : RTGJ.w, 1.0, 64.0);
+        [loop] for (uint k = 1u; k < nk; k++) {
+            const float v1 = frac(u1 + 0.7548777 * (float)k), v2 = frac(u2 + 0.5698403 * (float)k);
+            const float z2 = 2.0 * v1 - 1.0, ph2 = 6.2831853 * v2, rr2 = sqrt(max(1.0 - z2 * z2, 0.0));
+            const float4 hk = nr_rt_gi_ray(o, normalize(n + float3(rr2 * cos(ph2), rr2 * sin(ph2), z2) * 0.999));
+            s += hk.rgb + sky * hk.w;
+        }
+        s /= (float)nk;
+    }
+    if (hs) {
+        const uint fc = PS_FOGCOL;
+        s = hsr + (RTGS.rgb + RTGS.w * float3(fc & 255u, (fc >> 8) & 255u, (fc >> 16) & 255u)) * hsw;
+    }
+    float3 smn = s, smx = s;   // (rtgi2) the quad's current samples' range (a moving receiver's history clamp)
+    if (quad) {
+        const float3 sq = QuadReadLaneAt(s, qt);
+        if (need && !self) s = sq;
+    } else if (hr) {
+    } else {
+        // every pixel traced: the mean over the quad's pixels on the same surface (four directions)
+        const float tl = 0.004 * dv + 0.5;
+        float3 sm = s;
+        float cn = 1.0;
+        [unroll] for (uint k = 0u; k < 3u; k++) {
+            const float3 so = k == 0u ? QuadReadAcrossX(s) : k == 1u ? QuadReadAcrossY(s) : QuadReadAcrossDiagonal(s);
+            const float3 po = k == 0u ? QuadReadAcrossX(wp) : k == 1u ? QuadReadAcrossY(wp) : QuadReadAcrossDiagonal(wp);
+            const float3 no = k == 0u ? QuadReadAcrossX(n) : k == 1u ? QuadReadAcrossY(n) : QuadReadAcrossDiagonal(n);
+            const uint oo = k == 0u ? QuadReadAcrossX(want ? 1u : 0u) : k == 1u ? QuadReadAcrossY(want ? 1u : 0u) : QuadReadAcrossDiagonal(want ? 1u : 0u);
+            const float3 dw = po - wp;
+            if (oo != 0u && dot(dw, dw) <= tl * tl && dot(no, n) >= 0.9) { sm += so; cn += 1.0; smn = min(smn, so); smx = max(smx, so); }
+        }
+        if (want) s = sm / cn;
+    }
+    if (RT_mv && ((uint)RTGC.x & 4u) != 0u && hok) hm = clamp(hm, smn - RTGC.y, smx + RTGC.y);
+    if (!on) return float3(0.0, 0.0, 0.0);
+    if ((uint)RTGI.w & 256u) return hs ? float3(0.0, 96.0, 0.0) : hkeep ? float3(96.0, 96.0, 0.0) : self ? float3(96.0, 0.0, 0.0) : float3(0.0, 0.0, 96.0);   // ($RG_RT_GI_HRDBG: green a sample, yellow the history kept, red traced here, blue neither)
+    float3 m = s;
+    float len = 1.0;
+    if (reuse || hkeep) {
+        m = hm;
+        len = hl;
+    } else if (hok) {
+        // (new sample weight: 1 / length, at least 1 / the longest length -- RTGJ.z 1: no history, the reference --
+        // and a moving receiver's least weight RTN.w)
+        m = lerp(hm, s, max(max(1.0 / (hl + 1.0), 1.0 / max(RTGJ.z, 1.0)), RT_mv ? RTN.w : 0.0));
+        len = min(hl + 1.0, RTGJ.z);
+    }
+    uint W, H;
+    const uint st = (uint)max(RTA.z, 1.0);
+    g_rth.GetDimensions(W, H);
+    const uint2 pxi = (uint2)px;
+    if (st >= 4u && pxi.x * st + 3u < W && pxi.y < H && !((uint)RTH.w & 4u)) {
+        const float3 r3 = float3(nr_rt_hash(pxi, (uint)RTH.z * 3u + 7u), nr_rt_hash(pxi, (uint)RTH.z * 3u + 8u), nr_rt_hash(pxi, (uint)RTH.z * 3u + 9u));
+        g_rth[uint2(pxi.x * st + 2u, pxi.y)] = nr_rt_gi_pack(m, r3);
+        g_rth[uint2(pxi.x * st + 3u, pxi.y)] = ((uint)len << 10) | (f32tof16(length(wp - RTE.xyz)) << 16);
+    }
+    return m;
+}
+// (rtnext) the half-resolution GI pass (one thread per 2 x 2 cell, nr_vulkan.cpp rt_gi_hr_pass after a present's receivers,
+// with the rows of one of its map receivers): the cell's request traced as its tracer lane would have (the same direction),
+// the sample written for the next present (no request: none), the request cleared
+[numthreads(8, 8, 1)]
+void CS_rtgi(uint3 id : SV_DispatchThreadID)
+{
+    uint W, H, SW, SH;
+    g_gireq.GetDimensions(W, H);
+    g_gismp.GetDimensions(SW, SH);
+    W /= 4u;
+    SW /= 3u;
+    if (id.x >= W || id.y >= H || id.x >= SW || id.y >= SH) return;
+    const uint2 b = uint2(id.x * 4u, id.y), sb = uint2(id.x * 3u, id.y);
+    const uint q3 = g_gireq[b + uint2(3u, 0u)];
+    if (q3 == 0u) { g_gismp[sb + uint2(1u, 0u)] = 0u; return; }
+    g_gireq[b + uint2(3u, 0u)] = 0u;
+    const float3 wp = asfloat(uint3(g_gireq[b], g_gireq[b + uint2(1u, 0u)], g_gireq[b + uint2(2u, 0u)]));
+    const float3 n = nr_rt_unoct(float2((float)(q3 & 255u), (float)((q3 >> 8) & 255u)) * (1.0 / 255.0));
+    const uint qt = ((uint)RTH.z + 2u) & 3u;
+    const float2 px = float2(id.xy * 2u + uint2(qt & 1u, qt >> 1u)) + 0.5;
+    const float2 fq = floor(px) + 11.17 * fmod(RTH.z, 64.0);
+    float u1 = frac(52.9829189 * frac(dot(fq + float2(29.0, 5.0), float2(0.06711056, 0.00583715))));
+    float u2 = frac(52.9829189 * frac(dot(fq + float2(3.0, 41.0), float2(0.06711056, 0.00583715))));
+    if ((uint)RTGK.x & 8u) u2 = nr_rt_mvrand(px, 6u, 0.7548777);
+    if ((uint)RTGK.x & 16u) u1 = nr_rt_mvrand(px, 5u, 0.6180340);
+    const float z = 2.0 * u1 - 1.0, ph = 6.2831853 * u2, rr = sqrt(max(1.0 - z * z, 0.0));
+    const float3 d = normalize(n + float3(rr * cos(ph), rr * sin(ph), z) * 0.999);
+    const float dv = f16tof32(q3 >> 16);
+    const float4 h = nr_rt_gi_ray(wp + n * (RTP.y + RTP.z * dv), d);
+    const float3 r3 = float3(nr_rt_hash(id.xy, (uint)RTH.z * 3u + 17u), nr_rt_hash(id.xy, (uint)RTH.z * 3u + 18u), nr_rt_hash(id.xy, (uint)RTH.z * 3u + 19u));
+    const uint2 e = (uint2)floor(saturate(nr_rt_oct(n)) * 2047.0 + 0.5);
+    g_gismp[sb] = nr_rt_gi_pack(h.rgb, r3);
+    g_gismp[sb + uint2(1u, 0u)] = (f32tof16(dv) << 16) | 0x100u | (uint)floor(saturate(h.w) * 255.0 + 0.5);
+    g_gismp[sb + uint2(2u, 0u)] = ((uint)RTH.z & 1023u) | (e.x << 10) | (e.y << 21);
+}
+#endif
+
 PSOut PS_nr(VSOut i)
 {
     PSOut o;
@@ -1375,7 +1953,30 @@ PSOut PS_nr(VSOut i)
                    : (VARIANT & NRV_REFRACT) ? i.uvs : i.uv;
         if (VARIANT & NRV_IM) tuv *= R[12].xy;      // GS-normalised -> the sampled texture (a live target: its size)
         float4 t;
-        if ((fl & PF_BOX) && R[22].z > 0.0) {
+        if ((fl & PF_FOCLP) && (fl & PF_BOX)) {
+            // (ptbugs3) the event focus blur's composite at an internal scale > 1: the frame under it
+            // softened to the PS2's resolution where the pass marked it (frame alpha > 0): a box of
+            // R[22].z target pixels centred on the pixel, a grid of at most 12 x 12 bilinear taps
+            uint W, H;
+            g_tex.GetDimensions(W, H);
+            float2 q = i.pos.xy;
+            int2 pc = clamp((int2)floor(q), int2(0, 0), int2((int)W - 1, (int)H - 1));
+            t = nr_expand(round(g_tex.Load(int3(pc, 0)) * 255.0), fl);
+            if (t.a > 0.0) {
+                float fw = max(R[22].z, 1.0);
+                int nt = (int)min(ceil(fw), 12.0);
+                float st = fw / (float)nt;
+                float2 lo = q - 0.5 * fw;
+                float3 cs = 0.0;
+                [loop] for (int y = 0; y < nt; y++) {
+                    [loop] for (int x = 0; x < nt; x++) {
+                        float2 pp = lo + (float2((float)x, (float)y) + 0.5) * st;
+                        cs += nr_expand(round(g_tex.SampleLevel(g_smp, pp / float2((float)W, (float)H), 0) * 255.0), fl).rgb;
+                    }
+                }
+                t.rgb = floor(cs / (float)(nt * nt) + 0.5);
+            }
+        } else if ((fl & PF_BOX) && R[22].z != 0.0) {
             // a twin draw (nr_dev.cpp gpu_set_im_hires: depth of field at the internal resolution):
             // the footprint of R[22].z x R[13].w of this pixel (a box as wide as the work buffer's own
             // pixels), centred on it, by a grid of at most 12 x 12 bilinear taps; colour and alpha
@@ -1385,8 +1986,9 @@ PSOut PS_nr(VSOut i)
             float2 q = i.stq.xy / (i.stq.z != 0.0 ? i.stq.z : 1e-30) * R[12].xy * float2((float)W, (float)H);
             // (R[13].w < 0: colour and alpha averaged apart, the GS's minifying taps' way: the bloom's
             // bright pass Cs * As of the averages, the PS2's strength; else alpha colour-weighted)
-            float2 fw = max(float2(abs(ddx(q.x)) + abs(ddy(q.x)), abs(ddx(q.y)) + abs(ddy(q.y))) * float2(R[22].z, abs(R[13].w)), 1.0);
-            int2 nt = (int2)min(ceil(fw), 12.0);
+            float2 fw = max(float2(abs(ddx(q.x)) + abs(ddy(q.x)), abs(ddx(q.y)) + abs(ddy(q.y))) * float2(abs(R[22].z), abs(R[13].w)), 1.0);
+            // (p6left: R[22].z < 0: bilinear taps up to 2 texels apart, a quarter of the taps: the soft shadow's read)
+            int2 nt = (int2)min(ceil(R[22].z < 0.0 ? 0.5 * fw : fw), 12.0);
             float2 st = fw / (float2)nt, lo = q - 0.5 * fw;
             float3 cs = 0.0, ca = 0.0;
             float wa = 0.0;
@@ -1504,6 +2106,7 @@ PSOut PS_nr(VSOut i)
         } else {
             t = nr_expand(floor(g_tex.Sample(g_smp, tuv) * 255.0 + 0.5), fl);
         }
+        if (fl & PF_SHUF16) t.a = floor(t.g / 4.0) * 4.0 + (t.a - floor(t.a / 4.0) * 4.0);
 #ifdef NR_RT
         rt_alb = t.rgb;
         if (RTR.x > 0.5 && RTR.x < 1.5) t.rgb = nr_rt_refl(i.wp, rt_gn, i.wn, t.rgb, i.pos.xy);   // (rt5) reflections
@@ -1557,7 +2160,11 @@ PSOut PS_nr(VSOut i)
     uint2 px = (uint2)(floor(i.pos.xy / max(R[2].z, 1.0)));   // the native pixel (dither, scan mask)
     if ((rfl & CR_SCAN) && ((px.y & 1u) != 0u) == ((rfl & CR_SCANODD) != 0u)) discard;
     uint fpsm = (asuint(R[1].z) >> 16) & 63u;
+#ifdef NR_CLR
+    uint4 dst = nr_from_stored(fpsm, nr_to_stored(fpsm, (uint4)round(g_cin.SubpassLoad() * 255.0)));   // (gfxperf9) the GS bytes
+#else
     uint4 dst = nr_from_stored(fpsm, nr_to_stored(fpsm, (uint4(g_crov[rp], g_crov[rp] >> 8, g_crov[rp] >> 16, g_crov[rp] >> 24) & 255u)));
+#endif
     if ((rfl & CR_DATE) && (fpsm == 0x00u || nr_is16(fpsm))) {
         if (((dst.a >> 7) & 1u) != ((rfl & CR_DATM) ? 1u : 0u)) discard;
     }
@@ -1601,6 +2208,15 @@ PSOut PS_nr(VSOut i)
         float3 E = nr_rt_emi(i.wp, rt_gn, i.pos.xy);
         c.rgb = ((uint)RTI.w & 1u) ? min(floor(E), 255.0) : min(c.rgb + floor(rt_alb * E / 128.0), 255.0);
     }
+    if (RTGI.x > 0.5 && RTL.w > 0.0) {   // (rtgi) one-bounce GI, added on the texel before fog (RTGI.x 2: the bounce's light alone)
+        const float3 G = nr_rt_gi(i.wp, rt_gn, i.pos.xy) * RTGI.y;
+        float3 add = rt_alb * G / 255.0;
+        if (RTGJ.x > 0.0) {   // (toward dark pixels: K^2 / (K^2 + Y^2) of the pixel's luminance so far -- the lit, painted light stays)
+            const float yc = dot(c.rgb, float3(0.299, 0.587, 0.114));
+            add *= RTGJ.x * RTGJ.x / (RTGJ.x * RTGJ.x + yc * yc);
+        }
+        c.rgb = RTGI.x > 1.5 ? min(floor(G + 0.5), 255.0) : min(c.rgb + floor(add + 0.5), 255.0);
+    }
 #endif
     if (fl & PF_FGE) {
         uint fc = PS_FOGCOL;
@@ -1637,7 +2253,13 @@ PSOut PS_nr(VSOut i)
         uint mask = nr_to_stored(fpsm, uint4(asuint(R[1].y), asuint(R[1].y) >> 8, asuint(R[1].y) >> 16, asuint(R[1].y) >> 24) & 255u);
         uint nraw = nr_to_stored(fpsm, oc), draw = nr_to_stored(fpsm, dst);
         oc = nr_from_stored(fpsm, (draw & mask) | (nraw & ~mask));
+#ifdef NR_CLR
+        o.c0 = (float4)oc / 255.0;   // (gfxperf9) the bytes through the attachment (UNORM: exact)
+        o.c1 = 1.0.xxxx;
+        return o;
+#else
         g_crov[rp] = oc.r | (oc.g << 8) | (oc.b << 16) | (oc.a << 24);
+#endif
     }
 #endif
     float F = (fl & PF_FIXF) ? (float)(at >> 24) : c.a;

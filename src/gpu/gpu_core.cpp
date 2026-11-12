@@ -3167,6 +3167,9 @@ const gpu_stats *gpu_get_stats(const gpu_renderer *r) { return &r->stats; }
 int gpu_get_scale(const gpu_renderer *r) { return r->scale; }
 void gpu_set_im_xfree(gpu_renderer *r, int on) { if (r) r->im_xfree = on != 0; }
 void gpu_set_im_box(gpu_renderer *r, int on) { (void)r; (void)on; }   /* (screen effects: native renderer only) */
+void gpu_set_im_focus(gpu_renderer *r, int on) { (void)r; (void)on; }   /* (ptbugs3: native renderer only) */
+uint64_t gpu_focus_lp_count(void) { return 0; }
+void gpu_set_im_focus_ratio(gpu_renderer *r, float ratio) { (void)r; (void)ratio; }
 void gpu_set_im_hires(gpu_renderer *r, int mode, float sx, float sy, float box, uint32_t frame)
 {
     (void)r; (void)mode; (void)sx; (void)sy; (void)box; (void)frame;   /* (native renderer only) */
@@ -3490,6 +3493,8 @@ void gpu_get_enhance(const gpu_renderer *r, gpu_enhance *e) { *e = r->enh; }
  * place in the GS stream.  Targets, coherence and the texture follow the same
  * rules as a batch (flush_batch); the state is the GS registers in force. */
 int gpu_nr_rt_chars_shadow(gpu_renderer *r) { (void)r; return 0; }
+int gpu_nr_rt_prepose_on(gpu_renderer *r) { (void)r; return 0; }
+void gpu_nr_rt_prepose(gpu_renderer *r, const struct gpu_nr_draw *d) { (void)r; (void)d; }
 const char *gpu_nr_backend_notice(void) { return ""; }   /* (no ray tracing on this renderer) */
 void gpu_nr_prims_begin(gpu_renderer *r)
 {

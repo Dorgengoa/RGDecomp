@@ -23,6 +23,9 @@
 
 #include <math.h>   /* floorf / fminf / sqrtf (the RT code; MSVC headers pull it in, glibc's do not) */
 #include <stdio.h>
+#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
+#include <xmmintrin.h>   /* (gfxperf7) _mm_getcsr: RG_VK_DRAWLOG */
+#endif
 #include <stdlib.h>
 #include <string.h>
 
@@ -41,6 +44,7 @@
 #include "gpu_internal.h"
 #include "nr_texrep.h"
 #include "nr_emi.h"   /* (rt8) emissive surfaces (docs/RAYTRACING.md "RT8") */
+#include "nr_fpukeep.h"   /* (gfxperf8) NR_FPU_KEEP: x87 / MXCSR kept around driver calls */
 
 #if defined(_WIN32)
 extern "C" __declspec(dllimport) void *__stdcall LoadLibraryA(const char *);
@@ -75,10 +79,16 @@ extern "C" __declspec(dllimport) void *__stdcall GetProcAddress(void *, const ch
 #include "vk_PS_nr_z.h"
 #include "vk_PS_nr_c.h"
 #include "vk_PS_nr_cz.h"
+#include "vk_PS_nr_cl.h"    /* (gfxperf9) $RG_VK_CLR */
+#include "vk_PS_nr_czl.h"
+#ifndef RG_VK_CLR_DEFAULT
+#define RG_VK_CLR_DEFAULT 0   /* (gfxperf9) $RG_VK_CLR when unset */
+#endif
 #include "vk_VS_nr_rt.h"
 #include "vk_GS_nr_rt.h"
 #include "vk_PS_nr_rt.h"
 #include "vk_PS_nr_zrt.h"
+#include "vk_CS_rtgi.h"
 
 #define pre_op() pre_op_at(__LINE__)
 namespace {
@@ -180,6 +190,7 @@ static bool spv_reflect(const uint32_t *w, size_t n, std::vector<Bind> &binds,
             uint32_t dim = a[2], sampled = a[6], fmt = a[7];
             int t = dim == 5 ? (sampled == 2 ? VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER : VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER)
                              : (sampled == 2 ? VK_DESCRIPTOR_TYPE_STORAGE_IMAGE : VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
+            if (dim == 6) t = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;   /* (gfxperf9) SubpassData: PS_nr_cl / PS_nr_czl */
             kind[a[0]] = std::make_pair(t, fmt);
             break;
         }
@@ -231,7 +242,7 @@ static void spv_coherent_images(std::vector<uint32_t> &w)
         if (!wc || i + wc > w.size()) return;
         const uint32_t *a = &w[i + 1];
         if (op == 71 && !first_dec) first_dec = i;
-        if (op == 25 && a[6] == 2 && a[2] != 5) storage_imgs.push_back(a[0]);
+        if (op == 25 && a[6] == 2 && a[2] != 5 && a[2] != 6) storage_imgs.push_back(a[0]);   /* (gfxperf9: not SubpassData) */
         if (op == 32) ptr_to[a[0]] = a[2];
         if (op == 59 && a[2] == 0) { vars.push_back(a[1]); var_type[a[1]] = a[0]; }
         if (op == 71 && wc >= 4 && a[1] == 33u) bind_of[a[0]] = a[2];   /* OpDecorate %v Binding n */
@@ -252,7 +263,28 @@ static void spv_coherent_images(std::vector<uint32_t> &w)
     w.insert(w.begin() + (long)first_dec, ins.begin(), ins.end());
 }
 
-/* ------------------------------------------------------------ resources */
+/* (gfxperf7, docs/NATIVE-RENDER.md "GPU throughput 6") the 32-bit NVIDIA Vulkan driver's pipeline compiler
+ * leaves the calling thread's x87 control word at round toward zero (0x027F -> 0x0E7F; MXCSR keeps its
+ * mode).  Pipelines are made lazily, also on the EE thread inside the kernel step, and the i686 UCRT's
+ * double libm (the game's Sin / Cos / Tan / Atan wrappers, src/crt/crt_math.c) runs on the x87 there:
+ * the town's camera matrices then came out 1-3 ulp off (Vulkan i686 only; D3D11 and x64 never touch
+ * the x87).  FpuKeep restores the caller's x87 control word and MXCSR controls around those driver
+ * calls; RG_VK_FPU_KEEP=0 = as before (measurement).  No-op off i686. */
+struct FpuKeep {
+#if defined(__i386__) || defined(_M_IX86)
+    /* (gfxperf8) the same, through nr_fpukeep.h (one helper for every guarded driver call; RG_FPU_KEEP_LOG) */
+    nr_fpukeep k;
+    explicit FpuKeep(const char *what = "vk create") : k(nr_fpukeep_enter(what)) {}
+    ~FpuKeep() { nr_fpukeep_leave(&k); }
+#else
+    explicit FpuKeep(const char * = NULL) {}   /* (gfxperf8) named call sites; nothing to keep off i686 */
+#endif
+};
+
+/* (gfxperf7, measurement with RG_VK_DRAWLOG) a driver call that leaves MXCSR (i686: | x87 control word << 16) changed */
+#define DL_MX0 const unsigned dl_mx0_ = drawlog_f ? dl_csr() : 0u
+#define DL_MX1(what) do { if (drawlog_f && dl_csr() != dl_mx0_) fprintf(drawlog_f, "mxcsr %08x -> %08x after %s (draw %llu)\n", dl_mx0_, dl_csr(), what, (unsigned long long)drawlog_n); } while (0)
+
 struct Buf {
     VkBuffer b = VK_NULL_HANDLE;
     VmaAllocation a = NULL;
@@ -381,11 +413,34 @@ public:
         VkQueryPool qp = VK_NULL_HANDLE;   /* timestamps (profile) */
         uint32_t qn = 0;
         std::vector<PEv> ev;
+        VkQueryPool gq = VK_NULL_HANDLE;   /* (gfxperf) $RG_VK_GPUTIME=1: the submission's first and last timestamp */
     } subs[NSUB];
+    /* (gfxperf, measurement) $RG_VK_GPUTIME=1: GPU time of the run as the union of the submissions'
+     * [first, last] timestamp intervals (idle between submissions excluded, stalls inside included),
+     * printed at exit */
+    bool gput = false;
+    std::vector<std::pair<uint64_t, uint64_t>> gput_iv;
     int ci = 0;               /* the sub recording (or next to record) */
     bool recording = false;
     uint64_t serial_next = 1;
     bool dirty = false;       /* a write since the last barrier */
+    bool dirty_other = false; /* (gfxperf) ... by something other than a draw or an image transfer ($RG_VK_GFXBAR) */
+    bool dirty_gfx = false;   /* ... by draws */
+    bool dirty_ximg = false;  /* ... by image transfers (copies, clears) */
+    bool dirty_cimg = false;  /* ... by dispatches writing images only (texture decodes) */
+    bool dirty_cbuf = false;  /* (gfxperf4) ... by other dispatches (buffers and / or images; $RG_VK_CBAR bit 1) */
+    bool dirty_xbuf = false;  /* (gfxperf4) ... by the buffer copies of a transfer batch ($RG_VK_CBAR bit 4) */
+    int gfxbar = -1;
+    /* (gfxperf4, docs/NATIVE-RENDER.md "GPU throughput 4") $RG_VK_CBAR bits (default 15 since gfxperf6, 7 = gfxperf4's; 0 = as before):
+     * 1 a dispatch's writes are its own kind (a compute dispatch next: a compute barrier), 2 the
+     * barrier after CLUT uploads waits only for the uploads, before compute and transfers (the CLUT
+     * buffer's only readers), 4 a transfer batch's buffer copies before its dispatch: a transfer ->
+     * compute barrier; 8 (gfxperf6, "GPU throughput 5") the local-memory snapshot copy (snap_copy) and
+     * the transfer batch's copies: a transfer barrier (kind 6), and the snapshot copy counts as a
+     * transfer write (the next draws take the draw barrier) */
+    int cbar = -1;
+    int gfxbar_bits() { if (gfxbar < 0) { const char *e = getenv("RG_VK_GFXBAR"); gfxbar = e ? atoi(e) : 7; } return gfxbar; }
+    int cbar_bits() { if (cbar < 0) { const char *e = getenv("RG_VK_CBAR"); cbar = e ? atoi(e) : 15; } return cbar; }
 
     /* ---- upload ring (host visible, coherent) ---- */
     Buf ring;
@@ -413,7 +468,9 @@ public:
         sh_cs_wb_color, sh_cs_wb_depth, sh_cs_merge, sh_cs_clut, sh_cs_l2l_read, sh_cs_l2l_write, sh_cs_xfer,
         sh_cs_decode, sh_ps_resample, sh_ps_fxaa, sh_ps_sharpen, sh_ps_final, sh_vs_nr, sh_vs_im, sh_ps_nr,
         sh_ps_nr_z, sh_ps_nr_c, sh_ps_nr_cz, sh_cs_load_phase, sh_gs_nr;
+    Shader sh_ps_nr_cl, sh_ps_nr_czl;   /* (gfxperf9) $RG_VK_CLR: PS_nr_c / PS_nr_cz reading the colour as an input attachment */
     Shader sh_vs_nr_rt, sh_gs_nr_rt, sh_ps_nr_rt, sh_ps_nr_zrt;   /* ray tracing (docs/RAYTRACING.md) */
+    Shader sh_cs_rtgi;   /* (rtnext) the half-resolution GI pass (nr_draw.hlsl CS_rtgi) */
     bool gs_ok = false;   /* geometryShader: meshes with the VU clipper through GS_nr */
     std::map<std::pair<const Shader *, const Shader *>, Prog *> progs;
     std::map<const Shader *, Prog *> progs_gs;   /* VS_nr + GS_nr + this pixel shader */
@@ -480,13 +537,44 @@ public:
     uint64_t disp_q0 = ~0ull;      /* display(): compose + copy, ended in the read-back / share */
 
     /* $RG_VK_STATS=1: counters printed at exit (measurement) */
-    enum { ST_SUBMIT, ST_WAIT, ST_WRAP, ST_BARRIER, ST_RP, ST_DRAW, ST_DISPATCH, ST_PIPE, ST_N };
+    enum { ST_SUBMIT, ST_WAIT, ST_WRAP, ST_BARRIER, ST_RP, ST_DRAW, ST_DISPATCH, ST_PIPE, ST_GFXBAR, ST_XBAR, ST_CBAR, ST_KBAR, ST_UBAR, ST_N };
     uint64_t st_n[ST_N] = {};
     /* RG_VK_STATS=1: where rendering instances end (source line of the pre_op / end_rp that
      * ended an open one; line 0: begin_rp with other attachments) */
     std::map<int, uint64_t> st_break;
-    void rp_break(int line) { if (in_rp) st_break[line]++; }
-
+    void rp_break(int line) { if (in_rp) { st_break[line]++; rp_brk_line = line; } }
+    int meas_noclear = -1;
+    int st_on = -1;   /* (RG_VK_STATS=1) */
+    std::map<int, uint64_t> st_resume;   /* (gfxperf2) instances begun on the attachments of the one a break at line ended */
+    int rp_brk_line = -1;
+    /* (gfxperf2, RG_VK_STATS) attachment switches between native draws: [0] the same colour target
+     * between its ordered view and its attachment, [1] the same colour target, another depth
+     * attachment, [2] another colour target, [3] other; [4] of [2]: back to the target before */
+    uint64_t st_sw[5] = {};
+    std::map<std::string, uint64_t> st_pp;
+    int rp_ct = -1, rp_ct_prev = -1, rp_next_ct = -1;
+    bool rp_crov = false, rp_next_crov = false;
+    /* (gfxperf9, docs/NATIVE-RENDER.md "GPU throughput 8") $RG_VK_CLR: ordered-view immediate draws (g.crov: the
+     * GS saturating blend As > 0x80 and the other back-end states) read the colour target as an input attachment
+     * of the rendering instance it is already the attachment of (VK_KHR_dynamic_rendering_local_read) instead of
+     * switching the target to its ordered view (a new rendering instance each way).  0 = the old path (the
+     * extension is not even enabled); bit 1 on; bit 2 MEASUREMENT ONLY: no barrier between such a draw's reads
+     * and a later draw's writes (write after read).  Inside an instance a by-region barrier precedes a draw that
+     * reads what an earlier draw of the instance wrote: after any other draw, or when its primitives overlap
+     * those of the local-read draws since the last barrier; a draw whose own primitives overlap is cut into
+     * groups with a barrier between them (the input attachment does not see the draw's own writes).  Depth stays
+     * in its ordered view, interlocked as before (colour + depth draws included). */
+    int clr_bits = 0;
+    bool clr_ok = false;
+    bool clr_dirty = false;   /* the attachment written by another draw since the instance began / the last in-instance barrier */
+    bool clr_war = false;     /* a local-read draw since then (its reads before a later draw's writes) */
+    float clr_map[6] = {};    /* the GS-window -> pixel mapping of clr_box (cb row 11, viewport) */
+    std::vector<float> clr_box, clr_ubox;   /* x0 x1 y0 y1 kind per unit: since the last barrier / of the draw */
+    std::vector<uint32_t> clr_ufirst;       /* the draw's units: first vertex */
+    std::vector<uint32_t> clr_split;        /* the draw's groups after the first: first vertex (a barrier before each) */
+    /* RG_VK_STATS: [0] local-read draws, barriers before one [1] after another draw, [2] overlap with earlier
+     * local-read draws, [3] another mapping; [4] inside one (a split); [5] before another draw (write after read) */
+    uint64_t clr_n[6] = {};
     VkBackend() { memset(slots, 0, sizeof slots); }
 
     /* ======================================================== setup */
@@ -504,6 +592,7 @@ public:
 
     bool init(const gpu_config *cfg, int s, char *err, size_t cap)
     {
+        NR_FPU_KEEP("vk init");   /* (gfxperf8) loader, instance, device, VMA, start-up shaders */
         scale = s;
         if (volkInitialize() != VK_SUCCESS) {
             snprintf(err, cap, "Vulkan loader not found");
@@ -603,6 +692,7 @@ public:
             r = ci ? ci(&ici, NULL, &inst) : VK_ERROR_INITIALIZATION_FAILED;
             if (r == VK_SUCCESS) vkGetInstanceProcAddr = layer_gipa;   /* volk loads the rest through the layer */
         } else {
+            NR_FPU_KEEP("vkCreateInstance");   /* (gfxperf8) */
             r = vkCreateInstance(&ici, NULL, &inst);
         }
         if (r != VK_SUCCESS) {
@@ -620,7 +710,7 @@ public:
         }
         /* the device: $RG_VK_DEVICE=N, else the first discrete GPU, else the first with 1.3 */
         uint32_t npd = 0;
-        vkEnumeratePhysicalDevices(inst, &npd, NULL);
+        { NR_FPU_KEEP("vkEnumeratePhysicalDevices"); vkEnumeratePhysicalDevices(inst, &npd, NULL); }   /* (gfxperf8; loads the ICD) */
         std::vector<VkPhysicalDevice> pds(npd);
         vkEnumeratePhysicalDevices(inst, &npd, pds.data());
         int pick = -1;
@@ -657,6 +747,13 @@ public:
             return false;
         }
         bool have_il = has_ext(VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME);
+        /* (gfxperf9) $RG_VK_CLR: local reads of the colour attachment */
+        {
+            const char *e = getenv("RG_VK_CLR");
+            clr_bits = e ? atoi(e) : RG_VK_CLR_DEFAULT;
+        }
+        const bool have_lr = clr_bits && has_ext(VK_KHR_DYNAMIC_RENDERING_LOCAL_READ_EXTENSION_NAME);
+        VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR flr = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_LOCAL_READ_FEATURES_KHR };
         bool have_dbc = has_ext(VK_EXT_DEPTH_BIAS_CONTROL_EXTENSION_NAME);
         /* graphics.raytracing (docs/RAYTRACING.md): asked for and the device has ray queries */
         const bool have_rt = cfg->raytracing > 0 && has_ext(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
@@ -674,6 +771,7 @@ public:
         if (have_il) f13.pNext = &fil;
         if (have_dbc) { fdb.pNext = f13.pNext; f13.pNext = &fdb; }
         if (have_rt) { frq.pNext = f13.pNext; fas.pNext = &frq; f13.pNext = &fas; }
+        if (have_lr) { flr.pNext = f13.pNext; f13.pNext = &flr; }   /* (gfxperf9) */
         vkGetPhysicalDeviceFeatures2(pd, &f2);
         if (!f13.dynamicRendering || !f13.shaderDemoteToHelperInvocation || !f2.features.dualSrcBlend || !f2.features.depthClamp) {
             snprintf(err, cap, "%s: missing a required feature (dynamicRendering %d, demote %d, dualSrcBlend %d, depthClamp %d)",
@@ -706,6 +804,18 @@ public:
             en13.pNext = &enil;
             enil.fragmentShaderPixelInterlock = VK_TRUE;
             dx.push_back(VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME);
+        }
+        VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR enlr = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_LOCAL_READ_FEATURES_KHR };
+        if (have_lr && rov_ok && flr.dynamicRenderingLocalRead) {
+            /* (gfxperf9) $RG_VK_CLR: the ordered-view draws' colour as an input attachment */
+            enlr.dynamicRenderingLocalRead = VK_TRUE;
+            enlr.pNext = en13.pNext;
+            en13.pNext = &enlr;
+            dx.push_back(VK_KHR_DYNAMIC_RENDERING_LOCAL_READ_EXTENSION_NAME);
+            clr_ok = true;
+        } else if (clr_bits) {
+            fprintf(stderr, "rg vulkan: RG_VK_CLR=%d: %s; the ordered views as before\n", clr_bits,
+                    !have_lr ? "no VK_KHR_dynamic_rendering_local_read" : !rov_ok ? "no ordered views" : "no dynamicRenderingLocalRead");
         }
         VkPhysicalDeviceDepthBiasControlFeaturesEXT endb = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_BIAS_CONTROL_FEATURES_EXT };
         {
@@ -762,6 +872,7 @@ public:
                 rt_dbg = cfg->raytracing == 2;
                 rt_ao = cfg->raytracing >= 3;   /* (graphics.raytracing "shadows + AO") */
                 rt_refl = cfg->raytracing >= 4;   /* (rt5: "shadows + AO + reflections") */
+                rt_gi = cfg->rt_gi >= 0 && cfg->rt_gi <= 2 ? cfg->rt_gi : 0;   /* (rtgi) graphics.rt_gi; $RG_RT_GI in rt_params */
                 dx.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
                 dx.push_back(VK_KHR_RAY_QUERY_EXTENSION_NAME);
                 dx.push_back(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
@@ -774,9 +885,13 @@ public:
                 en12.bufferDeviceAddress = VK_TRUE;
                 if (!pres_ok) { en12.pNext = en2.pNext; en2.pNext = &en12; }
             } else {
+                /* name what is missing (linux64: a GTX 1080 has acceleration structures + RT pipelines, no ray queries) */
+                const char *why = !has_ext(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) ? "no VK_KHR_acceleration_structure"
+                                  : !has_ext(VK_KHR_RAY_QUERY_EXTENSION_NAME) ? "no VK_KHR_ray_query"
+                                  : !has_ext(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) ? "no VK_KHR_deferred_host_operations"
+                                  : "a ray-tracing feature is missing";
                 fprintf(stderr, "rg gpu: ray tracing unavailable on %s (%d-bit driver: %s); off\n", props.deviceName,
-                        (int)(sizeof(void *) * 8), !have_rt ? "no VK_KHR_acceleration_structure / VK_KHR_ray_query"
-                                                            : "a ray-tracing feature is missing");
+                        (int)(sizeof(void *) * 8), why);
             }
         }
         float prio[2] = { 1.0f, 1.0f };
@@ -803,7 +918,7 @@ public:
             ldi[1].pNext = dci.pNext;
             dci.pNext = &ldi[0];
         }
-        r = vkCreateDevice(pd, &dci, NULL, &dev);
+        { NR_FPU_KEEP("vkCreateDevice"); r = vkCreateDevice(pd, &dci, NULL, &dev); }   /* (gfxperf8) */
         if (r != VK_SUCCESS) {
             snprintf(err, cap, "vkCreateDevice failed (%d)", (int)r);
             return false;
@@ -822,6 +937,8 @@ public:
             /* GPU time per kind of work ($RG_GPU_PROFILE=1, as nr_d3d11.cpp): timestamp queries */
             const char *pe = getenv("RG_GPU_PROFILE");
             prof = pe && pe[0] == '1' && qp[qf].timestampValidBits > 0 && props.limits.timestampPeriod > 0.0f;
+            const char *gt = getenv("RG_VK_GPUTIME");
+            gput = gt && gt[0] == '1' && qp[qf].timestampValidBits > 0 && props.limits.timestampPeriod > 0.0f;
             ts_period_ns = props.limits.timestampPeriod;
         }
         snprintf(devname, sizeof devname, "Vulkan %s (API %u.%u.%u%s%s)", props.deviceName, VK_API_VERSION_MAJOR(props.apiVersion),
@@ -852,7 +969,9 @@ public:
 #endif
 #line 789
             if (rt_on) ai.flags |= VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
-            if (vmaCreateAllocator(&ai, &vma) != VK_SUCCESS) {
+            VkResult vr;
+            { NR_FPU_KEEP("vmaCreateAllocator"); vr = vmaCreateAllocator(&ai, &vma); }   /* (gfxperf8) */
+            if (vr != VK_SUCCESS) {
                 snprintf(err, cap, "vmaCreateAllocator failed");
                 return false;
             }
@@ -878,6 +997,12 @@ public:
                 qc.queryType = VK_QUERY_TYPE_TIMESTAMP;
                 qc.queryCount = PQ_MAX;
                 if (vkCreateQueryPool(dev, &qc, NULL, &subs[i].qp) != VK_SUCCESS) prof = false;
+            }
+            if (gput) {
+                VkQueryPoolCreateInfo qc = { VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO };
+                qc.queryType = VK_QUERY_TYPE_TIMESTAMP;
+                qc.queryCount = 2;
+                if (vkCreateQueryPool(dev, &qc, NULL, &subs[i].gq) != VK_SUCCESS) gput = false;
             }
         }
 #define CHK(x, what) do { if (!(x)) { snprintf(err, cap, "%s failed", what); return false; } } while (0)
@@ -972,6 +1097,13 @@ public:
         if (zrov_ok) SH(sh_ps_nr_z, PS_nr_z, VK_SHADER_STAGE_FRAGMENT_BIT, "PS_nr");
         if (rov_ok) SH(sh_ps_nr_c, PS_nr_c, VK_SHADER_STAGE_FRAGMENT_BIT, "PS_nr");
         if (rov_ok && zrov_ok) SH(sh_ps_nr_cz, PS_nr_cz, VK_SHADER_STAGE_FRAGMENT_BIT, "PS_nr");
+        if (clr_ok) {   /* (gfxperf9) $RG_VK_CLR; a failure leaves it off */
+            if (!shader_make(sh_ps_nr_cl, g_spv_PS_nr_cl, sizeof g_spv_PS_nr_cl, VK_SHADER_STAGE_FRAGMENT_BIT, "PS_nr") ||
+                (zrov_ok && !shader_make(sh_ps_nr_czl, g_spv_PS_nr_czl, sizeof g_spv_PS_nr_czl, VK_SHADER_STAGE_FRAGMENT_BIT, "PS_nr"))) {
+                fprintf(stderr, "rg vulkan: local-read shaders failed; RG_VK_CLR off\n");
+                clr_ok = false;
+            }
+        }
 #undef SH
         if (rt_on) {
             /* the ray-query mesh pipeline (docs/RAYTRACING.md); a failure leaves ray tracing off */
@@ -979,6 +1111,7 @@ public:
                       shader_make(sh_ps_nr_rt, g_spv_PS_nr_rt, sizeof g_spv_PS_nr_rt, VK_SHADER_STAGE_FRAGMENT_BIT, "PS_nr");
             if (ok && gs_ok) ok = shader_make(sh_gs_nr_rt, g_spv_GS_nr_rt, sizeof g_spv_GS_nr_rt, VK_SHADER_STAGE_GEOMETRY_BIT, "GS_nr");
             if (ok && zrov_ok) ok = shader_make(sh_ps_nr_zrt, g_spv_PS_nr_zrt, sizeof g_spv_PS_nr_zrt, VK_SHADER_STAGE_FRAGMENT_BIT, "PS_nr");
+            if (ok) ok = shader_make(sh_cs_rtgi, g_spv_CS_rtgi, sizeof g_spv_CS_rtgi, VK_SHADER_STAGE_COMPUTE_BIT, "CS_rtgi");
             if (!ok) { fprintf(stderr, "rg gpu: ray-tracing shaders failed; ray tracing off\n"); rt_on = false; }
             rt_params();
         }
@@ -1002,30 +1135,77 @@ public:
         {
             const char *e = getenv("RG_VK_STATS");
             if (e && e[0] == '1')
-                fprintf(stderr, "rg vulkan: %llu submits, %llu fence waits, %llu ring wraps, %llu barriers, %llu rendering instances, "
+                fprintf(stderr, "rg vulkan: %llu submits, %llu fence waits, %llu ring wraps, %llu barriers (%llu -> draws, %llu -> image transfers, %llu -> decodes, %llu -> dispatches, %llu after CLUT uploads: narrowed), %llu rendering instances, "
                                 "%llu draws, %llu dispatches, %zu pipelines\n",
                         (unsigned long long)st_n[ST_SUBMIT], (unsigned long long)st_n[ST_WAIT], (unsigned long long)st_n[ST_WRAP],
-                        (unsigned long long)st_n[ST_BARRIER], (unsigned long long)st_n[ST_RP], (unsigned long long)st_n[ST_DRAW],
+                        (unsigned long long)st_n[ST_BARRIER], (unsigned long long)st_n[ST_GFXBAR], (unsigned long long)st_n[ST_XBAR], (unsigned long long)st_n[ST_CBAR], (unsigned long long)st_n[ST_KBAR], (unsigned long long)st_n[ST_UBAR], (unsigned long long)st_n[ST_RP], (unsigned long long)st_n[ST_DRAW],
                         (unsigned long long)st_n[ST_DISPATCH], gpipes.size());
             if (e && e[0] == '1') {
                 std::vector<std::pair<uint64_t, int>> v;
                 for (auto &k : st_break) v.push_back(std::make_pair(k.second, k.first));
                 std::sort(v.rbegin(), v.rend());
+                {
+                    std::vector<std::pair<uint64_t, std::string>> gv;
+                    for (auto &k : st_gbar) gv.push_back(std::make_pair(k.second, k.first));
+                    std::sort(gv.rbegin(), gv.rend());
+                    fprintf(stderr, "rg vulkan: global barriers by (writer line -> next operation line; -1 new command buffer, -2 CLUT uploads, 0 draws):");
+                    for (size_t i = 0; i < gv.size() && i < 16; i++) fprintf(stderr, " [%s] %llu", gv[i].second.c_str(), (unsigned long long)gv[i].first);
+                    fprintf(stderr, "%c", 10);
+                }
+                fprintf(stderr, "rg vulkan: fence waits by caller (line (-1 = submission slot reused): waits, CPU ms):");
+                for (auto &k : st_wait) fprintf(stderr, " %d: %llu %.1f", k.first, (unsigned long long)k.second.first, k.second.second);
+                fprintf(stderr, "\n");
                 fprintf(stderr, "rg vulkan: rendering instances ended at (nr_vulkan.cpp line: count):");
                 for (size_t i = 0; i < v.size() && i < 12; i++) fprintf(stderr, " %d: %llu", v[i].second, (unsigned long long)v[i].first);
                 fprintf(stderr, "\n");
+                fprintf(stderr, "rg vulkan: instances resumed on the same attachments after a break at (line: count):");
+                for (auto &k : st_resume) if (k.second > 500) fprintf(stderr, " %d: %llu", k.first, (unsigned long long)k.second);
+                fprintf(stderr, "\n");
+                if (clr_ok)   /* (gfxperf9) */
+                    fprintf(stderr, "rg vulkan: local-read draws (RG_VK_CLR=%d) %llu; in-instance barriers before them %llu (after another draw %llu, "
+                                    "overlap with earlier local-read draws %llu, another mapping %llu), inside them (splits) %llu, "
+                                    "before another draw (write after read) %llu\n",
+                            clr_bits, (unsigned long long)clr_n[0], (unsigned long long)(clr_n[1] + clr_n[2] + clr_n[3]),
+                            (unsigned long long)clr_n[1], (unsigned long long)clr_n[2], (unsigned long long)clr_n[3], (unsigned long long)clr_n[4],
+                            (unsigned long long)clr_n[5]);
+                fprintf(stderr, "rg vulkan: attachment switches: same target ordered view <-> attachment %llu, same target other depth %llu, "
+                                "another target %llu (back to the one before %llu), other %llu\n",
+                        (unsigned long long)st_sw[0], (unsigned long long)st_sw[1], (unsigned long long)st_sw[2],
+                        (unsigned long long)st_sw[4], (unsigned long long)st_sw[3]);
+                {
+                    std::vector<std::pair<uint64_t, std::string>> pv;
+                    for (auto &q : st_pp) pv.push_back(std::make_pair(q.second, q.first));
+                    std::sort(pv.rbegin(), pv.rend());
+                    fprintf(stderr, "rg vulkan: switches back to the target before (from -> to, v = ordered view):");
+                    for (size_t i = 0; i < pv.size() && i < 10; i++) fprintf(stderr, " [%s] %llu", pv[i].second.c_str(), (unsigned long long)pv[i].first);
+                    fprintf(stderr, "\n");
+                }
             }
         }
         if (dev) {
             wait_all();
             vkDeviceWaitIdle(dev);
             if (prof) prof_print();
+            if (gput && !gput_iv.empty()) {
+                std::sort(gput_iv.begin(), gput_iv.end());
+                double busy = 0;
+                uint64_t a = gput_iv[0].first, b = gput_iv[0].second;
+                for (const auto &iv : gput_iv) {
+                    if (iv.first > b) { busy += (double)(b - a); a = iv.first; b = iv.second; }
+                    else if (iv.second > b) b = iv.second;
+                }
+                busy += (double)(b - a);
+                fprintf(stderr, "gfxperf: vulkan GPU busy %.1f ms over %zu submissions (RG_VK_GPUTIME)\n", busy * (double)ts_period_ns * 1e-6,
+                        gput_iv.size());
+            }
             for (int i = 0; i < 2; i++) img_free(ps[i].img);
             for (Retired &r : ps_retired) img_free(r.img);
             for (int i = 0; i < 2; i++) buf_free(lagq[i].b);
             if (tl) vkDestroySemaphore(dev, tl, NULL);
             for (int i = 0; i < NSUB; i++)
                 if (subs[i].qp) vkDestroyQueryPool(dev, subs[i].qp, NULL);
+            for (int i = 0; i < NSUB; i++)
+                if (subs[i].gq) vkDestroyQueryPool(dev, subs[i].gq, NULL);
             for (size_t i = 0; i < targets.size(); i++) free_target(targets[i]);
             for (Target &t : rt_pool) free_target(t);
             for (int i = 0; i < NSUB; i++) run_dels(subs[i]);
@@ -1037,6 +1217,11 @@ public:
             rt_as_free(rt_ptlas); buf_free(rt_pibuf); buf_free(rt_pmbuf);
             rt_as_free(rt_ctlas); rt_as_free(rt_pctlas); buf_free(rt_cibuf); buf_free(rt_pcibuf); buf_free(rt_cdummy);
             for (auto &e : rt_dyn) { rt_as_free(e.second.blas); buf_free(e.second.vb); }
+            if (rt_statrb.map && rst.frames) {   /* (rtalpha) the guard's last copy (the device is idle here) */
+                buf_inval(rt_statrb);
+                memcpy(rt_bad, rt_statrb.map + RT_STAT_BAD, sizeof rt_bad);
+                rt_bad_reads++;
+            }
             rt_print_stats();
             emi_exit();   /* (rt8) */
             rt_hist_free();
@@ -1072,7 +1257,7 @@ public:
                               &sh_cs_wb_color, &sh_cs_wb_depth, &sh_cs_merge, &sh_cs_clut, &sh_cs_l2l_read, &sh_cs_l2l_write,
                               &sh_cs_xfer, &sh_cs_decode, &sh_ps_resample, &sh_ps_fxaa, &sh_ps_sharpen, &sh_ps_final, &sh_vs_nr,
                               &sh_vs_im, &sh_ps_nr, &sh_ps_nr_z, &sh_ps_nr_c, &sh_ps_nr_cz, &sh_cs_load_phase, &sh_gs_nr,
-                              &sh_vs_nr_rt, &sh_gs_nr_rt, &sh_ps_nr_rt, &sh_ps_nr_zrt };
+                              &sh_vs_nr_rt, &sh_gs_nr_rt, &sh_ps_nr_rt, &sh_ps_nr_zrt, &sh_cs_rtgi, &sh_ps_nr_cl, &sh_ps_nr_czl };
             for (Shader *s : all) if (s->m) vkDestroyShaderModule(dev, s->m, NULL);
             if (smp_lin) vkDestroySampler(dev, smp_lin, NULL);
             for (int i = 0; i < 8; i++) if (smp_nr[i >> 2][(i >> 1) & 1][i & 1]) vkDestroySampler(dev, smp_nr[i >> 2][(i >> 1) & 1][i & 1], NULL);
@@ -1113,7 +1298,9 @@ public:
         if (host == 2) ai.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
         if (host) ai.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
         VmaAllocationInfo inf = {};
-        if (vmaCreateBuffer(vma, &bi, &ai, &b.b, &b.a, &inf) != VK_SUCCESS) { b = Buf(); return false; }
+        VkResult vr;
+        { NR_FPU_KEEP("vmaCreateBuffer"); vr = vmaCreateBuffer(vma, &bi, &ai, &b.b, &b.a, &inf); }   /* (gfxperf8) */
+        if (vr != VK_SUCCESS) { b = Buf(); return false; }
         b.map = (uint8_t *)inf.pMappedData;
         b.size = size;
         return true;
@@ -1124,6 +1311,7 @@ public:
         vi.buffer = b.b;
         vi.format = VK_FORMAT_R32_UINT;
         vi.range = VK_WHOLE_SIZE;
+        NR_FPU_KEEP("vkCreateBufferView");   /* (gfxperf8) */
         return vkCreateBufferView(dev, &vi, NULL, &b.view) == VK_SUCCESS;
     }
     void buf_free(Buf &b)
@@ -1153,6 +1341,7 @@ public:
         vi.subresourceRange.levelCount = mk_levels;
         vi.subresourceRange.layerCount = 1;
         VkImageView v = VK_NULL_HANDLE;
+        NR_FPU_KEEP("vkCreateImageView");   /* (gfxperf8) */
         if (vkCreateImageView(dev, &vi, NULL, &v) != VK_SUCCESS) return VK_NULL_HANDLE;
         return v;
     }
@@ -1186,7 +1375,9 @@ public:
 #line 1081
         VmaAllocationCreateInfo ai = {};
         ai.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
-        if (vmaCreateImage(vma, &ii, &ai, img, al, NULL) != VK_SUCCESS) { *img = VK_NULL_HANDLE; *al = NULL; return false; }
+        VkResult vr;
+        { NR_FPU_KEEP("vmaCreateImage"); vr = vmaCreateImage(vma, &ii, &ai, img, al, NULL); }   /* (gfxperf8) */
+        if (vr != VK_SUCCESS) { *img = VK_NULL_HANDLE; *al = NULL; return false; }
         pre_op();
         VkImageMemoryBarrier b = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
         b.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
@@ -1264,7 +1455,9 @@ public:
         VkShaderModuleCreateInfo mi = { VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
         mi.codeSize = w.size() * 4;
         mi.pCode = w.data();
-        if (vkCreateShaderModule(dev, &mi, NULL, &s.m) != VK_SUCCESS) return false;
+        VkResult smr;
+        { FpuKeep fk("vkCreateShaderModule"); smr = vkCreateShaderModule(dev, &mi, NULL, &s.m); }
+        if (smr != VK_SUCCESS) return false;
         s.stage = stage;
         s.entry = entry;
         return true;
@@ -1282,20 +1475,38 @@ public:
         }
         s.dels.clear();
     }
+    /* (gfxperf4, RG_VK_STATS=1) CPU ms blocked in fence waits per caller line (wait_site: set by
+     * wait_serial / cb; the exit line "fence waits by caller") */
+    int wait_site = 0;
+    std::map<int, std::pair<uint64_t, double>> st_wait;
     void sub_wait(Sub &s)
     {
         if (!s.busy) return;
         st_n[ST_WAIT]++;
-        vkWaitForFences(dev, 1, &s.fence, VK_TRUE, UINT64_MAX);
+        if (st_on < 0) { const char *e = getenv("RG_VK_STATS"); st_on = e && e[0] == '1'; }
+        if (st_on) {
+            auto t0 = std::chrono::steady_clock::now();
+            vkWaitForFences(dev, 1, &s.fence, VK_TRUE, UINT64_MAX);
+            std::pair<uint64_t, double> &w = st_wait[wait_site];
+            w.first++;
+            w.second += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+        } else
+        { DL_MX0; vkWaitForFences(dev, 1, &s.fence, VK_TRUE, UINT64_MAX); DL_MX1("vkWaitForFences"); }
         vkResetFences(dev, 1, &s.fence);
         s.busy = false;
         run_dels(s);
         if (prof) prof_collect(s);
+        if (gput && s.gq) {
+            uint64_t t[2];
+            if (vkGetQueryPoolResults(dev, s.gq, 0, 2, sizeof t, t, 8, VK_QUERY_RESULT_64_BIT) == VK_SUCCESS && t[1] >= t[0])
+                gput_iv.push_back(std::make_pair(t[0], t[1]));
+        }
     }
     VkCommandBuffer cb()
     {
         Sub &s = subs[ci];
         if (!recording) {
+            wait_site = -1;   /* (a submission slot reused: the GPU NSUB submissions behind) */
             sub_wait(s);
             vkResetCommandPool(dev, s.pool, 0);
             VkCommandBufferBeginInfo bi = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
@@ -1308,8 +1519,14 @@ public:
                 s.qn = 0;
                 s.ev.clear();
             }
+            if (gput && s.gq) {
+                vkCmdResetQueryPool(s.cb, s.gq, 0, 2);
+                vkCmdWriteTimestamp(s.cb, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, s.gq, 0);
+            }
             bound_pipe = VK_NULL_HANDLE;
             dirty = true;   /* the previous submission's writes: ordered by the barrier below */
+            dirty_other = true;
+            other_site = -1;   /* (RG_VK_STATS: a new command buffer) */
         }
         return s.cb;
     }
@@ -1328,6 +1545,7 @@ public:
         mb.dstAccessMask = VK_ACCESS_HOST_READ_BIT | VK_ACCESS_MEMORY_READ_BIT;
         vkCmdPipelineBarrier(s.cb, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_HOST_BIT | VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
                              0, 1, &mb, 0, NULL, 0, NULL);
+        if (gput && s.gq) vkCmdWriteTimestamp(s.cb, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, s.gq, 1);
         vkEndCommandBuffer(s.cb);
         VkSubmitInfo si = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
         si.commandBufferCount = 1;
@@ -1343,7 +1561,9 @@ public:
             si.pSignalSemaphores = &tl;
         }
         st_n[ST_SUBMIT]++;
+        DL_MX0;
         VkResult r = vkQueueSubmit(queue, 1, &si, s.fence);
+        DL_MX1("vkQueueSubmit");
         if (r != VK_SUCCESS) {
             static int once;
             if (!once++) fprintf(stderr, "rg vulkan: vkQueueSubmit failed (%d)\n", (int)r);
@@ -1355,15 +1575,17 @@ public:
         dirty = false;
     }
     /* wait for the work recorded up to serial (submitting it if it is still recording) */
-    void wait_serial(uint64_t serial)
+    void wait_serial(uint64_t serial, int site = __builtin_LINE())
     {
         if (recording && subs[ci].serial <= serial) submit();
+        wait_site = site;
         for (int i = 0; i < NSUB; i++)
             if (subs[i].busy && subs[i].serial <= serial) sub_wait(subs[i]);
     }
-    void wait_all()
+    void wait_all(int site = __builtin_LINE())
     {
         submit();
+        wait_site = site;
         for (int k = 1; k <= NSUB; k++) sub_wait(subs[(ci + k) % NSUB]);   /* oldest first */
     }
 
@@ -1459,22 +1681,80 @@ public:
     }
 
     /* ---- synchronisation ---- */
-    void barrier()
+    /* (gfxperf) $RG_VK_MEAS_BARSKIP=bits, MEASUREMENT ONLY (races: a wrong picture): skip the
+     * barriers of begin_rp (1) / of every other operation (2) to bound what they cost */
+    int meas_barskip = -1;
+    /* kind: 1 = draws next (begin_rp), 2 = any operation, 3 = a transfer into / out of images only,
+     * 4 = a compute dispatch writing an image only (a texture decode), 5 = any other compute dispatch
+     * (gfxperf4, $RG_VK_CBAR; 2 with it off), 6 = a transfer reading / writing buffers (gfxperf6,
+     * $RG_VK_CBAR bit 8: the local-memory snapshot copy and the transfer batch's copies; 2 with it off) */
+    void barrier(int kind = 2)
     {
         if (!dirty) return;
+        if (meas_barskip < 0) { const char *e = getenv("RG_VK_MEAS_BARSKIP"); meas_barskip = e ? atoi(e) : 0; }
+        if (meas_barskip & (kind == 1 ? 1 : 2)) { dirty = dirty_other = dirty_gfx = dirty_ximg = dirty_cimg = dirty_cbuf = dirty_xbuf = false; return; }
         st_n[ST_BARRIER]++;
+        if (gfxbar < 0) { const char *e = getenv("RG_VK_GFXBAR"); gfxbar = e ? atoi(e) : 7; }
+        /* (gfxperf4, docs/NATIVE-RENDER.md "GPU throughput 4") $RG_VK_CBAR: a compute dispatch next
+         * (kind 5; 4 = a decode) after only draws / image transfers / dispatches: their stages and
+         * writes before the compute stage's reads and writes.  Draws or an image transfer next after
+         * a dispatch that may have written buffers: the global barrier, as before */
+        if (kind == 5 && (!(cbar_bits() & 1) || !gfxbar)) kind = 2;
+        /* (gfxperf6, docs/NATIVE-RENDER.md "GPU throughput 5") $RG_VK_CBAR bit 8: a buffer transfer
+         * next (kind 6) after only draws / image transfers / dispatches / buffer copies: their stages
+         * and writes before the transfer's reads and writes (any resource: a memory barrier) */
+        if (kind == 6 && (!(cbar_bits() & 8) || !gfxbar)) kind = 2;
+        if (!dirty_other && ((kind == 1 && (gfxbar & 1) && !dirty_cbuf && !dirty_xbuf) || (kind == 3 && (gfxbar & 2) && !dirty_cbuf && !dirty_xbuf) ||
+                             (kind == 4 && (gfxbar & 4)) || kind == 5 || kind == 6)) {
+            /* (gfxperf, docs/NATIVE-RENDER.md "GPU throughput 2") only draws and image transfers
+             * (copies, clears) since the last barrier: their stages and writes before the next
+             * operation's.  Draws next: their fragment work and attachment access (the vertex and
+             * geometry stages read only vertex buffers and constants, which neither writes, so
+             * the next draws' vertex work need not wait); an image transfer next: the transfer */
+            st_n[kind == 1 ? ST_GFXBAR : kind == 3 || kind == 6 ? ST_XBAR : kind == 4 ? ST_CBAR : ST_KBAR]++;
+            const VkPipelineStageFlags fs = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT |
+                                            VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            VkPipelineStageFlags src = (dirty_gfx ? fs : 0u) | (dirty_ximg || dirty_xbuf ? VK_PIPELINE_STAGE_TRANSFER_BIT : 0u) |
+                                       (dirty_cimg || dirty_cbuf ? VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT : 0u);
+            VkMemoryBarrier gb = { VK_STRUCTURE_TYPE_MEMORY_BARRIER };
+            gb.srcAccessMask = (dirty_gfx ? VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+                                            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : 0u) |
+                               (dirty_ximg || dirty_xbuf ? VK_ACCESS_TRANSFER_WRITE_BIT : 0u) | (dirty_cimg || dirty_cbuf ? VK_ACCESS_SHADER_WRITE_BIT : 0u);
+            VkPipelineStageFlags dst = kind == 1 ? fs : kind == 3 || kind == 6 ? VK_PIPELINE_STAGE_TRANSFER_BIT : VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+            gb.dstAccessMask = kind == 1 ? VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
+                                           VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+                                           VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | (clr_ok ? VK_ACCESS_INPUT_ATTACHMENT_READ_BIT : 0u)   /* (gfxperf9) */
+                                         : kind == 3 || kind == 6 ? VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_TRANSFER_WRITE_BIT
+                                                     : VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
+            if (!src) src = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            vkCmdPipelineBarrier(cb(), src, dst, 0, 1, &gb, 0, NULL, 0, NULL);
+            dirty = dirty_gfx = dirty_ximg = dirty_cimg = dirty_cbuf = dirty_xbuf = false;
+            return;
+        }
+        if (st_on < 0) { const char *e = getenv("RG_VK_STATS"); st_on = e && e[0] == '1'; }
+        if (st_on > 0) {
+            /* (gfxperf4, RG_VK_STATS) global barriers by (what wrote "other" since the last
+             * barrier: line, -1 a new command buffer, -2 CLUT uploads; the next operation: line,
+             * 0 draws, -2 CLUT uploads) */
+            char k[48];
+            snprintf(k, sizeof k, "%d%s -> %d", dirty_other ? other_site : 0, dirty_other ? "" : "(none)", kind == 1 ? 0 : bar_site);
+            st_gbar[k]++;
+        }
         VkMemoryBarrier mb = { VK_STRUCTURE_TYPE_MEMORY_BARRIER };
         mb.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
         mb.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
         vkCmdPipelineBarrier(cb(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 1, &mb, 0, NULL, 0, NULL);
-        dirty = false;
+        dirty = dirty_other = dirty_gfx = dirty_ximg = dirty_cimg = dirty_cbuf = dirty_xbuf = false;
     }
-    void pre_op_at(int line)
+    int other_site = 0, bar_site = 0;
+    std::map<std::string, uint64_t> st_gbar;
+    void pre_op_at(int line, int next = 2)   /* next: barrier()'s kind of the operation that follows */
     {
         cb();
         rp_break(line);
         end_rp();
-        barrier();
+        bar_site = line;
+        barrier(next);
         clut_flush();
     }
     /* CLUT uploads (set_clut / set_clut_part) wait here until the next operation outside a
@@ -1486,12 +1766,42 @@ public:
     void clut_flush()
     {
         if (clut_pend.empty()) return;
+        const bool ub_narrow = (cbar_bits() & 2) && gfxbar && !dirty;
+        if (ub_narrow) {
+            /* (gfxperf4, $RG_VK_CBAR bit 2) the CLUT buffer's earlier readers (compute, transfers) done
+             * before the uploads overwrite it, whatever the barrier before was narrowed to */
+            st_n[ST_BARRIER]++;
+            VkMemoryBarrier wb = { VK_STRUCTURE_TYPE_MEMORY_BARRIER };
+            wb.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT | VK_ACCESS_SHADER_WRITE_BIT;
+            wb.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            vkCmdPipelineBarrier(cb(), VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT | VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                 0, 1, &wb, 0, NULL, 0, NULL);
+        }
         for (const ClutUp &u : clut_pend) vkCmdUpdateBuffer(cb(), clut.b, u.off * 4u, u.n * 4u, u.w);
         clut_pend.clear();
+        if (ub_narrow) {
+            /* (gfxperf4, $RG_VK_CBAR bit 2) nothing else written since pre_op's barrier: only the
+             * uploads, before the CLUT buffer's readers and writers (decodes and CLUT loads in
+             * compute, read-backs and further uploads as transfers; no draw binds it) */
+            st_n[ST_BARRIER]++;
+            st_n[ST_UBAR]++;
+            VkMemoryBarrier ub = { VK_STRUCTURE_TYPE_MEMORY_BARRIER };
+            ub.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            ub.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
+            vkCmdPipelineBarrier(cb(), VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT | VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                 0, 1, &ub, 0, NULL, 0, NULL);
+            return;
+        }
         dirty = true;
+        dirty_other = true;
+        other_site = -2;   /* (RG_VK_STATS: CLUT uploads) */
+        bar_site = -2;
         barrier();
     }
-    void post_op() { dirty = true; }
+    void post_op(int site = __builtin_LINE()) { dirty = true; dirty_other = true; other_site = site; }
+    void post_op_img() { dirty = true; dirty_ximg = true; }   /* (after a transfer that wrote images only) */
+    void post_op_cimg() { dirty = true; dirty_cimg = true; }  /* (after a dispatch that wrote images only) */
+    void post_op_cbuf() { dirty = true; dirty_cbuf = true; }  /* (gfxperf4: after any other dispatch, $RG_VK_CBAR) */
 
     void end_rp()
     {
@@ -1504,9 +1814,28 @@ public:
     {
         cb();
         if (in_rp && rp.c == c && rp.d == d && rp.w == w && rp.h == h && rp.noatt == noatt) return;
+        if (st_on < 0) { const char *e = getenv("RG_VK_STATS"); st_on = e && e[0] == '1'; }
+        if (in_rp && st_on) {
+            int cls = rp_next_ct < 0 || rp_ct < 0 ? 3 : rp_next_ct != rp_ct ? 2 : rp_next_crov != rp_crov ? 0 : 1;
+            st_sw[cls]++;
+            if (cls == 2 && rp_next_ct == rp_ct_prev) {
+                st_sw[4]++;
+                const Target &ta = targets[rp_ct], &tb = targets[rp_next_ct];
+                char k[96];
+                snprintf(k, sizeof k, "%dx%d%s%s -> %dx%d%s%s", ta.w, ta.h, ta.depth ? "z" : "", rp_crov ? "v" : "", tb.w, tb.h,
+                         tb.depth ? "z" : "", rp_next_crov ? "v" : "");
+                st_pp[k]++;
+            }
+        }
+        if (st_on && !in_rp && rp_brk_line >= 0 && rp.c == c && rp.d == d && rp.w == w && rp.h == h && rp.noatt == noatt) st_resume[rp_brk_line]++;
+        rp_brk_line = -1;
+        if (rp_next_ct != rp_ct) rp_ct_prev = rp_ct;
+        rp_ct = rp_next_ct;
+        rp_crov = rp_next_crov;
+        rp_next_ct = -1;
         rp_break(0);
         end_rp();
-        barrier();
+        barrier(1);
         VkRenderingAttachmentInfo ca = { VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO };
         ca.imageView = c;
         ca.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
@@ -1521,10 +1850,13 @@ public:
         ri.pColorAttachments = c ? &ca : NULL;
         ri.pDepthAttachment = d ? &da : NULL;
         vkCmdBeginRendering(subs[ci].cb, &ri);
+        clr_dirty = clr_war = false;   /* (gfxperf9) earlier writes: barrier(1) above */
+        clr_box.clear();
         st_n[ST_RP]++;
         in_rp = true;
         rp.c = c; rp.d = d; rp.w = w; rp.h = h; rp.noatt = noatt;
         dirty = true;
+        dirty_gfx = true;
     }
 
     /* ======================================================== programs and pipelines */
@@ -1571,6 +1903,7 @@ public:
             x.descriptorType = bd.type;
             x.descriptorCount = 1;
             x.stageFlags = st;
+            if (bd.type == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT) x.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;   /* (gfxperf9) */
             lb.push_back(x);
         }
         VkDescriptorSetLayoutCreateInfo dl = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
@@ -1589,7 +1922,12 @@ public:
             ci_.stage.module = a->m;
             ci_.stage.pName = a->entry;
             ci_.layout = p->pl;
-            if (vkCreateComputePipelines(dev, pcache, 1, &ci_, NULL, &p->comp) != VK_SUCCESS) p->comp = VK_NULL_HANDLE;
+            DL_MX0;
+            {
+                FpuKeep fk("vkCreateComputePipelines");
+                if (vkCreateComputePipelines(dev, pcache, 1, &ci_, NULL, &p->comp) != VK_SUCCESS) p->comp = VK_NULL_HANDLE;
+            }
+            DL_MX1("vkCreateComputePipelines");
         }
         if (!g) progs[std::make_pair(a, b)] = p;
         return p;
@@ -1704,7 +2042,12 @@ public:
         gi.pDynamicState = &dy;
         gi.layout = p->pl;
         VkPipeline pp = VK_NULL_HANDLE;
-        if (vkCreateGraphicsPipelines(dev, pcache, 1, &gi, NULL, &pp) != VK_SUCCESS) pp = VK_NULL_HANDLE;
+        DL_MX0;
+        {
+            FpuKeep fk("vkCreateGraphicsPipelines");
+            if (vkCreateGraphicsPipelines(dev, pcache, 1, &gi, NULL, &pp) != VK_SUCCESS) pp = VK_NULL_HANDLE;
+        }
+        DL_MX1("vkCreateGraphicsPipelines");
         gpipes[key] = pp;
         return pp;
     }
@@ -1772,6 +2115,13 @@ public:
                 ii[n].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
                 x.pImageInfo = &ii[n];
                 break;
+            case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:   /* (gfxperf9) the instance's colour attachment */
+                if (!s.iv) continue;
+                ii[n].sampler = VK_NULL_HANDLE;
+                ii[n].imageView = s.iv;
+                ii[n].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+                x.pImageInfo = &ii[n];
+                break;
             case VK_DESCRIPTOR_TYPE_SAMPLER:
                 ii[n].sampler = s.smp ? s.smp : smp_lin;
                 ii[n].imageView = VK_NULL_HANDLE;
@@ -1794,18 +2144,21 @@ public:
         if (n) vkCmdPushDescriptorSetKHR(subs[ci].cb, bp, p->pl, 0, n, w);
     }
 
-    void dispatch(const Shader &cs, uint32_t gx, uint32_t gy, uint32_t gz)
+    void dispatch(const Shader &cs, uint32_t gx, uint32_t gy, uint32_t gz, bool img_only = false)
     {
         Prog *p = prog(&cs, NULL);
         if (!p->comp) return;
-        pre_op();
+        cbar_bits();
+        pre_op_at(__LINE__, img_only ? 4 : 5);
         VkCommandBuffer c = cb();
         vkCmdBindPipeline(c, VK_PIPELINE_BIND_POINT_COMPUTE, p->comp);
         bound_pipe = VK_NULL_HANDLE;
         push(p, VK_PIPELINE_BIND_POINT_COMPUTE);
         vkCmdDispatch(c, gx, gy, gz);
         st_n[ST_DISPATCH]++;
-        post_op();
+        if (img_only) post_op_cimg();
+        else if (cbar & 1) post_op_cbuf();
+        else post_op();
     }
 
     void set_vp_sc(int vw, int vh, int x0, int y0, int x1, int y1, int tw, int th)
@@ -1821,6 +2174,107 @@ public:
         VkRect2D r = { { x0, y0 }, { (uint32_t)(x1 - x0), (uint32_t)(y1 - y0) } };
         vkCmdSetScissor(subs[ci].cb, 0, 1, &r);
     }
+    /* (gfxperf9, $RG_VK_CLR) the by-region barrier inside a rendering instance: earlier draws' colour attachment
+     * writes before later input-attachment reads and attachment accesses, earlier reads before later writes */
+    void clr_bar(int why)
+    {
+        VkMemoryBarrier mb = { VK_STRUCTURE_TYPE_MEMORY_BARRIER };
+        mb.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        mb.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        const VkPipelineStageFlags fs = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        vkCmdPipelineBarrier(subs[ci].cb, fs, fs, VK_DEPENDENCY_BY_REGION_BIT, 1, &mb, 0, NULL, 0, NULL);
+        clr_n[why]++;
+    }
+    void clr_barrier(int why)   /* (gfxperf9) ... before the next draw: nothing pending after it */
+    {
+        clr_bar(why);
+        clr_dirty = clr_war = false;
+        clr_box.clear();
+    }
+    /* (gfxperf9) any other draw recorded into the current instance (after its begin_rp): it may write the attachment */
+    void clr_other()
+    {
+        if (clr_war && !(clr_bits & 2)) clr_barrier(5);
+        clr_war = false;
+        clr_box.clear();
+        clr_dirty = true;
+    }
+    /* (gfxperf9) the units of an immediate draw (as nr_d3d11.cpp im_disjoint: the two triangles of a sprite = one
+     * unit) as boxes in GS window units: clr_ubox (x0 x1 y0 y1 kind: 1 triangle, 2 sprite, 10 + n a corner
+     * triangle missing corner n) and clr_ufirst (first vertex) */
+    void clr_units(const GpuImVtx *v, uint32_t n)
+    {
+        clr_ubox.clear();
+        clr_ufirst.clear();
+        const uint32_t nt = n / 3;
+        for (uint32_t t = 0; t < nt; t++) {
+            const GpuImVtx *p = v + t * 3;
+            float x0 = p[0].x, x1 = p[0].x, y0 = p[0].y, y1 = p[0].y;
+            for (int j = 1; j < 3; j++) {
+                x0 = p[j].x < x0 ? p[j].x : x0; x1 = p[j].x > x1 ? p[j].x : x1;
+                y0 = p[j].y < y0 ? p[j].y : y0; y1 = p[j].y > y1 ? p[j].y : y1;
+            }
+            int seen = 0, miss = -1;
+            for (int j = 0; j < 3; j++) {
+                bool cx = p[j].x == x0 || p[j].x == x1, cy = p[j].y == y0 || p[j].y == y1;
+                if (!cx || !cy) { seen = -1; break; }
+                seen |= 1 << ((p[j].x == x1 ? 1 : 0) | (p[j].y == y1 ? 2 : 0));
+            }
+            if (seen > 0 && x1 > x0 && y1 > y0 && __builtin_popcount((unsigned)seen) == 3)
+                for (int c = 0; c < 4; c++) if (!(seen & (1 << c))) miss = c;
+            size_t k = clr_ubox.size();
+            if (k && miss >= 0 && clr_ubox[k - 1] == (float)(10 + (miss ^ 3)) && clr_ubox[k - 5] == x0 && clr_ubox[k - 4] == x1 &&
+                clr_ubox[k - 3] == y0 && clr_ubox[k - 2] == y1 && clr_ufirst.back() + 3 == t * 3) {
+                clr_ubox[k - 1] = 2.0f;   /* the other half of a sprite (the opposite corner missing) */
+                continue;
+            }
+            clr_ubox.push_back(x0); clr_ubox.push_back(x1); clr_ubox.push_back(y0); clr_ubox.push_back(y1);
+            clr_ubox.push_back(miss >= 0 ? (float)(10 + miss) : 1.0f);
+            clr_ufirst.push_back(t * 3);
+        }
+    }
+    /* (gfxperf9) can units A and B (5 floats each) share a pixel centre?  Sprites may touch (the right / bottom
+     * edge is exclusive), anything else needs a gap */
+    static bool clr_meet(const float *A, const float *B)
+    {
+        if (A[4] == 2.0f && B[4] == 2.0f) return !(A[1] <= B[0] || B[1] <= A[0] || A[3] <= B[2] || B[3] <= A[2]);
+        return !(A[1] < B[0] || B[1] < A[0] || A[3] < B[2] || B[3] < A[2]);
+    }
+    /* (gfxperf9) plan a local-read draw (after its begin_rp): the barrier before it, clr_split inside it */
+    void clr_plan(const GpuNrDraw &g)
+    {
+        clr_n[0]++;
+        const float mp[6] = { g.cb[11][0], g.cb[11][1], g.cb[11][2], g.cb[11][3], (float)g.vp_w, (float)g.vp_h };
+        if (clr_dirty) clr_barrier(1);
+        else if (!clr_box.empty() && memcmp(mp, clr_map, sizeof mp)) clr_barrier(3);
+        memcpy(clr_map, mp, sizeof mp);
+        clr_units(g.im, g.nim);
+        for (size_t u = 0; u < clr_ufirst.size(); u++) {
+            const float *U = &clr_ubox[u * 5];
+            bool hit = clr_box.size() >= 5 * 512;   /* (bounded work: at most 512 units between barriers) */
+            for (size_t b = 0; b < clr_box.size() && !hit; b += 5) hit = clr_meet(U, &clr_box[b]);
+            if (hit) {
+                if (u == 0) clr_barrier(2);                   /* before the draw */
+                else { clr_split.push_back(clr_ufirst[u]); clr_box.clear(); }   /* inside it (clr_draw) */
+            }
+            clr_box.insert(clr_box.end(), U, U + 5);
+        }
+        clr_dirty = false;
+        clr_war = true;
+    }
+    /* (gfxperf9) vertices [a, b) of an immediate draw: vkCmdDraw(c, b - a, 1, a, 0), with a barrier before each
+     * local-read split inside */
+    void clr_draw(VkCommandBuffer c, uint32_t a, uint32_t b)
+    {
+        for (uint32_t s : clr_split) {
+            if (s <= a || s >= b) continue;
+            vkCmdDraw(c, s - a, 1, a, 0);
+            clr_bar(4);
+            a = s;
+        }
+        vkCmdDraw(c, b - a, 1, a, 0);
+    }
+
     /* a full-screen triangle (VS_quad) with the slots set; c / d: attachments of w x h */
     bool quad(const GKey &k, VkImageView c, VkImageView d, int w, int h, int vw, int vh, int x0, int y0, int x1, int y1)
     {
@@ -1828,6 +2282,7 @@ public:
         VkPipeline pp = gpipe(k);
         if (!pp) return false;
         begin_rp(c, d, w, h, 0);
+        if (clr_ok) clr_other();   /* (gfxperf9) */
         VkCommandBuffer c_ = subs[ci].cb;
         if (pp != bound_pipe) { vkCmdBindPipeline(c_, VK_PIPELINE_BIND_POINT_GRAPHICS, pp); bound_pipe = pp; }
         push(k.p, VK_PIPELINE_BIND_POINT_GRAPHICS);
@@ -1893,9 +2348,11 @@ public:
             t.used = 1;
             n_rt_pool_hits++;
             if (mk_noclear) return true;   /* (rt_clone: overwritten whole at once) */
-            pre_op();
+            if (meas_noclear < 0) { const char *e = getenv("RG_VK_MEAS_NOCLEAR"); meas_noclear = e ? atoi(e) : 0; }
+            if (meas_noclear) return true;   /* (gfxperf2, MEASUREMENT ONLY: a reused target keeps its old pixels) */
+            pre_op_at(__LINE__, 3);
             clear_img(t.img, t.dsv != 0);
-            post_op();
+            post_op_img();
             return true;
         }
         t = Target();
@@ -1917,7 +2374,8 @@ public:
             t.view = view_make(t.img, t.fmt, VK_IMAGE_ASPECT_DEPTH_BIT);
         } else {
             t.fmt = VK_FORMAT_R8G8B8A8_UNORM;
-            if (!image_raw(&t.img, &t.al, W, H, t.fmt, XF | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | (rov_ok ? VK_IMAGE_USAGE_STORAGE_BIT : 0u),
+            if (!image_raw(&t.img, &t.al, W, H, t.fmt, XF | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | (rov_ok ? VK_IMAGE_USAGE_STORAGE_BIT : 0u) |
+                                                         (clr_ok ? VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT : 0u),   /* (gfxperf9) */
                            rov_ok))
                 return false;
             t.view = view_make(t.img, t.fmt, VK_IMAGE_ASPECT_COLOR_BIT);
@@ -1965,9 +2423,9 @@ public:
     void rt_clear(int id) override
     {
         if (id < 0 || (size_t)id >= targets.size() || !targets[id].used) return;
-        pre_op();
+        pre_op_at(__LINE__, 3);
         clear_img(targets[id].img, targets[id].dsv != 0);
-        post_op();
+        post_op_img();
     }
 
     void rt_pool_free()
@@ -2006,7 +2464,7 @@ public:
     void copy_img(VkImage dst, int dx, int dy, VkImage src, int sx, int sy, int w, int h, bool depth, int site = __builtin_LINE())
     {
         if (w <= 0 || h <= 0) return;
-        pre_op_at(site);
+        pre_op_at(site, 3);
         VkImageCopy c = {};
         c.srcSubresource.aspectMask = c.dstSubresource.aspectMask = depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
         c.srcSubresource.layerCount = c.dstSubresource.layerCount = 1;
@@ -2014,7 +2472,7 @@ public:
         c.dstOffset = { dx, dy, 0 };
         c.extent = { (uint32_t)w, (uint32_t)h, 1 };
         vkCmdCopyImage(cb(), src, VK_IMAGE_LAYOUT_GENERAL, dst, VK_IMAGE_LAYOUT_GENERAL, 1, &c);
-        post_op();
+        post_op_img();
     }
 
     void rt_resize(int id, int w, int h) override
@@ -2275,12 +2733,13 @@ public:
         if (nb > nbytes) memset(ro.p + nbytes, 0, nb - nbytes);
         RA rd = ring_put(desc, (VkDeviceSize)ndesc * 32u, 16);
         if (!rd.p) return false;
-        pre_op();
+        pre_op_at(__LINE__, 6);   /* (gfxperf6, $RG_VK_CBAR bit 8: buffer copies; else the global barrier) */
         VkBufferCopy c0 = { ro.off, 0, nb ? nb : 16u };
         VkBufferCopy c1 = { rd.off, 0, (VkDeviceSize)ndesc * 32u };
         vkCmdCopyBuffer(cb(), ro.b, merge.b, 1, &c0);
         vkCmdCopyBuffer(cb(), rd.b, xdesc.b, 1, &c1);
-        post_op();
+        if ((cbar_bits() & 4) && !dirty) { dirty = true; dirty_xbuf = true; }   /* (gfxperf4: only these copies since pre_op's barrier) */
+        else post_op();
         slots_clear();
         uint32_t uu[8][4] = {};
         uu[0][0] = ndesc;
@@ -2419,6 +2878,7 @@ public:
                         if (sn.maxAnisotropy > aniso_max) sn.maxAnisotropy = aniso_max;
                     }
                     VkSampler &dst = an ? smp_rep_an[j >> 2][(j >> 1) & 1][j & 1] : smp_rep[j >> 2][(j >> 1) & 1][j & 1];
+                    NR_FPU_KEEP("vkCreateSampler");   /* (gfxperf8) */
                     if (vkCreateSampler(dev, &sn, NULL, &dst) != VK_SUCCESS) dst = VK_NULL_HANDLE;
                 }
             }
@@ -2927,14 +3387,14 @@ public:
         if (g.dec_rgba) {
             RA ra = ring_put(g.dec_rgba, need, 16);
             if (!ra.p) return NULL;
-            pre_op();
+            pre_op_at(__LINE__, 3);   /* (from the host-written ring: an image transfer) */
             VkBufferImageCopy c = {};
             c.bufferOffset = ra.off;
             c.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             c.imageSubresource.layerCount = 1;
             c.imageExtent = { (uint32_t)w, (uint32_t)h, 1 };
             vkCmdCopyBufferToImage(cb(), ra.b, e->img.i, VK_IMAGE_LAYOUT_GENERAL, 1, &c);
-            post_op();
+            post_op_img();
         } else {
             GpuDrawCB c = g.dec_cb;
             c.d[3][3] = 0;
@@ -2945,7 +3405,9 @@ public:
             set_buf(B_T + 0, mem.b, 0, VK_WHOLE_SIZE);
             set_tbuf(B_T + 5, clut.view);
             set_img(B_U + 0, e->img.uv);
-            dispatch(sh_cs_decode, (uint32_t)(w + 7) / 8, (uint32_t)(h + 7) / 8, 1);
+            /* (reads local memory and the CLUT, written only by operations that are not image-only:
+             * barrier()'s kind 4 then orders them fully) */
+            dispatch(sh_cs_decode, (uint32_t)(w + 7) / 8, (uint32_t)(h + 7) / 8, 1, true);
         }
         memcpy(e->key, g.dec_key, sizeof e->key);
         e->rect = rc;
@@ -2999,7 +3461,7 @@ public:
         int x0 = r.x0 < 0 ? 0 : r.x0, y0 = r.y0 < 0 ? 0 : r.y0;
         int x1 = r.x1 > t.w ? t.w : r.x1, y1 = r.y1 > t.h ? t.h : r.y1;
         if (x1 > x0 && y1 > y0 && t.snap)
-            copy_img(t.snap, x0 * scale, y0 * scale, t.img, x0 * scale, y0 * scale, (x1 - x0) * scale, (y1 - y0) * scale, false);
+            copy_img(t.snap, x0 * scale, y0 * scale, t.img, x0 * scale, y0 * scale, (x1 - x0) * scale, (y1 - y0) * scale, false, 100000 + __LINE__);   /* (RG_VK_STATS: 100000 + line = an own-target snapshot) */
     }
 
     /* ======================================================== ray tracing (docs/RAYTRACING.md)
@@ -3034,6 +3496,7 @@ public:
      * alpha-tested casters (RGBA8 texels, by NrTex::rtgen; freed when no instance names them) */
     Buf rt_mbuf;
     VkDeviceAddress rt_mbuf_addr = 0;
+    uint32_t rt_mbuf_rows = 0, rt_pmbuf_rows = 0;   /* (rtalpha) rows in the newest table: nr_draw.hlsl RTX.w */
     uint64_t rt_tex_gen = 0;
     /* rb: a host read-back copy, scanned once its submission completed (serial): amin = the
      * smallest texel alpha; a material whose alpha test every texel passes is opaque */
@@ -3054,10 +3517,47 @@ public:
      * 4 opaque, 8 cut-out (as 1 / 2 for the map). */
     enum { RT_DYN_REBUILD = 16, RT_DYN_AGE = 90 };
     struct RtDynPend { RtInst in; size_t off; uint32_t nv; };
+    /* (rtnext, docs/RAYTRACING.md "RT12") the characters' current pose: a game frame's skinned records posed before its draws
+     * (nr_scene.c rt_prepose_scan -> rt_prepose); rt_dyn_frame gives each of the last frame's posed parts (its classification)
+     * the nearest pre-posed record of the same mesh instead of moving the last pose on.  $RG_RT_PREPOSE=1: on (default off: rt7) */
+    struct RtPre { uint32_t mesh, nv; size_t off; float c[3]; bool used; };
+    std::vector<RtPre> rt_pre;
+    std::vector<float> rt_prepos;
+    uint32_t rt_pre_frame = 0;
+    int rt_precfg = -1;
+    uint64_t rst_pre[5] = {};   /* frames with poses, records posed, parts given them, parts not; vertices in the error census */
+    double rt_pre_err = 0.0, rt_pre_ms = 0.0;
+    int rt_prepose_on() override
+    {
+        if (rt_precfg < 0) { const char *e = getenv("RG_RT_PREPOSE"); rt_precfg = e && e[0] == '1'; }   /* (rtnext, paused: off by default until gated) */
+        return rt_on && rt_chars && rt_precfg ? 1 : 0;
+    }
+    void rt_prepose(const gpu_nr_draw *d) override
+    {
+        if (!rt_prepose_on() || !d->rt_frame || !d->mesh.nvtx) return;
+        const auto t0 = std::chrono::steady_clock::now();
+        if (d->rt_frame != rt_pre_frame) { rt_pre.clear(); rt_prepos.clear(); rt_pre_frame = d->rt_frame; rst_pre[0]++; }
+        RtPre p;
+        p.mesh = d->mesh.id;
+        p.nv = d->mesh.nvtx;
+        p.off = rt_prepos.size();
+        p.used = false;
+        rt_prepos.resize(p.off + (size_t)p.nv * 3);
+        if (!rt_pose(d, true, &rt_prepos[p.off])) { rt_prepos.resize(p.off); return; }
+        float lo[3] = { 1e30f, 1e30f, 1e30f }, hi[3] = { -1e30f, -1e30f, -1e30f };
+        const float *a = &rt_prepos[p.off];
+        for (uint32_t v = 0; v < p.nv; v++)
+            for (int c = 0; c < 3; c++) { lo[c] = a[3 * v + c] < lo[c] ? a[3 * v + c] : lo[c]; hi[c] = a[3 * v + c] > hi[c] ? a[3 * v + c] : hi[c]; }
+        for (int c = 0; c < 3; c++) p.c[c] = 0.5f * (lo[c] + hi[c]);
+        rt_pre.push_back(p);
+        rst_pre[1]++;
+        rt_pre_ms += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+    }
     std::vector<RtDynPend> rt_dynp;
     std::vector<float> rt_dynpos;
     struct RtDyn { RtAS blas; Buf vb; uint32_t nv = 0, nt = 0, mesh = 0, nbuilt = 0; uint64_t last = 0; float pc[3] = {}, pd[3] = {}; uint64_t pfr = 0;
-                   std::vector<float> pp, ps; uint64_t vfr = 0; };   /* (rt7) the last frame's posed vertices and their step */
+                   std::vector<float> pp, ps; uint64_t vfr = 0;
+                   std::vector<float> pre; uint64_t prefr = 0; };   /* (rt7) the last frame's posed vertices and their step; (rtnext) the pre-pose its TLAS used */
     /* (rt4) a game frame's TLAS holds the characters of the frame before (casters are collected
      * while a frame draws): each posed part is moved on by its own last step (bounding-box centre,
      * frame to frame) so its shadow does not trail by a game frame.  Steps longer than rt_xmax
@@ -3109,6 +3609,11 @@ public:
      * later); a scene where nearly every sun-facing pixel is shadowed is an interior / a covered
      * place whose key light the art already bakes in: the shadow strength fades out there */
     enum { RT_STAT_SLOTS = 64 };
+    /* (rtalpha) after the slots: the lookup guard's counters (nr_draw.hlsl NR_RT_BAD_AT = 512: bad row,
+     * triangle, vertex; the last bad lookup's row, triangle / index, bound, table rows) */
+    enum { RT_STAT_BAD = RT_STAT_SLOTS * 8, RT_STAT_BYTES = RT_STAT_BAD + 32 };
+    uint32_t rt_bad[8] = {};
+    uint64_t rt_bad_serial = 0, rt_bad_reads = 0;
     Buf rt_stat, rt_statrb;   /* device-local counters (shader atomics), host read-back copies */
     uint64_t rt_stat_serial[RT_STAT_SLOTS] = {};
     float rt_encl = 0.0f, rt_kstr = 1.0f, rt_elo = 0.6f, rt_ehi = 0.85f;
@@ -3170,11 +3675,31 @@ public:
         if ((e = getenv("RG_RT_REFL_FLOOR"))) { rt_rfloor_in = (float)atof(e); const char *c = strchr(e, ','); rt_rfloor_out = c ? (float)atof(c + 1) : rt_rfloor_in; }   /* (rt7) in[,out] */
         if ((e = getenv("RG_RT_AO"))) { rt_ao = atoi(e) != 0; const char *c = strchr(e, ','); if (c) { rt_aolen = (float)atof(c + 1); c = strchr(c + 1, ','); if (c) rt_aostr = (float)atof(c + 1); } }   /* 0 | 1[,length[,strength]] */
         if ((e = getenv("RG_RT_FEXP"))) rt_fexp = atoi(e) & 15;     /* measurement: 1 no history read, 2 no write, 4 no characters-only ray, 8 no map rays */
+        /* (rtgi) RT10 bounce GI: $RG_RT_GI=mode[,strength[,length]] (mode 0 off, 1 on, 2 the added light alone) */
+        if ((e = getenv("RG_RT_GI")) && *e) { rt_gi = atoi(e); const char *c = strchr(e, ','); if (c) { rt_gistr = (float)atof(c + 1); c = strchr(c + 1, ','); if (c) rt_gilen = (float)atof(c + 1); } }
+        if (rt_gi < 0 || rt_gi > 2) rt_gi = 0;
+        if ((e = getenv("RG_RT_GI_QUAD")) && *e) rt_giq = atoi(e);     /* one GI ray per 2 x 2 quad from this internal resolution up (0 off) */
+        if ((e = getenv("RG_RT_GI_HALF")) && *e) rt_gihalf = atoi(e);  /* 1: settled pixels trace the bounce in every other 8 x 8 tile per present */
+        if ((e = getenv("RG_RT_GI_HIT")) && *e) rt_gihit = atoi(e);    /* bits: 1 the sun's shadow at the hit, 2 emissive lights at the hit, 4 cut-out casters hit (candidate loop), 8 cut-outs traced solid + one alpha test (cheaper; 4 off) */
+        if ((e = getenv("RG_RT_GI_FILL")) && *e) rt_gik = (float)atof(e);   /* the dark-pixel weight's K (0: none, the bounce added everywhere alike) */
+        if ((e = getenv("RG_RT_GI_SPATIAL")) && *e) rt_girad = (float)atof(e);   /* the history's spatial taps' radius in internal pixels (0 off; < 0: 1.5 x scale) */
+        if ((e = getenv("RG_RT_GI_HLEN")) && *e) rt_gihlen = (float)atof(e);     /* the history's longest length (frames) */
+        if ((e = getenv("RG_RT_GI_RAYS")) && *e) rt_girays = atoi(e);            /* (measurement) rays per pixel: with RG_RT_GI_HLEN=1 a converged reference */
+        /* (rtgi2) RT10 follow-ups (docs/RAYTRACING.md "RT10b"): foliage levers, characters, sky, interiors */
+        if ((e = getenv("RG_RT_GI_CUT")) && *e) { rt_gicut = atoi(e); const char *c = strchr(e, ','); if (c) { rt_gipeel = atoi(c + 1); c = strchr(c + 1, ','); if (c) { rt_gibud = atoi(c + 1); c = strchr(c + 1, ','); if (c) rt_gireach = (float)atof(c + 1); } } }   /* bits[,layers[,budget[,reach]]] (nr_draw.hlsl RTGK) */
+        if ((e = getenv("RG_RT_GI_CHR")) && *e) { rt_gichr = atoi(e); const char *c = strchr(e, ','); if (c) { rt_gicm = (float)atof(c + 1); c = strchr(c + 1, ','); if (c) rt_gicr = atoi(c + 1); } }   /* bits[,clamp margin[,rays]] (RTGC) */
+        if ((e = getenv("RG_RT_GI_SKY")) && *e) { rt_gisky = (float)atof(e); const char *c = strchr(e, ','); rt_giskyc[0] = -1.0f; if (c) { rt_giskyc[0] = (float)atof(c + 1); c = strchr(c + 1, ','); rt_giskyc[1] = c ? (float)atof(c + 1) : rt_giskyc[0]; c = c ? strchr(c + 1, ',') : NULL; rt_giskyc[2] = c ? (float)atof(c + 1) : rt_giskyc[1]; } }   /* strength[,r,g,b] (default the fog colour) */
+        if ((e = getenv("RG_RT_GI_IN")) && *e) rt_giin = (float)atof(e);   /* the strength's factor in enclosed places / without a sun */
+        if ((e = getenv("RG_RT_GI_HR")) && *e) rt_gihr = atoi(e);   /* (rtnext) 1: half-resolution GI (a deferred pass traces per 2 x 2 cell), 0 inline (rtgi2), 2 a pixel without sample or history traces itself */
+        if (rt_gi && !rt_filt) rt_gi = 0;   /* (the bounce needs the filter's history) */
         rt_rays = rt_rays < 1 ? 1 : rt_rays > 16 ? 16 : rt_rays;
     }
     void rt_print_stats()
     {
         if (!rt_on) return;
+        /* (rtalpha) the lookup guard (nr_draw.hlsl nr_rt_tri): 0 0 0 = every hit named a row, triangle and vertices in range */
+        fprintf(stderr, "rg rt bounds: bad lookups row %u triangle %u vertex %u, lookups %u ($RG_RT_GUARD=3) (%llu read-backs%s)\n", rt_bad[0], rt_bad[1], rt_bad[2],
+                rt_bad[7], (unsigned long long)rt_bad_reads, rt_bad_reads ? "" : "; not counted: no counters, $RG_RT_ENCLOSED=0");
         for (auto &e : rt_hist)
             fprintf(stderr, "rg rt class: abe %u zwrite %u ate %u alpha %02x tme %u var %03x: %llu draws\n", e.first & 1, (e.first >> 1) & 1,
                     (e.first >> 2) & 1, (e.first >> 8) & 0xFF, (e.first >> 3) & 1, e.first >> 16, (unsigned long long)e.second);
@@ -3204,6 +3729,16 @@ public:
         fprintf(stderr, "rg rt presents: %llu with their own TLAS (RT2d), %llu failed; penumbra filter %s (%llu presents, half rate %d); ambient occlusion %s (%llu receiver draws without a sun); reflections %s (%llu reflective draws, %llu of them water)\n",
                 (unsigned long long)rt_npass, (unsigned long long)rt_npass_fail, rt_filt && rt_hist_ok ? "on" : "off",
                 (unsigned long long)rt_npres, rt_half, rt_ao ? "on" : "off", (unsigned long long)rst.recv_aoonly, rt_refl ? "on" : "off", (unsigned long long)rst.recv_refl, (unsigned long long)rst.recv_water);
+        fprintf(stderr, "rg rt gi: mode %d ($RG_RT_GI / graphics.rt_gi), strength %.2f, length %.0f, quad from %dx, hit bits %d, fill K %.0f, spatial %.1f px, history %.0f; %llu receiver draws\n",
+                rt_gi, rt_gistr, rt_gilen, rt_giq, rt_gihit, rt_gik, rt_girad < 0.0f ? 1.5f * (float)scale : rt_girad, rt_gihlen, (unsigned long long)rt_gi_recv);
+        fprintf(stderr, "rg rt gi2: cut-outs %d, layers %d, budget %d, reach %.0f ($RG_RT_GI_CUT); characters %d, margin %.1f, rays %d ($RG_RT_GI_CHR); sky %.2f (%s) ($RG_RT_GI_SKY); interiors x%.2f ($RG_RT_GI_IN)\n",
+                rt_gicut, rt_gipeel, rt_gibud, rt_gireach, rt_gichr, rt_gicm, rt_gicr, rt_gisky, rt_giskyc[0] >= 0.0f ? "rgb" : "fog colour", rt_giin);
+        fprintf(stderr, "rg rt prepose: %s ($RG_RT_PREPOSE); %llu frames with the characters' records posed before their draws, %llu records, parts given their frame's pose %llu, left moved on %llu; vertex error of that pose vs the frame's drawn pose %.4f units (%llu vertices); posing %.3f ms CPU per frame with characters\n",
+                rt_prepose_on() ? "on" : "off", (unsigned long long)rst_pre[0], (unsigned long long)rst_pre[1], (unsigned long long)rst_pre[2],
+                (unsigned long long)rst_pre[3], rst_pre[4] ? rt_pre_err / (double)rst_pre[4] : 0.0, (unsigned long long)rst_pre[4],
+                rst_pre[0] ? rt_pre_ms / (double)rst_pre[0] : 0.0);
+        fprintf(stderr, "rg rt gi hr: half resolution %d ($RG_RT_GI_HR), %llu passes, %llu presents' requests without a pass\n",
+                rt_gihr, (unsigned long long)rt_gihr_n, (unsigned long long)rt_gihr_skip);
         fprintf(stderr, "rg rt sun census: key light luminance min %.2f max %.2f; draws taking it < 2 (dark) %llu, 2-8 %llu, 8-32 %llu, 32-64 %llu, 64-128 %llu, >= 128 %llu\n",
                 rt_sunlum_min < 1e29f ? rt_sunlum_min : 0.0f, rt_sunlum_max, (unsigned long long)rt_sunlum[0], (unsigned long long)rt_sunlum[1],
                 (unsigned long long)rt_sunlum[2], (unsigned long long)rt_sunlum[3], (unsigned long long)rt_sunlum[4], (unsigned long long)rt_sunlum[5]);
@@ -3233,6 +3768,7 @@ public:
     }
     bool rt_as_make(RtAS &a, VkAccelerationStructureTypeKHR type, VkDeviceSize size)
     {
+        NR_FPU_KEEP("vkCreateAccelerationStructureKHR");   /* (gfxperf8) */
         if (!buf_make(a.buf, size, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 0))
             return false;
         VkAccelerationStructureCreateInfoKHR ci_ = { VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR };
@@ -3302,7 +3838,7 @@ public:
         bi.geometryCount = 1;
         bi.pGeometries = &g;
         VkAccelerationStructureBuildSizesInfoKHR sz = { VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR };
-        vkGetAccelerationStructureBuildSizesKHR(dev, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &bi, &nt, &sz);
+        { NR_FPU_KEEP("vkGetAccelerationStructureBuildSizesKHR"); vkGetAccelerationStructureBuildSizesKHR(dev, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &bi, &nt, &sz); }   /* (gfxperf8) */
         if (!rt_as_make(mb.blas, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, sz.accelerationStructureSize)) { rst.blas_fail++; return false; }
         VkDeviceAddress sa;
         if (!rt_scratch_get(sz.buildScratchSize, sa)) { rt_as_free(mb.blas); rst.blas_fail++; return false; }
@@ -3359,8 +3895,13 @@ public:
     }
     /* an instance's material row (RT2b; m[14] = the mesh id is set by the caller); cut: an
      * alpha-tested caster whose texels do not all pass (false: its alpha copy is gone, no caster) */
-    bool rt_mat(const RtInst &r, NrMeshBuf &mb, uint64_t fr, uint32_t m[16], bool &cut)
+    /* (rtalpha) a row as collected: the 16 words of the material row, then its bounds (rt_top_build
+     * uploads the rows, then the bounds after them; nr_draw.hlsl nr_rt_tri): triangles, vertices, texels */
+    enum { RT_ROW_U = 20 };
+    bool rt_mat(const RtInst &r, NrMeshBuf &mb, uint64_t fr, uint32_t m[RT_ROW_U], bool &cut)
     {
+        m[16] = mb.nidx / 3;
+        m[17] = mb.vbytes / 28;
         if (r.tgen) {
             auto at = rt_alpha.find(r.tgen);
             if (at == rt_alpha.end()) return false;   /* (its copy failed: no caster rather than a solid card) */
@@ -3380,13 +3921,14 @@ public:
             m[2] = (uint32_t)ib; m[3] = (uint32_t)(ib >> 32);
             m[4] = (uint32_t)ta; m[5] = (uint32_t)(ta >> 32);
             m[6] = at->second.w | (at->second.h << 16);
+            m[18] = at->second.w * at->second.h;
             m[7] = r.mfl | (1u << 24);   /* (a cut-out: hits far along the ray are foliage, nr_rt_ray) */
             memcpy(&m[8], r.uvs, 16);
             memcpy(&m[12], &r.ma, 4);
             memcpy(&m[13], &r.mc, 4);
         }
-        if (rt_refl) {
-            /* (rt5) the reflection hit's material (nr_draw.hlsl nr_rt_hitcol): every instance names
+        if (rt_refl || rt_gi) {
+            /* (rt5) the reflection hit's material (rtgi: and the bounce's hit) (nr_draw.hlsl nr_rt_hitcol): every instance names
              * its mesh's buffers and, when textured, a texel copy; m[7] bit 25 = a material row,
              * bit 26 = textured; m[15] the material colour (RGBA8, 0x80 = 1.0) */
             if (!cut) {
@@ -3394,7 +3936,7 @@ public:
                 uint32_t wh = 0, fl = r.rfl;
                 if (r.rgen) {
                     auto at = rt_alpha.find(r.rgen);
-                    if (at != rt_alpha.end()) { at->second.ref = fr; ta = at->second.addr; wh = at->second.w | (at->second.h << 16); }
+                    if (at != rt_alpha.end()) { at->second.ref = fr; ta = at->second.addr; wh = at->second.w | (at->second.h << 16); m[18] = at->second.w * at->second.h; }
                     else fl &= ~(1u << 26);
                 }
                 m[0] = (uint32_t)vb; m[1] = (uint32_t)(vb >> 32);
@@ -3455,6 +3997,18 @@ public:
                     for (int c = 0; c < 3; c++) { lo[c] = a[3 * v + c] < lo[c] ? a[3 * v + c] : lo[c]; hi[c] = a[3 * v + c] > hi[c] ? a[3 * v + c] : hi[c]; }
                 for (int c = 0; c < 3; c++) jb.ac[c] = 0.5f * (lo[c] + hi[c]);
             }
+            if (!kbase && e.prefr && e.prefr + 1 == fr && e.pre.size() == (size_t)p.nv * 3) {
+                /* (rtnext) the last frame's TLAS pose (pre-posed) against the pose that frame's draws had */
+                const float *a = &rt_dynpos[p.off];
+                double s = 0.0;
+                for (uint32_t v = 0; v < p.nv; v++) {
+                    double q = 0.0;
+                    for (int c = 0; c < 3; c++) { const double dd = (double)a[3 * v + c] - e.pre[3 * v + c]; q += dd * dd; }
+                    s += sqrt(q);
+                }
+                rt_pre_err += s;
+                rst_pre[4] += p.nv;
+            }
             if (!kbase) {
                 /* (rt7) per-vertex pose extrapolation (game frames only: a present's TLAS is posed at its time) */
                 if (rt_xvert < 0) { const char *ev = getenv("RG_RT_XVERT"); rt_xvert = ev && *ev ? atoi(ev) : 1; }
@@ -3499,6 +4053,29 @@ public:
                     jb.vx = true;
                     rst.xv_parts++;
                 }
+                /* (rtnext) this frame's own pose, when its records were pre-posed: the nearest unused one of the same mesh */
+                if (rt_pre_frame && rt_pre_frame != rt_cur && !rt_pre.empty()) {
+                    int best = -1;
+                    float bd = rt_xmax * rt_xmax;
+                    for (size_t k = 0; k < rt_pre.size(); k++) {
+                        const RtPre &q = rt_pre[k];
+                        if (q.used || q.mesh != p.in.mesh || q.nv != p.nv) continue;
+                        float d2 = 0.0f;
+                        for (int c = 0; c < 3; c++) { const float dl = q.c[c] - jb.ac[c]; d2 += dl * dl; }
+                        if (d2 <= bd) { bd = d2; best = (int)k; }
+                    }
+                    if (best >= 0) {
+                        rt_pre[best].used = true;
+                        memcpy(a, &rt_prepos[rt_pre[best].off], n3 * 4);
+                        memcpy(ra.p + doff[i], a, n3 * 4);
+                        jb.vx = true;   /* (no box step either) */
+                        e.pre.assign(a, a + n3);
+                        e.prefr = fr;
+                        rst_pre[2]++;
+                    } else {
+                        rst_pre[3]++;
+                    }
+                }
             }
             VkBufferCopy c = { ra.off + doff[i], 0, (VkDeviceSize)p.nv * 12 };
             vkCmdCopyBuffer(cb(), ra.b, e.vb.b, 1, &c);
@@ -3526,7 +4103,7 @@ public:
             bi.geometryCount = 1;
             bi.pGeometries = &g;
             VkAccelerationStructureBuildSizesInfoKHR sz = { VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR };
-            vkGetAccelerationStructureBuildSizesKHR(dev, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &bi, &e.nt, &sz);
+            { NR_FPU_KEEP("vkGetAccelerationStructureBuildSizesKHR"); vkGetAccelerationStructureBuildSizesKHR(dev, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &bi, &e.nt, &sz); }   /* (gfxperf8) */
             if (!e.blas.as && !rt_as_make(e.blas, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, sz.accelerationStructureSize)) continue;
             VkDeviceAddress sa;
             if (!rt_scratch_get(j.upd ? sz.updateScratchSize : sz.buildScratchSize, sa)) continue;
@@ -3541,7 +4118,7 @@ public:
             if (j.upd) rst.dyn_refit++;
             else rst.dyn_build++;
             const RtInst &in = rt_dynp[j.i].in;
-            uint32_t m[16] = {};
+            uint32_t m[RT_ROW_U] = {};
             bool cut = false;
             if (!rt_mat(in, *j.mb, fr, m, cut)) continue;
             m[14] = in.mesh;
@@ -3584,8 +4161,9 @@ public:
             x.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR |
                       (cut ? VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR : VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR);
             x.accelerationStructureReference = e.blas.addr;
+            if (rt_gi) m[7] |= 1u << 27;   /* (rtgi2) a posed part: nr_draw.hlsl nr_rt_gi_ray's hit faces the ray (its row's positions are not posed) */
             ins.push_back(x);
-            mats.insert(mats.end(), m, m + 16);
+            mats.insert(mats.end(), m, m + RT_ROW_U);
             rst.dyn_inst++;
             rt_sph_add(lo, hi);
         }
@@ -3641,7 +4219,7 @@ public:
     }
     /* a TLAS from instances + their material rows (the buffers grow by powers of two, kept) */
     bool rt_top_build(RtAS &tl, Buf &ib, Buf &mbf, VkDeviceAddress &maddr, uint32_t &cap_,
-                      const std::vector<VkAccelerationStructureInstanceKHR> &ins, const std::vector<uint32_t> &mats)
+                      const std::vector<VkAccelerationStructureInstanceKHR> &ins, const std::vector<uint32_t> &mats, uint32_t *nrows = NULL)
     {
         uint32_t n = (uint32_t)ins.size();
         bool ok = true;
@@ -3654,7 +4232,7 @@ public:
             ok = buf_make(ib, (VkDeviceSize)cap * sizeof(VkAccelerationStructureInstanceKHR),
                           VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
                               VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR, 0) &&
-                 buf_make(mbf, (VkDeviceSize)cap * 64, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+                 buf_make(mbf, (VkDeviceSize)cap * RT_ROW_U * 4, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
                                                                VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 0);
             maddr = ok ? rt_addr(mbf.b) : 0;
             cap_ = ok ? cap : 0;
@@ -3670,18 +4248,28 @@ public:
         bi.geometryCount = 1;
         bi.pGeometries = &g;
         VkAccelerationStructureBuildSizesInfoKHR sz = { VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR };
-        if (ok) vkGetAccelerationStructureBuildSizesKHR(dev, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &bi, &cap_, &sz);
+        if (ok) { NR_FPU_KEEP("vkGetAccelerationStructureBuildSizesKHR"); vkGetAccelerationStructureBuildSizesKHR(dev, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &bi, &cap_, &sz); }   /* (gfxperf8) */
         if (ok && !tl.as) ok = rt_as_make(tl, VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, sz.accelerationStructureSize);
         VkDeviceAddress sa = 0;
         if (ok) ok = rt_scratch_get(sz.buildScratchSize, sa);
         if (ok && n) {
             RA ra = ring_put(ins.data(), (VkDeviceSize)n * sizeof ins[0], 16);
-            RA rm = ra.p && !mats.empty() ? ring_put(mats.data(), (VkDeviceSize)n * 64, 16) : ra;
+            /* the rows (64 bytes each), then their bounds (16 bytes each, nr_draw.hlsl nr_rt_tri) */
+            RA rm = ra;
+            if (ra.p && !mats.empty() && mats.size() == (size_t)n * RT_ROW_U) {
+                rm = ring_alloc((VkDeviceSize)n * RT_ROW_U * 4, 16);
+                for (uint32_t i = 0; rm.p && i < n; i++) {
+                    memcpy(rm.p + (size_t)i * 64, &mats[(size_t)i * RT_ROW_U], 64);
+                    memcpy(rm.p + (size_t)n * 64 + (size_t)i * 16, &mats[(size_t)i * RT_ROW_U + 16], 16);
+                }
+            } else if (!mats.empty()) {
+                rm = RA();
+            }
             if (!ra.p || !rm.p) ok = false;
             else {
                 VkBufferCopy c = { ra.off, 0, (VkDeviceSize)n * sizeof ins[0] };
                 vkCmdCopyBuffer(cb(), ra.b, ib.b, 1, &c);
-                VkBufferCopy c2 = { rm.off, 0, (VkDeviceSize)n * 64 };
+                VkBufferCopy c2 = { rm.off, 0, (VkDeviceSize)n * RT_ROW_U * 4 };
                 if (!mats.empty()) vkCmdCopyBuffer(cb(), rm.b, mbf.b, 1, &c2);   /* (none: the rows are another TLAS's) */
                 rt_barrier();
             }
@@ -3695,6 +4283,7 @@ public:
             vkCmdBuildAccelerationStructuresKHR(cb(), 1, &bi, &pr);
             rt_barrier();
         }
+        if (nrows) *nrows = ok ? n : 0;
         return ok;
     }
     /* once per game frame: BLAS for new casters, the sticky set, then the TLAS + material table */
@@ -3735,13 +4324,13 @@ public:
         /* enclosure: the counts of frame fr - 8 (when its submission completed) */
         if (rt_encl_on) {
             if (!rt_stat.b) {
-                if (!buf_make(rt_stat, RT_STAT_SLOTS * 8, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                if (!buf_make(rt_stat, RT_STAT_BYTES, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
                                                                VK_BUFFER_USAGE_TRANSFER_DST_BIT, 0) ||
-                    !buf_make(rt_statrb, RT_STAT_SLOTS * 8, VK_BUFFER_USAGE_TRANSFER_DST_BIT, 2) || !rt_statrb.map) {
+                    !buf_make(rt_statrb, RT_STAT_BYTES, VK_BUFFER_USAGE_TRANSFER_DST_BIT, 2) || !rt_statrb.map) {
                     buf_free(rt_stat); buf_free(rt_statrb);
                     rt_encl_on = 0;
                 } else {
-                    vkCmdFillBuffer(cb(), rt_stat.b, 0, RT_STAT_SLOTS * 8, 0);
+                    vkCmdFillBuffer(cb(), rt_stat.b, 0, RT_STAT_BYTES, 0);
                     rt_barrier();   /* (before the slot copy / fill below: sync validation, rt3) */
                 }
             }
@@ -3751,8 +4340,25 @@ public:
                 VkBufferCopy c = { pv, pv, 8 };
                 vkCmdCopyBuffer(cb(), rt_stat.b, rt_statrb.b, 1, &c);
                 rt_stat_serial[pv / 8] = subs[ci].serial;
+                {
+                    /* (rtalpha) the guard's counters (monotonic: every frame's copy; read when the newest has landed, and at exit) */
+                    VkBufferCopy cb_ = { RT_STAT_BAD, RT_STAT_BAD, 32 };
+                    vkCmdCopyBuffer(cb(), rt_stat.b, rt_statrb.b, 1, &cb_);
+                    if (!rt_bad_serial) rt_bad_serial = subs[ci].serial;
+                }
                 vkCmdFillBuffer(cb(), rt_stat.b, cu, 8, 0);
                 rt_barrier();
+            }
+            if (rt_statrb.map && rt_bad_serial && rt_serial_done(rt_bad_serial)) {
+                buf_inval(rt_statrb);
+                uint32_t b[8];
+                memcpy(b, rt_statrb.map + RT_STAT_BAD, 32);
+                rt_bad_serial = 0;
+                if (b[0] + b[1] + b[2] > rt_bad[0] + rt_bad[1] + rt_bad[2])
+                    fprintf(stderr, "rg rt bounds: frame %u: bad lookups row %u triangle %u vertex %u (last: row %u, triangle / index %u, bound %u, rows %u)\n",
+                            rt_cur, b[0], b[1], b[2], b[3], b[4], b[5], b[6]);
+                memcpy(rt_bad, b, sizeof b);
+                rt_bad_reads++;
             }
             const int k = (int)((fr + RT_STAT_SLOTS - 8) % RT_STAT_SLOTS);
             if (rt_statrb.map && fr > 8 && rt_stat_serial[k] && rt_serial_done(rt_stat_serial[k])) {
@@ -3786,7 +4392,7 @@ public:
         std::vector<VkAccelerationStructureInstanceKHR> ins;
         std::vector<uint32_t> mats;
         ins.reserve(all.size());
-        mats.reserve(all.size() * 16);
+        mats.reserve(all.size() * RT_ROW_U);
         bool built = false;
         for (const RtInst *rp : all) {
             const RtInst &r = *rp;
@@ -3795,7 +4401,7 @@ public:
             NrMeshBuf &mb = it->second;
             if (mb.blas_state == 0) { rt_blas(mb); built = true; }
             if (mb.blas_state != 1) continue;
-            uint32_t m[16] = {};
+            uint32_t m[RT_ROW_U] = {};
             bool cut = false;
             if (!rt_mat(r, mb, fr, m, cut)) continue;
             m[14] = r.mesh;
@@ -3808,7 +4414,7 @@ public:
                       (cut ? VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR : VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR);
             x.accelerationStructureReference = mb.blas.addr;
             ins.push_back(x);
-            mats.insert(mats.end(), m, m + 16);
+            mats.insert(mats.end(), m, m + RT_ROW_U);
         }
         /* RT2c: the posed characters (rt_dynp): positions uploaded, BLAS built or refitted */
         rt_nsph = 0;
@@ -3838,7 +4444,7 @@ public:
         if (built) { rt_barrier(); rt_scr_off = 0; }
         uint32_t n = (uint32_t)ins.size();
         rt_ctop(rt_ctlas, rt_cibuf, rt_ccap, ins);
-        if (rt_top_build(rt_tlas, rt_ibuf, rt_mbuf, rt_mbuf_addr, rt_tlas_cap, ins, mats)) {
+        if (rt_top_build(rt_tlas, rt_ibuf, rt_mbuf, rt_mbuf_addr, rt_tlas_cap, ins, mats, &rt_mbuf_rows)) {
             rt_tlas_stale = false;
             rst.tlas++;
             rst.inst += n;
@@ -3869,7 +4475,9 @@ public:
     int rt_last_chr = 0;
     int rt_chars_shadow() override
     {
-        return rt_on && rt_chars && rt_sun_ok && !rt_tlas_stale && rt_last_chr > 0 && (!rt_encl_on || rt_kstr >= 0.5f) ? 1 : 0;
+        /* (rtnext) bit 1: ray tracing on with a TLAS (graphics.rt_char_shadows = drop, nr_dev.cpp) */
+        return (rt_on && rt_chars && rt_sun_ok && !rt_tlas_stale && rt_last_chr > 0 && (!rt_encl_on || rt_kstr >= 0.5f) ? 1 : 0) |
+               (rt_on && rt_tlas.as && !rt_tlas_stale ? 2 : 0);
     }
     bool rt_pass(int phase) override
     {
@@ -3903,7 +4511,7 @@ public:
                 NrMeshBuf &mb = it->second;
                 if (mb.blas_state == 0) { rt_blas(mb); built = true; }
                 if (mb.blas_state != 1) return;
-                uint32_t m[16] = {};
+                uint32_t m[RT_ROW_U] = {};
                 bool cut = false;
                 if (!rt_mat(r, mb, fr, m, cut)) return;
                 m[14] = r.mesh;
@@ -3916,7 +4524,7 @@ public:
                           (cut ? VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR : VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR);
                 x.accelerationStructureReference = mb.blas.addr;
                 ins.push_back(x);
-                mats.insert(mats.end(), m, m + 16);
+                mats.insert(mats.end(), m, m + RT_ROW_U);
             };
             for (const RtInst &r : rt_inst) add(r);
             for (auto &kv : rt_stick)
@@ -3927,7 +4535,7 @@ public:
             memcpy(rt_pcsph, rt_sph, sizeof rt_sph[0] * (size_t)rt_nsph);
             if (built) { rt_barrier(); rt_scr_off = 0; }
             rt_ctop(rt_pctlas, rt_pcibuf, rt_pccap, ins);
-            rt_pass_on = rt_top_build(rt_ptlas, rt_pibuf, rt_pmbuf, rt_pmbuf_addr, rt_ptlas_cap, ins, mats);
+            rt_pass_on = rt_top_build(rt_ptlas, rt_pibuf, rt_pmbuf, rt_pmbuf_addr, rt_ptlas_cap, ins, mats, &rt_pmbuf_rows);
             if (rt_pass_on) rt_npass++;
             else rt_npass_fail++;
             std::swap(rt_inst, rt_pinst); std::swap(rt_keys, rt_pkeys); std::swap(rt_seen, rt_pseen);
@@ -3976,6 +4584,91 @@ public:
     int rt_ao_nosun = 1;        /* (rt5) receivers without a sun trace AO only ($RG_RT_AO_NOSUN=0: rt4, none) */
     bool rt_rnosun = false;     /* (rt5) the current receiver: no sun (AO only) */
     /* (rt5) RT3 reflections spike (docs/RAYTRACING.md "RT5"): graphics.raytracing 4 or $RG_RT_REFL=1[,strength[,length]] */
+    /* (rtgi) RT10, one-bounce diffuse GI (nr_draw.hlsl nr_rt_gi, rows 38-39 RTGI / RTGJ): graphics.rt_gi or $RG_RT_GI */
+    int rt_gi = 0, rt_giq = 2, rt_gihit = 11, rt_girays = 1, rt_gihalf = 0;   /* (rtgi2) hit 11: cut-out cards solid + peeled (rtgi 7) */
+    float rt_gistr = 0.6f, rt_gilen = 600.0f, rt_gik = 64.0f, rt_girad = -1.0f, rt_gihlen = 32.0f;
+    uint64_t rt_gi_recv = 0;
+    /* (rtnext) half-resolution GI (docs/RAYTRACING.md "RT12"; nr_draw.hlsl nr_rt_gi_hrs / CS_rtgi): the receivers' requests
+     * (4 words per 2 x 2 cell) and the pass's samples (3 words per cell), the rows of one map receiver of the present
+     * (rt_gi_hr_take: one with a sun and emissive lights first), passes run / presents with requests but no pass */
+    int rt_gihr = 0;   /* (rtnext, paused: off by default until gated; $RG_RT_GI_HR=1 half resolution) */
+    Img rt_gireq, rt_gismp;
+    bool rt_gihr_ok = false, rt_gic_ok = false;
+    int rt_gic_score = -1;
+    float rt_gic[43][4];
+    uint64_t rt_gihr_n = 0, rt_gihr_skip = 0;
+    bool rt_gihr_on() const { return rt_gi && rt_gihr > 0 && rt_gihr_ok && !rt_dbg; }
+    void rt_gihr_need()
+    {
+        if (!rt_gi || rt_gihr <= 0 || !rt_hist_ok) return;
+        const int wp = rt_hw / rt_hwords(), cw = (wp + 1) / 2, ch = (rt_hh + 1) / 2;
+        if (rt_gihr_ok && rt_gireq.w >= cw * 4 && rt_gireq.h >= ch) return;
+        img_defer(rt_gireq);
+        img_defer(rt_gismp);
+        rt_gihr_ok = img_make(rt_gireq, cw * 4, ch, VK_FORMAT_R32_UINT, VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, false) &&
+                     img_make(rt_gismp, cw * 3, ch, VK_FORMAT_R32_UINT, VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, false);
+        if (!rt_gihr_ok) { img_free(rt_gireq); img_free(rt_gismp); rt_gihr = 0; return; }
+        rt_gic_ok = false;
+        pre_op();
+        VkClearColorValue z = {};
+        VkImageSubresourceRange rr = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+        vkCmdClearColorImage(cb(), rt_gireq.i, VK_IMAGE_LAYOUT_GENERAL, &z, 1, &rr);
+        vkCmdClearColorImage(cb(), rt_gismp.i, VK_IMAGE_LAYOUT_GENERAL, &z, 1, &rr);
+        rt_barrier();
+        post_op();
+    }
+    /* a map receiver's rows for the pass (the receivers with a sun and the emissive lights preferred) */
+    void rt_gi_hr_take(const float (*o)[4])
+    {
+        if (!(o[38][0] > 0.0f) || rt_rchr) return;
+        const int sc = (o[4][0] * o[4][0] + o[4][1] * o[4][1] + o[4][2] * o[4][2] > 0.5f ? 2 : 0) + (o[29][2] > 0.5f ? 1 : 0);
+        if (rt_gic_ok && sc < rt_gic_score) return;
+        memcpy(rt_gic, o, sizeof rt_gic);   /* (43 = RT_CB_ROWS) */
+        rt_gic_ok = true;
+        rt_gic_score = sc;
+    }
+    /* after a present's receivers (rt_pass_new, before the history swap): trace the present's requests against the newest
+     * TLAS (a game frame's: its own casters, built just before), its material table and lights patched in */
+    void rt_gi_hr_pass()
+    {
+        if (!rt_gic_ok) return;
+        rt_gic_ok = false;
+        rt_gic_score = -1;
+        if (!rt_gihr_ok || !rt_tlas.as || rt_tlas_stale || !sh_cs_rtgi.m) { rt_gihr_skip++; return; }
+        float o[RT_CB_ROWS][4];
+        memcpy(o, rt_gic, sizeof o);
+        const VkDeviceAddress ma = rt_mbuf_addr;
+        uint32_t lo = (uint32_t)ma, hi = (uint32_t)(ma >> 32), nr0;
+        memcpy(&o[8][0], &lo, 4);
+        memcpy(&o[8][1], &hi, 4);
+        memcpy(&nr0, &o[10][3], 4);
+        const uint32_t nr = (nr0 & 0xC0000000u) | (rt_mbuf_rows & 0x3FFFFFFFu);
+        memcpy(&o[10][3], &nr, 4);
+        if (o[29][2] > 0.5f) o[29][2] = (float)emi_ln;
+        slots_clear();
+        set_ubo(2, o, sizeof o);
+        slots[B_T + 8].as = rt_tlas.as;
+        slots[B_T + 9].as = rt_ctlas.as;
+        if (rt_stat.b) set_buf(B_U + 6, rt_stat.b, 0, VK_WHOLE_SIZE);
+        set_img(B_U + 9, rt_gireq.uv);
+        set_img(B_U + 10, rt_gismp.uv);
+        pre_op();
+        rt_barrier();   /* the receivers' requests (and the history writes) before the pass reads them */
+        post_op();
+        dispatch(sh_cs_rtgi, (uint32_t)(rt_gireq.w / 4 + 7) / 8, (uint32_t)(rt_gireq.h + 7) / 8, 1);
+        pre_op();
+        rt_barrier();   /* the samples before the next present's receivers read them */
+        post_op();
+        slots_clear();
+        rt_gihr_n++;
+    }
+    /* (rtgi2) rows 40-42 RTGK / RTGS / RTGC: the cut-out cards in bounce rays, the sky on a miss, characters; interiors' factor */
+    /* (rtgi2) defaults (docs/RAYTRACING.md "RT10b"): cut 12 = 4 (a texel still see-through after the last layer is a hit) | 8
+     * (azimuth from white noise: the 1-ray bias / background trail), 2 layers; sky 0.1 x the fog colour; interiors x0.6;
+     * characters 3 (they block bounce rays, their hit bounces).  rtgi = $RG_RT_GI_HIT=7 RG_RT_GI_CUT=0 RG_RT_GI_SKY=0
+     * RG_RT_GI_IN=1 RG_RT_GI_CHR=0 */
+    int rt_gicut = 12, rt_gipeel = 2, rt_gibud = 0, rt_gichr = 3, rt_gicr = 0;
+    float rt_gireach = 0.0f, rt_gicm = 8.0f, rt_gisky = 0.1f, rt_giskyc[3] = { -1.0f, -1.0f, -1.0f }, rt_giin = 0.6f;
     int rt_refl = 0, rt_rclass = 1;   /* $RG_RT_REFL_CLASS bits: 1 env-map / reflection-map draws (the hit replaces the map's texel), 2 water (Fresnel blend; experimental, off by default: no confirmed water in the fixtures) */
     float rt_rstr = 1.0f, rt_rlen = 3000.0f;
     /* (rt6) reflections polish: the game's fog on the hit ($RG_RT_REFL_FOG=0 off), the distance fade's
@@ -3994,12 +4687,14 @@ public:
     uint64_t rt_npres = 0;
     float rt_vp_cur[4][4] = {}, rt_vp_prev[4][4] = {}, rt_cam_cur[3] = {}, rt_cam_prev[3] = {};
     bool rt_vp_cur_ok = false, rt_vp_prev_ok = false;
-    void rt_hist_free() { img_free(rt_hst[0]); img_free(rt_hst[1]); rt_hist_ok = false; }
+    /* the history's words per pixel: 0 the shadow, 1 AO, (rtgi) 2-3 the bounce (RGB, length | eye distance) */
+    int rt_hwords() const { return rt_gi ? 4 : rt_ao ? 2 : 1; }
+    void rt_hist_free() { img_free(rt_hst[0]); img_free(rt_hst[1]); rt_hist_ok = false; img_free(rt_gireq); img_free(rt_gismp); rt_gihr_ok = false; }
     /* the history images for a receiver target of w x h native pixels (grown when needed) */
     void rt_hist_need(int w, int h)
     {
         if (!rt_filt) return;
-        const int W = w * scale * (rt_ao ? 2 : 1), H = h * scale;
+        const int W = w * scale * rt_hwords(), H = h * scale;
         if (rt_hist_ok && W <= rt_hw && H <= rt_hh) return;
         img_defer(rt_hst[0]);
         img_defer(rt_hst[1]);
@@ -4054,6 +4749,7 @@ public:
     void rt_pass_new()
     {
         if (!rt_filt || !rt_hist_ok) return;
+        if (rt_vp_cur_ok && rt_gic_ok) rt_gi_hr_pass();   /* (rtnext) the half-resolution GI pass of the present that ends */
         if (rt_vp_cur_ok) {
             memcpy(rt_vp_prev, rt_vp_cur, sizeof rt_vp_cur);
             memcpy(rt_cam_prev, rt_cam_cur, sizeof rt_cam_cur);
@@ -4235,7 +4931,7 @@ public:
                 in.m[4 * r + 3] = d->rt[3][r];
             }
             /* (rt5) reflections: the hit's colour (texture, vertex colour, material colour) */
-            if (rt_refl) {
+            if (rt_refl || rt_gi) {   /* (rtgi: the bounce's hit too) */
                 RtAlpha *rc = tx && g.tme && !(var & (V_ENVMAP | V_REFLECT)) && !(g.tex_rt >= 0) ? rt_alpha_get(tx) : NULL;
                 in.rgen = rc ? tx->rtgen : 0;
                 in.rfl = (((at >> 16) & 3u) << 16) | ((var & V_VCOL) ? 1u << 19 : 0u) | (g.clamp_u ? 1u << 20 : 0u) |
@@ -4336,7 +5032,7 @@ public:
         rt_rmode = rdraw1 ? 1 : rdraw2 ? 2 : 0;
         if (rdraw) rst.recv_refl++;
         if (rdraw2) rst.recv_water++;
-        if (!rt_sun_ok && !(rt_ao && rt_ao_nosun) && !emi_ln) {   /* (rt8: emissive lights receive without a sun) */
+        if (!rt_sun_ok && !(rt_ao && rt_ao_nosun) && !emi_ln && !rt_gi) {   /* (rtgi: the bounce receives without a sun) */   /* (rt8: emissive lights receive without a sun) */
             rst.sk_nolight++;
             if (rt_sun_kind) rst.sun_dark++;
             if (!rdraw) return false;
@@ -4349,7 +5045,7 @@ public:
         return true;
     }
     /* the receiver's constants (nr_draw.hlsl NrRT) */
-    enum { RT_CB_ROWS = 38 };   /* (rt8: row 29 RTI, emissive lights; rt9: rows 30-33 RTWP, 34 RTMV, 35 RTN, 36 RTO, 37 RTJ) */
+    enum { RT_CB_ROWS = 43 };   /* (rtgi: rows 38 RTGI, 39 RTGJ; rtgi2: 40 RTGK, 41 RTGS, 42 RTGC) */   /* (rt8: row 29 RTI, emissive lights; rt9: rows 30-33 RTWP, 34 RTMV, 35 RTN, 36 RTO, 37 RTJ) */
     void rt_cb(const gpu_nr_draw *d, float o[RT_CB_ROWS][4])
     {
         memset(o, 0, RT_CB_ROWS * 16);
@@ -4395,7 +5091,17 @@ public:
         const bool chr_ok = !rt_rchr || rt_pass_on;
         o[10][0] = chr_ok ? 5.0f : 1.0f;
         o[10][1] = chr_ok ? 10.0f : 2.0f;
-        o[10][2] = rt_rchr ? 3.0f : 15.0f;   /* (rt5) a reflection ray's mask: a character part's sees the map only (its own last pose would mirror itself) */
+        o[10][2] = rt_rchr ? 3.0f : 15.0f;
+        {
+            /* (rtalpha) the table's rows (as uint): a hit's lookups are checked against them and the bounds after them */
+            static int gd = -1;
+            if (gd < 0) { const char *e = getenv("RG_RT_GUARD"); gd = e && *e ? atoi(e) : 1; }
+            /* ($RG_RT_GUARD=0: unchecked, a control; 2: the table claims half its rows, a control that the counters count;
+             * 3: every lookup counted too, a measurement) */
+            uint32_t nr = rt_pass_on ? rt_pmbuf_rows : rt_mbuf_rows;
+            nr = gd == 0 ? nr | 0x80000000u : gd == 2 ? nr / 2 : gd == 3 ? nr | 0x40000000u : nr;
+            memcpy(&o[10][3], &nr, 4);
+        }   /* (rt5) a reflection ray's mask: a character part's sees the map only (its own last pose would mirror itself) */
         /* RT2f: the penumbra filter (history images of this present and the previous one, its camera) */
         rt_vp_take(d);
         const bool hf = rt_filt && rt_hist_ok;
@@ -4423,7 +5129,7 @@ public:
          * enclosure (an enclosed place has no real sunlit faces) */
         const bool inside = rt_rnosun || (rt_encl_on && rt_kstr < 0.5f);
         o[25][1] = inside ? rt_aostr_in : rt_aostr;
-        o[25][2] = rt_ao ? 2.0f : 1.0f;
+        o[25][2] = (float)rt_hwords();
         o[25][3] = getenv("RG_RT_AODBG") ? -1.0f : 1.0f + (rt_aolit - 1.0f) * (rt_encl_on ? rt_kstr : 1.0f);   /* (rt4) AO share on sunlit faces; < 0: the AO debug view */
         /* (rt5) reflections (nr_draw.hlsl RTR): x 1 = this draw's environment / reflection map texel
          * becomes the reflection's hit, y strength, z ray length, w bit 0 one ray per 2 x 2 quad */
@@ -4494,6 +5200,38 @@ public:
             if (cp < 0) { const char *e = getenv("RG_RT_CHRPAT"); cp = !(e && e[0] == '0'); }
             if (!cp) o[29][3] = (float)((int)o[29][3] | 2);
         }
+        /* (rtgi) RT10 bounce GI (nr_draw.hlsl nr_rt_gi): RTGI x mode (1 on, 2 the added light alone), y strength,
+         * z ray length, w bits (1 one ray per 2 x 2 quad, 2 the sun's shadow at the hit, 4 emissive lights at the
+         * hit, 8 cut-out casters hit); RTGJ x the dark-pixel weight's K, y the history's spatial taps' radius
+         * (internal pixels), z the history's longest length */
+        if (rt_gi && rt_filt && rt_hist_ok) {
+            o[38][0] = (float)rt_gi;
+            o[38][1] = rt_gistr;
+            o[38][2] = rt_gilen;
+            const bool q = rt_giq > 0 && scale >= rt_giq && !rt_dbg && !rt_rchr;
+            o[38][3] = (float)((q ? 1 : 0) | ((rt_gihit & 1) ? 2 : 0) | ((rt_gihit & 2) ? 4 : 0) | ((rt_gihit & 4) ? 8 : 0) | (rt_gihalf ? 16 : 0) | ((rt_gihit & 8) ? 32 : 0) |
+                               (rt_gihr_on() ? 64 : 0) | (rt_gihr_on() && rt_gihr == 2 ? 128 : 0) |   /* (128: $RG_RT_GI_HR=2, a pixel without sample or history traces itself) */
+                               (rt_gihr_on() && getenv("RG_RT_GI_HRDBG") ? 256 : 0));   /* (256: the debug colours of the half-resolution samples) */   /* (rtnext) 64: half resolution (the deferred pass's samples) */
+            o[39][0] = rt_gik;
+            o[39][1] = rt_girad < 0.0f ? 1.5f * (float)scale : rt_girad;
+            o[39][2] = rt_gihlen < 1.0f ? 1.0f : rt_gihlen > 63.0f ? 63.0f : rt_gihlen;
+            o[39][3] = (float)(rt_girays < 1 ? 1 : rt_girays > 64 ? 64 : rt_girays);
+            /* (rtgi2) open places (1) .. enclosed / no sun (0), as the reflections' floor: the interiors' strength factor, the sky */
+            const float ko = rt_rnosun ? 0.0f : rt_encl_on ? rt_kstr : 1.0f;
+            o[38][1] = rt_gistr * (rt_giin + (1.0f - rt_giin) * ko);
+            o[40][0] = (float)rt_gicut;
+            o[40][1] = (float)(rt_gipeel < 1 ? 1 : rt_gipeel > 8 ? 8 : rt_gipeel);
+            o[40][2] = (float)(rt_gibud < 0 ? 0 : rt_gibud);
+            o[40][3] = rt_gireach > 0.0f ? rt_gireach : 0.0f;
+            if (rt_gisky > 0.0f) {
+                if (rt_giskyc[0] >= 0.0f) for (int k = 0; k < 3; k++) o[41][k] = rt_gisky * rt_giskyc[k] * ko;
+                else o[41][3] = rt_gisky * ko;
+            }
+            o[42][0] = (float)rt_gichr;
+            o[42][1] = rt_gicm;
+            o[42][2] = (float)(rt_gicr < 0 ? 0 : rt_gicr > 16 ? 16 : rt_gicr);
+            rt_gi_recv++;
+        }
     }
     /* (rt9) motion vectors of moving receivers (docs/RAYTRACING.md "RT9"): a character part's previous
      * present's object rows and bones (by mesh id and its occurrence among this present's character
@@ -4501,7 +5239,9 @@ public:
      * character gets its AO and soft shadow back.  $RG_RT_MV=bits[,tol fraction[,tol units[,AO rays[,least
      * weight]]]]: bit 0 on (0 = rt8: no AO, hard shadow on characters), bit 1 the quad average of the noisy
      * terms, bit 2 the characters' AO rays see the characters too, bit 3 (measurement: the reference of
-     * tools/rt/rt_ghost.py) every receiver traces RTN.z AO rays; $RG_RT_CHRPAT=1 = rt8, =0 = rt7.
+     * tools/rt/rt_ghost.py) every receiver traces RTN.z AO rays, bit 4 the history clamped to the quad's current
+     * samples, bit 5 white-noise samples; default (rt9b) 51,0.01,1,4,0.1 (rt9's tuning: 3,..,2); $RG_RT_CHRPAT=1
+     * = rt8, =0 = rt7.
      * Returns true when rt_mvb holds the previous bones (bound as b3). */
     struct RtMvEnt { uint64_t pres; bool sk; float w[4][4]; float b[256][4]; };
     std::unordered_map<uint64_t, RtMvEnt> rt_mvm;
@@ -4509,18 +5249,18 @@ public:
     uint64_t rt_mvocc_p = ~0ull;
     float rt_mvb[256][4];
     int rt_mvmode = -1;
-    float rt_mvp[4] = { 0.01f, 1.0f, 2.0f, 0.1f };
+    float rt_mvp[4] = { 0.01f, 1.0f, 4.0f, 0.1f };
     float rt_mvclamp = 0.05f;   /* ($RG_RT_MV_CLAMP: the history clamp's margin, bit 4) */
     int rt_mvsr = 1;            /* ($RG_RT_MV_RAYS: a moving character part's shadow rays per pixel) */
     uint64_t rt_mvst[3] = {};   /* moving receivers drawn: with the previous pose, without (first present), skinned */
     bool rt_mv_rows(const gpu_nr_draw *d, float o[RT_CB_ROWS][4])
     {
         if (rt_mvmode < 0) {
-            rt_mvmode = 3;
+            rt_mvmode = 51;
             const char *e = getenv("RG_RT_MV");
             if (e && *e) {
                 float v[4] = { rt_mvp[0], rt_mvp[1], rt_mvp[2], rt_mvp[3] };
-                int b = 3;
+                int b = 51;
                 sscanf(e, "%d,%f,%f,%f,%f", &b, &v[0], &v[1], &v[2], &v[3]);
                 rt_mvmode = b;
                 memcpy(rt_mvp, v, sizeof v);
@@ -4566,6 +5306,90 @@ public:
         return pb;
     }
 
+    /* (gfxperf7, measurement) RG_VK_DRAWLOG=FILE: one line per recorded native draw with hashes of
+     * everything the host hands the GPU for it (constants, bones, mesh / immediate vertices, the
+     * texture's decode key and constants, pipeline key without its pointer, viewport / scissor), to
+     * compare two exes draw by draw (docs/NATIVE-RENDER.md "GPU throughput 6") */
+    FILE *drawlog_f = []() -> FILE * { const char *e = getenv("RG_VK_DRAWLOG"); return e && e[0] ? fopen(e, "w") : NULL; }();
+    uint64_t drawlog_n = 0;
+    static uint64_t dl_fnv(const void *p, size_t n, uint64_t h = 1469598103934665603ull)
+    {
+        const uint8_t *b = (const uint8_t *)p;
+        for (size_t i = 0; i < n; i++) { h ^= b[i]; h *= 1099511628211ull; }
+        return h;
+    }
+    static unsigned dl_csr()
+    {
+#if defined(__i386__) || defined(_M_IX86)
+        unsigned short cw;
+        __asm__ volatile("fnstcw %0" : "=m"(cw));   /* (i686: the x87 control word in the high half) */
+        return _mm_getcsr() | ((unsigned)cw << 16);
+#elif defined(__x86_64__) || defined(_M_X64)
+        return _mm_getcsr();
+#else
+        return 0;
+#endif
+    }
+    void drawlog(const GpuNrDraw &g, const GKey &k, const Target &ct, const Target *zt, bool zr, const float (*cbv)[4],
+                 const NrTex *tx, VkImageView tview, bool clipgs, bool rtr)
+    {
+        const gpu_nr_draw *d = g.d;
+        GKey kk = k;
+        kk.p = NULL;
+        const char *vs = k.p && k.p->vs ? k.p->vs->entry : "-", *ps = k.p && k.p->ps ? k.p->ps->entry : "-";
+        const char *gs = k.p && k.p->gs ? k.p->gs->entry : "-";
+        uint64_t hm = 0, hi = 0, hb = 0;
+        if (!g.im && d) {
+            if (d->mesh.vtx) hm = dl_fnv(d->mesh.vtx, (size_t)d->mesh.nvtx * 28);
+            if (d->mesh.idx) hi = dl_fnv(d->mesh.idx, (size_t)d->mesh.nidx * 4);
+            if (d->nbones_rows) hb = dl_fnv(d->bones, sizeof d->bones);
+        } else if (g.im) {
+            hm = dl_fnv(g.im, (size_t)g.nim * sizeof(GpuImVtx));
+            if (g.nruns > 0) hi = dl_fnv(g.runs, (size_t)g.nruns * 8);
+        }
+        fprintf(drawlog_f, "%llu rt %d %dx%d f%u z %d%s im %u mesh %u nv %u ni %u cb %016llx bo %016llx vb %016llx ib %016llx "
+                "key %016llx %s/%s/%s tex %d/%d snap %d h %016llx dk %016llx dcb %016llx rgba %d lin %d cl %d%d an %d rep %d tv %d "
+                "vp %d %d sc %d %d %d %d clip %d rtr %d mx %08x\n",
+                (unsigned long long)drawlog_n++, g.color_rt, ct.w, ct.h, (unsigned)ct.fmt, g.depth_rt, zr ? "r" : "", g.nim,
+                d && !g.im ? d->mesh.id : 0u, d && !g.im ? d->mesh.nvtx : 0u, d && !g.im ? d->mesh.nidx : 0u,
+                (unsigned long long)dl_fnv(cbv, sizeof(float) * 4 * 26), (unsigned long long)hb, (unsigned long long)hm,
+                (unsigned long long)hi, (unsigned long long)dl_fnv(&kk, sizeof kk), vs, gs, ps, g.tme, g.tex_rt, g.tex_snap,
+                (unsigned long long)(tx ? tx->h : 0), (unsigned long long)dl_fnv(g.dec_key, sizeof g.dec_key),
+                (unsigned long long)dl_fnv(&g.dec_cb, sizeof g.dec_cb), g.dec_rgba != NULL, g.lin, g.clamp_u, g.clamp_v, g.aniso,
+                g.rep != NULL, tview != VK_NULL_HANDLE, g.vp_w, g.vp_h, g.scissor.x0, g.scissor.y0, g.scissor.x1, g.scissor.y1,
+                (int)clipgs, (int)rtr, dl_csr());
+        /* RG_VK_DRAWLOG_RB=FROM:TO: for those draws also the texels of the decoded texture, the colour
+         * target and an ordered depth target before the draw, read back (waits for the GPU) */
+        static int rb0 = -2, rb1;
+        if (rb0 == -2) { const char *e = getenv("RG_VK_DRAWLOG_RB"); if (!e || sscanf(e, "%d:%d", &rb0, &rb1) != 2) rb0 = -1; }
+        const long long n = (long long)drawlog_n - 1;
+        if (rb0 >= 0 && n >= rb0 && n <= rb1) {
+            std::vector<uint32_t> px;
+            uint64_t ht = 0, hc = 0, hz = 0;
+            if (tx && tx->img.i && tx->tw > 0) {
+                px.resize((size_t)tx->tw * tx->th);
+                if (read_img(tx->img.i, 0, 0, tx->tw, tx->th, px.data()) >= 0) ht = dl_fnv(px.data(), px.size() * 4);
+            }
+            px.resize((size_t)ct.w * scale * ct.h * scale);
+            if (read_img(ct.img, 0, 0, ct.w * scale, ct.h * scale, px.data()) >= 0) hc = dl_fnv(px.data(), px.size() * 4);
+            if (zt && zr) {
+                px.resize((size_t)zt->w * scale * zt->h * scale);
+                if (read_img(zt->img, 0, 0, zt->w * scale, zt->h * scale, px.data()) >= 0) hz = dl_fnv(px.data(), px.size() * 4);
+            }
+            fprintf(drawlog_f, "  rb tex %016llx colour %016llx depth %016llx\n", (unsigned long long)ht, (unsigned long long)hc,
+                    (unsigned long long)hz);
+            /* the values themselves: constant rows, immediate vertices (bit patterns) */
+            for (int r = 0; r < 26; r++) {
+                const uint32_t *w = (const uint32_t *)cbv[r];
+                fprintf(drawlog_f, "  cb%02d %08x %08x %08x %08x\n", r, w[0], w[1], w[2], w[3]);
+            }
+            for (uint32_t v = 0; g.im && v < g.nim && v < 64; v++) {
+                const uint32_t *w = (const uint32_t *)&g.im[v];
+                fprintf(drawlog_f, "  v%u %08x %08x %08x %08x %08x %08x %08x %08x\n", v, w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7]);
+            }
+        }
+    }
+
     bool nr_draw(const GpuNrDraw &g) override
     {
         if (!nr_ok) return false;
@@ -4573,6 +5397,10 @@ public:
         Target *zt = g.depth_rt >= 0 ? &targets[g.depth_rt] : NULL;
         const bool zr = zt && !zt->dsv;
         if (zr && (!sh_ps_nr_z.m || !zt->uv)) return false;
+        /* (gfxperf9) $RG_VK_CLR: an ordered-view immediate draw through the colour attachment + local reads
+         * (not when it samples the target itself: the attachment would be read as a texture) */
+        const bool clr = clr_ok && g.crov && g.im && g.nim && ct.view && (zr ? sh_ps_nr_czl.m != VK_NULL_HANDLE : (sh_ps_nr_cl.m && !zt)) &&
+                         !(g.tme && g.tex_rt == g.color_rt && !g.tex_snap);
         if (g.crov && (!g.im || !ct.uv || (zr ? !sh_ps_nr_cz.m : (!sh_ps_nr_c.m || zt)))) return false;
         const gpu_nr_draw *d = g.d;
         NrMeshBuf *mb = NULL;
@@ -4588,7 +5416,7 @@ public:
         NrTex *rtx = NULL;   /* ray tracing: an alpha-tested caster's texture (RT2b) */
         if (g.tme && g.tex_rt >= 0) {
             if (g.tex_snap) {
-                snapshot_rect(ct, g.tex_rect);
+                if (g.tex_snap != 2) snapshot_rect(ct, g.tex_rect);   /* (2: the pass's snapshot, taken by an earlier draw: RG_NR_FBX) */
                 tview = ct.snap_view;
             } else {
                 tview = targets[g.tex_rt].view;
@@ -4637,32 +5465,40 @@ public:
         set_ubo(0, cbv, sizeof cbv);
         if (d->nbones_rows && !g.im) set_ubo(1, d->bones, sizeof d->bones);
         if (rtr) rt_hist_need(ct.w, ct.h);
+        if (rtr) rt_gihr_need();   /* (rtnext) */
         if (rtr) {
             float rcb[RT_CB_ROWS][4];
             rt_cb(d, rcb);
             const bool mvb = rt_mv_rows(d, rcb);   /* (rt9) */
+            if (((uint32_t)rcb[38][3] & 64u) && !(rcb[34][0] > 0.5f)) rt_gi_hr_take(rcb);   /* (rtnext: a map receiver's rows for the pass) */
             set_ubo(2, rcb, sizeof rcb);
             if (mvb) set_ubo(3, rt_mvb, sizeof rt_mvb);
             slots[B_T + 8].as = rt_pass_on ? rt_ptlas.as : rt_tlas.as;
             slots[B_T + 9].as = rt_pass_on ? rt_pctlas.as : rt_ctlas.as;
             if (rt_stat.b) set_buf(B_U + 6, rt_stat.b, 0, VK_WHOLE_SIZE);
             if (rt_hist_ok) { set_img(B_U + 7, rt_hst[rt_hcur].uv); set_img(B_U + 8, rt_hst[rt_hcur ^ 1].uv); }
+            /* (rtnext) the half-resolution GI images (R32_UINT; without them the history's stand in, never read) */
+            if (rt_gihr_ok) { set_img(B_U + 9, rt_gireq.uv); set_img(B_U + 10, rt_gismp.uv); }
+            else if (rt_hist_ok) { set_img(B_U + 9, rt_hst[rt_hcur ^ 1].uv); set_img(B_U + 10, rt_hst[rt_hcur ^ 1].uv); }
         }
         if (tview) { set_img(B_T + 0, tview); set_smp(0, tsmp); }
         if (zr) set_img(B_U + 2, zt->uv);
-        if (g.crov) set_img(B_U + 3, ct.uv);
+        if (g.crov && !clr) set_img(B_U + 3, ct.uv);
+        if (clr) set_img(B_T + 14, ct.view);   /* (gfxperf9) binding 30: the input attachment */
         /* pipeline */
         const Shader *ps = g.crov ? (zr ? &sh_ps_nr_cz : &sh_ps_nr_c) : zr ? &sh_ps_nr_z : &sh_ps_nr;
+        if (clr) ps = zr ? &sh_ps_nr_czl : &sh_ps_nr_cl;   /* (gfxperf9) */
         if (rtr) ps = zr ? &sh_ps_nr_zrt : &sh_ps_nr_rt;
         /* a mesh with the VU clipper (rows 24-25, nr_scene.c nr_clip_cb): GS_nr cuts its triangles */
         const bool clipgs = !g.im && gs_ok && g.cb[25][2] != 0.0f;
         GKey k = key0(rtr ? (clipgs ? prog_gs_rt(ps) : prog(&sh_vs_nr_rt, ps))
                           : clipgs ? prog_gs(ps) : prog(g.im ? &sh_vs_im : &sh_vs_nr, ps));
         k.vin = g.im ? 2 : 1;
-        k.cf = g.crov ? VK_FORMAT_UNDEFINED : ct.fmt;
+        k.cf = g.crov && !clr ? VK_FORMAT_UNDEFINED : ct.fmt;   /* (gfxperf9: && !clr) */
         k.df = zt && !zr ? zt->fmt : VK_FORMAT_UNDEFINED;
         nr_blend(k, g.abe, g.alpha_abcd, g.cmask);
         if (g.crov) { k.blend = 0; k.cmask = 0; }
+        if (clr) k.cmask = 15;   /* (gfxperf9) the shader's bytes as they are (blend off) */
         k.cull = g.im ? 0 : (uint8_t)(g.cull >= 0 && g.cull <= 2 ? g.cull : 0);
         /* the rasterizer bias: with a depth attachment as D3D11; with depth in an ordered view
          * (no attachment) D3D11 still biases SV_Position.z as for a float buffer, which Vulkan
@@ -4692,6 +5528,7 @@ public:
             GKey ks = k;
             nr_blend(ks, g.abe, (g.alpha_abcd & ~0xFu) | ((g.alpha_abcd & 3u) << 2) | ((g.alpha_abcd >> 2) & 3u), g.cmask);
             if (g.crov) { ks.blend = 0; ks.cmask = 0; }
+            if (clr) ks.cmask = 15;   /* (gfxperf9) */
             pp_sw = gpipe(ks);
         }
         int W = ct.w * scale, H = ct.h * scale;
@@ -4701,8 +5538,16 @@ public:
         if (sx1 > W) sx1 = W;
         if (sy1 > H) sy1 = H;
         if (sx1 <= sx0 || sy1 <= sy0) return true;   /* nothing inside the target */
-        if (g.crov) begin_rp(VK_NULL_HANDLE, VK_NULL_HANDLE, W, H, g.color_rt + 1);
+        if (drawlog_f) drawlog(g, k, ct, zt, zr, cbv, rtx, tview, clipgs, rtr);   /* (gfxperf7, measurement: RG_VK_DRAWLOG) */
+        rp_next_ct = g.color_rt;
+        rp_next_crov = g.crov != 0 && !clr;   /* (gfxperf9: && !clr) */
+        if (clr) begin_rp(ct.view, VK_NULL_HANDLE, W, H, 0);   /* (gfxperf9) the instance on the attachment (kept when it is the current one) */
+        else if (g.crov) begin_rp(VK_NULL_HANDLE, VK_NULL_HANDLE, W, H, g.color_rt + 1);
         else begin_rp(ct.view, zt && !zr ? zt->view : zbv, W, H, 0);
+        rp_next_ct = -1;
+        clr_split.clear();   /* (gfxperf9) */
+        if (clr) clr_plan(g);
+        else if (clr_ok) clr_other();
         VkCommandBuffer c = subs[ci].cb;
         if (pp != bound_pipe) { vkCmdBindPipeline(c, VK_PIPELINE_BIND_POINT_GRAPHICS, pp); bound_pipe = pp; }
         push(k.p, VK_PIPELINE_BIND_POINT_GRAPHICS);
@@ -4729,11 +5574,11 @@ public:
                         bound_pipe = np;
                         cur = (int)sw;
                     }
-                    vkCmdDraw(c, e - at, 1, at, 0);
+                    clr_draw(c, at, e);   /* (gfxperf9: vkCmdDraw(c, e - at, 1, at, 0) cut at the local-read splits) */
                     at = e;
                 }
             } else {
-                vkCmdDraw(c, g.nim, 1, 0, 0);
+                clr_draw(c, 0, g.nim);   /* (gfxperf9: vkCmdDraw(c, g.nim, 1, 0, 0) cut at the local-read splits) */
             }
         }
         if (prof) pev_add(rtr ? PC_RTR : PC_NR, pq0, (double)(g.scissor.x1 - g.scissor.x0) * (g.scissor.y1 - g.scissor.y0) * scale * scale);
@@ -4755,9 +5600,14 @@ public:
             at += runs[2 * i + 1];
         }
         if (!cs.empty()) {
-            pre_op();
+            pre_op_at(__LINE__, 6);   /* (gfxperf6, $RG_VK_CBAR bit 8: a buffer transfer; else the global barrier) */
             vkCmdCopyBuffer(cb(), mem.b, snapb[k].b, (uint32_t)cs.size(), cs.data());
-            post_op();
+            /* (gfxperf6, $RG_VK_CBAR bit 8) only this copy since pre_op's barrier: a transfer write
+             * (the snapshot buffer is read only by the host, after the submission's fence), so the
+             * next draws or image transfer take the narrow barrier (from the transfer stage, which
+             * also orders the copy's read of the mirror before later writers of it) */
+            if ((cbar_bits() & 8) && gfxbar_bits() && !dirty) { dirty = true; dirty_ximg = true; }
+            else post_op();
         }
         snap_serial[k] = recording ? subs[ci].serial : serial_next - 1;
         snap_next = (k + 1) % SNAP_SLOTS;

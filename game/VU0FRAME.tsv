@@ -124,14 +124,14 @@ src/main/model/FrameCalcWorldMatrix_148ff0.c	FrameCalcWorldMatrix_148ff0	frame	S
 src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleLoad	helper	
 src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleLoad	helper-call	FrameCalcWorldMatrix_148ff0
 src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleMul	helper	
-src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleMul	helper-decl	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	InvScaleMul	helper-call	FrameCalcWorldMatrix_148ff0
 src/main/model/FrameCalcWorldMatrix_148ff0.c	LoadScaleVec	helper	
 src/main/model/FrameCalcWorldMatrix_148ff0.c	LoadScaleVec	helper-call	FrameCalcWorldMatrix_148ff0
 src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleLoad	helper	
 src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleLoad	helper-call	FrameCalcWorldMatrix_148ff0
 src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleMul	helper	
-src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleMul	helper-decl	FrameCalcWorldMatrix_148ff0
-src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleMul	helper-decl	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleMul	helper-call	FrameCalcWorldMatrix_148ff0
+src/main/model/FrameCalcWorldMatrix_148ff0.c	ScaleMul	helper-call	FrameCalcWorldMatrix_148ff0
 src/main/model/FrameCalcWorldMatrix_148ff0.c	StoreMatrix	helper	
 src/main/model/FrameCalcWorldMatrix_148ff0.c	StoreMatrix	helper-call	FrameCalcWorldMatrix_148ff0
 src/main/model/FrameCalcWorldMatrix_148ff0.c	StoreMatrix	helper-call	FrameCalcWorldMatrix_148ff0
@@ -154,14 +154,14 @@ src/main/model/FrameUpdateWorld_149680.c	FrameUpdateWorld_149680	frame	Vu0ScaleM
 src/main/model/FrameUpdateWorld_149680.c	InvScaleLoad	helper	
 src/main/model/FrameUpdateWorld_149680.c	InvScaleLoad	helper-call	FrameUpdateWorld_149680
 src/main/model/FrameUpdateWorld_149680.c	InvScaleMul	helper	
-src/main/model/FrameUpdateWorld_149680.c	InvScaleMul	helper-decl	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	InvScaleMul	helper-call	FrameUpdateWorld_149680
 src/main/model/FrameUpdateWorld_149680.c	LoadScaleVec	helper	
 src/main/model/FrameUpdateWorld_149680.c	LoadScaleVec	helper-call	FrameUpdateWorld_149680
 src/main/model/FrameUpdateWorld_149680.c	ScaleLoad	helper	
 src/main/model/FrameUpdateWorld_149680.c	ScaleLoad	helper-call	FrameUpdateWorld_149680
 src/main/model/FrameUpdateWorld_149680.c	ScaleMul	helper	
-src/main/model/FrameUpdateWorld_149680.c	ScaleMul	helper-decl	FrameUpdateWorld_149680
-src/main/model/FrameUpdateWorld_149680.c	ScaleMul	helper-decl	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	ScaleMul	helper-call	FrameUpdateWorld_149680
+src/main/model/FrameUpdateWorld_149680.c	ScaleMul	helper-call	FrameUpdateWorld_149680
 src/main/model/FrameUpdateWorld_149680.c	StoreMatrix	helper	
 src/main/model/FrameUpdateWorld_149680.c	StoreMatrix	helper-call	FrameUpdateWorld_149680
 src/main/model/FrameUpdateWorld_149680.c	StoreMatrix	helper-call	FrameUpdateWorld_149680

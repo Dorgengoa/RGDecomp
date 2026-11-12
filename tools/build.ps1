@@ -45,7 +45,7 @@ foreach ($t in @("$LlvmRoot\bin\clang.exe", $Ninja, $CMake)) {
 # --- MSVC x86 environment (CRT + Windows SDK libs/headers for i686-pc-windows-msvc)
 if (-not $VcVars) {
     $cands = @(
-        "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat",
+        "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat",
         "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat",
         "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat")
     $VcVars = $cands | Where-Object { Test-Path $_ } | Select-Object -First 1

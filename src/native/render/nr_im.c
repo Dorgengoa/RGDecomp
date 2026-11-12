@@ -78,7 +78,7 @@ static struct {
     uint64_t vifcmd[128];
     uint64_t mpg;
     uint64_t nat_batches, nat_prims, emu_prims, emu_batches, skip_batches, lines, kept_batches;
-    uint64_t sfx_skipped, sfx_zonly, sfx_box, sfx_hires;
+    uint64_t sfx_skipped, sfx_zonly, sfx_box, sfx_hires, sfx_focus;
     uint64_t gif_pkts, gif_refused, gif_ref_why[8];   /* nr_im_gif */
 } g_st;
 static int ring_init(void);
@@ -677,10 +677,21 @@ static void flush(gpu_renderer *gr, gpu_gs *gs)
             g_pn = 0;
             return;
         }
-        if (a == NR_SFX_BOX) {
+        if (a == NR_SFX_FOCUSLP) {
+            /* (ptbugs3) the focus blur's composite: the frame under it softened to the PS2's
+             * resolution first at an internal scale > 1 (gpu_set_im_focus, nr_dev.cpp focus_prefilter) */
+            gpu_set_im_focus(gr, nr_sfx_focus_k());
+            r = gpu_nr_im_submit(gr, g_pv, g_pn, g_ptype);
+            gpu_set_im_focus(gr, 0);
+            g_st.sfx_focus++;
+            if (r == 0) { g_st.nat_batches++; g_st.nat_prims += (uint64_t)g_pn; }
+            g_pn = 0;
+            return;
+        }
+        if (a == NR_SFX_BOX || a == NR_SFX_BOX2) {
             /* "enhanced": the pass's minifying read of the frame box-filtered at the internal
              * resolution (gpu_set_im_box, nr_draw.hlsl PF_BOX) */
-            gpu_set_im_box(gr, 1);
+            gpu_set_im_box(gr, a == NR_SFX_BOX2 ? 2 : 1);
             r = gpu_nr_im_submit(gr, g_pv, g_pn, g_ptype);
             gpu_set_im_box(gr, 0);
             g_st.sfx_box++;
@@ -1067,6 +1078,14 @@ void nr_im_stats(FILE *f)
                    "at the internal resolution %llu (nr_sfx.c)\n",
                 (unsigned long long)g_st.sfx_skipped, (unsigned long long)g_st.sfx_zonly,
                 (unsigned long long)g_st.sfx_box, (unsigned long long)g_st.sfx_hires);
+    if (g_st.sfx_focus)
+        fprintf(f, "native render immediate: focus blur composites %llu, frame pre-filtered under %llu (ptbugs3, nr_sfx.c NR_SFX_FOCUSLP)\n",
+                (unsigned long long)g_st.sfx_focus,
+#ifdef RG_HAVE_GPU   /* integ7: rg_native_render without the GPU (Linux non-native-only lib) has no gpu.h */
+                (unsigned long long)gpu_focus_lp_count());
+#else
+                0ull);
+#endif
     nr_sfx_stats(f);
     if (g_st.gif_pkts || g_st.gif_refused)
         fprintf(f, "native render immediate: GIF streams as records (VU1 program kicks, DIRECT packets) %llu (refused %llu: "

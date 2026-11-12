@@ -16,6 +16,7 @@
 #include "nr_interp.h"   /* interpolated presentation (docs/NATIVE-RENDER.md) */
 #include "nr_im.h"
 #include "nr_mem.h"     /* walkers' readable memory, poison mode */
+#include "nr_lnrm.h"    /* leftover normals natively (RG_NR_MISSNRM=3) */
 
 #include <math.h>
 #include <stdlib.h>
@@ -90,6 +91,11 @@ typedef struct nr_rec {
     int vu_bbox;             /* the VIF tap must merge bb into VU memory (the composite runs emulated) */
     nr_qw bb_lo, bb_hi;
     float lxs;               /* nr_set_frame_xscale at record time (line strands on a wide frame) */
+    /* RG_NR_MISSNRM=3 (nr_lnrm.h): the mesh reads leftover normals; at the walker's marker its
+     * vertices get them in lder (a copy of mesh0 with 16-bit normals), mesh = lder */
+    int lnrm;
+    const nr_mesh *mesh0;
+    nr_mesh *lder;           /* owned by the ring slot (freed when the slot is reused for another) */
 } nr_rec;
 static nr_rec *g_rec;
 static float g_frame_xs = 1.0f;   /* EE: nr_set_frame_xscale */
@@ -622,6 +628,23 @@ static int miss_uv_ok(void)
     if (k < 0) { const char *e = getenv("RG_NR_MISSUV"); k = !(e && e[0] == '0'); }
     return k;
 }
+/* A lit / environment-mapped mesh whose batches unpack no normals (Blue Thunder, chara/mob/e129:
+ * header normal offset set, no UNPACK there): the VU program reads whatever earlier meshes left
+ * in VU memory at that offset.  Default (RG_NR_MISSNRM=3, lane missnrm3): those values computed
+ * natively from the batches drawn before it (nr_lnrm.h; bit for bit the oracle's on the Blue
+ * Thunder fight).  RG_NR_MISSNRM=0: it stays on the VU program -- not drawn at all in a
+ * native-only exe (and its composite clip range becomes unknown).  RG_NR_MISSNRM=1: drawn
+ * natively with N = 0 (ambient light, the environment map's centre texel): visible, but not the
+ * oracle's picture (docs/NATIVE-RENDER.md "Meshes without normals (Blue Thunder)", lane
+ * ptbugs1108; a USER decision before it can be the default).  RG_NR_MISSNRM=2 (lane ptbugs2):
+ * sign vectors at the leftover magnitude (nr_mesh.c missnrm_signs, record qw78 below): the
+ * oracle's saturated lights / edge-texel env map, 31-34 dB vs 23-26 for N = 0. */
+static int miss_nrm_ok(void)
+{
+    static int k = -1;
+    if (k < 0) { const char *e = getenv("RG_NR_MISSNRM"); k = !e || !e[0] ? 3 : (e[0] >= '1' && e[0] <= '3') ? e[0] - '0' : 0; }
+    return k;
+}
 uint32_t nr_model_record2(uint32_t mesh_pkt, int variant, const uint32_t *src)
 {
     nr_cblock *b = NULL;
@@ -643,6 +666,14 @@ uint32_t nr_model_record2(uint32_t mesh_pkt, int variant, const uint32_t *src)
     if (id && b) {
         nr_rec *r = rec_of(id);
         memcpy(r->c, b->c, sizeof r->c);
+        if (r->mesh->nrm_signs) {
+            /* RG_NR_MISSNRM=2: the sign vectors at the magnitude of the VU's leftover float bit
+             * patterns (itof15 of ~1.2e9: ~36,600) for the lit / environment-mapped pieces; N = 0
+             * for any other reader (the reflection kind, as RG_NR_MISSUV) */
+            int k;
+            float s = (r->variant & (NRV_ENVMAP | NRV_LIGHT)) ? 36600.0f * 32768.0f / 127.0f : 0.0f;
+            for (k = 0; k < 3; k++) r->c[NRQ_NRMSCALE].f[k] *= s;
+        }
         memcpy(r->bones, b->bones, sizeof r->bones);
         r->bones_hi = b->bones_hi;
         r->has_box = !(r->variant & (NRV_SKIN | NRV_SHADOW | NRV_LINES | NRV_ZSCALE)) ? rigid_box(r->mesh, r->c, r->box) : 0;
@@ -668,6 +699,19 @@ uint32_t nr_model_record2(uint32_t mesh_pkt, int variant, const uint32_t *src)
     return id;
 }
 
+/* RG_NR_DEBUG: one stderr line per mesh (first 16) a fallback keeps on the VU program */
+static void fb_note(const nr_mesh *m, int variant, const char *why)
+{
+    static uint32_t seen[16];
+    static int n;
+    int k;
+    g_st.fallback_mesh++;
+    if (n >= 16 || !getenv("RG_NR_DEBUG")) return;
+    for (k = 0; k < n; k++) if (seen[k] == m->pkt) return;
+    seen[n++] = m->pkt;
+    fprintf(stderr, "nr: mesh %08X variant %03X stays emulated (%s): prim mask %x, %u indices, %u batches%s, frame %u\n",
+            m->pkt, variant, why, m->prim_mask, m->nidx, m->nbatch, m->batch_overflow ? " (overflow)" : "", g_frame_no);
+}
 uint32_t nr_model_record(uint32_t mesh_pkt, int variant)
 {
     const nr_mesh *m;
@@ -683,7 +727,7 @@ uint32_t nr_model_record(uint32_t mesh_pkt, int variant)
         if (!on) { g_st.fallback_variant++; return 0; }
     }
     m = nr_mesh_get(mesh_pkt, (variant & NRV_SKIN) != 0);
-    if (m->bad) { g_st.fallback_mesh++; return 0; }
+    if (m->bad) { fb_note(m, variant, m->why ? m->why : "bad"); return 0; }
     {
         /* arrays the variant reads: UV (unless the environment map replaces
          * it), colours (vertex colour), normals (environment map, lights) */
@@ -704,13 +748,13 @@ uint32_t nr_model_record(uint32_t mesh_pkt, int variant)
             }
         } else if (variant & NRV_LINES) {
             /* the line program: its two layouts, every batch known */
-            if ((m->prim_mask & ~((1u << 0x11) | (1u << 0x13))) || m->batch_overflow) { g_st.fallback_mesh++; return 0; }
+            if ((m->prim_mask & ~((1u << 0x11) | (1u << 0x13))) || m->batch_overflow) { fb_note(m, variant, "lines"); return 0; }
         } else {
-            if ((m->prim_mask & ~((1u << 3) | (1u << 4) | (1u << 5))) || !m->nidx) { g_st.fallback_mesh++; return 0; }
+            if ((m->prim_mask & ~((1u << 3) | (1u << 4) | (1u << 5))) || !m->nidx) { fb_note(m, variant, "prim / no indices"); return 0; }
             /* UVs only matter when the material samples a texture */
             if (!(variant & (NRV_ENVMAP | NRV_REFRACT | NRV_REFLECT)) && g_rec_tme != 0 && !miss_uv_ok()) need |= NR_MISS_UV;
             if (variant & NRV_VCOL) need |= NR_MISS_COL;
-            if (variant & (NRV_ENVMAP | NRV_LIGHT)) need |= NR_MISS_NRM;
+            if ((variant & (NRV_ENVMAP | NRV_LIGHT)) && !miss_nrm_ok()) need |= NR_MISS_NRM;
             /* the reflection kind on a mesh without normals reads whatever an earlier batch
              * left (not reproducible, like the UV-less mesh): drawn with N = 0 (UV from the
              * view direction alone) unless RG_NR_MISSUV=0 */
@@ -756,6 +800,9 @@ uint32_t nr_model_record(uint32_t mesh_pkt, int variant)
     r->id = id;
     r->variant = variant;
     r->mesh = m;
+    r->mesh0 = m;
+    r->lnrm = miss_nrm_ok() == 3 && (m->missing & NR_MISS_NRM) && (variant & (NRV_ENVMAP | NRV_LIGHT)) &&
+              !(variant & (NRV_SHADOW | NRV_LINES));
     r->filled = 0;
     r->tapped = 0;
     r->has_box = 0;
@@ -763,6 +810,130 @@ uint32_t nr_model_record(uint32_t mesh_pkt, int variant)
     r->lxs = g_frame_xs;
     g_st.recorded++;
     return id;
+}
+
+/* ---- RG_NR_MISSNRM=3: leftover normals at the walker's markers (nr_lnrm.h) ----------
+ * The walker (nr_fx.c) hands every DIRECT payload of the frame chain here in DMA order: a
+ * mesh marker logs the record's batches (and, for a mesh that reads leftover normals, first
+ * computes them); the composite's strip packet (nr_comp_sprite: tag NREG 4, UV XYZ2 UV XYZ2)
+ * stands for the VU program 0x445C60, which wrote qw140-169. */
+static struct { uint64_t consumers, partial, unknown_vtx, derived, other; } g_ln;
+static int32_t (*g_ln_out)[3];
+static uint8_t *g_ln_known;
+static uint32_t g_ln_cap;
+static uint32_t g_ln_prev[3];   /* the previous draw's object / info / skin packets (src[3..5]) */
+static int lnrm_partial(const nr_mesh *m)
+{
+    uint32_t b, r;
+    for (b = 0; b < m->nlay; b++) {
+        const struct nr_mesh_lay *l = &m->lay[b];
+        uint32_t a = 2 + l->h[3];
+        if (!l->h[3]) continue;
+        for (r = 0; r < l->nrun; r++) {
+            uint32_t w = m->runs[l->run0 + r], st = w & 0x3FF, n = (w >> 10) & 0x7FF;
+            if (a >= st && a < st + n && ((w >> 21) & 7) == 7) return 1;
+        }
+    }
+    return 0;
+}
+static void lnrm_marker(uint32_t id)
+{
+    nr_rec *r = g_rec ? rec_of(id) : NULL;
+    nr_lnrm_draw d;
+    uint32_t i, c, n;
+    float K[3] = { 0, 0, 0 };
+    nr_mesh *m2;
+    uint32_t items[3];
+    int ni = 0;
+    if (!r || r->id != id || !r->filled || !r->mesh0) { nr_lnrm_opaque_draw(); g_ln.other++; return; }
+    /* the item packets the PS2 chain CALLs before this draw: the sorted path emits a node's
+     * packet when it differs from the previous node's, the direct path once per part (its
+     * meshes share them): object (+ MSCAL 0), model info (OFFSET 2 x qw76.x), skin rows */
+    for (c = 0; c < 3; c++) {
+        if (r->src[3 + c] && r->src[3 + c] != g_ln_prev[c]) items[ni++] = r->src[3 + c];
+        g_ln_prev[c] = r->src[3 + c];
+    }
+    if (r->variant & (NRV_LINES | NRV_REFLECT | NRV_REFRACT)) { nr_lnrm_opaque_draw(); g_ln.other++; return; }
+    d.items = items;
+    d.nitems = ni;
+    d.mesh = r->mesh0;
+    d.skinned = (r->variant & NRV_SKIN) != 0;
+    d.env = (r->variant & NRV_ENVMAP) != 0;
+    d.shadow = (r->variant & NRV_SHADOW) != 0;
+    d.c = r->c;
+    d.bones = r->bones;
+    d.live = &r->id;
+    d.live_id = id;
+    if (!r->lnrm) { nr_lnrm_draw_pass(&d, NULL, NULL); return; }
+    n = r->mesh0->nvtx;
+    if (n > g_ln_cap) {
+        free(g_ln_out);
+        free(g_ln_known);
+        g_ln_cap = n + 1024;
+        g_ln_out = (int32_t(*)[3])malloc(g_ln_cap * sizeof *g_ln_out);
+        g_ln_known = (uint8_t *)malloc(g_ln_cap);
+        if (!g_ln_out || !g_ln_known) { g_ln_cap = 0; nr_lnrm_draw_pass(&d, NULL, NULL); return; }
+    }
+    memset(g_ln_known, 0, n);
+    memset(g_ln_out, 0, n * sizeof *g_ln_out);
+    g_ln.consumers++;
+    g_ln.unknown_vtx += nr_lnrm_draw_pass(&d, g_ln_out, g_ln_known);
+    if (lnrm_partial(r->mesh0)) { g_ln.partial++; return; }   /* drawn as RG_NR_MISSNRM=1: N = 0 where missing */
+    if (r->lder) { nr_mesh_free(r->lder); r->lder = NULL; }
+    m2 = nr_mesh_derive(r->mesh0);
+    if (!m2) return;
+    /* t = itof15 of the leftover lanes as the decode reads them; 16 bits per lane: the int8
+     * normal is the high byte, the low bytes go to nw (x) and pw (y | z << 8); the shader
+     * (nr_draw.hlsl VS_nr) reads n = (nrm * 256 + low) / 2^23 * qw78 */
+    for (i = 0; i < n; i++)
+        for (c = 0; c < 3; c++) {
+            float t = g_ln_known[i] ? nr_lnrm_itof15(g_ln_out[i][c]) : 36600.0f;
+            if (fabsf(t) > K[c]) K[c] = fabsf(t);
+        }
+    for (c = 0; c < 3; c++) if (!(K[c] > 0.0f)) K[c] = 1.0f;
+    for (i = 0; i < n; i++) {
+        int32_t v[3];
+        nr_vtx *x = &m2->vtx[i];
+        for (c = 0; c < 3; c++) {
+            float t;
+            if (g_ln_known[i]) t = nr_lnrm_itof15(g_ln_out[i][c]);
+            else {   /* unknown: RG_NR_MISSNRM=2's sign vector at the leftover magnitude */
+                uint32_t h = (i + 1u) * 2654435761u;
+                t = (h >> (7 + 6 * c)) & 1 ? 36600.0f : -36600.0f;
+            }
+            v[c] = (int32_t)lrintf(t / K[c] * 32767.0f);
+            if (v[c] > 32767) v[c] = 32767;
+            if (v[c] < -32767) v[c] = -32767;
+        }
+        x->nx = (int8_t)(v[0] >> 8); x->ny = (int8_t)(v[1] >> 8); x->nz = (int8_t)(v[2] >> 8);
+        x->nw = (int8_t)(uint8_t)(v[0] & 255);
+        x->pw = (int16_t)(uint16_t)((v[1] & 255) | (v[2] & 255) << 8);
+    }
+    for (c = 0; c < 3; c++) r->c[NRQ_NRMSCALE].f[c] *= K[c] * (8388608.0f / 32767.0f);
+    r->lder = m2;
+    r->mesh = m2;
+    g_ln.derived++;
+}
+void nr_lnrm_walk_direct(const uint8_t *p, uint32_t qw)
+{
+    uint32_t w[12];
+    if (!nr_lnrm_on() || !qw) return;
+    memcpy(w, p, 16);
+    if (w[1] == 0x40000000u && w[2] == 0x4343u && w[3] == 0) { nr_lnrm_sprite(); return; }
+    if (qw != 2) return;
+    memcpy(w, p, 32);
+    if (w[0] != 0x8001u || w[1] != 0x10000000u || w[2] != 0xEu || w[3] != 0 || w[5] != 0 || w[6] != GS_NATIVE_MARK || w[7] != 0)
+        return;
+    lnrm_marker(w[4]);
+}
+static void lnrm_stats(FILE *f)
+{
+    if (!nr_lnrm_on()) return;
+    nr_lnrm_stats(f);
+    fprintf(f, "native render leftover normals: %llu consumer draws (%llu re-encoded, %llu partly unpacked: N = 0 there), "
+            "%llu unknown vertices, %llu other draws (lines / reflection / refraction / gone) made [140, 900) unknown\n",
+            (unsigned long long)g_ln.consumers, (unsigned long long)g_ln.derived, (unsigned long long)g_ln.partial,
+            (unsigned long long)g_ln.unknown_vtx, (unsigned long long)g_ln.other);
 }
 
 /* ---- shadow volumes (nr_vu1sh.h) ----------------------------------------
@@ -2209,6 +2380,35 @@ int nr_ip_mesh_cb(uint32_t id, struct gpu_nr_draw *d)
     return 1;
 }
 
+/* (rtnext, docs/RAYTRACING.md "RT12") the characters' current pose for the frame's TLAS: at the first record of a new frame
+ * in the GS stream, every skinned record of that frame (the chain runs after the frame's records are built and filled) is
+ * handed to the backend, which poses it (gpu_nr_rt_prepose).  Reads records only: no game state, no GS state */
+static gpu_nr_draw g_pre;
+static uint32_t g_pre_frame;
+static uint64_t g_pre_st[2];   /* frames scanned, records handed */
+static void rt_prepose_scan(gpu_renderer *gr, uint32_t frame)
+{
+    uint32_t i;
+    g_pre_st[0]++;
+    for (i = 0; i < NR_RECS; i++) {
+        const nr_rec *q = &g_rec[i];
+        const uint32_t id = q->id;
+        const nr_mesh *m = q->mesh;
+        if (!id || q->frame != frame || !q->filled || !m || !(q->variant & NRV_SKIN) || (q->variant & (NRV_SHADOW | NRV_LINES))) continue;
+        g_pre.mesh.id = m->id;
+        g_pre.mesh.vtx = m->vtx;
+        g_pre.mesh.nvtx = m->nvtx;
+        g_pre.mesh.stride = sizeof(nr_vtx);
+        g_pre.mesh.idx = m->idx;
+        g_pre.mesh.nidx = m->nidx;
+        build_cb(q, &g_pre);
+        memcpy(g_pre.bones, q->bones, sizeof g_pre.bones);
+        g_pre.nbones_rows = NR_BONE_ROWS;
+        if (q->id != id || q->frame != frame) continue;   /* (the slot was reused meanwhile) */
+        gpu_nr_rt_prepose(gr, &g_pre);
+        g_pre_st[1]++;
+    }
+}
 static void gs_marker(void *user, gpu_renderer *gr, gpu_gs *gs, uint64_t value)
 {
     uint32_t id = (uint32_t)value;
@@ -2221,6 +2421,10 @@ static void gs_marker(void *user, gpu_renderer *gr, gpu_gs *gs, uint64_t value)
     r = rec_of(id);
     if (r->id != id) { g_st.stale_gs++; return; }
     if (!r->filled) { g_st.not_filled++; return; }
+    if (r->frame != g_pre_frame) {   /* (rtnext) a new frame's first record: its characters' poses first */
+        g_pre_frame = r->frame;
+        if (gpu_nr_rt_prepose_on(gr)) rt_prepose_scan(gr, r->frame);
+    }
     if (r->variant & NRV_SHADOW) { frame_add(r, gr, gs, 0); draw_shadow(r, gr, gs); ip_note(r, gs); return; }
     if (r->variant & NRV_LINES) { frame_add(r, gr, gs, 0); draw_lines(r, gr, gs); ip_note(r, gs); return; }
     m = r->mesh;
@@ -2538,6 +2742,7 @@ void nr_runtime_stats(FILE *f)
     nr_fx_stats(f);
     nr_mem_stats(f);
     nr_vux_stats(f);
+    lnrm_stats(f);
 #ifdef RG_HAVE_GPU
     if (g_store_n) fprintf(f, "native render: local->host reads served natively (no VIF1/FIFO) %llu\n",(unsigned long long)g_store_n);
 #endif

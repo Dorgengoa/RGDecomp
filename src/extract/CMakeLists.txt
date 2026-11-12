@@ -45,7 +45,10 @@ endif()
 
 # rg-setup: the published build's one-step first run (unpack + rebuild rg-game.exe,
 # docs/RELEASE.md); shipped as Setup.exe.
-add_executable(rg-setup setup_main.cpp)
+# + the exe icon from data/ (src/icon, docs/ICON.md), compiled in directly: this directory
+# also builds standalone
+add_executable(rg-setup setup_main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../icon/rg_icon.cpp)
+target_include_directories(rg-setup PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../icon)
 target_link_libraries(rg-setup PRIVATE rg_extract_core)
 if(MINGW)
   target_link_options(rg-setup PRIVATE -municode)

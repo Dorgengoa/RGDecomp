@@ -169,7 +169,15 @@ static void crash_minidump(EXCEPTION_POINTERS *ep, const char *path)
     mei.client = FALSE;
     /* MiniDumpWithIndirectlyReferencedMemory (0x40): threads, stacks and the memory the
      * stacks point at; a few MB, not the game heap */
+#if defined(_WIN64)
+    /* x64 (ptbugs1110): + MiniDumpWithUnloadedModules (0x20) and MiniDumpWithThreadInfo
+     * (0x1000: each thread's start address; tools/native/mdinfo.py prints them) */
+    if (mdw(GetCurrentProcess(), GetCurrentProcessId(), h, 0x40 | 0x20 | 0x1000, &mei, NULL, NULL))
+#else
+#line 166
     if (mdw(GetCurrentProcess(), GetCurrentProcessId(), h, 0x40, &mei, NULL, NULL))
+#endif
+#line 167
         crash_out("  minidump: %s\n", path);
     CloseHandle(h);
 }
@@ -187,6 +195,23 @@ static LONG WINAPI rg_game_crash(EXCEPTION_POINTERS *ep)
     int ns = 0;
     if (InterlockedExchange(&once, 1)) return EXCEPTION_CONTINUE_SEARCH;   /* a second thread / fault */
     g_crash_len = 0;
+#if defined(_WIN64)
+    /* x64 (ptbugs1110): full 64-bit rip / registers (a foreign thread's rip is above 4 GB; the
+     * i686 fields truncated it), the access kind incl. execute (8 = DEP), the rva only when
+     * rip is inside the exe image */
+    crash_out("rg-game: EXCEPTION 0x%08lX at rip=0x%llX (image base 0x%llX, %s 0x%llX)",
+              (unsigned long)er->ExceptionCode, (unsigned long long)c->Rip, (unsigned long long)base,
+              c->Rip >= base && c->Rip < end ? "rva" : "NOT IN THE EXE, rva", (unsigned long long)(c->Rip - base));
+    if (er->NumberParameters >= 2)
+        crash_out(" %s 0x%llX", er->ExceptionInformation[0] == 8 ? "execute" : er->ExceptionInformation[0] ? "write" : "read",
+                  (unsigned long long)er->ExceptionInformation[1]);
+    crash_out("\n  rax=%llX rbx=%llX rcx=%llX rdx=%llX rsi=%llX rdi=%llX rbp=%llX rsp=%llX r8=%llX r9=%llX\n",
+              (unsigned long long)c->Rax, (unsigned long long)c->Rbx, (unsigned long long)c->Rcx,
+              (unsigned long long)c->Rdx, (unsigned long long)c->Rsi, (unsigned long long)c->Rdi,
+              (unsigned long long)c->Rbp, (unsigned long long)c->Rsp, (unsigned long long)c->R8,
+              (unsigned long long)c->R9);
+#else
+#line 184
     crash_out("rg-game: EXCEPTION 0x%08lX at eip=0x%08lX (image base 0x%08lX, rva 0x%08lX)",
               (unsigned long)er->ExceptionCode, (unsigned long)c->Eip, (unsigned long)base,
               (unsigned long)(c->Eip - base));
@@ -196,6 +221,8 @@ static LONG WINAPI rg_game_crash(EXCEPTION_POINTERS *ep)
     crash_out("\n  eax=%08lX ebx=%08lX ecx=%08lX edx=%08lX esi=%08lX edi=%08lX ebp=%08lX esp=%08lX\n",
               (unsigned long)c->Eax, (unsigned long)c->Ebx, (unsigned long)c->Ecx, (unsigned long)c->Edx,
               (unsigned long)c->Esi, (unsigned long)c->Edi, (unsigned long)c->Ebp, (unsigned long)c->Esp);
+#endif
+#line 193
 #if defined(_WIN64)
     extern int rg_x64_crash_frames(EXCEPTION_POINTERS *, void (*)(const char *, ...), uint32_t *, size_t, int, int); ns = rg_x64_crash_frames(ep, crash_out, &g_crash_sym[0].rva, sizeof g_crash_sym[0], ns, 16); crash_out("  stack words in the image (rva):"); /* x64pt: unwound frames */
 #else
@@ -612,6 +639,20 @@ static LONG WINAPI rg_game_stack_overflow(EXCEPTION_POINTERS *ep)
  * (tools/parity/parity.py builds these from its field table; compare with
  * probe.py on retail).  A chain that meets NULL (or an unreadable pointer)
  * prints "<TAG> field=F vbl=V ITEM: NULL". */
+#if !defined(_WIN32) && defined(__linux__)
+/* Linux host items (lane fixtools 2026-11-11): the image base is __executable_start (-no-pie:
+ * 0x400000, the RVAs of rg-game.map's VMAs), and reads go through process_vm_readv on the
+ * own pid, which fails (EFAULT) on an unmapped range as IsBadReadPtr does on Windows. */
+#include <sys/syscall.h>
+#include <sys/uio.h>
+extern char __executable_start[];
+static int rg_dump_copy(void *dst, uintptr_t src, size_t n)
+{
+    struct iovec l = {dst, n}, r = {(void *)src, n};
+    return syscall(SYS_process_vm_readv, (long)getpid(), &l, 1L, &r, 1L, 0L) == (long)n;
+}
+#endif
+#line 597
 static void rg_dump_spec(const char *spec_in, const char *tag, unsigned long long field)
 {
     char spec[4096];
@@ -628,7 +669,10 @@ static void rg_dump_spec(const char *spec_in, const char *tag, unsigned long lon
         const uint8_t *hb = NULL;
 #ifdef _WIN32
         hb = (const uint8_t *)GetModuleHandleA(NULL);
+#elif defined(__linux__)
+        hb = (const uint8_t *)__executable_start;
 #endif
+#line 614
         if (*t == 'h')
             hb = (const uint8_t *)0;
         if (*t == 'p' && hb) {
@@ -641,7 +685,15 @@ static void rg_dump_spec(const char *spec_in, const char *tag, unsigned long lon
                     q = 0;
                     break;
                 }
+#elif defined(__linux__)
+                uint32_t v;
+                if (!rg_dump_copy(&v, at, 4)) {
+                    q = 0;
+                    break;
+                }
+                at = (uintptr_t)&v;
 #endif
+#line 627
                 q = *(const uint32_t *)at;
             }
             hb = (const uint8_t *)q;
@@ -659,14 +711,24 @@ static void rg_dump_spec(const char *spec_in, const char *tag, unsigned long lon
             fprintf(stderr, "%s field=%llu vbl=%u %s: NULL\n", tag, field, D_004810C4[0], t);
             continue;
         }
+#elif defined(__linux__)
+        static uint8_t hbuf[0x4000];
+        if (host && !rg_dump_copy(hbuf, (uintptr_t)hb + a, n == 0 ? 1 : n < sizeof hbuf ? n : sizeof hbuf)) {
+            fprintf(stderr, "%s field=%llu vbl=%u %s: NULL\n", tag, field, D_004810C4[0], t);
+            continue;
+        }
 #endif
+#line 645
         fprintf(stderr, "%s field=%llu vbl=%u %08X:", tag, field, D_004810C4[0], a);
         for (uint32_t i = 0; i < n && i < 0x4000; i++) {
             uint8_t b = 0;
             if (host) {
 #ifdef _WIN32
                 b = ((const uint8_t *)((uintptr_t)hb + a))[i];
+#elif defined(__linux__)
+                b = hbuf[i];
 #endif
+#line 652
             } else
                 rg_trace_read(a + i, &b, 1, &bad);
             fprintf(stderr, "%s%02x", (i % 4) ? "" : " ", b);
@@ -1208,6 +1270,39 @@ static void battle_speed_apply(const rg_settings *s, uint64_t k)
     rg_runtime_set_speed(sp, v != 0);
 }
 
+/* RG_FORCE_ENCOUNTER=fixed:ID[@N] (tests: tools/fixtures/scenario.py, out/scenario/FORCE-API.md,
+ * docs/TEST-FIXTURES.md "Scenarios"; the plain RG_FORCE_ENCOUNTER=GROUP form, a random-encounter
+ * group, is the CharaSysEncounterStartGroupMaybe_3a5010 override's): once the game has been in
+ * field control (game mode 6/100) for N consecutive
+ * fields (default 60), put fixed_encount_param id ID (a story boss, area master, ..) in the
+ * game's own pending-encounter slot, the one the WorldData command SetPendingEncounter fills
+ * (GameDataSetPendingEncounterId_3e67b0, GameData +0x58); GameDataUpdateManagers_3e63a0 starts
+ * it on its next field-mode update.  Once per run.  Unset = nothing read or written. */
+extern void *GetGameData_1fede0(void);
+extern int32_t GameDataSetPendingEncounterId_3e67b0(void *o, int32_t id);
+static void scenario_encounter(uint64_t k)
+{
+    static int init, id = -1, after = 60, run, done;
+    if (!init) {
+        const char *e = getenv("RG_FORCE_ENCOUNTER");
+        init = 1;
+        if (e && strncmp(e, "fixed:", 6) == 0 && e[6]) {
+            id = atoi(e + 6);
+            const char *at = strchr(e, '@');
+            if (at)
+                after = atoi(at + 1);
+        }
+    }
+    if (id < 0 || done)
+        return;
+    run = (D_004B51A0[0] == 6 && D_004B51E0[0] == 100) ? run + 1 : 0;
+    if (run < after)
+        return;
+    GameDataSetPendingEncounterId_3e67b0(GetGameData_1fede0(), id);
+    done = 1;
+    fprintf(stderr, "SCENARIO field=%llu queued fixed encounter %d\n", (unsigned long long)k, id);
+}
+
 /* Before every field: the capture hint (a camera asked within the last 30
  * fields) and the --mouse-motion injection for this field. */
 static void look_apply(void)
@@ -1455,6 +1550,12 @@ int main(int argc, char **argv)
         else { usage(); rg_settings_destroy(settings); return 2; }
     }
     cfg.headless = headless;
+    {
+        /* $RG_DISPLAY_HASH_EVERY=N (identity checks, gfxperf3): fold the display read-out into the run
+         * hash every N fields (rg_runtime_config.display_hash_every; 0 / unset = logic only, as always) */
+        const char *dh = getenv("RG_DISPLAY_HASH_EVERY");
+        if (dh && *dh) cfg.display_hash_every = (uint32_t)strtoul(dh, NULL, 0);
+    }
     rg_game_default_dirs(&cfg);
     if (mc_cli_wanted(&saves_cli)) {
         /* the saves tools (docs/SAVES.md): run on the saves dir and exit, the game does not start */
@@ -1560,6 +1661,7 @@ int main(int argc, char **argv)
             prompts_apply(settings);
             look_apply();
             battle_speed_apply(settings, k);
+            scenario_encounter(k);
             rc = rg_runtime_run_field();
             if (rc)
                 break;
@@ -1573,8 +1675,13 @@ int main(int argc, char **argv)
                 /* RG_RAM_DUMP=FIELD:PATH[,FIELD:PATH..]: the 32 MB PS2 EE RAM
                  * image through the trace address map at the end of FIELD
                  * (compare with a PCSX2 savestate's eeMemory.bin; unmapped
-                 * bytes read 0; pointers are host addresses on the port) */
+                 * bytes read 0; pointers are host addresses on the port).  The game
+                 * heap is mapped at its retail addresses for the dump (lane tentacle:
+                 * tools/native/frame_census.py finds model frames in it). */
                 char spec[1024];
+                const rg_ps2_ram *ram_ = rg_crt0_ram();
+                if (ram_ && ram_->heap_start)
+                    rg_trace_set_heap(ram_->heap_start, RG_PS2_HEAP_START, RG_PS2_HEAP_SIZE);
                 strncpy(spec, getenv("RG_RAM_DUMP"), sizeof spec - 1);
                 spec[sizeof spec - 1] = 0;
                 for (char *t = strtok(spec, ","); t; t = strtok(NULL, ",")) {

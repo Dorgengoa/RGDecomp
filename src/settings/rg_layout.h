@@ -58,6 +58,35 @@ int rg_layout_active(void);
  * it stays on the screen; world-anchored text (rg_layout_about_begin) about its own point;
  * full-screen menus (stage 3) keep their size.  1 = off: nothing changes (Original). */
 void rg_layout_set_ui_scale(float u);
+/* graphics.menu_position / menu_margin (docs/WIDESCREEN.md "Menu position"): the full-screen
+ * menus' 4:3 block flush left (left != 0; margin = fraction of the canvas width in, at most
+ * centred) or centred (0: the stage 3 layout, Original).  $RG_MENU_LEFT overrides it. */
+void rg_layout_set_menu_position(int left, float margin);
+/* a menu task that stays centred whatever the menu position (help sheets, battle results) */
+void rg_layout_menu_centred_task(const void *fn);
+/* 3D on menu screens (docs/WIDESCREEN.md "Menu 3D models"): a camera view packet (VU qw 0-19,
+ * CameraWriteViewPacket_148740 override) written while a stage 3 menu task runs with the menu
+ * block off the centre (menu_position left) gets its screen-centre X (screen matrix ox, GS
+ * pixels) moved like the task's 2D: the menu's models stay with their panels.  Untouched when
+ * the layout is inactive (4:3, Original), for other tasks, centred menus, RG_LAYOUT_MENU_3D=0.
+ * rg_layout_menu_view_x: the ox such a packet gets (ox itself when untouched). */
+void rg_layout_view_packet(void *pkt);
+float rg_layout_menu_view_x(float ox);
+/* the X shift (GS pixels) the running task's last view packet got this frame, else 0: the
+ * offscreen composite (ModelDrawOffscreenCompositeMaybe_16aac0 override) moves the rectangle it
+ * clears and copies the model back from (centre-relative boxes) by it */
+float rg_layout_view_dx(void);
+/* Wide content in a menu (the Revelation board's cells, $RG_REV_WIDE >= 1): menu sprites drawn
+ * between begin / end past the 4:3 screen's right edge are shown up to the canvas's right edge
+ * instead of hidden.  rg_layout_wide_mode(): $RG_REV_WIDE if set (0 off, 1 cells, 2 cells +
+ * the board's scroll window), else graphics.revelation_wide (2 / 0); rg_layout_wide_extra(): 4:3-frame pixels visible right of the 4:3
+ * screen now (0 unless mode 2 and the layout is active). */
+void rg_layout_wide_begin(void);
+void rg_layout_wide_end(void);
+int rg_layout_wide_mode(void);
+/* graphics.revelation_wide: on = mode 2 unless $RG_REV_WIDE is set (0 = off) */
+void rg_layout_set_revelation_wide(int on);
+int rg_layout_wide_extra(void);
 float rg_layout_ui_scale(void);
 /* full-screen menus (an indexed-colour UI background covering the screen, drawn by a
  * game task): detection runs on any wide canvas.  Stage 3 (USER 2026-10-19, no aspect
@@ -100,6 +129,16 @@ void rg_layout_about_end(void);
  * "Anchor snaps (2026-10-31)").  Not nested. */
 void rg_layout_elem_begin(float x0_px, float x1_px);
 void rg_layout_elem_end(void);
+/* follow another task's layout (the battle menu's panel and cursor over the party HUD:
+ * normal_BtlChgMenuDraw_4f9f80 override, docs/WIDESCREEN.md "Battle menu cursor"): every packet
+ * drawn between begin and end takes one anchor, decided at the end of the last such bracket:
+ * the anchor that the given task's lowest packet overlapping the bracket's packets in X, at most
+ * a quarter of the screen height below them, got in the last drawn frame (the HUD slot under
+ * the panel); none when the bracket's packets together are wider than 0.62 of the screen or
+ * nothing of that task is under them (then: as usual).  RG_LAYOUT_FOLLOW=0: off (as before).
+ * Not nested; one bracket a frame. */
+void rg_layout_follow_begin(const void *task_fn);
+void rg_layout_follow_end(void);
 /* stage 3: the main menu's portrait-circle copy of the field frame
  * (MenuCaptureScreenTex_298810 override): resampled from the wide frame so it holds what
  * the 4:3 copy holds.  src = the frame download at row 106 (512 RGBA32 pixels a row),
@@ -140,6 +179,7 @@ int rg_layout_scan_gif(uint8_t *buf, int qwc, rg_layout_xref *out, int max);
 /* counters for logs / tests */
 typedef struct rg_layout_stats {
     unsigned packets, groups, moved, full, ztest, suppressed, verts, about, menu, capture, strips, inherited;
+    unsigned followed;   /* rg_layout_follow_begin: packets that took the followed task's anchor */
 } rg_layout_stats;
 void rg_layout_get_stats(rg_layout_stats *st);
 

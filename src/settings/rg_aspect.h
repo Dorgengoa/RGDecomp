@@ -110,6 +110,10 @@ void rg_event_shake_unscale_draw_copy(void *cam);
  * multiplier of the message windows' type-out speed (MesWinAdvanceTypeout_275f00 override) */
 void rg_text_speed_set(int v);
 float rg_text_speed_mult(void);
+/* gameplay.frog_log_order (0 original, 1 sorted; read by rg_aspect_step_settings): the Frog Log
+ * collects its rows in rg_froglog_rank order (WeaponCombineLogCollect_3e9270 override) */
+void rg_froglog_order_set(int v);
+int rg_froglog_sorted(void);
 
 #ifdef __cplusplus
 }

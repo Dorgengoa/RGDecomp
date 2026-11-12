@@ -10,10 +10,13 @@ engine, and native file, controller, memory-card and movie services.
 content: no art, sound, music, movies, text or game data, and no bytes taken from the
 game's executable. The first-run setup reads everything it needs from your own disc image.
 
-- **Play it:** download `release/RogueGalaxyPC-1105a-win32.zip` and follow
+- **Play it on Windows:** download `release/RogueGalaxyPC-1112a-win32.zip` and follow
   [QUICKSTART.md](QUICKSTART.md). In short: unzip it, put your `.iso` in the folder, run
   `Setup.exe` once, then run `rg-game.exe`.
-- **Build:** 1105a (2026-11-05).
+- **Play it on Linux (x86-64):** download `release/RogueGalaxyPC-1112a-linux-x86_64.zip`
+  and follow [QUICKSTART-linux.md](QUICKSTART-linux.md): unzip it, put your `.iso` in the
+  folder, run `./rg-setup` once, then run `./rg-game`.
+- **Build:** 1112a (2026-11-12).
 
 ## Current state
 
@@ -28,9 +31,12 @@ that led there.
   every chapter, maps, battles, game over, the shop, the Factory and Insectron.
 - Play-testers have played from the start through the early boss fights. **A complete
   playthrough has not been confirmed yet.** Later chapters are covered by the automated save tests only.
-- Windows 10 or 11, 64-bit, with a Direct3D 11 or Vulkan graphics card. The executable in
-  the download is 32-bit. A 64-bit Windows build and Linux builds exist and run the same
-  automated routes, but are not in the download yet.
+- Windows 10 or 11, 64-bit, with a Direct3D 11 or Vulkan graphics card. The Windows
+  executable in the download is 32-bit; a 64-bit Windows build exists and runs the same
+  automated routes, but is not in the download yet.
+- Linux, x86-64, with a Vulkan driver (X11 or Wayland): a native 64-bit build in its own
+  download. It runs the same automated routes as Windows with the same results; it has had
+  less play-testing.
 
 ## Features added over the original
 
@@ -100,13 +106,13 @@ eplacements`; file names follow PCSX2's texture-pack
 - Movie audio runs at the disc's 48,048 Hz clock; long movies may drift very slightly.
 - Windows SmartScreen warns about the unsigned executables (choose "More info", then
   "Run anyway").
-- If the game crashes, `rg-game-crash.txt` and `rg-game-crash.dmp` appear next to it.
+- If the game crashes on Windows, `rg-game-crash.txt` and `rg-game-crash.dmp` appear next to it.
   Please include them in a report.
 
 ## Planned
 
 - A confirmed full playthrough, with automated runs covering every chapter.
-- The 64-bit Windows build and Linux in the download; later macOS.
+- The 64-bit Windows build in the download; later macOS.
 - Optional ray tracing (Vulkan, 64-bit build): sun shadows, ambient occlusion, reflections
   and light from the art's lamps, screens and flames. Working in development builds, not
   in this download yet.
@@ -184,7 +190,7 @@ workspace/
     dl/SDL3-3.4.18.tar.gz              optional: SDL3 source for offline builds (else downloaded)
 ```
 
-Also needed: Visual Studio 2019 Build Tools (x86 C runtime and Windows SDK) and Python 3.10+.
+Also needed: Visual Studio 2022 Build Tools (MSVC 14.44: the x86 C runtime and the Windows SDK) and Python 3.10+.
 
 ### First build
 

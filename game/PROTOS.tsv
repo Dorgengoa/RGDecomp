@@ -16768,16 +16768,10 @@ src/main/model/FrameAllocExtMaybe_149390.c	3	MemStackNew_14e230	decl-removed	cou
 src/main/model/FrameAllocExtMaybe_149390.c	5	FrameAllocExtMaybe_149390	def-widen	first call passes incoming register(s) through: added void *rgp_a1
 src/main/model/FrameAllocExtMaybe_149390.c	10	MemStackNew_14e230	missing-passthrough	1 args (g) -> def 2 (gg); passed rgp_a1
 src/main/model/FrameAllocExtMaybe_149390.c	10	MemStackNew_14e230	ret-cast	(s32 *) over void *
-src/main/model/FrameCalcWorldMatrix_148ff0.c	260	ScaleMul	decl-replaced-self	XS ScaleMul();
-src/main/model/FrameCalcWorldMatrix_148ff0.c	281	InvScaleMul	decl-replaced-self	XS InvScaleMul();
-src/main/model/FrameCalcWorldMatrix_148ff0.c	295	ScaleMul	decl-replaced-self	XS ScaleMul();
 src/main/model/FrameDupName_14a700.c	22	MemStackStrDup_14cf10	ret-cast	(s32) over void *
 src/main/model/FrameFindByName_149ed0.c	17	FrameGetChild_149cf0	ret-cast	(Node *) over int
 src/main/model/FrameFindByName_149ed0.c	17	FrameGetNext_149ce0	ret-cast	(Node *) over int
 src/main/model/FrameInitFromRes_14e710.c	27	MemStackStrDup_14cf10	ret-cast	(s32) over void *
-src/main/model/FrameUpdateWorld_149680.c	222	ScaleMul	decl-replaced-self	XS ScaleMul();
-src/main/model/FrameUpdateWorld_149680.c	238	InvScaleMul	decl-replaced-self	XS InvScaleMul();
-src/main/model/FrameUpdateWorld_149680.c	252	ScaleMul	decl-replaced-self	MS ScaleMul();
 src/main/model/FuncAnimeBind_190fc0.c	60	NodeObjFindChildByName_195040	ret-cast	(s32) over void *
 src/main/model/FuncAnimeBind_190fc0.c	63	ModelGetFrame_1511f0	ret-cast	(s32) over void *
 src/main/model/FuncDataRecReset_192210.c	3	NodeXformReset_186490	decl-removed	ret int vs void: extern s32 NodeXformReset_186490(void *);

@@ -17,9 +17,44 @@
 static double g_c[8][4];
 static int g_init;
 
+#if defined(__x86_64__) || defined(_M_X64)
+/* x64 (gfxperf5, 2026-11-08): the game builds this table on its first movie frame, inside the
+ * kernel step, i.e. under the guest MXCSR (round toward zero + FTZ + DAZ), where the x64 UCRT's
+ * cos is wrong (src/crt/crt_math.c HOST_RN): 12 of 32 entries differed from i686 by up to
+ * ~2^-40 relative, enough to flip rounded pixels; the title movie then differed from i686 by 1-2
+ * levels (boot:save2 fields 678-1,100).  Under that MXCSR x64 takes the table i686 computes
+ * there (read from an i686 save state at field 677, out/gfxperf5/runs/s1_i).  Round to nearest
+ * (tools, tests, RG_EE_FPU=ieee) computes as before.  RG_MV_IDCT_TAB=0: always compute. */
+#include <stdint.h>
+#include <stdlib.h>
+#include <xmmintrin.h>
+static const uint64_t g_c_i686_chop[8][4] = {
+    {0x3fd6a09e667f3bcdull, 0x3fd6a09e667f3bcdull, 0x3fd6a09e667f3bcdull, 0x3fd6a09e667f3bcdull},
+    {0x3fdf6297cff75cb0ull, 0x3fda9b66290ea1a3ull, 0x3fd1c73b39ae68c9ull, 0x3fb8f8b83c69a60dull},
+    {0x3fdd906bcf328d46ull, 0x3fc87de2a6aea964ull, 0xbfc87de2a6aea962ull, 0xbfdd906bcf328d46ull},
+    {0x3fda9b66290ea1a3ull, 0xbfb8f8b83c69a608ull, 0xbfdf6297cff75cb0ull, 0xbfd1c73b39ae68cfull},
+    {0x3fd6a09e667f3bcdull, 0xbfd6a09e667f3bccull, 0xbfd6a09e667f3bceull, 0x3fd6a09e667f3bcbull},
+    {0x3fd1c73b39ae68c9ull, 0xbfdf6297cff75cb0ull, 0x3fb8f8b83c69a5ecull, 0x3fda9b66290ea1a5ull},
+    {0x3fc87de2a6aea964ull, 0xbfdd906bcf328d47ull, 0x3fdd906bcf328d44ull, 0xbfc87de2a6aea947ull},
+    {0x3fb8f8b83c69a60dull, 0xbfd1c73b39ae68cfull, 0x3fda9b66290ea1a5ull, 0xbfdf6297cff75cb2ull},
+};
+static int chop_table(void)
+{
+    const char *e = getenv("RG_MV_IDCT_TAB");
+    if (e && e[0] == '0') return 0;
+    if ((_mm_getcsr() & 0x6000u) != 0x6000u) return 0;
+    memcpy(g_c, g_c_i686_chop, sizeof g_c);
+    g_init = 1;
+    return 1;
+}
+#else
+static int chop_table(void) { return 0; }
+#endif
+
 static void init_tab(void)
 {
     const double pi = 3.14159265358979323846;
+    if (chop_table()) return;
     for (int k = 0; k < 8; k++) {
         double ck = (k == 0) ? sqrt(0.5) : 1.0;
         for (int n = 0; n < 4; n++) g_c[k][n] = 0.5 * ck * cos((2 * n + 1) * k * pi / 16.0);

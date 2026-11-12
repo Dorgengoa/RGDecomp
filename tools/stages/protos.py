@@ -466,6 +466,7 @@ class FileInfo:
     ls: list = field(default_factory=list)
     externc: list = field(default_factory=list)
     objdecls: set = field(default_factory=set)   # names declared as OBJECTS
+    stmtmacros: set = field(default_factory=set)  # object-like macros expanding to code
 
     def line(self, off: int) -> int:
         return bisect_right(self.ls, off)
@@ -663,6 +664,17 @@ def parse_file(rel: str, data: bytes, gtd: dict) -> FileInfo:
             t = resolve_type(rep, fi.tdefs)
             if t.cls in ("g", "f"):
                 fi.tdefs[nm] = t
+    # object-like macros that expand to a statement or an expression (`#define XS
+    # SPLIT149680(x, Xf149680)`, `#define MS if (mode) { .. }`): such a macro on the line
+    # before a call (`XS` / `ScaleMul();`) has no `;`, so the statement-wise declaration
+    # scan below read `XS ScaleMul()` as a block-scope declaration with return type XS and
+    # rewrote the CALL into `static void ScaleMul(void);` -- FrameUpdateWorld_149680 and
+    # FrameCalcWorldMatrix_148ff0 lost their non-uniform scale multiplies (lane tentacle:
+    # the Mud Whooper cutscene tentacles; switch RG_PROTOS_NO_STMTMACRO)
+    if not os.environ.get("RG_PROTOS_NO_STMTMACRO"):
+        for m in re.finditer(r"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)[ \t]+([^\n]*)$", text, re.M):
+            if re.search(r"[({;]", m.group(2)):
+                fi.stmtmacros.add(m.group(1))
     if cpp:
         for m in re.finditer(r'\bextern\s*"C"\s*\{', _code):
             o = m.end() - 1
@@ -751,6 +763,8 @@ def parse_file(rel: str, data: bytes, gtd: dict) -> FileInfo:
         rw = ret.split()
         if not rw or name in KEYWORDS or any(w in RET_BAD for w in rw):
             continue
+        if fi.stmtmacros and rw[0] in fi.stmtmacros:
+            continue   # `MACRO` / `f();`: a call after a code macro, not a declaration
         if any(lo < a < hi for lo, hi in class_ranges):
             continue
         ff = fi.enclosing(a)

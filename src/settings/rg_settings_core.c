@@ -4,6 +4,8 @@
  * docs/SETTINGS.md has the table.  Input settings are registered by the input
  * layer (src/host/rg_input.h, rg_actions_register_settings). */
 #include "rg_settings.h"
+#include <stdio.h>
+#include <string.h>
 #include "rg_display.h"
 
 #define N(a) ((int)(sizeof(a) / sizeof((a)[0])))
@@ -36,6 +38,8 @@ static const char *const k_movie_aspect_l[] = { "Keep 4:3 (pillarbox)", "Stretch
 /* rg_layout.h RG_UI_LAYOUT_* (docs/WIDESCREEN.md "Stage 2") */
 static const char *const k_ui_layout[] = { "keep", "stretch" };
 static const char *const k_ui_layout_l[] = { "Keep proportions (anchored)", "Stretch (PS2 on a 16:9 TV)" };
+static const char *const k_menu_pos[] = { "left", "centre" };   /* (menuleft) */
+static const char *const k_menu_pos_l[] = { "Left edge", "Centre" };
 /* MSAA is not offered: the renderer decides coverage in the pixel shader
  * (exact triangles, docs/GPU.md), so hardware multisampling would not see
  * the GS edges; supersampling through the internal resolution does */
@@ -51,23 +55,53 @@ static const char *const k_flash[] = { "original", "reduced", "minimal" };
 static const char *const k_cblind[] = { "off", "protanopia", "deuteranopia", "tritanopia" };
 static const char *const k_cblind_l[] = { "Off", "Protanopia (red-weak)", "Deuteranopia (green-weak)",
                                           "Tritanopia (blue-weak)" };
-static const char *const k_shadow[] = { "original", "2x", "4x" };
+static const char *const k_shadow[] = { "original", "enhanced" };   /* (p6left) gpu_enhance.shadow_res 0 / 1 */
+static const char *const k_shadow_l[] = { "Original (192x192 buffer)", "Enhanced (internal resolution)" };
 static const char *const k_rt[] = { "off", "shadows", "shadows_ao", "shadows_ao_refl" };   /* (debug colours: $RG_RT=2, docs/RAYTRACING.md; shadows_ao = gpu_config 3, shadows_ao_refl = 4 (rt5)) */
 static const char *const k_rt_l[] = { "Off", "Shadows", "Shadows + AO", "Shadows + AO + reflections" };
 static const char *const k_rte[] = { "off", "on", "overlay" };   /* (rt8) gpu_config.rt_emissive 0 / 1 / 2 */
 static const char *const k_rte_l[] = { "Off", "On", "On + debug overlay" };
+static const char *const k_rtgi[] = { "off", "on", "debug_overlay" };   /* (rtgi) gpu_config.rt_gi 0 / 1 / 2 */
+static const char *const k_rtgi_l[] = { "Off", "On", "Bounce light only (debug)" };
+static const char *const k_rtcs[] = { "replace", "keep", "drop" };   /* (rtnext) gpu_enhance.rt_char_shadows 0 / 1 / 2 */
+static const char *const k_rtcs_l[] = { "Replaced where ray-traced", "Kept", "Dropped" };
 static const char *const k_output_filter[] = { "off", "scanlines", "crt" };
 static const char *const k_output_filter_l[] = { "Off", "Scanlines", "CRT (scanlines + mask)" };
 static const char *const k_text_speed[] = { "original", "fast", "instant" };
 static const char *const k_text_speed_l[] = { "Original", "Fast (2x)", "Instant (page at once)" };
 static const char *const k_battle_speed[] = { "original", "1.5x", "2x", "3x" };
 static const char *const k_battle_speed_l[] = { "Original (1x)", "1.5x", "2x", "3x" };
+static const char *const k_frog_log[] = { "original", "sorted" };   /* (froglog) */
+static const char *const k_frog_log_l[] = { "Original (US additions last)", "Sorted (additions in place)" };
 
 #define ORIG RG_SETF_HAS_ORIGINAL
 #define PH RG_SETF_PLACEHOLDER
 #define DISP RG_SETF_DISPLAY
 #define RS RG_SETF_RESTART
 #define GP RG_SETF_GAMEPLAY
+
+/* system.discord_app_id: empty, or a Discord application ID (17-20 decimal digits; spaces
+ * around it dropped) */
+static int discord_id_ok(const char *text, char *norm, size_t normcap, char *err, size_t errcap, void *user)
+{
+    (void)user;
+    while (*text == ' ' || *text == '\t') text++;
+    size_t n = strlen(text);
+    while (n && (text[n - 1] == ' ' || text[n - 1] == '\t')) n--;
+    for (size_t i = 0; i < n; i++)
+        if (text[i] < '0' || text[i] > '9') {
+            snprintf(err, errcap, "an application ID is digits only (Discord Developer Portal, General Information)");
+            return -1;
+        }
+    if (n && (n < 17 || n > 20)) {
+        snprintf(err, errcap, "an application ID has 17 to 20 digits");
+        return -1;
+    }
+    if (n + 1 > normcap) return -1;
+    memcpy(norm, text, n);
+    norm[n] = 0;
+    return 0;
+}
 
 static const rg_setting_def k_core[] = {
     /* ---------------------------------------------------------- display */
@@ -130,6 +164,16 @@ static const rg_setting_def k_core[] = {
       .help = "with a wide aspect: menus, text and HUD keep their 4:3 shapes, scaled by height and anchored to the left / centre / right, or stretch with the picture (the PS2 on a 16:9 TV)",
       .flags = ORIG, .def_i = 0, .orig_i = 0,
       .enum_names = k_ui_layout, .enum_labels = k_ui_layout_l, .enum_count = N(k_ui_layout) },
+    { .id = "graphics.menu_position", .type = RG_SET_ENUM, .label = "Menu position",
+      .help = "with a wide aspect and Wide-screen UI keep: the full-screen menus (main menu and its screens, shop, save, Galaxy Map) sit at the left edge of the screen with their background continued to the right, or in the centre; help sheets and battle results stay centred. Drawing only. Centre = Original",
+      .flags = ORIG, .def_i = 0, .orig_i = 1,
+      .enum_names = k_menu_pos, .enum_labels = k_menu_pos_l, .enum_count = N(k_menu_pos) },
+    { .id = "graphics.menu_margin", .type = RG_SET_INT, .label = "Menu margin",
+      .help = "percent of the screen width between the left edge and a menu placed at the left (Menu position), at most centred. Drawing only. 0 = Original",
+      .flags = ORIG, .def_i = 0, .orig_i = 0, .min_i = 0, .max_i = 15, .step_i = 1 },
+    { .id = "graphics.revelation_wide", .type = RG_SET_BOOL, .label = "Wide Revelation board",
+      .help = "with a wide aspect and Wide-screen UI keep: the Revelation board shows its cells over the whole width of the screen and scrolls only when the cursor nears the screen's right edge (off: cut off at the 4:3 menu's edge, as on the PS2). Drawing only. Off = Original",
+      .flags = ORIG, .def_i = 1, .orig_i = 0 },
     { .id = "graphics.antialiasing", .type = RG_SET_ENUM, .label = "Anti-aliasing",
       .help = "SSAA renders at N x the internal resolution and filters down; FXAA is a post-process edge blend",
       .flags = ORIG, .def_i = 0, .orig_i = 0, .enum_names = k_aa, .enum_labels = k_aa_l, .enum_count = N(k_aa) },
@@ -156,7 +200,9 @@ static const rg_setting_def k_core[] = {
     { .id = "graphics.lod_bias", .type = RG_SET_FLOAT, .label = "Draw distance / LOD bias",
       .flags = PH | ORIG, .def_f = 0.0, .orig_f = 0.0, .min_f = -2.0, .max_f = 2.0, .step_f = 0.25 },
     { .id = "graphics.shadow_res", .type = RG_SET_ENUM, .label = "Shadow resolution",
-      .flags = PH | ORIG, .def_i = 0, .orig_i = 0, .enum_names = k_shadow, .enum_count = N(k_shadow) },
+      .help = "the soft character shadows (the plane shadows' blur buffer): enhanced draws the PS2's 192x192 blur buffer at the internal resolution (up to 2x; smooth edges, the same softness); original keeps the PS2's buffer, magnified. Drawing only",
+      .flags = ORIG, .def_i = 0, .orig_i = 0,
+      .enum_names = k_shadow, .enum_labels = k_shadow_l, .enum_count = N(k_shadow) },
     /* docs/RAYTRACING.md (RT2: shown in the menu, off by default); Vulkan + a ray-query capable
      * device only (x64 builds: the 32-bit NVIDIA driver exposes no ray tracing) */
     { .id = "graphics.raytracing", .type = RG_SET_ENUM, .label = "Ray tracing",
@@ -168,6 +214,16 @@ static const rg_setting_def k_core[] = {
       .help = "lamps, screens, crystals, lava and glowing signs the art paints bright light the surfaces around them (ray-traced, with shadows); overlay: the surfaces taken as emitters drawn magenta. Needs ray tracing on. Drawing only. Off = Original",
       .flags = RS | ORIG, .def_i = 0, .orig_i = 0,
       .enum_names = k_rte, .enum_labels = k_rte_l, .enum_count = N(k_rte) },
+    /* (rtgi) docs/RAYTRACING.md "RT10": one-bounce diffuse light, a sub-option of ray tracing */
+    { .id = "graphics.rt_gi", .type = RG_SET_ENUM, .label = "Ray-traced bounce light (GI)",
+      .help = "one bounce of light from the surfaces around: colour bleeds from lit walls and floors into shadows and corners, weighted toward dark pixels so the painted look stays; debug: the added light alone. Needs ray tracing on. Drawing only. Off = Original",
+      .flags = RS | ORIG, .def_i = 0, .orig_i = 0,
+      .enum_names = k_rtgi, .enum_labels = k_rtgi_l, .enum_count = N(k_rtgi) },
+    /* (rtnext) docs/RAYTRACING.md "RT12": the game's own character shadows with ray tracing on (live) */
+    { .id = "graphics.rt_char_shadows", .type = RG_SET_ENUM, .label = "Game's character shadows with ray tracing",
+      .help = "the game's own shadows under the characters while ray tracing is on: replaced = left out where the ray-traced character shadows show (sunlit places), kept indoors and at night; kept = always drawn (two shadows outdoors); dropped = never drawn while ray tracing runs (no character shadow where the ray-traced ones fade out). Nothing changes without ray tracing. Drawing only",
+      .flags = ORIG, .def_i = 0, .orig_i = 0,
+      .enum_names = k_rtcs, .enum_labels = k_rtcs_l, .enum_count = N(k_rtcs) },
     { .id = "graphics.gamma", .type = RG_SET_FLOAT, .label = "Gamma",
       .help = "above 1 brightens mid-tones (output only)",
       .flags = ORIG, .def_f = 1.0, .orig_f = 1.0, .min_f = 0.5, .max_f = 2.0, .step_f = 0.05 },
@@ -254,6 +310,10 @@ static const rg_setting_def k_core[] = {
       .help = "runs battles faster while the fight is on (not in battle menus, tutorials, event scenes, the results or movies): the whole game clock runs this many times as fast, so every frame of the fight is the same as at 1x, only sooner; sound keeps its pitch (tempo follows). Changes the pacing of battles, so it is a gameplay option: Original = 1x. Needs a PC fast enough to run the game at that multiple",
       .flags = GP | ORIG, .def_i = 0, .orig_i = 0, .enum_names = k_battle_speed, .enum_labels = k_battle_speed_l,
       .enum_count = N(k_battle_speed) },
+    { .id = "gameplay.frog_log_order", .type = RG_SET_ENUM, .label = "Frog Log order",
+      .help = "order of the Frog Log's combine lists: the US release added weapons with new item numbers, so the game lists their recipes after all the others; sorted puts each one with its weapon tree (the order of the game's item table). Display only: saves and combining are unchanged. Original = the game's order",
+      .flags = GP | ORIG, .def_i = 0, .orig_i = 0, .enum_names = k_frog_log, .enum_labels = k_frog_log_l,
+      .enum_count = N(k_frog_log) },
     { .id = "gameplay.skip_seen_movies", .type = RG_SET_BOOL, .label = "Allow skipping seen movies",
       .flags = PH | ORIG, .def_i = 1, .orig_i = 0 },
 
@@ -263,6 +323,17 @@ static const rg_setting_def k_core[] = {
       .def_i = 1, .orig_i = 1 },
     { .id = "system.screenshot_dir", .type = RG_SET_STRING, .label = "Screenshot folder",
       .help = "F12 writes rg-shot-NNNN.png here (applies at once)", .def_s = ".", .max_len = 511 },
+    /* Discord Rich Presence (src/discord, docs/DISCORD.md): a background thread talking to the
+     * Discord desktop app's local pipe; idle without an application ID */
+    { .id = "system.discord", .type = RG_SET_BOOL, .label = "Discord activity",
+      .help = "shows \"Playing <your Discord application's name>\" while the Discord app runs on this PC; needs system.discord_app_id in settings.ini (docs/DISCORD.md); applies at once",
+      .def_i = 1 },
+    { .id = "system.discord_app_id", .type = RG_SET_STRING, .label = "Discord application ID",
+      .help = "the Application ID of an application you create in the Discord Developer Portal (its name is what Discord shows); empty = off; settings.ini only, read at start",
+      .flags = RS | RG_SETF_HIDDEN, .def_s = "", .max_len = 24, .validate = discord_id_ok },
+    { .id = "system.discord_details", .type = RG_SET_BOOL, .label = "Discord: show chapter",
+      .help = "adds the chapter of the save last loaded or written to the activity",
+      .def_i = 1 },
 };
 
 int rg_settings_register_core(rg_settings *s)

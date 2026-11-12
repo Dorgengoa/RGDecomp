@@ -96,6 +96,13 @@ set_tests_properties(fixtures.optgate_quick PROPERTIES LABELS "fixtures;p6" SKIP
 rg_slot_test(fixtures.fpsgate_quick 1200 ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/p6/fpsgate.py run --tier quick
          --exe $<TARGET_FILE:rg-game> --out ${_work}/fpsgate_quick -j 2 --skip-missing)
 set_tests_properties(fixtures.fpsgate_quick PROPERTIES LABELS "fixtures;p6;fpsgate" SKIP_RETURN_CODE 77)
+# invsort (lane invsort 2026-11-09, docs/SETTINGS.md "Sort items by category"): the generated
+# category map is current, and the scripted sort -> save -> load -> use play test
+add_test(NAME fixtures.invsort_census COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/census/invsort_census.py --check)
+set_tests_properties(fixtures.invsort_census PROPERTIES LABELS fixtures TIMEOUT 120 SKIP_RETURN_CODE 77)
+rg_slot_test(fixtures.invsort 900 ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/invsort/invsort_test.py play
+         --exe $<TARGET_FILE:rg-game> --out ${_work}/invsort --skip-missing)
+set_tests_properties(fixtures.invsort PROPERTIES LABELS fixtures SKIP_RETURN_CODE 77)
 set(_tests fixtures.save fixtures.roundtrip)
 foreach(kind corrupt truncated foreign)
   rg_slot_test(fixtures.refuse.${kind} 900 WILL_FAIL ${RG_PYTHON} ${_fx} refuse $<TARGET_FILE:rg-game> ${_work} ${kind})
@@ -105,3 +112,13 @@ set_tests_properties(fixtures.save PROPERTIES FIXTURES_SETUP rg_ss_states)
 set_tests_properties(${_tests} PROPERTIES LABELS fixtures SKIP_RETURN_CODE 77)
 list(REMOVE_ITEM _tests fixtures.save)
 set_tests_properties(${_tests} PROPERTIES FIXTURES_REQUIRED rg_ss_states)
+# scenario (lane scenario 2026-11-11, docs/TEST-FIXTURES.md "Scenarios", docs/GAME-PROGRESSION.md):
+# fixtures.scenario_selftest = no game run: the condition decoder on known strings, the census
+# (census/progression.tsv rebuilt from data/) and target resolution ('Mud Whooper' -> fixed 1005 on
+# Juraika, section 2032); fixtures.scenario = card sc_1005 booted, RG_FORCE_ENCOUNTER=fixed:1005@60
+# queues the boss, passes when the enemy records name Mud Whooper
+add_test(NAME fixtures.scenario_selftest COMMAND ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/fixtures/scenario.py selftest)
+set_tests_properties(fixtures.scenario_selftest PROPERTIES LABELS fixtures TIMEOUT 300 SKIP_RETURN_CODE 77)
+rg_slot_test(fixtures.scenario 900 ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/fixtures/scenario.py run "Mud Whooper"
+         --exe $<TARGET_FILE:rg-game> --out ${_work}/scenario --skip-missing)
+set_tests_properties(fixtures.scenario PROPERTIES LABELS fixtures SKIP_RETURN_CODE 77)

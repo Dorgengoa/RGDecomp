@@ -47,6 +47,14 @@ typedef struct nr_mesh {
     int bad;                  /* not drawable natively (reason in why) */
     const char *why;
     float bbox[6];            /* raw position bounds (min xyz, max xyz) */
+    int nrm_signs;            /* RG_NR_MISSNRM=2: no batch unpacked normals, vtx normals = sign vectors */
+    /* every batch (MSCNT) as the VU program sees it (nr_lnrm.c, docs/NATIVE-RENDER.md "Leftover
+     * normals natively"): header qw0 / qw1, the vertex index of its first vertex in vtx[], and the
+     * runs of qwords its UNPACKs wrote (TOP-relative: start | len << 10 | lanes << 21) */
+    uint32_t nlay;
+    struct nr_mesh_lay { uint32_t h[8]; uint32_t vfirst, run0, nrun, vbase; } *lay;   /* vbase: qwords in the runs before */
+    uint32_t *runs;
+    int derived;              /* nr_mesh_derive copy: owns only vtx (idx, lay, runs shared) */
 } nr_mesh;
 
 /* The mesh decoded from the packet at host address pkt (cached; the cache
@@ -63,6 +71,12 @@ nr_mesh *nr_mesh_decode(uint32_t pkt, int skinned_variant);
 typedef void (*nr_batch_cb)(void *user, const nr_qw *img, const uint8_t *written);
 nr_mesh *nr_mesh_decode_words(const uint32_t *w, uint32_t n, int skinned_variant, nr_batch_cb cb, void *user);
 void nr_mesh_free(nr_mesh *m);
+/* the batch images of a cached mesh again (cb per MSCNT, as nr_mesh_decode_words), decoded from
+ * its packet; -1 when the packet's bytes no longer hash to the mesh */
+int nr_mesh_images(const nr_mesh *m, int skinned_variant, nr_batch_cb cb, void *user);
+/* a copy with its own vertex array and a new id (nr_lnrm.c: per-draw normals); free with
+ * nr_mesh_free */
+nr_mesh *nr_mesh_derive(const nr_mesh *m);
 
 typedef struct nr_mesh_stats {
     uint64_t lookups, decodes, rehash, bad;

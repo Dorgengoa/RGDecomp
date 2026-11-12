@@ -36,6 +36,8 @@
 #include "nr_const.h"
 #include "nr_im.h"
 #include "nr_vu1.h"
+#include "nr_trig.h"
+#include "nr_lnrm.h"
 
 static uint32_t rd32(const uint8_t *p) { uint32_t v; memcpy(&v, p, 4); return v; }
 
@@ -246,8 +248,8 @@ static void particles(uint32_t xtop)
         l = sqrtf(U[0] * U[0] + U[1] * U[1] + U[2] * U[2]);
         l = l > 0.0f ? sc[1] / l : 0.0f;
         for (i = 0; i < 3; i++) U[i] *= l;
-        cs = cosf(ang);
-        sn = sinf(ang);
+        cs = NR_COSF(ang);
+        sn = NR_SINF(ang);
         for (i = 0; i < 3; i++) { A[i] = R[i] * cs + U[i] * sn; B[i] = U[i] * cs - R[i] * sn; }
         cx[0] = c0[0]; cy[0] = c0[1]; us[0] = uA[0]; vs[0] = uA[1];
         cx[1] = c1[0]; cy[1] = c0[1]; us[1] = uB[0]; vs[1] = uA[1];
@@ -327,6 +329,11 @@ static void start(uint32_t cmd, uint32_t imm)
             static int lg = -1;
             if (lg < 0) lg = getenv("RG_NR_VUX_LOG") != NULL;
             if (lg) fprintf(stderr, "vux particles frame %u count %u\n", nr_frame_no(), V.mem[xtop & 1023].u[1] & 0xFFFF);
+            if (nr_lnrm_on()) {   /* RG_NR_MISSNRM=3: what the program wrote is not a model batch's */
+                uint32_t cnt = V.mem[xtop & 1023].u[1] & 0xFFFF;
+                nr_lnrm_unknown(xtop, (V.mem[76].u[0] & 1023) + 4 + 13 * cnt + 2);
+                nr_lnrm_unknown(0x3FE, 2);
+            }
             particles(xtop);
             V.tpc = 0x328 / 8;                   /* nop[e] b 0x328 */
             V.run[P_PARTICLES]++;
@@ -334,6 +341,7 @@ static void start(uint32_t cmd, uint32_t imm)
         }
     }
     V.untranslated++;
+    nr_lnrm_unknown(140, 760);   /* (RG_NR_MISSNRM=3) a program not run here may write anywhere */
     {
         uint64_t h = code_at(pc);
         int i;
@@ -423,6 +431,7 @@ void nr_vux_cmd(const uint8_t *data, uint32_t bytes)
     imm = c & 0xFFFF;
     num = (c >> 16) & 0xFF;
     V.cmds++;
+    nr_lnrm_vux_present();
     if (cmd >= 0x60) { unpack(c, data + 4, (bytes - 4) / 4); return; }
     switch (cmd) {
     case 0x01: V.cl = imm & 0xFF; V.wl = (imm >> 8) & 0xFF; break;

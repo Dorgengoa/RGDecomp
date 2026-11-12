@@ -28,6 +28,7 @@
 #include <cmath>
 #include <deque>
 #include <map>
+#include <new>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -83,6 +84,7 @@ struct Stats {
     uint64_t saves, restores, put_fail, pre_skipped;
     uint64_t pc_plans, pc_plan_skip, pc_plan_cmds, pc_plan_cuts, pc_passes, pc_skipped, pc_taken, pc_put, pc_fail;
     uint64_t im_draws, im_paired, im_tris, im_tris_lerped, trimmed, zs_strips, zs_groups, zs_groups_all, zs_pose, zs_widened;
+    uint64_t oom;                /* logs ended by std::bad_alloc while recording (IpRec::oom) */
 };
 
 static uint32_t g_mesh_id;
@@ -159,9 +161,35 @@ public:
         else st.pre_images++;
         s.pre.push_back(p);
     }
+    /* Out of memory while recording (gfxperf10): std::bad_alloc from a command's copies (the log's
+     * vector growing, vertices, texels, maps) ends this frame's log instead of the process: the
+     * slot is freed (its capacity given back) and marked unrecorded, so no pass replays it (the
+     * presentation shows the newest frame, as for any frame without a log) and recording stops
+     * until the next frame boundary.  Seen when the machine's commit limit was reached
+     * (gfxperf9 timing round 1: 51.05 of 51.06 GB committed machine-wide).  $RG_INTERP_OOM_AT=N
+     * (measurement, fault injection): every N-th recorded command (run-wide count) throws instead. */
+    uint64_t n_added = 0;
+    static uint64_t oom_at()
+    {
+        static long long at = -1;
+        if (at < 0) { const char *e = getenv("RG_INTERP_OOM_AT"); at = e ? atoll(e) : 0; if (at < 0) at = 0; }
+        return (uint64_t)at;
+    }
+    void oom()
+    {
+        st.oom++;
+        if (cur < 0) return;
+        free_slot(cur);
+        std::vector<Cmd>().swap(slot[cur].cmds);
+        std::vector<Pre>().swap(slot[cur].pre);
+        cur = -1;
+        if (dbg_on() || memlog_on()) fprintf(stderr, "interp device: out of memory while recording (%llu): frame not kept\n",
+                                             (unsigned long long)st.oom);
+    }
     Cmd &add(CmdKind k)
     {
         Slot &s = slot[cur];
+        if (++n_added % (oom_at() ? oom_at() : ~0ull) == 0) throw std::bad_alloc();
         s.cmds.emplace_back();
         Cmd &c = s.cmds.back();
         c.k = k;
@@ -175,6 +203,39 @@ public:
         return c;
     }
     bool recording() const { return cur >= 0 && !replaying; }
+    /* $RG_INTERP_MEMLOG=1 (measurement, gfxperf10): host bytes each slot holds, one stderr line per
+     * frame boundary (the slot just recorded + all slots), peaks at exit (gpu_ip_stats) */
+    static int memlog_on()
+    {
+        static int on = -1;
+        if (on < 0) { const char *e = getenv("RG_INTERP_MEMLOG"); on = e && *e && e[0] != '0'; }
+        return on;
+    }
+    size_t slot_bytes(const Slot &s, size_t *payload) const
+    {
+        size_t p = 0;
+        for (const Cmd &c : s.cmds)
+            p += c.im.capacity() * sizeof(GpuImVtx) + (c.runs.capacity() + c.rgba.capacity()) * sizeof(uint32_t);
+        if (payload) *payload = p;
+        return s.cmds.capacity() * sizeof(Cmd) + p;
+    }
+    size_t mem_peak_all = 0, mem_peak_slot = 0, mem_peak_cmds = 0, mem_peak_payload = 0;
+    void memlog(int next)
+    {
+        if (!memlog_on()) return;
+        size_t all = 0;
+        for (int i = 0; i < NR_IP_SLOTS; i++) all += slot_bytes(slot[i], NULL);
+        if (all > mem_peak_all) mem_peak_all = all;
+        if (cur >= 0) {
+            size_t pay = 0, b = slot_bytes(slot[cur], &pay);
+            if (b > mem_peak_slot) mem_peak_slot = b;
+            if (slot[cur].cmds.size() > mem_peak_cmds) mem_peak_cmds = slot[cur].cmds.size();
+            if (pay > mem_peak_payload) mem_peak_payload = pay;
+            fprintf(stderr, "interp mem: slot %d cmds %zu cap %zu (%.1f MB) payload %.1f MB pre %zu; all slots %.1f MB; next %d\n",
+                    cur, slot[cur].cmds.size(), slot[cur].cmds.capacity(),
+                    slot[cur].cmds.capacity() * sizeof(Cmd) / 1048576.0, pay / 1048576.0, slot[cur].pre.size(), all / 1048576.0, next);
+        }
+    }
 
     /* ---- the backend, forwarded ---- */
     const char *name() const override { return in->name(); }
@@ -191,13 +252,15 @@ public:
         if (id >= 0) {
             bump(id);
             if (recording()) {
-                Cmd &c = add(C_CREATE);
-                c.rt[0] = id;
-                c.life[0] = life_of(id);
-                c.a = depth; c.b = w; c.c = h;
-                slot[cur].born[id] = life_of(id);
-                slot[cur].ord[id] = slot[cur].nborn++;
-                st.creates++;
+                try {
+                    Cmd &c = add(C_CREATE);
+                    c.rt[0] = id;
+                    c.life[0] = life_of(id);
+                    c.a = depth; c.b = w; c.c = h;
+                    slot[cur].born[id] = life_of(id);
+                    slot[cur].ord[id] = slot[cur].nborn++;
+                    st.creates++;
+                } catch (const std::bad_alloc &) { oom(); }
             }
         }
         sync();
@@ -206,21 +269,25 @@ public:
     void rt_resize(int id, int w, int h) override
     {
         if (recording()) {
-            writes(id);
-            Cmd &c = add(C_RESIZE);
-            c.rt[0] = id;
-            c.life[0] = life_of(id);
-            c.a = w; c.b = h;
+            try {
+                writes(id);
+                Cmd &c = add(C_RESIZE);
+                c.rt[0] = id;
+                c.life[0] = life_of(id);
+                c.a = w; c.b = h;
+            } catch (const std::bad_alloc &) { oom(); }
         }
         in->rt_resize(id, w, h);
     }
     void rt_destroy(int id) override
     {
         if (recording() && id >= 0) {
-            Cmd &c = add(C_DESTROY);
-            c.rt[0] = id;
-            c.life[0] = life_of(id);
-            slot[cur].ord.erase(id);
+            try {
+                Cmd &c = add(C_DESTROY);
+                c.rt[0] = id;
+                c.life[0] = life_of(id);
+                slot[cur].ord.erase(id);
+            } catch (const std::bad_alloc &) { oom(); }
         }
         in->rt_destroy(id);
         bump(id);
@@ -228,23 +295,31 @@ public:
     void rt_clear(int id) override
     {
         if (recording()) {
-            writes(id);
-            Cmd &c = add(C_CLEAR);
-            c.rt[0] = id;
-            c.life[0] = life_of(id);
-            st.clears++;
+            try {
+                writes(id);
+                Cmd &c = add(C_CLEAR);
+                c.rt[0] = id;
+                c.life[0] = life_of(id);
+                st.clears++;
+            } catch (const std::bad_alloc &) { oom(); }
         }
         in->rt_clear(id);
     }
     void rt_load(int id, uint32_t bp, uint32_t bw, int psm, const GpuRect &r) override
     {
         if (recording()) {
-            writes(id);
-            Cmd &c = add(C_LOAD);
-            c.rt[0] = id;
-            c.life[0] = life_of(id);
-            c.bp = bp; c.bw = bw; c.psm = psm; c.r = r;
-            st.loads++;
+            try {
+                writes(id);
+                Cmd &c = add(C_LOAD);
+                c.rt[0] = id;
+                c.life[0] = life_of(id);
+                c.bp = bp; c.bw = bw; c.psm = psm; c.r = r;
+                st.loads++;
+            } catch (const std::bad_alloc &) {
+                oom();
+                in->rt_load(id, bp, bw, psm, r);
+                return;
+            }
             in->rt_load(id, bp, bw, psm, r);
             /* the target after the load: the replay puts it back (local memory is not the same
              * then: the core makes it current from live targets before a load) */
@@ -263,13 +338,15 @@ public:
     bool rt_copy(int dst, int dx, int dy, int src, const GpuRect &sr) override
     {
         if (recording()) {
-            writes(dst);
-            writes(src);
-            Cmd &c = add(C_COPY);
-            c.rt[0] = dst; c.life[0] = life_of(dst);
-            c.rt[1] = src; c.life[1] = life_of(src);
-            c.a = dx; c.b = dy; c.r = sr;
-            st.copies++;
+            try {
+                writes(dst);
+                writes(src);
+                Cmd &c = add(C_COPY);
+                c.rt[0] = dst; c.life[0] = life_of(dst);
+                c.rt[1] = src; c.life[1] = life_of(src);
+                c.a = dx; c.b = dy; c.r = sr;
+                st.copies++;
+            } catch (const std::bad_alloc &) { oom(); }
         }
         return in->rt_copy(dst, dx, dy, src, sr);
     }
@@ -277,13 +354,15 @@ public:
                         int spsm, const GpuRect &sr) override
     {
         if (recording()) {
-            writes(dst);
-            writes(src);
-            Cmd &c = add(C_REINT);
-            c.rt[0] = dst; c.life[0] = life_of(dst);
-            c.rt[1] = src; c.life[1] = life_of(src);
-            c.bp = dbp; c.bw = dbw; c.psm = dpsm; c.r = dr;
-            c.bp2 = sbp; c.bw2 = sbw; c.psm2 = spsm; c.r2 = sr;
+            try {
+                writes(dst);
+                writes(src);
+                Cmd &c = add(C_REINT);
+                c.rt[0] = dst; c.life[0] = life_of(dst);
+                c.rt[1] = src; c.life[1] = life_of(src);
+                c.bp = dbp; c.bw = dbw; c.psm = dpsm; c.r = dr;
+                c.bp2 = sbp; c.bw2 = sbw; c.psm2 = spsm; c.r2 = sr;
+            } catch (const std::bad_alloc &) { oom(); }
         }
         return in->rt_reinterpret(dst, dbp, dbw, dpsm, dr, src, sbp, sbw, spsm, sr);
     }
@@ -375,28 +454,30 @@ public:
     bool nr_draw(const GpuNrDraw &g) override
     {
         if (recording()) {
-            /* pre-images of what the draw writes and reads (a target read may be gone at replay) */
-            writes(g.color_rt);
-            writes(g.depth_rt);
-            writes(g.tex_rt);
-            Cmd &c = add(C_DRAW);
-            c.g = g;
-            if (g.d) { c.d = *g.d; c.has_d = 1; }
-            if (g.im && g.nim) c.im.assign(g.im, g.im + g.nim);
-            if (g.runs && g.nruns > 0) c.runs.assign(g.runs, g.runs + 2 * g.nruns);
-            if (g.dec_rgba) {
-                size_t n = (size_t)(g.dec_rect.x1 - g.dec_rect.x0) * (size_t)(g.dec_rect.y1 - g.dec_rect.y0);
-                c.rgba.assign(g.dec_rgba, g.dec_rgba + n);
-            }
-            c.mesh_id = g.im ? 0 : g_mesh_id;
-            c.rt[0] = g.color_rt; c.life[0] = life_of(g.color_rt);
-            c.rt[1] = g.depth_rt; c.life[1] = life_of(g.depth_rt);
-            c.rt[2] = g.tex_rt; c.life[2] = life_of(g.tex_rt);
-            for (int k = 0; k < 3; k++) {
-                auto o = slot[cur].ord.find(c.rt[k]);
-                c.srt[k] = o != slot[cur].ord.end() ? 0x40000000 + o->second : c.rt[k];
-            }
-            st.draws++;
+            try {
+                /* pre-images of what the draw writes and reads (a target read may be gone at replay) */
+                writes(g.color_rt);
+                writes(g.depth_rt);
+                writes(g.tex_rt);
+                Cmd &c = add(C_DRAW);
+                c.g = g;
+                if (g.d) { c.d = *g.d; c.has_d = 1; }
+                if (g.im && g.nim) c.im.assign(g.im, g.im + g.nim);
+                if (g.runs && g.nruns > 0) c.runs.assign(g.runs, g.runs + 2 * g.nruns);
+                if (g.dec_rgba) {
+                    size_t n = (size_t)(g.dec_rect.x1 - g.dec_rect.x0) * (size_t)(g.dec_rect.y1 - g.dec_rect.y0);
+                    c.rgba.assign(g.dec_rgba, g.dec_rgba + n);
+                }
+                c.mesh_id = g.im ? 0 : g_mesh_id;
+                c.rt[0] = g.color_rt; c.life[0] = life_of(g.color_rt);
+                c.rt[1] = g.depth_rt; c.life[1] = life_of(g.depth_rt);
+                c.rt[2] = g.tex_rt; c.life[2] = life_of(g.tex_rt);
+                for (int k = 0; k < 3; k++) {
+                    auto o = slot[cur].ord.find(c.rt[k]);
+                    c.srt[k] = o != slot[cur].ord.end() ? 0x40000000 + o->second : c.rt[k];
+                }
+                st.draws++;
+            } catch (const std::bad_alloc &) { oom(); }
         }
         bool ok = in->nr_draw(g);
         sync();
@@ -1853,6 +1934,7 @@ void gpu_ip_rec_slot(gpu_renderer *r, int s)
 {
     IpRec *p = rec_of(r);
     if (!p) return;
+    p->memlog(s);
     p->restore();
     if (s >= 0 && s < NR_IP_SLOTS) {
         p->free_slot(s);
@@ -1965,6 +2047,12 @@ void gpu_ip_stats(gpu_renderer *r, FILE *f)
             (unsigned long long)s.im_tris, (unsigned long long)s.zs_groups, (unsigned long long)s.zs_groups_all,
             (unsigned long long)s.zs_strips, (unsigned long long)s.zs_pose, (unsigned long long)s.zs_widened,
             (unsigned long long)s.trimmed);
+    if (s.oom)
+        fprintf(f, "interp device: logs ended by out of memory %llu (frames shown without passes)\n", (unsigned long long)s.oom);
+    if (IpRec::memlog_on())
+        fprintf(f, "interp mem peaks: all slots %.1f MB, one slot %.1f MB (payload %.1f MB), commands in a slot %zu (Cmd %zu bytes)\n",
+                p->mem_peak_all / 1048576.0, p->mem_peak_slot / 1048576.0, p->mem_peak_payload / 1048576.0, p->mem_peak_cmds,
+                sizeof(Cmd));
     fprintf(f, "interp device: dead commands (live_cmds) %llu of %llu sequence commands analysed; redirected %s, "
                "pre-images not needed %llu\n",
             (unsigned long long)p->dce_skipped, (unsigned long long)p->dce_cmds, p->redirect_on() ? "on" : "off",

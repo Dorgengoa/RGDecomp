@@ -75,11 +75,13 @@ const uint32_t K256[64] = {
 }  // namespace
 
 std::string to_hex(const uint8_t* p, size_t n) {
-    static const char d[] = "0123456789abcdef";
+    // digits by arithmetic, not a "0123456789abcdef" table: such a table after zero padding
+    // matched a retail 16-byte window in Setup.exe (make_release leak gate, 2026-11-10)
+    auto dig = [](unsigned v) { return static_cast<char>(v < 10 ? '0' + v : 'a' + (v - 10)); };
     std::string s(n * 2, '0');
     for (size_t i = 0; i < n; ++i) {
-        s[2 * i] = d[p[i] >> 4];
-        s[2 * i + 1] = d[p[i] & 15];
+        s[2 * i] = dig(p[i] >> 4);
+        s[2 * i + 1] = dig(p[i] & 15u);
     }
     return s;
 }

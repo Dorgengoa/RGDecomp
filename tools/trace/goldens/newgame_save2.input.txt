@@ -1,0 +1,270 @@
+# SPDX-License-Identifier: CC0-1.0
+# Golden input: power-on -> title -> NEW GAME -> opening -> first battle (player control).
+# Game VBlank counter units ([0x004810C4]); see tools/trace/README.md.
+1900 1905 CROSS      # title menu: NEW GAME (default cursor with an empty card)
+2400 2405 CROSS      # then every 6 s: advance story screen / dialogue (as retail_afterstory)
+2760 2765 CROSS
+3120 3125 CROSS
+3480 3485 CROSS
+3840 3845 CROSS
+4200 4205 CROSS
+4560 4565 CROSS
+4920 4925 CROSS
+5280 5285 CROSS
+5640 5645 CROSS
+6000 6005 CROSS
+6360 6365 CROSS
+6720 6725 CROSS
+7080 7085 CROSS
+7440 7445 CROSS
+7800 7805 CROSS
+8160 8165 CROSS
+8520 8525 CROSS
+8880 8885 CROSS
+9240 9245 CROSS
+9600 9605 CROSS
+9960 9965 CROSS
+10320 10325 CROSS
+10680 10685 CROSS
+11040 11045 CROSS
+11400 11405 CROSS
+11760 11765 CROSS
+12120 12125 CROSS
+12480 12485 CROSS
+12840 12845 CROSS
+13200 13205 CROSS
+13560 13565 CROSS
+13920 13925 CROSS
+14280 14285 CROSS
+14640 14645 CROSS
+15000 15005 CROSS
+15360 15365 CROSS
+15720 15725 CROSS
+16080 16085 CROSS
+16440 16445 CROSS
+16800 16805 CROSS
+17160 17165 CROSS
+17520 17525 CROSS
+17880 17885 CROSS
+18240 18245 CROSS
+18600 18605 CROSS
+18960 18965 CROSS
+19320 19325 CROSS
+19680 19685 CROSS
+20040 20045 CROSS
+20400 20405 CROSS
+20760 20765 CROSS
+21120 21125 CROSS
+21480 21485 CROSS
+21840 21845 CROSS
+22200 22205 CROSS
+22560 22565 CROSS
+22920 22925 CROSS
+23280 23285 CROSS
+23640 23645 CROSS
+24000 24005 CROSS
+24450 24455 START  # battle tutorial page 1/3
+24570 24575 START  # page 2/3
+24690 24695 START  # page 3/3 -> battle (game mode 7) at vbl ~24732
+
+# ===========================================================================
+# Continuation 2 (2026-10-18, re-timed after the AngleWrap fix, the re-ingest de031765
+# and the native VU0 default; docs/TEST-FIXTURES.md "Route"). Replaces
+# newgame_save1.input.txt (kept for history: its battle inputs were timed against the
+# broken turn controller and now open the PAUSE menu). Same story: first battle won ->
+# Salgin -> transporter event -> save to MEMORY CARD slot 1 / FILE 01 -> back in the
+# field. No stick-tap work-around: the run state settles on release.
+# Written for the PORT: every key in this file is the kernel VBlank count = the field
+# number (--fields/--shot), not the game counter (docs/RUNTIME.md "Pad").
+# Milestones (fields; build/play2-i686 2026-10-19, the retwiden + wideret fixes: battles
+# award EXP / money, battle commands pressed during an action's recovery are buffered;
+# RG_VU0_MODE=native, RG_RENDER/THREADS/IOP/AUDIO=native, RG_GPU=hw; since 2026-10-24 the
+# EE float default, RG_EE_FPU=chop: only the help-sheet STARTs moved). Re-timed 2026-10-19
+# with tools/fixtures/retime.py (closed loop from the battle state) + tapsearch.py:
+#   25860 "Suggestions" tutorial (the 3-page "Action Gauge" tutorial no longer opens:
+#   the battle ends first; 25890 before the EE float default, re-timed 2026-10-24)
+#   26510 battle won (game mode 7/4001 -> 11/1), results (battle_won 26780)
+#   28740 first field control in Salgin (game mode 6/100; town at 28840)
+#   29180 transporter event, then "Transporter Functions" tutorial
+#   30110 field control next to the transporter (save_point at 30220)
+#   the party stands on the pad without a step; 30740 transporter menu (game mode 20;
+#   trans_menu at 30780)
+#   ~31480 "File 1 saved." (card1/BASCUS-97490LV5RG_00), 31680 back in the field (saved 31700)
+# The battle is NOT robust: any change in battle AI / float math moves the tutorials
+# (VU0 local -> native moved them by +140 fields and the win by -380; the 2026-10-19 fixes
+# the win by -330); re-time with
+# tools/fixtures/play.py + tapsearch.py (docs/TEST-FIXTURES.md "Re-timing the route").
+# Stick lines (#!stick, docs/INPUT.md "Scripted sticks") are comments to
+# tools/trace/input.py: retail replays end at the first one (field 28840).
+# Input tables end at 32,636: go on from the save (run_from.py --boot-save save2).
+# ===========================================================================
+# first battle (after the tutorial closes at ~24700): attack every 10 fields
+# first battle (closed loop, tools/fixtures/retime.py): SQUARE every 10 fields while fighting,
+# START 60 fields after a help sheet opens; after the win CROSS every 120 through the results
+# and the Hooded Man dialogue
+24730 24732 SQUARE
+24740 24742 SQUARE
+24750 24752 SQUARE
+24770 24772 SQUARE
+24780 24782 SQUARE
+24790 24792 SQUARE
+24810 24812 SQUARE
+24820 24822 SQUARE
+24830 24832 SQUARE
+24850 24852 SQUARE
+24860 24862 SQUARE
+24870 24872 SQUARE
+24890 24892 SQUARE
+24900 24902 SQUARE
+24910 24912 SQUARE
+24930 24932 SQUARE
+24940 24942 SQUARE
+24950 24952 SQUARE
+24970 24972 SQUARE
+24980 24982 SQUARE
+24990 24992 SQUARE
+25010 25012 SQUARE
+25020 25022 SQUARE
+25030 25032 SQUARE
+25050 25052 SQUARE
+25060 25062 SQUARE
+25070 25072 SQUARE
+25090 25092 SQUARE
+25100 25102 SQUARE
+25110 25112 SQUARE
+25130 25132 SQUARE
+25140 25142 SQUARE
+25150 25152 SQUARE
+25170 25172 SQUARE
+25180 25182 SQUARE
+25190 25192 SQUARE
+25210 25212 SQUARE
+25220 25222 SQUARE
+25230 25232 SQUARE
+25250 25252 SQUARE
+25260 25262 SQUARE
+25270 25272 SQUARE
+25290 25292 SQUARE
+25300 25302 SQUARE
+25310 25312 SQUARE
+25330 25332 SQUARE
+25340 25342 SQUARE
+25350 25352 SQUARE
+25370 25372 SQUARE
+25380 25382 SQUARE
+25390 25392 SQUARE
+25410 25412 SQUARE
+25420 25422 SQUARE
+25430 25432 SQUARE
+25450 25452 SQUARE
+25460 25462 SQUARE
+25470 25472 SQUARE
+25490 25492 SQUARE
+25500 25502 SQUARE
+25510 25512 SQUARE
+25530 25532 SQUARE
+25540 25542 SQUARE
+25550 25552 SQUARE
+25570 25572 SQUARE
+25580 25582 SQUARE
+25590 25592 SQUARE
+25610 25612 SQUARE
+25620 25622 SQUARE
+25630 25632 SQUARE
+25650 25652 SQUARE
+25660 25662 SQUARE
+25670 25672 SQUARE
+25690 25692 SQUARE
+25700 25702 SQUARE
+25710 25712 SQUARE
+25730 25732 SQUARE
+25740 25742 SQUARE
+25750 25752 SQUARE
+25770 25772 SQUARE
+25780 25782 SQUARE
+25790 25792 SQUARE
+25810 25812 SQUARE
+25820 25822 SQUARE
+25830 25832 SQUARE
+25850 25852 SQUARE
+25860 25862 SQUARE
+25870 25872 SQUARE
+25930 25933 START
+26050 26053 START
+26170 26173 START
+26210 26212 SQUARE
+26220 26222 SQUARE
+26230 26232 SQUARE
+26250 26252 SQUARE
+26260 26262 SQUARE
+26270 26272 SQUARE
+26290 26292 SQUARE
+26300 26302 SQUARE
+26310 26312 SQUARE
+26330 26332 SQUARE
+26340 26342 SQUARE
+26350 26352 SQUARE
+26370 26372 SQUARE
+26380 26382 SQUARE
+26390 26392 SQUARE
+26410 26412 SQUARE
+26420 26422 SQUARE
+26430 26432 SQUARE
+26450 26452 SQUARE
+26460 26462 SQUARE
+26470 26472 SQUARE
+26490 26492 SQUARE
+26500 26502 SQUARE
+26510 26512 SQUARE
+26570 26573 CROSS
+26641 26644 CROSS
+26761 26764 CROSS
+26881 26884 CROSS
+27001 27004 CROSS
+27121 27124 CROSS
+27241 27244 CROSS
+27361 27364 CROSS
+27481 27484 CROSS
+27601 27604 CROSS
+27721 27724 CROSS
+27841 27844 CROSS
+27961 27964 CROSS
+28081 28084 CROSS
+28201 28204 CROSS
+28321 28324 CROSS
+28441 28444 CROSS
+28561 28564 CROSS
+28681 28684 CROSS
+# field control in Salgin at ~28740: walk to the transporter (event at ~29180)
+#!stick 1 0
+#!stick 28840 29220 128 0
+# transporter event dialogue, then the 3-page "Transporter Functions" tutorial
+29340 29345 CROSS
+29460 29465 CROSS
+29580 29585 CROSS
+29700 29705 CROSS
+29840 29845 START
+29960 29965 START
+30080 30085 START  # field control at ~30,110
+# to the transporter pad: the direct way is blocked (a ledge); jump over it
+#!stick 30442 30540 255 128
+30460 30463 CIRCLE
+30490 30493 CIRCLE
+30520 30523 CIRCLE
+#!stick 30551 30565 0 255
+#!stick 30566 30580 0 128
+#!stick 30581 30595 0 128
+#!stick 30596 30610 0 0
+# on the pad (the run state settles after the release; tapsearch.py 2026-10-19: no step
+# needed, the transporter menu opens from here)
+30730 30733 CROSS  # transporter menu (Save / Teleport / ??? / Item Storage)
+30810 30813 CROSS  # Save
+30960 30963 CROSS  # MEMORY CARD slot 1
+31110 31113 CROSS  # FILE 01 (NEW DATA)
+31160 31163 LEFT   # "Create new data in file 1?" -> Yes
+31190 31193 CROSS  # save
+31530 31533 CROSS  # dismiss "File 1 saved."
+31610 31613 CIRCLE # close the slot list
+31670 31673 CIRCLE # close the transporter menu
+# walk away from the transporter (field walking after the save)
+#!stick 31750 31870 0 255

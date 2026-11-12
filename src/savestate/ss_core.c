@@ -53,6 +53,29 @@ static void ss_big_free(void *p)
 }
 #define SS_BIG_ALLOC(n) ss_big_alloc(n)
 #define SS_BIG_FREE(p) ss_big_free(p)
+#elif defined(__linux__) && defined(__x86_64__)
+/* x86-64 Linux: a NULL-hint mmap lands high (near the libraries), out of the low 2 GB that game
+ * pointers need (glibc's heap there is pinned low, src/x64/lowmem_linux.c).  The size sits in
+ * front of the block. */
+#include <sys/mman.h>
+static void *ss_big_alloc(size_t n)
+{
+    size_t r = (n + 16 + 0xFFFu) & ~(size_t)0xFFFu;
+    void *p = mmap(NULL, r, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (p == MAP_FAILED)
+        return NULL;
+    *(size_t *)p = r;
+    return (uint8_t *)p + 16;
+}
+static void ss_big_free(void *p)
+{
+    if (p) {
+        uint8_t *b = (uint8_t *)p - 16;
+        munmap(b, *(size_t *)b);
+    }
+}
+#define SS_BIG_ALLOC(n) ss_big_alloc(n)
+#define SS_BIG_FREE(p) ss_big_free(p)
 #else
 #define SS_BIG_ALLOC(n) malloc(n)
 #define SS_BIG_FREE(p) free(p)

@@ -94,6 +94,8 @@ typedef gs_state rt_gs;
 #ifdef RG_HAVE_NATIVE_AUDIO
 #include "rg_audio_game.h"   /* native audio engine (docs/NATIVE-AUDIO.md) */
 #include "rg_audio.h"        /* ra_get_stats ($RG_FIELD_STATS) */
+#include "rg_icon.h"         /* window icon from data/ (docs/ICON.md) */
+#include "rg_discord.h"      /* Discord Rich Presence (docs/DISCORD.md) */
 /* its clocks in 48 kHz frames: the virtual clock; the HLE's render position (compare
  * mode puts each command where the HLE applied it) and the HLE's 240 Hz tick origin */
 static unsigned long long ra_clk_native(void *u) { (void)u; return ps2k_now() / SND_CYCLES_PER_FRAME; }
@@ -293,6 +295,95 @@ static void say(const char *fmt, const char *a)
         fprintf(stderr, fmt, a);
         fflush(stderr);
     }
+}
+
+/* ---------------------------------------------------------------- icon, Discord
+ * Both outside the game: no game state read or written, nothing in the run hash. */
+
+/* The window / taskbar icon (docs/ICON.md).  An exe that carries an icon (Setup.exe's
+ * player exe, `rg-icon embed`) already gave it to SDL's window class: the same pixels, so
+ * nothing to do.  Else it is built from data/ (the public build carries no art).
+ * $RG_ICON=0: no icon (a control). */
+static void runtime_icon(void)
+{
+    if (!R.host || R.cfg.headless)
+        return;
+    const char *e = getenv("RG_ICON");
+    if (e && !strcmp(e, "0"))
+        return;
+#ifdef _WIN32
+    if (rg_icon_exe_has_icon(NULL))
+        return;
+#endif
+    rg_icon_set s;
+    char err[256];
+    if (rg_icon_build(R.data_dir, RG_ICON_DEFAULT, &s, err, sizeof err)) {
+        say("rg_runtime: window icon: %s\n", err);
+        return;
+    }
+#ifdef _WIN32
+    rg_icon_set_window(rg_host_native_window(R.host), &s);
+#else
+    rg_host_set_window_icon(R.host, s.rgba[0], s.size[0]);
+#endif
+    rg_icon_free(&s);
+}
+
+static int g_discord_details;
+static char g_discord_chapter[72];   /* the last save's chapter title */
+static char g_discord_id[32];        /* system.discord_app_id as read at start */
+
+/* the chapter of the save the game last wrote / read (mccard's observer) */
+static void discord_meta(const mc_save_meta *m, int saved, void *user)
+{
+    (void)saved;
+    (void)user;
+    if (!m->valid)
+        return;
+    snprintf(g_discord_chapter, sizeof g_discord_chapter, "%s", m->chapter_name);
+    if (g_discord_details)
+        rg_discord_set_activity(g_discord_chapter, NULL);
+}
+
+static void discord_apply(rg_settings *s)
+{
+    g_discord_details = rg_settings_find(s, "system.discord_details") >= 0 &&
+                        rg_settings_get_bool(s, "system.discord_details");
+    rg_discord_set_activity(g_discord_details ? g_discord_chapter : "", NULL);
+    if (rg_settings_find(s, "system.discord") >= 0 && rg_settings_get_bool(s, "system.discord")) {
+        if (rg_discord_start(g_discord_id) == 0)
+            say("rg_runtime: Discord activity on (application %s)\n", g_discord_id);
+    } else {
+        rg_discord_stop();
+    }
+}
+
+/* system.discord / system.discord_details apply at once (the menu) */
+static void discord_changed(rg_settings *s, int index, void *user)
+{
+    (void)user;
+    const char *id = rg_settings_def(s, index)->id;
+    if (!strcmp(id, "system.discord") || !strcmp(id, "system.discord_details"))
+        discord_apply(s);
+}
+
+/* Discord Rich Presence (docs/DISCORD.md): windowed runs with system.discord on and an
+ * application ID (read once: settings.ini); $RG_DISCORD=0 turns it off for a run. */
+static void runtime_discord(void)
+{
+    if (!R.host || R.cfg.headless || !R.cfg.settings)
+        return;
+    const char *e = getenv("RG_DISCORD");
+    if (e && !strcmp(e, "0"))
+        return;
+    rg_settings *s = R.cfg.settings;
+    if (rg_settings_find(s, "system.discord_app_id") < 0)
+        return;
+    snprintf(g_discord_id, sizeof g_discord_id, "%s", rg_settings_get_string(s, "system.discord_app_id"));
+    if (!rg_discord_valid_id(g_discord_id))
+        return;   /* no application: nothing at all, not even the callback */
+    rg_settings_on_change(s, discord_changed, NULL);
+    discord_apply(s);
 }
 
 /* ---------------------------------------------------------------- pacing
@@ -969,6 +1060,8 @@ int rg_runtime_init(const rg_runtime_config *cfg)
             /* the Saves page's save manager: names, PCSX2 import (docs/SAVES.md 4c) */
             rg_menu_set_saves(rg_host_settings_menu(R.host), mc_menu_ops());
         }
+        runtime_icon();
+        runtime_discord();
         rg_pacer_init(&R.pacer, R.cfg.throttle);
         rg_pace_init(&R.pace, NULL);
         {
@@ -1182,6 +1275,7 @@ int rg_runtime_init(const rg_runtime_config *cfg)
             mc.backup_keep = rg_settings_get_int(R.cfg.settings, "saves.backup_keep");   /* (0 = none) */
         if (mccard_init(&mc) != 0)
             say("rg_runtime: memory cards under %s unavailable\n", R.saves_dir);
+        mccard_set_meta_hook(discord_meta, NULL);   /* Discord activity text (read-only) */
         if (rg_iop_native()) {
             rg_npad_config nc;
             rg_npad_default_config(&nc);
@@ -1665,6 +1759,8 @@ static void gpu_start(void)
     if (gc.raytracing >= 2) gc.raytracing++;   /* (menu "shadows + AO" = 3, "+ reflections" = 4 (rt5); 2 is the debug colours, $RG_RT=2 only) */
     if (R.cfg.settings && rg_settings_find(R.cfg.settings, "graphics.rt_emissive") >= 0)
         gc.rt_emissive = rg_settings_get_enum(R.cfg.settings, "graphics.rt_emissive");   /* (rt8) docs/RAYTRACING.md "RT8" */
+    if (R.cfg.settings && rg_settings_find(R.cfg.settings, "graphics.rt_gi") >= 0)
+        gc.rt_gi = rg_settings_get_enum(R.cfg.settings, "graphics.rt_gi");   /* (rtgi) docs/RAYTRACING.md "RT10" */
     /* real-time play only: the lens flare's depth probes are served a frame late instead of
      * waiting on the game thread for the GPU (docs/NATIVE-THREADS.md "3h"); every headless /
      * unthrottled / display-hashed run (tests, traces, save states) reads exactly */
@@ -1944,6 +2040,74 @@ static void audio_mix_update(void)
         v[i] = rg_settings_find(s, ids[i]) >= 0 ? rg_settings_get_int(s, ids[i]) : 100;
     rg_audio_runtime_volumes(v[0], v[1], v[2], v[3]);
 #endif
+}
+
+/* $RG_AUDIO_HEADROOM (docs/NATIVE-AUDIO.md "Master volume headroom"; presentation only): 1 = the
+ * master volume (audio.master_volume) scales the presentation mix BEFORE its one s16 clip and the
+ * host stream gain leaves it out; 0 = the older path (the clip first, the master volume after it in
+ * the SDL stream gain).  Below the clip both give the same level (+-0.5 LSB rounding); a burst that
+ * clipped at full scale keeps its peaks.  Neither the model mix (run hash, RG_AUDIO_WAV) nor the
+ * audio command log sees it.  $RG_AUDIO_PRESENT_WAV=path: float WAV of what the device gets after
+ * the master volume (either path; the focus mute left out), for A/B. */
+#define RG_AUDIO_HEADROOM_DEFAULT 1   /* explaud 2026-11-11: on (with RG_AUDIO_LEVEL the bursts that
+                                         clipped stay below the old clipped level; 0 = ptbugs4's default) */
+/* $RG_AUDIO_LEVEL (docs/NATIVE-AUDIO.md "Output level vs PCSX2", explaud 2026-11-11; presentation
+ * only): the output level of the presentation mix, applied before its one s16 clip.  The engine
+ * mixes at the register formula's level (core 1 MVOL 0x3FFF x2 = unity: a movie plays at 0.992 of
+ * its PCM); PCSX2 2.6.3 plays everything (movie, SE voices, BGM) at 0.62 of that, a flat -4.1 dB,
+ * so the default is 0.625.  RG_AUDIO_LEVEL=1 = the older level (louder, clips first).  Neither
+ * the model mix (run hash, RG_AUDIO_WAV) nor the audio command log sees it. */
+#define RG_AUDIO_LEVEL_DEFAULT 0.625f
+static float g_alevel = -1.0f;
+static int g_ahead = -1;
+static FILE *g_pwav;
+static uint64_t g_pwav_frames;
+static void pwav_header(void)
+{
+    uint32_t data = (uint32_t)(g_pwav_frames * 8), hdr[11] = {0x46464952u, data + 36, 0x45564157u, 0x20746d66u,
+        16, 3u | (2u << 16), 48000, 48000 * 8, 8u | (32u << 16), 0x61746164u, data};
+    long at = ftell(g_pwav);
+    fseek(g_pwav, 0, SEEK_SET);
+    fwrite(hdr, 4, 11, g_pwav);
+    fseek(g_pwav, at, SEEK_SET);
+}
+static void audio_headroom_update(void)
+{
+#ifdef RG_HAVE_NATIVE_AUDIO
+    if (g_ahead < 0) {
+        const char *e = getenv("RG_AUDIO_HEADROOM");
+        g_ahead = e && *e ? atoi(e) != 0 : RG_AUDIO_HEADROOM_DEFAULT;
+        const char *l = getenv("RG_AUDIO_LEVEL");
+        g_alevel = l && *l ? (float)atof(l) : RG_AUDIO_LEVEL_DEFAULT;
+        if (!(g_alevel > 0.0f) || g_alevel > 1.0f)
+            g_alevel = g_alevel > 1.0f ? 1.0f : RG_AUDIO_LEVEL_DEFAULT;
+        const char *w = getenv("RG_AUDIO_PRESENT_WAV");
+        if (w && *w && (g_pwav = fopen(w, "wb")) != NULL)
+            pwav_header();
+    }
+    if (!R.host) {
+        rg_audio_runtime_headroom(g_alevel);
+        return;
+    }
+    rg_host_set_volume_in_mix(R.host, g_ahead);
+    rg_audio_runtime_headroom((g_ahead ? rg_host_volume(R.host) : 1.0f) * g_alevel);
+#endif
+}
+static void audio_pwav(const int16_t *play, uint32_t n)
+{
+    if (!g_pwav)
+        return;
+    float g = g_ahead || !R.host ? 1.0f : rg_host_volume(R.host), f[2 * 512];
+    for (uint32_t k = 0; k < n; k += 512) {
+        uint32_t m = n - k < 512 ? n - k : 512;
+        for (uint32_t i = 0; i < m * 2; i++)
+            f[i] = (float)play[2 * k + i] / 32768.0f * g;
+        g_pwav_frames += fwrite(f, 8, m, g_pwav);
+    }
+    if (R.st.fields % 60 == 0) {
+        pwav_header();
+        fflush(g_pwav);
+    }
 }
 
 static void field_note(void);   /* (below: one GS-stream tick per field) */
@@ -2927,6 +3091,7 @@ static void host_half(void)
         rg_host_audio_owed(R.host, (uint32_t)((double)(R.pace.acc / RG_PACE_FIELD_U) * 800.0 / (R.speed > 1.0 ? R.speed : 1.0)));
     uint32_t got = 0;
     audio_mix_update(); /* audio.*_volume -> the engine's presentation mix */
+    audio_headroom_update(); /* audio.master_volume: before or after the clip */
     for (;;) {
         uint32_t n;
         const int16_t *play = R.audio; /* what the device gets: the presentation mix */
@@ -2959,6 +3124,7 @@ static void host_half(void)
         }
         fold_part(1, &R.st.run_hash, R.audio, (size_t)n * 4);
         rg_host_audio_push(R.host, play, n);
+        audio_pwav(play, n);
         if (R.wav)
             R.wav_frames += fwrite(R.audio, 4, n, R.wav);
         got += n;
@@ -3420,6 +3586,8 @@ void rg_runtime_shutdown(void)
         iop_hle_set_post_install(NULL, NULL);
 #endif
     rg_iop_report(R.cfg.quiet);
+    mccard_set_meta_hook(NULL, NULL);
+    rg_discord_stop();   /* closes the pipe: Discord clears the activity */
     if (mccard_inited())
         mccard_shutdown();
     rg_pad_set_input_source(NULL, NULL);
@@ -3520,6 +3688,7 @@ void rg_runtime_shutdown(void)
     rg_crt0_shutdown();
     if (R.host)
         rg_host_destroy(R.host);
+    rg_icon_window_release();
     if (R.have_script)
         rg_input_script_free(&R.script);
     wav_close();

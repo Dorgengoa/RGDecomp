@@ -303,8 +303,8 @@ void FrameCalcWorldMatrix_148ff0(Xf148ff0 *x, M4_148ff0 *out)
         if (x->parent == NULL) {
             if (x->scale != NULL) {
                 ScaleLoad(&rg_vu0, x->scale, &m);
-                void ScaleMul(rg_vu0_state *rg_vu0_p_);
-
+                XS
+                ScaleMul(&rg_vu0);
                 XS
                 StoreMatrix(&rg_vu0, &x->world);
             } else {
@@ -324,8 +324,8 @@ void FrameCalcWorldMatrix_148ff0(Xf148ff0 *x, M4_148ff0 *out)
             ps.v.y = VecLength_13d4a0(&pw.r[1]);
             ps.v.z = VecLength_13d4a0(&pw.r[2]);
             InvScaleLoad(&rg_vu0, &ps, &pw);
-            void InvScaleMul(rg_vu0_state *rg_vu0_p_);
-
+            XS
+            InvScaleMul(&rg_vu0);
             XS
             StoreMatrix(&rg_vu0, &x->world);
             if (x->scale != NULL) {
@@ -338,8 +338,8 @@ void FrameCalcWorldMatrix_148ff0(Xf148ff0 *x, M4_148ff0 *out)
             v2_148ff0 = x->world.r[1].q;
             v3_148ff0 = x->world.r[2].q;
             v4_148ff0 = x->world.r[3].q;
-            void ScaleMul(rg_vu0_state *rg_vu0_p_);
-
+            XS
+            ScaleMul(&rg_vu0);
             XS
             x->world.r[0].q = v1_148ff0;
             x->world.r[1].q = v2_148ff0;

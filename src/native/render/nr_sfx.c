@@ -43,7 +43,7 @@
 #endif
 
 static const char *const k_names[NR_SFX_COUNT] = {
-    "none", "glare", "tbox_bloom", "dof", "focus", "cblur", "tint", "fade", "pause", "flash", "particles",
+    "none", "glare", "tbox_bloom", "dof", "focus", "cblur", "tint", "fade", "pause", "flash", "particles", "shadow",
 };
 const char *nr_sfx_name(int cls) { return cls >= 0 && cls < NR_SFX_COUNT ? k_names[cls] : "?"; }
 
@@ -61,7 +61,7 @@ static int task_class(const char *t)
         { "Draw Chara Blur", NR_SFX_CBLUR },     { "Draw Gray Scale Filter", NR_SFX_TINT },
         { "Draw Fade", NR_SFX_FADE },            { "Draw Pause Filter", NR_SFX_PAUSE },
         { "Draw Effect", NR_SFX_FLASH },         { "Draw Prog Effect", NR_SFX_FLASH },
-        { "Draw Status Effect", NR_SFX_FLASH },
+        { "Draw Status Effect", NR_SFX_FLASH },  { "Draw Shadow", NR_SFX_SHADOW },
     };
     size_t i;
     if (!t) return NR_SFX_NONE;
@@ -228,6 +228,7 @@ static int class_mode(const gpu_enhance *e, int cls)
     case NR_SFX_GLARE: case NR_SFX_TBOX_BLOOM: return e->fx[GPU_FX_BLOOM];
     case NR_SFX_DOF: case NR_SFX_FOCUS: return e->fx[GPU_FX_DOF];
     case NR_SFX_CBLUR: return e->fx[GPU_FX_MOTION_BLUR];
+    case NR_SFX_SHADOW: return e->shadow_res == 1 ? GPU_FXMODE_ENHANCED : GPU_FXMODE_ORIGINAL;
     default: return -1;
     }
 }
@@ -413,6 +414,19 @@ static void light_limit(const gpu_gs *gs, gs_vertex *v, int n, int type, uint64_
 }
 #endif
 
+/* (ptbugs3) the focus pre-filter's box in native pixels x 100 ($RG_NR_SFX_FOCUSK=k, default 1: one
+ * PS2 pixel; nr_dev.cpp focus_prefilter) */
+int nr_sfx_focus_k(void)
+{
+    static int k = -1;
+    if (k < 0) {
+        const char *x = getenv("RG_NR_SFX_FOCUSK");
+        double f = x && x[0] ? atof(x) : 1.0;
+        k = f >= 0.25 && f <= 8.0 ? (int)(f * 100.0 + 0.5) : 100;
+    }
+    return k;
+}
+
 int nr_sfx_batch(struct gpu_renderer *gr, gpu_gs *gs, gs_vertex *v, int n, int type, uint64_t attr, const char *task,
                  uint32_t frame)
 {
@@ -467,9 +481,24 @@ int nr_sfx_batch(struct gpu_renderer *gr, gpu_gs *gs, gs_vertex *v, int n, int t
         return NR_SFX_DRAW;
     }
     mode = class_mode(&e, cls);
-    if (mode <= GPU_FXMODE_ORIGINAL) return NR_SFX_DRAW;
     c = (int)BITS(attr, 9, 1);
     fr = gs->reg[GS_FRAME_1 + c];
+    if (cls == NR_SFX_FOCUS && mode != GPU_FXMODE_OFF && tme && abe && BITS(fr, 16, 6) >= 8 &&
+        BITS(fr, 32, 32) == 0xFF000000u && b.x1 - b.x0 >= 400.0f && b.y1 - b.y0 >= 300.0f) {
+        /* (ptbugs3) the focus blur's composite (FocusFilterDrawMaybe_17c000's last sprite: the
+         * 192x192 buffer over the frame, RGB only, by its soft depth mask): the frame under it is
+         * softened to the PS2's resolution at an internal scale > 1 (nr_dev.cpp focus_prefilter).
+         * $RG_NR_SFX_FOCUSLP: 2 (default) Original and Enhanced, 1 Enhanced only, 0 the old path */
+        static int lp = -1;
+        if (lp < 0) { const char *x = getenv("RG_NR_SFX_FOCUSLP"); lp = x && x[0] >= '0' && x[0] <= '2' ? x[0] - '0' : 2; }
+        if (lp == 2 || (lp == 1 && mode == GPU_FXMODE_ENHANCED)) {
+            g_st.enhanced[cls]++;
+            /* the read's texels per pixel (192 / 512): focus_blur_read's footprint */
+            gpu_set_im_focus_ratio(gr, b.x1 > b.x0 ? (b.u1 - b.u0) / (b.x1 - b.x0) : 0.0f);
+            return NR_SFX_FOCUSLP;
+        }
+    }
+    if (mode <= GPU_FXMODE_ORIGINAL) return NR_SFX_DRAW;
     if (mode == GPU_FXMODE_OFF) {
         /* the pass's blend over the frame (a frame-wide target, screen-sized) */
         if (abe && BITS(fr, 16, 6) >= 8 && b.x1 - b.x0 >= 400.0f && b.y1 - b.y0 >= 300.0f) {
@@ -485,7 +514,7 @@ int nr_sfx_batch(struct gpu_renderer *gr, gpu_gs *gs, gs_vertex *v, int n, int t
         }
         return NR_SFX_DRAW;
     }
-    if (mode == GPU_FXMODE_ENHANCED && (cls == NR_SFX_GLARE || cls == NR_SFX_TBOX_BLOOM) && hires_on()) {
+    if (mode == GPU_FXMODE_ENHANCED && (cls == NR_SFX_GLARE || cls == NR_SFX_TBOX_BLOOM || cls == NR_SFX_SHADOW) && hires_on()) {
         /* bloom at the internal resolution: every batch of the pass, its work buffers twinned at
          * the frame's internal resolution (nr_dev.cpp "twins"); the draw over the frame reads the
          * twin, its colour scaled to the PS2's strength (bloom_gain) */
@@ -496,11 +525,12 @@ int nr_sfx_batch(struct gpu_renderer *gr, gpu_gs *gs, gs_vertex *v, int n, int t
             /* a work buffer: (its scissor) -> the frame (512 x 448) */
             float w = (float)BITS(sc, 16, 11) + 1.0f - (float)BITS(sc, 0, 11);
             float h = (float)BITS(sc, 48, 11) + 1.0f - (float)BITS(sc, 32, 11);
-            if (w >= 16.0f && h >= 16.0f && w < 512.0f && h <= 448.0f) {
+            int psm = (int)BITS(fr, 24, 6);   /* (p6left: not the shadow buffer's CT16 view, 192 x 384) */
+            if (w >= 16.0f && h >= 16.0f && w < 512.0f && h <= 448.0f && (psm == 0x00 || psm == 0x01)) {
                 sx = hs[cls][0] = 512.0f / w;
                 sy = hs[cls][1] = 448.0f / h;
             }
-        } else if (tme && abe) {
+        } else if (tme && abe && cls != NR_SFX_SHADOW) {
             float k = bloom_gain();
             int i, j, nv = type == GS_PRIM_TRIANGLE ? 3 : type == GS_PRIM_SPRITE ? 2 : 1;
             if (k != 1.0f)
@@ -513,7 +543,8 @@ int nr_sfx_batch(struct gpu_renderer *gr, gpu_gs *gs, gs_vertex *v, int n, int t
                         p->b = (uint8_t)(b_ > 255.0f ? 255.0f : b_);
                     }
         }
-        gpu_set_im_hires(gr, 1, sx, sy, bloom_box(), frame);
+        /* (the shadow pass: the GS's own filter on its copy of the frame mask, no box) */
+        gpu_set_im_hires(gr, cls == NR_SFX_SHADOW ? 2 : 1, sx, sy, cls == NR_SFX_SHADOW ? 0.0f : bloom_box(), frame);
         g_st.enhanced[cls]++;
         return NR_SFX_HIRES;
     }
@@ -523,6 +554,13 @@ int nr_sfx_batch(struct gpu_renderer *gr, gpu_gs *gs, gs_vertex *v, int n, int t
         float dx = b.x1 - b.x0, dy = b.y1 - b.y0;
         if (dx > 0.0f && dy > 0.0f && ((b.u1 - b.u0) > 1.25f * dx || (b.v1 - b.v0) > 1.25f * dy)) {
             g_st.enhanced[cls]++;
+            /* (p6left) depth of field: the footprint widened to the PS2's blur in screen units
+             * (nr_dev.cpp gpu_set_im_box mode 2; $RG_NR_SFX_DOFK=0: p6fx2's plain box) */
+            if (cls == NR_SFX_DOF || cls == NR_SFX_FOCUS) {
+                static int k2 = -1;
+                if (k2 < 0) { const char *x = getenv("RG_NR_SFX_DOFK"); k2 = !(x && x[0] == '0' && !x[1]); }
+                if (k2) return NR_SFX_BOX2;
+            }
             return NR_SFX_BOX;
         }
     }

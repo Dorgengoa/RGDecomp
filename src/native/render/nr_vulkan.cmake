@@ -83,12 +83,17 @@ set(_rg_vk_entries
   "PS_nr|ps|nr_draw.hlsl|NR_ZROV=1|PS_nr_z"
   "PS_nr|ps|nr_draw.hlsl|NR_CROV=1|PS_nr_c"
   "PS_nr|ps|nr_draw.hlsl|NR_CROV=1 NR_ZROV=1|PS_nr_cz"
+  # (gfxperf9) $RG_VK_CLR: the ordered-view back end reading the colour as an input attachment (local read)
+  "PS_nr|ps|nr_draw.hlsl|NR_CROV=1 NR_CLR=1|PS_nr_cl"
+  "PS_nr|ps|nr_draw.hlsl|NR_CROV=1 NR_ZROV=1 NR_CLR=1|PS_nr_czl"
   # ray tracing (docs/RAYTRACING.md): the mesh pipeline with a world position and a ray-query shadow
   # term (SM 6.5, SPV_KHR_ray_query); used only with graphics.raytracing on a capable device
   "VS_nr|vs|nr_draw.hlsl|NR_RT=1|VS_nr_rt"
   "GS_nr|gs|nr_draw.hlsl|NR_RT=1|GS_nr_rt"
   "PS_nr|ps|nr_draw.hlsl|NR_RT=1|PS_nr_rt"
-  "PS_nr|ps|nr_draw.hlsl|NR_RT=1 NR_ZROV=1|PS_nr_zrt")
+  "PS_nr|ps|nr_draw.hlsl|NR_RT=1 NR_ZROV=1|PS_nr_zrt"
+  # (rtnext) the half-resolution GI pass (docs/RAYTRACING.md "RT12")
+  "CS_rtgi|cs|nr_draw.hlsl|NR_RT=1|CS_rtgi")
 set(_rg_vk_headers)
 foreach(e IN LISTS _rg_vk_entries)
   string(REPLACE "|" ";" _l "${e}")

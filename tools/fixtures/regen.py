@@ -55,7 +55,7 @@ def main(argv=None) -> int:
             fxlib.say(f"regen: unknown milestone {n} (known: {', '.join(fxlib.MILESTONE_FIELDS)})")
             return 2
     (d / "bin").mkdir(parents=True, exist_ok=True)
-    exe = d / "bin" / "rg-game.exe"
+    exe = d / "bin" / fxlib.EXE_NAME
     for s, t in ((src, exe), (src.with_suffix(".map"), exe.with_suffix(".map"))):
         if not t.exists() or fxlib.sha256(s) != fxlib.sha256(t):
             shutil.copy2(s, t)
@@ -126,7 +126,7 @@ def main(argv=None) -> int:
         "generated_by": "tools/fixtures/regen.py",
         "created": time.strftime("%Y-%m-%d %H:%M:%S"),
         "exe_source": str(src),
-        "exe": "bin/rg-game.exe",
+        "exe": "bin/" + fxlib.EXE_NAME,
         "exe_sha256": fxlib.sha256(exe),
         "exe_id": fxlib.exe_id(exe),
         "input": str(fxlib.GOLDEN.relative_to(fxlib.PORT)).replace("\\", "/"),

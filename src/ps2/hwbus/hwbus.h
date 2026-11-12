@@ -131,12 +131,12 @@ uint64_t hwbus_unknown_total(void); /* accesses, including ones past the table *
 uint8_t  hw_r8(uint32_t addr);
 uint16_t hw_r16(uint32_t addr);
 uint32_t hw_r32(uint32_t addr);
-uint64_t hw_r64(uint32_t addr);
+unsigned long long hw_r64(uint32_t addr);   /* = uint64_t, spelled as port/hwaccess.h declares it (LP64) */
 void     hw_r128(uint32_t addr, void *out16);
 void hw_w8(uint32_t addr, uint8_t v);
 void hw_w16(uint32_t addr, uint16_t v);
 void hw_w32(uint32_t addr, uint32_t v);
-void hw_w64(uint32_t addr, uint64_t v);
+void hw_w64(uint32_t addr, unsigned long long v);
 void hw_w128(uint32_t addr, const void *in16);
 
 /* ---- scratchpad (PS2_SPR) ---- */

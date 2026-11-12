@@ -185,6 +185,9 @@ int ra_present_active(void);                     /* the second mix is being rend
 /* ra_output_read plus the matching presentation frames (plr may be NULL) */
 uint32_t ra_output_read2(int16_t *lr, int16_t *plr, uint32_t max_frames);
 void ra_render2(int16_t *lr, int16_t *plr, uint32_t frames); /* pull: both mixes */
+/* master volume applied to the presentation mix before its s16 clip (1 = none; $RG_AUDIO_HEADROOM) */
+void ra_present_set_headroom(float gain);
+uint64_t ra_present_clips(void);                 /* presentation samples clipped so far */
 /* The source of what a PCM port plays (the stream's file path, RA_SRC_* by name):
  * "BGM" -> music, "SND2/MWV" (jingles) -> music, "LIVETALK" or an "/EVnn-" folder ->
  * voice, anything else -> effects.  ra_pcm_source_of is the classifier alone. */

@@ -395,6 +395,7 @@ typedef struct mfd {
     int mode;
     uint32_t pos;
     int dirty;      /* metadata changed */
+    int wdirty_seen; /* written through this descriptor (the meta hook) */
 } mfd;
 
 #define MAX_FDS_CAP 64
@@ -1799,6 +1800,23 @@ int mccard_open(int port, const char *path, int mode)
     return slot;
 }
 
+static mccard_meta_hook_fn g_meta_hook;
+static void *g_meta_user;
+
+void mccard_set_meta_hook(mccard_meta_hook_fn fn, void *user)
+{
+    g_meta_hook = fn;
+    g_meta_user = user;
+}
+
+/* the summary of a whole data file the game wrote / read, to the observer */
+static void meta_notify(const uint8_t *head, uint32_t n, int saved)
+{
+    mc_save_meta sm;
+    if (g_meta_hook && mc_save_meta_parse(head, n, &sm) == 0)
+        g_meta_hook(&sm, saved, g_meta_user);
+}
+
 int mccard_close(int fd)
 {
     ensure();
@@ -1811,6 +1829,8 @@ int mccard_close(int fd)
         return r; /* an injected failure other than a pulled card: still open */
     if (!r)
         r = commit_fd(d);
+    if (!r && d->buf && d->wdirty_seen && d->len > 0x800)
+        meta_notify(d->buf, d->len, 1);
     if (d->f)
         fclose(d->f);
     free(d->buf);
@@ -1872,6 +1892,18 @@ int mccard_read(int fd, void *dst, int size)
         got = fread(dst, 1, n, d->f);
     }
     d->pos += (uint32_t)got;
+    if (g_meta_hook && got && d->pos == m->size && m->size > 0x800) {   /* a whole data file was read */
+        uint8_t head[0x350];
+        size_t hn;
+        if (w) {
+            hn = w->len < sizeof head ? w->len : sizeof head;
+            memcpy(head, w->buf, hn);
+        } else {
+            fseek(d->f, 0, SEEK_SET);
+            hn = fread(head, 1, sizeof head, d->f);
+        }
+        meta_notify(head, (uint32_t)hn, 0);
+    }
     return (int)got;
 }
 
@@ -1907,6 +1939,7 @@ int mccard_write(int fd, const void *src, int size)
         d->len = end;
     m->size = d->len;
     d->wdirty = 1;
+    d->wdirty_seen = 1;
     now_time(&m->mtime);
     d->dirty = 1;
     return size;

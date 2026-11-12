@@ -272,8 +272,8 @@ void FrameUpdateWorld_149680(Xf149680 *x, s32 mode)
         if (x->parent == NULL) {
             if (x->scale != NULL) {
                 ScaleLoad(&rg_vu0, x->scale, &m);
-                void ScaleMul(rg_vu0_state *rg_vu0_p_);
-
+                XS
+                ScaleMul(&rg_vu0);
                 XS
                 StoreMatrix(&rg_vu0, &x->world);
             } else {
@@ -288,8 +288,8 @@ void FrameUpdateWorld_149680(Xf149680 *x, s32 mode)
             ps.v.y = VecLength_13d4a0(&x->parent->world.r[1]);
             ps.v.z = VecLength_13d4a0(&x->parent->world.r[2]);
             InvScaleLoad(&rg_vu0, &ps, &x->parent->world);
-            void InvScaleMul(rg_vu0_state *rg_vu0_p_);
-
+            XS
+            InvScaleMul(&rg_vu0);
             XS
             StoreMatrix(&rg_vu0, &x->world);
             if (x->scale != NULL) {
@@ -302,8 +302,8 @@ void FrameUpdateWorld_149680(Xf149680 *x, s32 mode)
             v2_149680 = x->world.r[1].q;
             v3_149680 = x->world.r[2].q;
             v4_149680 = x->world.r[3].q;
-            void ScaleMul(rg_vu0_state *rg_vu0_p_);
-
+            MS
+            ScaleMul(&rg_vu0);
             MS
             x->world.r[0].q = v1_149680;
             x->world.r[1].q = v2_149680;

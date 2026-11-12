@@ -91,6 +91,13 @@ void rg_aspect_step_settings(rg_aspect_ctl *c, const rg_settings *s, int title, 
         movie = rg_settings_get_enum(s, "graphics.movie_aspect");
     if (s && rg_settings_find(s, "graphics.ui_layout") >= 0)
         rg_aspect_set_ui_layout(rg_settings_get_enum(s, "graphics.ui_layout"));
+    /* graphics.menu_position / menu_margin / revelation_wide (docs/WIDESCREEN.md "Menu position") */
+    if (s && rg_settings_find(s, "graphics.revelation_wide") >= 0)
+        rg_layout_set_revelation_wide(rg_settings_get_bool(s, "graphics.revelation_wide"));
+    if (s && rg_settings_find(s, "graphics.menu_position") >= 0)
+        rg_layout_set_menu_position(rg_settings_get_enum(s, "graphics.menu_position") == 0,
+                                    rg_settings_find(s, "graphics.menu_margin") >= 0
+                                        ? (float)rg_settings_get_int(s, "graphics.menu_margin") / 100.0f : 0.0f);
     /* accessibility (presentation only, docs/SETTINGS.md): the 2D UI scale (rg_layout.h) and
      * the camera shake amount (CameraShakeApply_3056b0 override) */
     if (s && rg_settings_find(s, "accessibility.ui_scale") >= 0)
@@ -100,6 +107,9 @@ void rg_aspect_step_settings(rg_aspect_ctl *c, const rg_settings *s, int title, 
     /* gameplay.text_speed (a gameplay option, off in Original): MesWinAdvanceTypeout_275f00 */
     if (s && rg_settings_find(s, "gameplay.text_speed") >= 0)
         rg_text_speed_set(rg_settings_get_enum(s, "gameplay.text_speed"));
+    /* gameplay.frog_log_order (display only, off in Original): WeaponCombineLogCollect_3e9270 */
+    if (s && rg_settings_find(s, "gameplay.frog_log_order") >= 0)
+        rg_froglog_order_set(rg_settings_get_enum(s, "gameplay.frog_log_order"));
     rg_aspect_resolve(mode, win_w, win_h, &n, &d);
     /* stage 2 showed a full-screen menu whole at 4:3 like the title; stage 3 (no aspect
      * switch for menus) keeps the canvas wide and lays the menu out as one centred 4:3
@@ -174,6 +184,19 @@ void rg_aspect_set_current(const rg_aspect_frame *f)
                          (long long)f->canvas_num * 3 > (long long)f->canvas_den * 4);
     rg_layout_set_frame(layout, ++g_frames);
     aspect_log(f);
+}
+
+static int g_froglog_sorted;
+void rg_froglog_order_set(int v) { g_froglog_sorted = v == 1; }
+/* called when the Frog Log builds a list; RG_FROG_LOG_ORDER=0/1 overrides the setting (tests) */
+int rg_froglog_sorted(void)
+{
+    static int env = -1;
+    if (env < 0) {
+        const char *e = getenv("RG_FROG_LOG_ORDER");
+        env = e && (*e == '0' || *e == '1') ? *e - '0' : 2;
+    }
+    return env < 2 ? env : g_froglog_sorted;
 }
 
 static float g_text_mult = 1.0f;

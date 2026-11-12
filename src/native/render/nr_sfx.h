@@ -33,13 +33,23 @@ enum {
     NR_SFX_PARTICLES,   /* an effect task's (or untagged) bright additive batch under half the screen: the
                          * particles / glows whose sum lights large areas (reduced flashing: the frame's
                          * light budget, nr_sfx.c light_limit) */
+    NR_SFX_SHADOW,      /* (p6left) "Draw Shadow": TaskDrawShadow_1f7360 -> DrawListEndPlaneShadowPass_146cc0 (the
+                         * plane shadows' soft pass: frame mask -> 192x192 buffer, 6 blur sprites, CT16 shuffle,
+                         * the darkening sprite; graphics.shadow_res) */
     NR_SFX_COUNT
 };
 const char *nr_sfx_name(int cls);
 
 /* NR_SFX_HIRES: drawn with gpu_set_im_hires on (nr_sfx_batch set it; the caller turns it off after
  * the submit): the effect chain at the internal resolution */
-enum { NR_SFX_DRAW = 0, NR_SFX_SKIP = 1, NR_SFX_ZONLY = 2, NR_SFX_BOX = 3, NR_SFX_HIRES = 4 };
+/* NR_SFX_BOX2 (p6left): as NR_SFX_BOX with the footprint widened to the PS2's blur at the internal
+ * resolution (gpu_set_im_box mode 2: depth of field "enhanced") */
+/* NR_SFX_FOCUSLP (ptbugs3): the focus blur's composite over the frame, drawn with gpu_set_im_focus on
+ * (the value nr_sfx_focus_k() gives; the caller turns it off after the submit): at an internal scale
+ * > 1 the frame under it is softened to the PS2's resolution first (nr_dev.cpp focus_prefilter) */
+enum { NR_SFX_DRAW = 0, NR_SFX_SKIP = 1, NR_SFX_ZONLY = 2, NR_SFX_BOX = 3, NR_SFX_HIRES = 4, NR_SFX_BOX2 = 5,
+       NR_SFX_FOCUSLP = 6 };
+int nr_sfx_focus_k(void);   /* gpu_set_im_focus's value: the pre-filter's box in native pixels x 100 */
 
 struct gpu_renderer;
 #ifndef RG_GPU_GS_T

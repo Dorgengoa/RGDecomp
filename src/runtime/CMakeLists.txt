@@ -13,6 +13,7 @@ target_link_libraries(rg_runtime PUBLIC
   rg_ps2_padmc rg_sce_padmc
   rg_ps2_spu rg_ps2_sound
   rg_ps2_spin
+  rg_icon rg_discord
   rg_flags)
 
 # guest-side smoke workload shared by the demo and tests/runtime

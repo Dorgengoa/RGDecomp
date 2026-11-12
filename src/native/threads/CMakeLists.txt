@@ -23,6 +23,9 @@ else()
 endif()
 target_include_directories(rg_native_fiber PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/fiber ${CMAKE_CURRENT_SOURCE_DIR}/kapi)
 target_link_libraries(rg_native_fiber PRIVATE rg_flags)
+if(RG_ASAN)   # check build (cmake/game.cmake): fiber switches announced to the sanitizer
+  target_compile_definitions(rg_native_fiber PRIVATE RG_ASAN=1)
+endif()
 
 # ---- the native kernel table ------------------------------------------------------------
 set(_rg_nk_src kapi/ps2k.h kapi/ps2k_ss.h kapi/ps2k_rename.h kapi/ps2k_api.inc

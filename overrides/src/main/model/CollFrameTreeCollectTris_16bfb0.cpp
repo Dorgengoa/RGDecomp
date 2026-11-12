@@ -1,6 +1,10 @@
 /* rg-override: replaces game/src/main/model/CollFrameTreeCollectTris_16bfb0.cpp sha256 e0f97f5461e288025f55441cf48169dde85c063d7b7909bbb9a62fc8a395b8a0
  * why: cross-file VU0 register protocol (loads the matrix vf10-13 that CollTriTransform_16c1a0 reads); with RG_VU0_LOCAL the file
- * shares the named context `colltri` (port/vu0_ctx.h, docs/NATIVE-CPU.md); otherwise verbatim */
+ * shares the named context `colltri` (port/vu0_ctx.h, docs/NATIVE-CPU.md); otherwise verbatim;
+ * also (lane localsize 2026-11-08): vB0 / vC0 are ONE {lo, hi} box in retail's frame (sp+0xB0 / 0xC0); the
+ * collector virtual run(.., &vB0, ..) (CollMeshCollectTrisInBox_16d1a0) reads both rows through &vB0: declared as
+ * two locals it read 16 bytes past vB0, the right bytes only while clang placed vC0 right above vB0
+ * (RG_ASAN: stack-buffer-overflow READ).  Now one struct, retail's order. */
 #define RG_VU0_CTX_NAME colltri
 #include "port/vu0_ctx.h"
 #include "port/vu0intrin.h" /* rg:vu0bind */
@@ -64,8 +68,7 @@ extern "C" s32 CollFrameTreeCollectTris_16bfb0(Node0016bfb0 *arg0, s32 arg1, u8 
 {
     Mtx4 m110 __attribute__((aligned(16)));
     Mtx4 mD0 __attribute__((aligned(16)));
-    Vec4 vC0 __attribute__((aligned(16)));
-    Vec4 vB0 __attribute__((aligned(16)));
+    struct { Vec4 vB0; Vec4 vC0; } rgp_bc __attribute__((aligned(16)));   /* rg-override: one retail frame block (vB0, vC0 back to back) */
     Vec4 vA0 __attribute__((aligned(16)));
     Vec4 v90 __attribute__((aligned(16)));
     u32 fl;
@@ -93,8 +96,8 @@ extern "C" s32 CollFrameTreeCollectTris_16bfb0(Node0016bfb0 *arg0, s32 arg1, u8 
         *(u128 *)&vA0 = qb;
         v90.w = 1.0f;
         vA0.w = 1.0f;
-        AabbTransformBounds_13c710(&vB0, &vC0, &mD0, (s32)&v90, &vA0);
-        n = arg0->unkF4->run(arg1, arg2, &vB0, arg4);
+        AabbTransformBounds_13c710(&rgp_bc.vB0, &rgp_bc.vC0, &mD0, (s32)&v90, &vA0);
+        n = arg0->unkF4->run(arg1, arg2, &rgp_bc.vB0, arg4);
         pm = &m110;
         arg4 -= n;
         if (pm) { pm = (Mtx4 *)(s32)(u32)pm; }

@@ -34,6 +34,7 @@
 #include "nr.h"
 #include "nr_im.h"
 #include "nr_mem.h"
+#include "nr_lnrm.h"
 
 
 static uint32_t rd32(const uint8_t *p) { uint32_t v; memcpy(&v, p, 4); return v; }
@@ -68,6 +69,7 @@ typedef struct walker {
     uint32_t *vb;           /* the VU command being collected (code + payload) */
     uint32_t vn, vcap;
     uint64_t direct_bytes;
+    uint32_t dstart, dqw;   /* the DIRECT payload being collected: its offset in buf, qwords */
 } walker;
 enum { K_DROP = 0, K_DIRECT, K_VU };
 
@@ -228,6 +230,7 @@ static void code(walker *w, uint32_t c)
 {
     uint32_t cmd = (c >> 24) & 0x7F, imm = c & 0xFFFF, num = (c >> 16) & 0xFF;
     if (c & 0x80000000u) w->irq = 1;
+    if (w->exec && nr_lnrm_on()) nr_lnrm_vif(c, w->cl, w->wl);   /* RG_NR_MISSNRM=3: VU1 double buffer, UNPACKs */
     w->kind = K_VU;
     w->need = 0;
     if (cmd >= 0x60) {
@@ -256,7 +259,12 @@ static void code(walker *w, uint32_t c)
                 if (vc_on()) { g_vc.mpg_dest = imm; g_vc.mpg_n = num ? num : 256u; g_vc.mpg_got = 0; g_vc.mpg_src = 0; }
             }
             break;
-        case 0x50: case 0x51: w->need = (imm ? imm : 65536u) * 4u; w->kind = K_DIRECT; return;
+        case 0x50: case 0x51:
+            w->need = (imm ? imm : 65536u) * 4u;
+            w->kind = K_DIRECT;
+            w->dstart = w->len;
+            w->dqw = imm ? imm : 65536u;
+            return;
         default: w->err = FX_VIF; return;
         }
     }
@@ -293,6 +301,9 @@ static void words(walker *w, const uint8_t *p, uint32_t n)
             w->need -= k;
             i += k;
             if (!w->need && w->exec && w->kind == K_VU) vu_end(w);
+            /* RG_NR_MISSNRM=3: model markers / composite strips in DMA order (nr_lnrm.h) */
+            if (!w->need && w->exec && w->kind == K_DIRECT && nr_lnrm_on() && w->len - w->dstart >= 16)
+                nr_lnrm_walk_direct(w->buf + w->dstart, (w->len - w->dstart) / 16);
             continue;
         }
         code(w, rd32(p + i * 4));

@@ -1,1 +1,2 @@
-7aff307f781af033e1bc120a69eaf47b8bcac5fd14aaa78fc5fdfe94820ce6f8  RogueGalaxyPC-1105a-win32.zip
+ea456fd431395c77a27d9f07ae2577fa99c7df721c2aa5e259a33aad6a36810c  RogueGalaxyPC-1112a-win32.zip
+97748f0290cfd3f4417f10fa758b5267d927021c2d6d1133205d20fb2aa6d932  RogueGalaxyPC-1112a-linux-x86_64.zip

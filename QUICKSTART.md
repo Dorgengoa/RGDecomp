@@ -9,7 +9,7 @@
 
 ## Set up (once)
 
-1. Unzip `RogueGalaxyPC-1105a-win32.zip` to a folder you can write to, for example
+1. Unzip `RogueGalaxyPC-1112a-win32.zip` to a folder you can write to, for example
    `Documents\RogueGalaxyPC`. Don't use `Program Files`.
 2. Copy your `.iso` into that folder, next to `Setup.exe`.
 3. Double-click `Setup.exe`. It checks the disc, unpacks it into a `data` folder and

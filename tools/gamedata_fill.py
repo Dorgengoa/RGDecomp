@@ -165,7 +165,52 @@ def blank_data2c(text: str, r: Retail) -> str:
     return DECL.sub(one, text)
 
 
+def _ovl_start(b: bytes, vals, ntok: int, ov: str, key: str) -> int:
+    """where the overlay image starts in its BIN: the offset whose words match every value"""
+    for cand in range(0, len(b) - 4 * ntok + 1, 4):
+        if all(struct.unpack_from('<I', b, cand + 4 * i)[0] == v for i, v in vals[:64]) and \
+           all(struct.unpack_from('<I', b, cand + 4 * i)[0] == v for i, v in vals):
+            return cand
+    raise ValueError(f"overlay {ov}: image not found in {key}")
+
+
+# x64 registry (gen_overlay_registry.py --arch x64, pregen/overlay-gen-x64): the same image as
+# an asm block of `.long` rows; a word is 0xXXXXXXXX or a symbol (the i686 RG_R rows)
+OVL_ASM = re.compile(r'RG_OVL_ASM_SYM\(rg_ovl_(\w+)_data\) ":\\n"\n(.*?)\n    RG_OVL_ASM_PREVIOUS', re.S)
+OVL_ASM_TOK = re.compile(r'(?<=\.long )[^,\\]+|(?<=, )[^,\\]+')
+
+
+def blank_ovl_asm(text: str, r: Retail) -> str:
+    def one(m):
+        ov, rows = m.group(1), m.group(2)
+        key = OVL_FILES[ov]
+        b = r.file(key)
+        toks = [t for line in re.finditer(r'(?m)^    "\.long [^\n]*\\n"$', rows)
+                for t in OVL_ASM_TOK.finditer(line.group(0))]
+        num = re.compile(r'0x[0-9A-F]{8}$')
+        vals = [(i, int(t.group(0), 16)) for i, t in enumerate(toks) if num.match(t.group(0))]
+        start = _ovl_start(b, vals, len(toks), ov, key)
+        res, pos, k = [], 0, 0
+        for line in re.finditer(r'(?m)^    "\.long [^\n]*\\n"$', rows):
+            res.append(rows[pos:line.start()])
+            seg, last = line.group(0), 0
+            for t in OVL_ASM_TOK.finditer(seg):
+                res.append(seg[last:t.start()])
+                tok = t.group(0)
+                res.append('@W@%s@%X@' % (key, start + 4 * k) if num.match(tok) else tok)
+                last = t.end()
+                k += 1
+            res.append(seg[last:])
+            pos = line.end()
+        res.append(rows[pos:])
+        return m.group(0).replace(rows, ''.join(res), 1)
+    return OVL_ASM.sub(one, text)
+
+
 def blank_ovl(text: str, r: Retail) -> str:
+    if 'RG_OVL_ASM_SYM(rg_ovl_' in text and 'static const uint32_t rg_ovl_' not in text:
+        return blank_ovl_asm(text, r)
+
     def one(m):
         ov, words = m.group(1), m.group(3)
         key = OVL_FILES[ov]

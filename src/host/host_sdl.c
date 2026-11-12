@@ -2,6 +2,7 @@
 /* SDL3 window, presentation, live input (through the input-action layer,
  * docs/INPUT.md), the settings overlay (docs/SETTINGS.md), audio stream.
  * docs/HOST.md. */
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -92,6 +93,7 @@ struct rg_host {
     FILE *tap, *tap_ev;                       /* $RG_AUDIO_HOST_WAV (+ .events.tsv) */
     uint64_t tap_frames;
     float volume;
+    int volume_in_mix;                        /* rg_host_set_volume_in_mix */
     /* output device + focus (audio lane, docs/HOST.md "Audio devices and focus") */
     SDL_AudioDeviceID adev;                   /* logical device the stream is bound to */
     char dev_want[256];                       /* audio.device ("" = system default) */
@@ -344,11 +346,101 @@ rg_host *rg_host_create(const rg_host_config *cfg)
     return h;
 }
 
+/* ------------------------------------------------- virtual gamepad (tests)
+ * $RG_VPAD_SCRIPT=FILE (docs/INPUT.md "Recording live input"): an SDL virtual gamepad,
+ * attached at the first pump of a windowed host and driven by FILE on the wall clock:
+ * lines "MS NAME VALUE" (ms since the attach; NAME an SDL gamepad button ("a", "dpup",
+ * "start", ...) with VALUE 0 / 1, or an axis ("leftx", "righttrigger", ...) with VALUE
+ * -32768..32767; '#' comments).  The pad reaches the game like a real one (SDL's gamepad
+ * events, the roster, the press latch, rg_actions_eval): a machine without a gamepad and
+ * without /dev/uinput access can still run the live gamepad path. */
+typedef struct vpad_ev { uint32_t ms; int button, axis, value; } vpad_ev;
+static struct {
+    int state;              /* 0 untested, 1 attached, -1 off */
+    SDL_JoystickID id;
+    SDL_Joystick *joy;
+    vpad_ev *ev;
+    int nev, next;
+    uint64_t t0;
+} g_vpad;
+
+static void vpad_load(const char *path)
+{
+    FILE *f = fopen(path, "r");
+    if (!f) { SDL_Log("rg-host: RG_VPAD_SCRIPT %s: cannot read", path); return; }
+    char ln[256];
+    int cap = 0;
+    while (fgets(ln, sizeof ln, f)) {
+        char *hash = strchr(ln, '#');
+        if (hash) *hash = 0;
+        unsigned long ms;
+        char name[64];
+        int v;
+        if (sscanf(ln, "%lu %63s %d", &ms, name, &v) != 3) continue;
+        vpad_ev e = { (uint32_t)ms, -1, -1, v };
+        SDL_GamepadButton b = SDL_GetGamepadButtonFromString(name);
+        if (b != SDL_GAMEPAD_BUTTON_INVALID) e.button = (int)b;
+        else {
+            SDL_GamepadAxis a = SDL_GetGamepadAxisFromString(name);
+            if (a == SDL_GAMEPAD_AXIS_INVALID) { SDL_Log("rg-host: RG_VPAD_SCRIPT: unknown control '%s'", name); continue; }
+            e.axis = (int)a;
+        }
+        if (g_vpad.nev == cap) {
+            cap = cap ? cap * 2 : 64;
+            vpad_ev *n = (vpad_ev *)SDL_realloc(g_vpad.ev, (size_t)cap * sizeof *n);
+            if (!n) break;
+            g_vpad.ev = n;
+        }
+        g_vpad.ev[g_vpad.nev++] = e;
+    }
+    fclose(f);
+}
+
+static void vpad_tick(rg_host *h)
+{
+    if (g_vpad.state < 0) return;
+    if (g_vpad.state == 0) {
+        g_vpad.state = -1;
+        const char *path = SDL_getenv("RG_VPAD_SCRIPT");
+        if (!path || !*path || h->headless) return;
+        SDL_VirtualJoystickDesc d;
+        SDL_INIT_INTERFACE(&d);
+        d.type = SDL_JOYSTICK_TYPE_GAMEPAD;
+        d.naxes = SDL_GAMEPAD_AXIS_COUNT;
+        d.nbuttons = SDL_GAMEPAD_BUTTON_COUNT;
+        d.name = "rg-game virtual pad (RG_VPAD_SCRIPT)";
+        g_vpad.id = SDL_AttachVirtualJoystick(&d);
+        g_vpad.joy = g_vpad.id ? SDL_OpenJoystick(g_vpad.id) : NULL;
+        if (!g_vpad.joy) { SDL_Log("rg-host: RG_VPAD_SCRIPT: no virtual joystick: %s", SDL_GetError()); return; }
+        vpad_load(path);
+        g_vpad.t0 = SDL_GetTicks();
+        g_vpad.state = 1;
+        SDL_Log("rg-host: RG_VPAD_SCRIPT: virtual gamepad %u, %d events", (unsigned)g_vpad.id, g_vpad.nev);
+    }
+    uint64_t now = SDL_GetTicks() - g_vpad.t0;
+    while (g_vpad.next < g_vpad.nev && g_vpad.ev[g_vpad.next].ms <= now) {
+        const vpad_ev *e = &g_vpad.ev[g_vpad.next++];
+        if (e->button >= 0) SDL_SetJoystickVirtualButton(g_vpad.joy, e->button, e->value != 0);
+        else SDL_SetJoystickVirtualAxis(g_vpad.joy, e->axis, (Sint16)(e->value < -32768 ? -32768 : e->value > 32767 ? 32767 : e->value));
+    }
+}
+
+static void vpad_close(void)
+{
+    if (g_vpad.joy) SDL_CloseJoystick(g_vpad.joy);
+    if (g_vpad.id) SDL_DetachVirtualJoystick(g_vpad.id);
+    SDL_free(g_vpad.ev);
+    memset(&g_vpad, 0, sizeof g_vpad);
+    g_vpad.state = -1;
+}
+
 void rg_host_destroy(rg_host *h)
 {
     if (!h) return;
+    rg_input_record_close();
     rg_host_present_thread(h, 0);
     for (int i = 0; i < h->roster.n; i++) SDL_CloseGamepad(h->pads[i]);
+    vpad_close();
     if (h->audio) SDL_DestroyAudioStream(h->audio);
     if (h->adev) SDL_CloseAudioDevice(h->adev);
     dev_names_free(h);
@@ -491,6 +583,27 @@ void rg_host_window_size(const rg_host *h, int *w, int *hh)
     ren_lock((rg_host *)h);
     if (h->ren) SDL_GetCurrentRenderOutputSize(h->ren, w, hh);
     ren_unlock((rg_host *)h);
+}
+
+void *rg_host_native_window(const rg_host *h)
+{
+#ifdef _WIN32
+    if (h && h->win)
+        return SDL_GetPointerProperty(SDL_GetWindowProperties(h->win), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+#else
+    (void)h;
+#endif
+    return NULL;
+}
+
+int rg_host_set_window_icon(rg_host *h, const uint8_t *rgba, int size)
+{
+    if (!h || !h->win || !rgba || size <= 0) return -1;
+    SDL_Surface *s = SDL_CreateSurfaceFrom(size, size, SDL_PIXELFORMAT_RGBA32, (void *)rgba, size * 4);
+    if (!s) return -1;
+    int ok = SDL_SetWindowIcon(h->win, s);
+    SDL_DestroySurface(s);
+    return ok ? 0 : -1;
 }
 
 const char *rg_host_screenshot_dir(const rg_host *h) { return h->shot_dir; }
@@ -1036,6 +1149,7 @@ int rg_host_pump(rg_host *h)
 static int pump_events(rg_host *h)
 {
     h->pumps++;
+    vpad_tick(h);   /* $RG_VPAD_SCRIPT (tests) */
     if ((h->pumps % 1800u) == 0)
         for (int p = 0; p < 2; p++)
             if (h->rumble_small[p] || h->rumble_large[p]) apply_rumble(h, p);
@@ -1707,13 +1821,18 @@ void rg_host_read_pad(rg_host *h, int port, uint32_t vbl, rg_pad *out)
         else rg_pad_neutral(out);
         return;
     }
-    if (h->headless || h->menu.open) { rg_pad_neutral(out); return; }
+    if (h->headless || h->menu.open) {
+        rg_pad_neutral(out);
+        if (port == 0) rg_input_record_pad(vbl, out);   /* $RG_INPUT_RECORD */
+        return;
+    }
     static bool keybuf[SDL_SCANCODE_COUNT];
     rg_gamepad_snap pads[RG_MAX_GAMEPADS];
     rg_input_snapshot in;
     live_snapshot(h, port, keybuf, pads, &in);
     h->acts.camera_view = port == 0 ? h->camera_view : RG_CAMVIEW_NONE;
     rg_actions_eval(&h->acts, &in, out);
+    if (port == 0) rg_input_record_pad(vbl, out);       /* $RG_INPUT_RECORD */
 }
 
 /* DS2 motors -> SDL gamepad rumble.  The gamepad is the port's (two players)
@@ -1984,7 +2103,17 @@ void rg_host_audio_pause(rg_host *h, int paused)
 /* the stream gain: master volume x focus mute (audio.background); presentation only */
 static void apply_gain(rg_host *h)
 {
-    if (h->audio) SDL_SetAudioStreamGain(h->audio, rg_audio_output_gain(h->volume, h->win_focus, h->background));
+    if (h->audio)
+        SDL_SetAudioStreamGain(h->audio, rg_audio_output_gain(h->volume_in_mix ? 1.0f : h->volume, h->win_focus,
+                                                              h->background));
+}
+
+void rg_host_set_volume_in_mix(rg_host *h, int on)
+{
+    if (!h || h->volume_in_mix == (on != 0))
+        return;
+    h->volume_in_mix = on != 0;
+    apply_gain(h);
 }
 
 void rg_host_set_volume(rg_host *h, float gain)
@@ -2115,7 +2244,10 @@ int rg_host_audio_devices(rg_host *h, const char **out, int cap)
     return k;
 }
 
-float rg_host_audio_output_gain(const rg_host *h) { return rg_audio_output_gain(h->volume, h->win_focus, h->background); }
+float rg_host_audio_output_gain(const rg_host *h)
+{
+    return rg_audio_output_gain(h->volume_in_mix ? 1.0f : h->volume, h->win_focus, h->background);
+}
 uint32_t rg_host_audio_device_id(const rg_host *h) { return h->adev; }
 uint32_t rg_host_audio_device_switches(const rg_host *h) { return h->dev_switches; }
 

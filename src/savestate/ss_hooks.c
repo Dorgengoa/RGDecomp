@@ -16,6 +16,15 @@
  * state: after a load it points into the loading process's unrelated heap.
  * Each hit names the owner (symbol / allocating caller), so the fix is a
  * policy row in ss_map.c or a hook.
+ *
+ * Linux (2026-11-08, lane linux32): the host heap is glibc's.  Its blocks are
+ * found by walking the main arena's chunks in the brk heap ("[heap]" of
+ * /proc/self/maps; a chunk is in use when the next chunk's PREV_INUSE bit is
+ * set, so tcache / fastbin chunks count as blocks too).  Not walked: other
+ * arenas (threads' heaps) and mmapped chunks; with RG_SS_AUDIT set,
+ * rg_ss_init caps glibc at one arena so host threads allocate in the walked
+ * one.  Where the walk stops parsing, the rest of the brk heap is one block.  The
+ * linked initial data are the file-backed parts of the writable PT_LOADs.
  */
 #include <stddef.h>
 #include <stdio.h>
@@ -31,6 +40,12 @@
 #define WIN32_LEAN_AND_MEAN
 #include <malloc.h>
 #include <windows.h>
+#elif defined(__linux__)
+#include <elf.h>
+#include <fcntl.h>
+#include <link.h>
+#include <sys/mman.h>
+#include <unistd.h>
 #endif
 
 static size_t k_size(void) { return ps2k_ss_size(); }
@@ -53,7 +68,7 @@ int rg_ss_register_default_hooks(void)
 }
 
 /* ------------------------------------------------------------ audit */
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__linux__)
 typedef struct hblk {
     uintptr_t lo, hi;
 } hblk;
@@ -67,6 +82,7 @@ static int cmp_blk(const void *a, const void *b)
     return x->lo < y->lo ? -1 : x->lo > y->lo;
 }
 
+#ifdef _WIN32
 static void collect_host_blocks(void)
 {
     HANDLE h = (HANDLE)_get_heap_handle();
@@ -95,6 +111,101 @@ static void collect_host_blocks(void)
     HeapUnlock(h);
     qsort(g_blk, (size_t)g_nblk, sizeof *g_blk, cmp_blk);
 }
+#else
+/* scratch memory of the audit itself: mmap, so the walked heap does not change under it */
+static void *aud_map(size_t n)
+{
+    void *p = mmap(NULL, n, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    return p == MAP_FAILED ? NULL : p;
+}
+
+#define AUD_BLK_CAP (1u << 21)
+
+/* [lo, hi) of the "[heap]" mapping (the brk heap = glibc's main arena); 0 if none */
+static int brk_heap(uintptr_t *lo, uintptr_t *hi)
+{
+    enum { CAP = 1 << 20 };
+    char *buf = (char *)aud_map(CAP);
+    if (!buf)
+        return 0;
+    int fd = open("/proc/self/maps", O_RDONLY);
+    size_t n = 0;
+    if (fd >= 0) {
+        ssize_t r;
+        while (n < CAP - 1 && (r = read(fd, buf + n, CAP - 1 - n)) > 0)
+            n += (size_t)r;
+        close(fd);
+    }
+    buf[n] = 0;
+    int ok = 0;
+    for (char *ln = buf; ln && *ln;) {
+        char *nl = strchr(ln, '\n');
+        if (nl)
+            *nl = 0;
+        if (strstr(ln, "[heap]")) {
+            unsigned long long a, b;
+            if (sscanf(ln, "%llx-%llx", &a, &b) == 2) {
+                *lo = (uintptr_t)a;
+                *hi = (uintptr_t)b;
+                ok = 1;
+            }
+            break;
+        }
+        ln = nl ? nl + 1 : NULL;
+    }
+    munmap(buf, CAP);
+    return ok;
+}
+
+static void collect_host_blocks(void)
+{
+    g_nblk = 0;
+    g_blk = (hblk *)aud_map(sizeof(hblk) * AUD_BLK_CAP);
+    uintptr_t lo, hi;
+    if (!g_blk || !brk_heap(&lo, &hi))
+        return;
+    uintptr_t end = (uintptr_t)sbrk(0);
+    if (end > lo && end < hi)
+        hi = end;
+    /* glibc chunks: [prev_size][size|flags] then the user data; SZ = sizeof(size_t),
+     * MALLOC_ALIGNMENT 16 on i386 (glibc >= 2.26) and x86-64; the first chunk sits where
+     * its user data is aligned */
+    const uintptr_t SZ = sizeof(size_t), AL = 16;
+    uintptr_t c = lo + ((AL - ((lo + 2 * SZ) & (AL - 1))) & (AL - 1));
+    int bad = 0;
+    while (c + 2 * SZ <= hi) {
+        uintptr_t sz = *(const size_t *)(c + SZ) & ~(uintptr_t)7;
+        if (c + sz == hi)
+            break; /* the top chunk (its size need not be a multiple of 16) */
+        if (sz < 2 * SZ || (sz & (AL - 1)) || c + sz > hi) {
+            bad = 1;
+            break;
+        }
+        uintptr_t nx = c + sz;
+        if (nx + 2 * SZ > hi)
+            break; /* the top chunk */
+        int inuse = (int)(*(const size_t *)(nx + SZ) & 1);
+        if (inuse && sz > 2 * SZ && g_nblk < (int)AUD_BLK_CAP) {
+            g_blk[g_nblk].lo = c + 2 * SZ;
+            g_blk[g_nblk].hi = nx + SZ; /* the user data runs into the next prev_size */
+            g_nblk++;
+        }
+        c = nx;
+    }
+    if (bad && c < hi && g_nblk < (int)AUD_BLK_CAP) {
+        /* a chunk that does not parse (a fencepost after a foreign sbrk, or a block another
+         * thread is changing): the rest of the brk heap counts as one block */
+        fprintf(stderr, "SSAUDIT note: glibc heap walk stopped at %08lx (of %08lx-%08lx, size word %lx) "
+                        "after %d blocks; the rest is one host block\n",
+                (unsigned long)c, (unsigned long)lo, (unsigned long)hi,
+                (unsigned long)*(const size_t *)(c + SZ), g_nblk);
+        g_blk[g_nblk].lo = c;
+        g_blk[g_nblk].hi = hi;
+        g_nblk++;
+    }
+    /* already in address order */
+}
+#endif
 
 static int host_block(uintptr_t v)
 {
@@ -114,6 +225,67 @@ static int host_block(uintptr_t v)
 /* The exe's .data as linked (from the file): a static word still equal to it
  * was never written at run time, so it is not a host pointer (VU microcode and
  * other tables in game .data often fall in the CRT heap's address range). */
+#ifdef __linux__
+/* the file-backed parts of the writable PT_LOADs (.data & co., no .bss) */
+#define AUD_INI 8
+static struct {
+    uintptr_t lo, n;
+    uint8_t *b;
+} g_ini[AUD_INI];
+static int g_nini;
+
+static void load_initial_data(void)
+{
+    const ss_image *im = ss_map_image();
+    g_nini = 0;
+    int fd = open(im->exe_path, O_RDONLY);
+    if (fd < 0)
+        return;
+    ElfW(Ehdr) eh;
+    if (pread(fd, &eh, sizeof eh, 0) == (ssize_t)sizeof eh && !memcmp(eh.e_ident, ELFMAG, SELFMAG) &&
+        eh.e_phentsize == sizeof(ElfW(Phdr))) {
+        for (int i = 0; i < eh.e_phnum && g_nini < AUD_INI; i++) {
+            ElfW(Phdr) ph;
+            if (pread(fd, &ph, sizeof ph, (off_t)(eh.e_phoff + (size_t)i * sizeof ph)) != (ssize_t)sizeof ph)
+                break;
+            if (ph.p_type != PT_LOAD || !(ph.p_flags & PF_W) || !ph.p_filesz)
+                continue;
+            uint8_t *b = (uint8_t *)aud_map(ph.p_filesz + 4);
+            if (!b)
+                break;
+            if (pread(fd, b, ph.p_filesz, (off_t)ph.p_offset) != (ssize_t)ph.p_filesz) {
+                munmap(b, ph.p_filesz + 4);
+                continue;
+            }
+            /* ET_EXEC: p_vaddr is the address; ET_DYN would add the load bias */
+            g_ini[g_nini].lo = (eh.e_type == ET_DYN ? im->base : 0) + ph.p_vaddr;
+            g_ini[g_nini].n = ph.p_filesz;
+            g_ini[g_nini].b = b;
+            g_nini++;
+        }
+    }
+    close(fd);
+}
+
+static int unchanged_static(uintptr_t p)
+{
+    for (int i = 0; i < g_nini; i++)
+        if (p >= g_ini[i].lo && p + 4 <= g_ini[i].lo + g_ini[i].n)
+            return !memcmp((const void *)p, g_ini[i].b + (p - g_ini[i].lo), 4);
+    return 0;
+}
+
+static void audit_release(void)
+{
+    for (int i = 0; i < g_nini; i++)
+        munmap(g_ini[i].b, g_ini[i].n + 4);
+    g_nini = 0;
+    if (g_blk)
+        munmap(g_blk, sizeof(hblk) * AUD_BLK_CAP);
+    g_blk = NULL;
+    g_nblk = 0;
+}
+#else
 static uint8_t *g_init;
 static uintptr_t g_init_lo, g_init_n;
 
@@ -158,6 +330,17 @@ static int unchanged_static(uintptr_t p)
         return 0;
     return !memcmp((const void *)p, g_init + (p - g_init_lo), 4);
 }
+
+static void audit_release(void)
+{
+    if (g_init)
+        HeapFree(GetProcessHeap(), 0, g_init);
+    g_init = NULL;
+    HeapFree(GetProcessHeap(), 0, g_blk);
+    g_blk = NULL;
+    g_nblk = 0;
+}
+#endif
 
 /* hits per owner (static symbol, allocating caller, "fiber-stack", "game-ram") */
 #define AUD_OWNERS 512
@@ -237,7 +420,7 @@ static void heap_chunk(void *user, uintptr_t p, uint32_t n, uintptr_t caller)
 
 int rg_ss_audit(FILE *out, int limit)
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__linux__)
     if (!rg_ss_active())
         return -1;
     static audit a;
@@ -268,12 +451,7 @@ int rg_ss_audit(FILE *out, int limit)
         fprintf(a.out, "SSAUDIT owner %6d  %s\n", a.own[i].hits, a.own[i].name);
     fprintf(a.out, "SSAUDIT %d host-heap pointer(s) in saved memory (%d host blocks)\n", a.hits, g_nblk);
     fflush(a.out);
-    if (g_init)
-        HeapFree(GetProcessHeap(), 0, g_init);
-    g_init = NULL;
-    HeapFree(GetProcessHeap(), 0, g_blk);
-    g_blk = NULL;
-    g_nblk = 0;
+    audit_release();
     return a.hits;
 #else
     (void)out;

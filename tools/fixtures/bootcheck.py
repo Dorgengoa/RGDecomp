@@ -93,7 +93,7 @@ def snapshot_exe(exe: Path) -> Path:
     if not exe.exists():
         return exe
     d = fxlib.FIXTURES / "runs" / "bootexe" / fxlib.exe_id(exe)
-    dst = d / "rg-game.exe"
+    dst = d / fxlib.EXE_NAME
     if not dst.exists():
         d.mkdir(parents=True, exist_ok=True)
         tmp = d / f"rg-game.{time.time_ns()}.tmp"
@@ -261,8 +261,19 @@ def main(argv=None) -> int:
                     help="library cards: also fight the box walk's first battle (autobattle.py; "
                     "result won / lost / timeout / stuck / crash / hang / no battle; informational, "
                     "only a crash or hang fails the card)")
+    ap.add_argument("--no-crtcheck", action="store_true",
+                    help="skip the wrong-CRT guard (tools/native/crtcheck.py) on the exe's .map")
     a = ap.parse_args(argv)
-    exe = snapshot_exe(fxlib.exe_path(a.exe))
+    src_exe = fxlib.exe_path(a.exe)
+    if not a.no_crtcheck:
+        # an i686 exe linked outside vcvars x86 has another MSVC CRT / STL: other pixels and run
+        # hash than every baseline (docs/TOOLCHAIN.md "Wrong CRT / STL"); x64 exes pass
+        sys.path.insert(0, str(HERE.parent / "native"))
+        import crtcheck
+        if not crtcheck.check(Path(src_exe), allow_nomap=True):
+            print("bootcheck: FAIL (wrong-CRT guard; --no-crtcheck to run anyway)")
+            return 1
+    exe = snapshot_exe(src_exe)
     lib = [n for n in fxlib.BOOT_FIXTURES if fxlib.BOOT_SCRIPT.get(n) == "lib"]
     base = [n for n in fxlib.BOOT_FIXTURES if n not in lib]
     names = a.names or (base + lib if a.all else lib if a.lib else base)

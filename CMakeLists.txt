@@ -19,6 +19,9 @@ else()
                       "(cmake/toolchain-x64-windows-clang.cmake, cmake/toolchain-linux-x64.cmake, docs/X64-PLAN.md)")
 endif()
 message(STATUS "RG_ARCH=${RG_ARCH}")
+# wrong-CRT guard (docs/TOOLCHAIN.md "Wrong CRT / STL"): Windows builds only inside the vcvars
+# environment they were configured with; rg_crtguard_finalize() at the end wires it to every target
+include(cmake/crtguard.cmake)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
@@ -240,6 +243,10 @@ add_subdirectory(tests/bindings)
 option(RG_HOST "Build src/host (fetches + builds SDL3, docs/HOST.md)" ON)
 # typed settings registry + menu model (docs/SETTINGS.md); pure C, no SDL
 add_subdirectory(src/settings)
+# exe / window icon from the player's data/ (docs/ICON.md) and Discord Rich Presence over
+# the local IPC pipe (docs/DISCORD.md); both self-contained, no game art in the tree
+add_subdirectory(src/icon)
+add_subdirectory(src/discord)
 if(RG_HOST)
   add_subdirectory(src/host)
   add_subdirectory(tests/host)
@@ -280,9 +287,10 @@ add_subdirectory(tests/fixtures)
 # D9 link gate (docs/NATIVE-ONLY.md): reads the rg-game map
 add_subdirectory(tests/native_only)
 
-# Linux i686: the VU0 libraries get the game objects' float-sqrt mapping (port/sqrtf_map.h:
-# rounded to nearest as the Windows exe's CRT sqrtf; cmake/game.cmake, docs/LINUX.md "Float sqrt")
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT RG_ARCH STREQUAL "x64")
+# Linux and Windows i686: the VU0 libraries get the game objects' float-sqrt mapping
+# (port/sqrtf_map.h: rounded to nearest whatever the CRT's sqrtf does; cmake/game.cmake,
+# docs/LINUX.md "Float sqrt", docs/TOOLCHAIN.md "MSVC toolset")
+if((CMAKE_SYSTEM_NAME STREQUAL "Linux" OR WIN32) AND NOT RG_ARCH STREQUAL "x64")
   foreach(d src/native/vu0 src/sce/vu0)
     if(EXISTS ${CMAKE_SOURCE_DIR}/${d}/CMakeLists.txt)
       get_property(_t DIRECTORY ${CMAKE_SOURCE_DIR}/${d} PROPERTY BUILDSYSTEM_TARGETS)
@@ -301,3 +309,6 @@ if(RG_ARCH STREQUAL "x64")
   rg_x64_finalize()
 endif()
 
+# wrong-CRT guard: every target waits for rg_crt_env; rg-game / rg-game-oracle get the post-link
+# map check (tools/native/crtcheck.py).  Last, so it sees every target.
+rg_crtguard_finalize()

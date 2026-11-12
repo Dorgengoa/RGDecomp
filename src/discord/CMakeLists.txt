@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: CC0-1.0
+# Discord Rich Presence over the local IPC pipe, our own client (docs/DISCORD.md).
+add_library(rg_discord STATIC rg_discord.h rg_discord.c)
+target_include_directories(rg_discord PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(rg_discord PRIVATE rg_flags)
+if(NOT WIN32)
+  find_package(Threads REQUIRED)
+  target_link_libraries(rg_discord PUBLIC Threads::Threads)
+endif()
+
+add_executable(rg-discord-tests tests/discord_tests.c)
+target_link_libraries(rg-discord-tests PRIVATE rg_discord rg_flags)
+foreach(t idle json absent protocol)
+  add_test(NAME discord.${t} COMMAND rg-discord-tests ${t})
+  set_tests_properties(discord.${t} PROPERTIES TIMEOUT 60 LABELS discord)
+endforeach()
+
+foreach(t rg_discord rg-discord-tests)
+  if(WIN32)
+    target_compile_definitions(${t} PRIVATE _CRT_SECURE_NO_WARNINGS)
+  endif()
+  if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
+    target_compile_options(${t} PRIVATE -Wall -Wextra)
+  endif()
+endforeach()

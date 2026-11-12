@@ -25,7 +25,8 @@
  *     name_key()), else the row its original's content key has (learned at run time when the
  *     original was decoded and named: bridge), else -- when the pack has <name>_e.png -- an
  *     implied row; the texels that emit and their colour come from the _e map when there is one
- *     (black = none), else from the replacement's own texels under the row's mask.
+ *     (black = none: luminance >= 24, whatever the row's mask -- rt9b; the row gives colour mode,
+ *     strength and kind), else from the replacement's own texels under the row's mask.
  *
  * Included by nr_vulkan.cpp only (header-only: no build-file change).  Nothing here runs unless
  * the census, the overlay or emissive lighting is on; nothing reaches game memory. */
@@ -98,11 +99,14 @@ struct Tex {
     float ecol[3] = { 0, 0, 0 };    /* the emitting texels' mean colour (0..255) */
     float efrac = 0;                /* share of visible texels that emit */
     std::vector<uint32_t> px;       /* tagged textures only: the texels (triangle sampling) */
+    int elum = -2;                  /* (rt9b) -2: the row's mask; else the luminance threshold of px (an HD
+                                     * pack's _e map: its non-black texels emit, whatever the row's mask) */
     bool emits(uint32_t c) const
     {
         if (!row) return false;
         if (((c >> 24) & 255u) < 0x20u) return false;   /* (alpha 0x80 = 1.0) */
-        return row->lum < 0 || lum8(c) >= (float)row->lum;
+        const int l = elum != -2 ? elum : row->lum;
+        return l < 0 || lum8(c) >= (float)l;
     }
 };
 
@@ -336,6 +340,7 @@ public:
         t.w = src->lw[l]; t.h = src->lh[l];
         const uint32_t *px = src->px + src->off[l];
         t.row = row;
+        if (src != im) t.elum = 24;   /* (rt9b) the _e map decides which texels emit (black = none) */
         double s[3] = { 0, 0, 0 };
         size_t ne = 0, nv = 0, n = (size_t)t.w * t.h;
         for (size_t i = 0; i < n; i++) {

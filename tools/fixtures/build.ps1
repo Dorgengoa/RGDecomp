@@ -23,7 +23,7 @@ $Root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if (-not $BuildDir) { $BuildDir = Join-Path $Root "build\fixtures-i686" }
 if (-not $VcVars) {
     $cands = @(
-        "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat",
+        "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat",
         "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat",
         "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat")
     $VcVars = $cands | Where-Object { Test-Path $_ } | Select-Object -First 1

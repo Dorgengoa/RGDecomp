@@ -630,7 +630,8 @@ static int t_core_defs(void)
         if (!strncmp(d->id, "graphics.", 9)) {
             /* graphics.aspect / movie_aspect: real since widescreen stage 0 (docs/WIDESCREEN.md) */
             /* graphics.bloom / depth_of_field / motion_blur: real since 2026-11-01 (p6fx, nr_sfx.c) */
-            static const char *const planned[] = { "graphics.lod_bias", "graphics.shadow_res" };
+            /* graphics.shadow_res: real since 2026-11-07 (p6left, nr_sfx.c class shadow) */
+            static const char *const planned[] = { "graphics.lod_bias" };
             int want = 0;
             for (size_t k = 0; k < sizeof planned / sizeof planned[0]; k++)
                 if (!strcmp(d->id, planned[k])) want = 1;

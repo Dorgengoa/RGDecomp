@@ -59,7 +59,7 @@ def main() -> int:
         os.environ["RG_PROTOS_NO_SHORTAGG"] = "1"
     if a.fault == "abi3":
         for k in ("RG_PROTOS_NO_AGGVIEW", "RG_PROTOS_NO_U128EXTRA", "RG_PROTOS_NO_NARROWVIEW",
-                  "RG_PROTOS_NO_TYPEMACRO"):
+                  "RG_PROTOS_NO_TYPEMACRO", "RG_PROTOS_NO_STMTMACRO"):
             os.environ[k] = "1"
     if a.fault == "bits":
         kind = protos.T.kind.fget
@@ -137,6 +137,9 @@ def main() -> int:
         ("def-vthunk-naked body", "void __attribute__((naked)) VThunk_4000c0" in
          out["src/main/listing/ListingRules_400000.c"].decode()),
         ("def-struct-by-ref", row("BigByValue_4000e0", "def-struct-by-ref", "b")),
+        ("code macro + call stays a call (stmtmacro)",
+         "    Step_401000();" in out["src/main/stmtmacro/StmtMacro_401000.c"].decode()
+         and "void Step_401000(void);" not in out["src/main/stmtmacro/StmtMacro_401000.c"].decode()),
         ("def-struct-by-ref copy", "Big b = *rgp_sbv_b;" in
          out["src/main/listing/ListingRules_400000.c"].decode()),
         # virtual call: forwarded entry registers + surviving $v0

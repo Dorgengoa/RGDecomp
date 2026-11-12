@@ -23,7 +23,14 @@ import sys
 from pathlib import Path
 
 PORT = Path(__file__).resolve().parents[2]
-DEFAULT_EXE = PORT / "build" / "fixtures-i686" / "rg-game.exe"
+# The exe's file name on this host: rg-game.exe (Windows), rg-game (Linux ELF; its lld map is
+# rg-game.map beside it, as ss_map.c expects).  A fixture set copies the exe as bin/EXE_NAME.
+EXE_NAME = "rg-game.exe" if os.name == "nt" else "rg-game"
+# default exe: build/fixtures-i686 (Windows, tools/fixtures/build.ps1); on Linux the remote
+# lane tree's native build ($RG/build/native-vk/rg-game beside $RG/port), else build/fixtures-linux
+_LINUX_NATIVE = PORT.parent / "build" / "native-vk" / "rg-game"
+DEFAULT_EXE = (PORT / "build" / "fixtures-i686" / "rg-game.exe" if os.name == "nt" else
+               _LINUX_NATIVE if _LINUX_NATIVE.exists() else PORT / "build" / "fixtures-linux" / "rg-game")
 FIXTURES = PORT / "out" / "fixtures"
 # The route the fixture sets are generated with: power-on -> first battle won ->
 # Salgin -> save at the first transporter (docs/TEST-FIXTURES.md "Route").  It

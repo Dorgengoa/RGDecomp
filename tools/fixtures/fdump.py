@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: CC0-1.0
 """FACTORY state dump (docs/TEST-FIXTURES.md "Widened soak", factory production): plays a
 segment from a save state and prints the factory object at its end field, read live through
-RG_STATUS_DUMP pointer chains (exe + its rg-game.map; no game code changes).
+RG_STATUS_DUMP pointer chains (exe + its link map, MSVC or Linux lld; no game code changes).
 
     python tools/fixtures/fdump.py EXE STATE [--input IN] [--to FIELD] [--grid] [--defs] [--json OUT]
 
@@ -40,6 +40,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import fxlib  # noqa: E402
+import linkmap  # noqa: E402
 
 NAMES = {0: "Disassembler", 1: "Grinder", 2: "Athanor", 3: "Washer", 4: "Smelter", 5: "Form Press",
          6: "Cooler", 0xA: "Assembler", 0xB: "Assembler II", 0xC: "Assembler III", 0xD: "Source Table",
@@ -55,11 +56,9 @@ RESULTS = {1: "produced", 4: "route broken", 8: "wrong material: Disassembler", 
 
 
 def sym_rva(exe: Path, name: str) -> int:
-    for ln in open(exe.with_suffix(".map"), encoding="latin-1"):
-        w = ln.split()
-        if len(w) >= 3 and w[1] == name:
-            return int(w[2], 16) - 0x400000
-    raise SystemExit(f"fdump: {name} not in {exe.with_suffix('.map')}")
+    """RVA of a global from the exe's link map (linkmap.py: MSVC /MAP or Linux lld -Map); the
+    name may carry MSVC i686's leading '_' (x64 / lld names have none)."""
+    return linkmap.sym_rva(exe, name[1:] if name.startswith("_") else name, tool="fdump")
 
 
 def dump(exe: Path, state: Path, inp: Path | None, to: int, defs=False, saves=None):

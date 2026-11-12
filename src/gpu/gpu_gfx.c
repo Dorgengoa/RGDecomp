@@ -55,6 +55,8 @@ void gpu_gfx_from_settings(gpu_gfx *g, const struct rg_settings *s)
         g->enh.tex_dump = 2;   /* (movie frames dumped too) */
     if (has(s, "graphics.texture_replace")) g->enh.tex_replace = rg_settings_get_bool(s, "graphics.texture_replace");
     if (has(s, "accessibility.flashing")) g->enh.flash = rg_settings_get_enum(s, "accessibility.flashing");
+    if (has(s, "graphics.shadow_res")) g->enh.shadow_res = rg_settings_get_enum(s, "graphics.shadow_res") == 1;
+    if (has(s, "graphics.rt_char_shadows")) g->enh.rt_char_shadows = rg_settings_get_enum(s, "graphics.rt_char_shadows");   /* (rtnext) */
     if (has(s, "graphics.gamma")) g->post.gamma = (float)rg_settings_get_float(s, "graphics.gamma");
     if (has(s, "graphics.brightness"))
         g->post.brightness = (float)rg_settings_get_float(s, "graphics.brightness");

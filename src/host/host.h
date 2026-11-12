@@ -154,6 +154,11 @@ uint16_t rg_input_script_word(const rg_input_script *s, uint32_t vbl);
  * centred, pressure 0/255 from the word.  Live input is NOT merged (a
  * regression run has no host input sources, like the PCSX2 harness). */
 void rg_input_script_pad(const rg_input_script *s, uint32_t vbl, rg_pad *out);
+/* $RG_INPUT_RECORD=FILE: live port-0 pad reads -> an input script that replays them
+ * (docs/INPUT.md "Recording live input").  rg_host_read_pad calls the first for every live
+ * port-0 read; rg_host_destroy the second.  No-ops without the variable. */
+void rg_input_record_pad(uint32_t vbl, const rg_pad *p);
+void rg_input_record_close(void);
 /* input.py's PINE blob: u32 count then count u16 words, little endian.  Returns
  * bytes needed; writes only if cap is large enough. */
 size_t rg_input_script_blob(const rg_input_script *s, uint8_t *out, size_t cap);
@@ -284,6 +289,11 @@ void rg_host_set_scale(rg_host *h, rg_scale_mode m);
 rg_scale_mode rg_host_scale(const rg_host *h);
 /* Client size in pixels (0 x 0 headless). */
 void rg_host_window_size(const rg_host *h, int *w, int *h_);
+/* The native window (Windows: the HWND; NULL elsewhere / headless) and a window icon from
+ * a size x size straight-RGBA picture (SDL_SetWindowIcon; non-Windows path of docs/ICON.md).
+ * 0 ok. */
+void *rg_host_native_window(const rg_host *h);
+int rg_host_set_window_icon(rg_host *h, const uint8_t *rgba, int size);
 /* Display shape (docs/WIDESCREEN.md): the canvas the window shows (4:3, or
  * 16:9 for graphics.aspect = 16:9) and the frame's shape inside it (the same,
  * or 4:3 pillarboxed for screens that are not WIDE-aware).  0 = canvas.
@@ -461,6 +471,9 @@ void rg_host_set_window_size(rg_host *h, int w, int hgt);
 /* Output gain 0..1 (audio.master_volume / 100). */
 void rg_host_set_volume(rg_host *h, float gain);
 float rg_host_volume(const rg_host *h);
+/* on: the master volume is applied in the presentation mix before its clip ($RG_AUDIO_HEADROOM,
+ * runtime.c), so the stream gain leaves it out (focus mute only); off (default): stream gain */
+void rg_host_set_volume_in_mix(rg_host *h, int on);
 /* Queue `frames` frames.  Headless or without a device the data is counted
  * and dropped.  Returns 0 or -1. */
 int rg_host_audio_push(rg_host *h, const int16_t *lr, uint32_t frames);

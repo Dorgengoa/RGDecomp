@@ -252,7 +252,18 @@ def plan_itemgrid(d: Driver):
             d.shot(f"t{off:04d}", t + off)
 
 
-PLANS = {"lib": plan_lib, "factory": plan_factory, "loadmenu": plan_loadmenu, "revel": plan_revel,
+def plan_listen(d: Driver):
+    """Audio level capture (explaud, docs/NATIVE-AUDIO.md "Output level vs PCSX2"; use with
+    --audio-raw): to field control C, then idle (field BGM), TRIANGLE at C+900 (main menu
+    SE), CIRCLE at C+1200, end at C+2400.  Port side + A/B: docs/NATIVE-AUDIO.md "Output level vs PCSX2"."""
+    c = boot_to_control(d)
+    d.press("TRIANGLE", c + 900)
+    d.press("CIRCLE", c + 1200)
+    d.wait_vbl(c + 2400, timeout=300)
+    d.log("listen done")
+
+
+PLANS = {"listen": plan_listen, "lib": plan_lib, "factory": plan_factory, "loadmenu": plan_loadmenu, "revel": plan_revel,
          "itemgrid": plan_itemgrid}
 
 
@@ -330,7 +341,7 @@ def busy() -> list[str]:
 
 
 def run_card(card: str, plan: str, out: Path, speed: float, timeout: float, keep: bool,
-             ecc: str = "ps2card") -> dict:
+             ecc: str = "ps2card", audio_raw: str | None = None) -> dict:
     src = Path(card)
     if not src.exists():
         src = CARDS / card
@@ -342,8 +353,18 @@ def run_card(card: str, plan: str, out: Path, speed: float, timeout: float, keep
     out.mkdir(parents=True, exist_ok=True)
     logf = open(out / f"{name}.log", "w", encoding="utf-8")
     res = {"card": name, "plan": plan, "ok": False}
-    e = emu.Emu(speed=speed, renderer=13, tag=f"cardboot_{name}",
-                overrides=["MemoryCards/Slot1_Enable=true", f"MemoryCards/Slot1_Filename={mc.name}"])
+    ov = ["MemoryCards/Slot1_Enable=true", f"MemoryCards/Slot1_Filename={mc.name}"]
+    if audio_raw:   # the SPU2 output at the host sink, as tools/trace/audiocap.py does
+        raw = os.path.abspath(audio_raw)
+        if os.path.exists(raw):
+            os.remove(raw)
+        os.environ.update(SDL_AUDIO_DRIVER="disk", SDL_AUDIO_DISK_OUTPUT_FILE=raw,
+                          SDL_AUDIO_DISK_TIMESCALE="1.0", SDL_AUDIO_DEVICE_SAMPLE_FRAMES="4795")
+        ov += ["SPU2/Output/Backend=SDL", "SPU2/Output/SyncMode=Disabled",
+               "SPU2/Output/ExpansionMode=Disabled", "SPU2/Output/OutputMuted=false",
+               "SPU2/Output/StandardVolume=100", "SPU2/Output/BufferMS=200",
+               "SPU2/Output/OutputLatencyMS=100", "SPU2/Output/OutputLatencyMinimal=false"]
+    e = emu.Emu(speed=speed, renderer=13, tag=f"cardboot_{name}", overrides=ov)
     t0 = time.time()
     try:
         pine = e.connect()
@@ -386,6 +407,8 @@ def main(argv=None) -> int:
                     help="spare-area ECC of the exported image: ps2card's own (default; same order as "
                          "mcman's since 2026-10-18) or rewrite every page incl. erased ones (mcman)")
     ap.add_argument("--list-plans", action="store_true")
+    ap.add_argument("--audio-raw", help="also capture the SPU2 output (s16 stereo 48 kHz raw, SDL disk "
+                    "driver; one card only; a fast local disk)")
     a = ap.parse_args(argv)
     if a.list_plans:
         for k, f in PLANS.items():
@@ -397,7 +420,7 @@ def main(argv=None) -> int:
         return 2
     ok = True
     for c in a.cards:
-        r = run_card(c, a.plan, Path(a.out), a.speed, a.timeout, a.keep_card, a.ecc)
+        r = run_card(c, a.plan, Path(a.out), a.speed, a.timeout, a.keep_card, a.ecc, a.audio_raw)
         ok &= r["ok"]
         print(f"cardboot {r['card']}: {'OK' if r['ok'] else 'FAIL ' + r.get('error', '')} ({r['wall_s']} s)", flush=True)
     return 0 if ok else 1

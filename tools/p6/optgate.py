@@ -88,6 +88,9 @@ CLASS = {
     "audio.device": ("host", "host audio device (none headless)"),
     "system.throttle": ("host", "headless forces unthrottled (runtime.c rg_runtime_init)"),
     "system.screenshot_dir": ("host", "window screenshot key only"),
+    "system.discord": ("host", "Discord IPC thread of windowed runs only (runtime.c runtime_discord)"),
+    "system.discord_app_id": ("host", "Discord IPC thread of windowed runs only"),
+    "system.discord_details": ("host", "Discord activity text; read-only save observer"),
     "prompts.style": ("host", "scripted / headless runs always use PlayStation prompts (host_sdl.c)"),
     "input.overlay_chord": ("input", "live gamepad input only"),
     "input.overlay_chord_hold": ("input", "live gamepad input only"),
@@ -102,6 +105,10 @@ CLASS = {
                                                "2026-11-01); RG_SHAKE_LOG=1 shows the run shook"),
     "graphics.rt_emissive": ("headless", "Vulkan x64 drawing only (docs/RAYTRACING.md RT8; a sub-option of graphics.raytracing): "
                                          "swept with RG_GPU_API=vulkan RG_RT=3 (shadows + AO on)"),
+    "graphics.rt_gi": ("headless", "Vulkan x64 drawing only (docs/RAYTRACING.md RT10; a sub-option of graphics.raytracing): "
+                                   "swept with RG_GPU_API=vulkan RG_RT=3 (shadows + AO on), also under interpolation"),
+    "graphics.rt_char_shadows": ("headless", "Vulkan x64 drawing only (docs/RAYTRACING.md RT12; the game's character shadows "
+                                             "with ray tracing on): swept with RG_GPU_API=vulkan RG_RT=3, drop also with RT off"),
     "graphics.raytracing": ("headless", "Vulkan x64 drawing only (docs/RAYTRACING.md; menu row since rt2); swept with "
                                         "RG_GPU_API=vulkan, also under interpolation (RT2d presents); an i686 / D3D11 exe "
                                         "prints 'unavailable' and runs as off"),
@@ -117,6 +124,10 @@ VALUES = {
     "system.screenshot_dir": ["out/optgate-shots"],
     "input.overlay_chord": ["", "pad:leftshoulder, pad:rightshoulder"],
     "graphics.rt_emissive": [("on", {"RG_GPU_API": "vulkan", "RG_RT": "3"}), ("overlay", {"RG_GPU_API": "vulkan", "RG_RT": "3"})],
+    "graphics.rt_gi": [("on", {"RG_GPU_API": "vulkan", "RG_RT": "3"}), ("debug_overlay", {"RG_GPU_API": "vulkan", "RG_RT": "3"}),
+                       ("on", {"RG_GPU_API": "vulkan", "RG_RT": "3", "RG_EMI": "1", "RG_INTERP": "1", "RG_INTERP_SIM": "120"})],
+    "graphics.rt_char_shadows": [("keep", {"RG_GPU_API": "vulkan", "RG_RT": "3"}), ("drop", {"RG_GPU_API": "vulkan", "RG_RT": "3"}),
+                                 ("drop", {})],
     "graphics.raytracing": [("shadows", {"RG_GPU_API": "vulkan"}), ("shadows_ao", {"RG_GPU_API": "vulkan"}),
                             ("shadows_ao_refl", {"RG_GPU_API": "vulkan"}),
                             ("shadows", {"RG_GPU_API": "vulkan", "RG_INTERP": "1", "RG_INTERP_SIM": "120"})],
@@ -365,13 +376,16 @@ def read_hashlog(p: Path) -> dict:
     with open(p, encoding="utf-8", errors="replace") as f:
         hdr = f.readline().rstrip("\n").split("\t")
         for line in f:
-            if line[:1].isdigit():
+            # (integ6) only complete rows: a run killed at its time limit leaves a half-written last
+            # line, which read as "hash log differs from field N" at the kill field (integ5 SLOW rows)
+            if line[:1].isdigit() and line.endswith("\n"):
                 v = line.rstrip("\n").split("\t")
-                rows[int(v[0])] = dict(zip(hdr, v))
+                if len(v) == len(hdr):
+                    rows[int(v[0])] = dict(zip(hdr, v))
     return rows
 
 
-def run_job(job, exe: Path, eid: str, out: Path, timeout_s: float | None = None) -> dict | None:
+def run_job(job, exe: Path, eid: str, out: Path, timeout_s: float | None = None, budget_cut: bool = False) -> dict | None:
     d = out / "jobs" / job["id"]
     res_p = d / "result.json"
     key = job_key(job, eid)
@@ -421,7 +435,7 @@ def run_job(job, exe: Path, eid: str, out: Path, timeout_s: float | None = None)
         last = rows[max(rows)] if rows else {}
         r = {"key": key, "id": job["id"], "rc": rc, "run_hash": m[-1] if m else None,
              "field": max(rows) if rows else None, "audio": last.get("audio"), "last": last,
-             "wall_s": round(time.time() - t0, 1), "timeout": timed_out, "timeout_s": timeout_s, "settings_errors": [ln for ln in text.splitlines()[2:] if "ignored" in ln or "bad settings" in ln][:5]}
+             "wall_s": round(time.time() - t0, 1), "timeout": timed_out, "timeout_s": timeout_s, "budget_cut": timed_out and budget_cut,"settings_errors": [ln for ln in text.splitlines()[2:] if "ignored" in ln or "bad settings" in ln][:5]}
         shutil.rmtree(saves, ignore_errors=True)
         tmp = d / "result.json.tmp"
         tmp.write_text(json.dumps(r, indent=1), encoding="utf-8")
@@ -441,6 +455,10 @@ def compare(job, r, base, out: Path) -> dict:
     if job["cfg"] == "original":
         ok = r["rc"] == 0 and r["run_hash"] and r["field"] == job["scen"]["fields"]
         return {"verdict": "BASE" if ok else "ERROR", "detail": "" if ok else f"rc {r['rc']} field {r['field']}"}
+    if r.get("timeout") and r.get("budget_cut"):
+        # (integ6) killed by the run's --max-hours budget, not by its own limit (integ5: "limit 81 s"
+        # with a 160 s baseline): no verdict yet; the next invocation re-runs it with the full limit
+        return {"verdict": "PENDING", "detail": f"budget ran out after {r['wall_s']:.0f} s at field {r['field']}"}
     if r.get("timeout"):
         a = read_hashlog(out / "jobs" / job["id"] / "hash.tsv")
         b = read_hashlog(out / "jobs" / base["id"] / "hash.tsv")
@@ -613,7 +631,9 @@ def main(argv=None) -> int:
             if j["cfg"] != "original":
                 bp = out / "jobs" / f"original__{j['scen']['name']}" / "result.json"
                 bw = json.loads(bp.read_text(encoding="utf-8")).get("wall_s", 0) if bp.exists() else 0
-                lim = min(left, max(a.timeout_min, a.timeout_factor * bw))
+                full = max(a.timeout_min, a.timeout_factor * bw)
+                lim = min(left, full)
+                return j, run_job(j, exe_run, eid, out, lim, budget_cut=lim < full)
             return j, run_job(j, exe_run, eid, out, lim)
 
         for batch in (base_first, rest):

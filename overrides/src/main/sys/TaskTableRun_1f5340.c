@@ -8,6 +8,9 @@
  *  - screen-effect settings (docs/NATIVE-RENDER.md "Screen effects"): the native renderer
  *    tags every immediate packet with the name of the task that built it ("Draw Glare",
  *    "Draw DOF", "Draw Chara Blur", ...), nr_im_task().
+ *  - menu position (docs/WIDESCREEN.md "Menu position", 2026-11-10 menuleft): the help sheets
+ *    (TaskDrawEvent1_27ab50) and the battle results (TaskDrawMenuWin_204320) are overlays over
+ *    the scene and stay centred when the menus sit at the left (rg_layout_menu_centred_task).
  * (2026-11-01 menuret: the screen-effect version had dropped the layout brackets -> no menu
  * task at 16:9 keep: main-menu labels in the side areas, portrait cut-out mirrored) */
 /* rgp:protos */
@@ -27,11 +30,20 @@ const char *nr_im_task(const char *name);
 void rg_layout_task_begin(const void *fn);
 void rg_layout_task_end(void);
 void rg_layout_suppress(int on);
+void rg_layout_menu_centred_task(const void *fn);
 
 s32 TaskTableRun_1f5340(E *arg0) {
     E *p;
 
     p = arg0;
+    {
+        static int reg;
+        if (!reg) {
+            reg = 1;
+            rg_layout_menu_centred_task((const void *)TaskDrawEvent1_27ab50);
+            rg_layout_menu_centred_task((const void *)TaskDrawMenuWin_204320);
+        }
+    }
     SetTaskListChanged_1f56b0(0);
     if (p == 0) {
         return 0;

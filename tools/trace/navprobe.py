@@ -43,6 +43,7 @@ from pathlib import Path
 PORT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PORT / "tools" / "fixtures"))
 import fxlib  # noqa: E402
+import linkmap  # noqa: E402
 
 OBJDUMP = os.environ.get("RG_OBJDUMP", r"../tools\llvm\bin\llvm-objdump.exe")
 CAMS = [0x4B5660 + k * 0x2F0 for k in range(6)]
@@ -50,13 +51,9 @@ MAPID_SYM = "D_004838C0"
 
 
 def _syms(mp: Path):
-    syms = []
-    for line in open(mp, encoding="latin-1"):
-        m = re.match(r"\s*000[13]:[0-9a-f]+\s+(\S+)\s+([0-9a-f]{8,16})\s+", line)
-        if m:
-            syms.append((int(m.group(2), 16), m.group(1).lstrip("_")))
-    syms.sort()
-    return syms
+    """[(VA, name)] sorted: MSVC sections 0001 (.text) + 0003 (.data), names without leading '_';
+    lld -Map: every symbol row (tools/fixtures/linkmap.py)."""
+    return sorted((va, n.lstrip("_")) for va, n, _ in linkmap.symbols(mp, msvc_sections="13"))
 
 
 def _ret_sites(exe: Path, syms, caller: str, callee: str) -> list[int]:
@@ -80,7 +77,7 @@ def _ret_sites(exe: Path, syms, caller: str, callee: str) -> list[int]:
 def rvas(exe: Path) -> dict:
     """{leader: [ret rva], marker: [ret rvas], mapid_rva: rva} for this exe."""
     exe = Path(exe).resolve()
-    mp = exe.with_suffix(".map")
+    mp = linkmap.map_path(exe)
     cache = exe.parent / "navprobe.json"
     eid = fxlib.exe_id(exe)
     if cache.exists():

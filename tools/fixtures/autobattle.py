@@ -60,6 +60,7 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent / "trace"))
 import fxlib  # noqa: E402
 import bootcheck  # noqa: E402
+import linkmap  # noqa: E402
 
 FIGHT_PHASE = "7/201"
 WON = {"7/500", "7/504", "7/4000"}
@@ -131,15 +132,15 @@ PARTY_STRIDE, ENEMY_STRIDE = 0x4C8, 0x410
 NODES = 12
 
 
+def _map_path(exe: Path) -> Path:
+    """The exe's link map: rg-game.exe -> rg-game.map (MSVC), rg-game (ELF) -> rg-game.map (lld)."""
+    return linkmap.map_path(exe)
+
+
 def _sym_rvas(exe: Path) -> dict:
-    mp = Path(exe).with_suffix(".map")
-    want = {"D_004837C0", "D_004B8680"}
-    out = {}
-    for line in open(mp, encoding="latin-1"):
-        m = re.match(r"\s*0003:[0-9a-f]+\s+_?(D_004837C0|D_004B8680)\s+([0-9a-f]{16})\s", line)
-        if m and m.group(1) in want:
-            out[m.group(1)] = int(m.group(2), 16) - 0x400000
-    return out
+    """{name: RVA} of the probe's two globals, from either link map (linkmap.py: MSVC /MAP or
+    lld -Map; both images at 0x400000, Linux -no-pie: __executable_start = rg_dump_spec's base)."""
+    return linkmap.sym_rvas(exe, ["D_004837C0", "D_004B8680"], tool="autobattle")
 
 
 def dump_spec(exe: Path) -> str:

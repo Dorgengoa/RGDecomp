@@ -188,7 +188,7 @@ static LONG WINAPI rg_x64_crash(EXCEPTION_POINTERS *ep)
     EXCEPTION_RECORD *er = ep->ExceptionRecord;
     fprintf(stderr, "rg x64: unhandled exception 0x%08lx at %p", er->ExceptionCode, er->ExceptionAddress);
     if (er->ExceptionCode == EXCEPTION_ACCESS_VIOLATION && er->NumberParameters >= 2)
-        fprintf(stderr, " (%s %p)", er->ExceptionInformation[0] ? "write" : "read",
+        fprintf(stderr, " (%s %p)", er->ExceptionInformation[0] == 8 ? "execute" : er->ExceptionInformation[0] ? "write" : "read",
                 (void *)er->ExceptionInformation[1]);
     fprintf(stderr, "; stack (module+RVA, tools/x64/rva2sym.py):\n");
     if (!c.Rip) { /* a call through a NULL pointer: the caller's return address is at rsp */
@@ -226,6 +226,21 @@ int rg_x64_crash_frames(EXCEPTION_POINTERS *ep, void (*out)(const char *, ...), 
     CONTEXT c = *ep->ContextRecord;
     uintptr_t img = (uintptr_t)GetModuleHandleA(NULL);
     int k = first;
+    {   /* whose thread (ptbugs1110): its start address; a start outside every module is a
+         * thread another process created (see rg_x64_inject_guard below) */
+        typedef LONG (NTAPI *qit_fn)(HANDLE, int, PVOID, ULONG, PULONG);
+        qit_fn qit = (qit_fn)(void *)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtQueryInformationThread");
+        DWORD64 st = 0;
+        HMODULE sm = NULL;
+        char sn[MAX_PATH] = "no module";
+        if (qit) qit(GetCurrentThread(), 9 /* ThreadQuerySetWin32StartAddress */, &st, sizeof st, NULL);
+        if (st && GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                                     (LPCSTR)(uintptr_t)st, &sm) && sm)
+            GetModuleFileNameA(sm, sn, sizeof sn);
+        const char *b = strrchr(sn, '\\');
+        out("  thread %lu, start 0x%llx (%s+0x%llx)\n", (unsigned long)GetCurrentThreadId(), (unsigned long long)st,
+            b ? b + 1 : sn, (unsigned long long)(st - (DWORD64)(uintptr_t)sm));
+    }
     out("  x64 frames (module+RVA, unwound):\n");
     *(uint32_t *)((char *)rvas + (size_t)k++ * stride) = (uint32_t)(c.Rip - img);
     if (!c.Rip) { /* a call through a NULL pointer: the caller's return address is at rsp */
@@ -399,6 +414,118 @@ static void rg_x64_d3dcensus_arm(void)
     }
 }
 
+/* Injected threads (ptbugs1110, play-test 1109a: "crash when I stream on Discord").  This exe
+ * is linked /LARGEADDRESSAWARE:NO, so Windows maps every system DLL except ntdll BELOW 2 GB
+ * in it (kernel32 at 0x80000), not at the boot-wide address the DLL has in every other 64-bit
+ * process.  Capture tools that inject a DLL the classic way -- CreateRemoteThread(target,
+ * start = LoadLibraryW as found in THEIR OWN kernel32, param = remote copy of the DLL path);
+ * Discord's stream capture (DiscordHook64.dll), likewise OBS's inject helper -- therefore
+ * start a thread at an address that is unmapped here: an execute fault in a thread whose
+ * only frame is BaseThreadInitThunk, and the process dies.
+ * The guard: the boot-wide bases of kernel32 / kernelbase come from their \KnownDlls
+ * sections (entry point address - entry RVA); a first-chance handler sees an EXECUTE fault
+ * at rip == the fault address inside such a boot-wide range and moves rip to the same RVA
+ * in this process's copy of the DLL (the faulting instruction is the function's first one:
+ * the arguments are still in rcx / rdx / r8 / r9 and the return address at [rsp]).
+ * RG_X64_INJECT = 1 (default): run the function (the injected DLL loads, as in any other
+ * process); 2: end that thread instead (ExitThread(0): the injector sees a failed load);
+ * 0: off (the old path: the process dies).  RG_X64_INJECT_LOG=1 logs the bases at start. */
+typedef struct { DWORD64 shared, local, size; const char *name; } rg_x64_inj_mod;
+static rg_x64_inj_mod rg_x64_inj[2];
+static int rg_x64_inj_n, rg_x64_inj_mode;
+static DWORD64 rg_x64_inj_exit;   /* kernel32!ExitThread (port/x64.h renames the C name to the EE one) */
+static volatile LONG rg_x64_inj_hits;
+static DWORD64 rg_x64_known_dll_base(const wchar_t *name, HMODULE local)
+{
+    typedef struct { USHORT Length, MaximumLength; PWSTR Buffer; } us_t;
+    typedef struct { ULONG Length; HANDLE Root; us_t *Name; ULONG Attributes; PVOID Sd, Qos; } oa_t;
+    typedef LONG (NTAPI *open_fn)(HANDLE *, ACCESS_MASK, oa_t *);
+    typedef LONG (NTAPI *query_fn)(HANDLE, int, PVOID, SIZE_T, SIZE_T *);
+    typedef LONG (NTAPI *close_fn)(HANDLE);
+    HMODULE nt = GetModuleHandleA("ntdll.dll");
+    open_fn op = (open_fn)(void *)GetProcAddress(nt, "NtOpenSection");
+    query_fn qs = (query_fn)(void *)GetProcAddress(nt, "NtQuerySection");
+    close_fn cl = (close_fn)(void *)GetProcAddress(nt, "NtClose");
+    wchar_t path[64] = L"\\KnownDlls\\";
+    us_t us;
+    oa_t oa;
+    HANDLE h = NULL;
+    DWORD64 info[8] = {0};   /* SECTION_IMAGE_INFORMATION; TransferAddress first */
+    if (!op || !qs || !cl || !local) return 0;
+    wcscat(path, name);
+    us.Length = (USHORT)(wcslen(path) * 2);
+    us.MaximumLength = us.Length + 2;
+    us.Buffer = path;
+    memset(&oa, 0, sizeof oa);
+    oa.Length = sizeof oa;
+    oa.Name = &us;
+    oa.Attributes = 0x40;   /* OBJ_CASE_INSENSITIVE */
+    if (op(&h, 0x1 /* SECTION_QUERY */, &oa) < 0) return 0;
+    LONG st = qs(h, 1 /* SectionImageInformation */, info, sizeof info, NULL);
+    cl(h);
+    if (st < 0 || !info[0]) return 0;
+    IMAGE_NT_HEADERS *nh = (IMAGE_NT_HEADERS *)((char *)local + ((IMAGE_DOS_HEADER *)local)->e_lfanew);
+    DWORD64 base = info[0] - nh->OptionalHeader.AddressOfEntryPoint;
+    return (base & 0xFFFF) ? 0 : base;
+}
+static LONG WINAPI rg_x64_inject_guard(EXCEPTION_POINTERS *ep)
+{
+    EXCEPTION_RECORD *er = ep->ExceptionRecord;
+    CONTEXT *c = ep->ContextRecord;
+    if (er->ExceptionCode != EXCEPTION_ACCESS_VIOLATION || er->NumberParameters < 2 ||
+        er->ExceptionInformation[0] != 8 || er->ExceptionInformation[1] != c->Rip)
+        return EXCEPTION_CONTINUE_SEARCH;
+    for (int i = 0; i < rg_x64_inj_n; i++) {
+        rg_x64_inj_mod *m = &rg_x64_inj[i];
+        if (c->Rip < m->shared || c->Rip >= m->shared + m->size) continue;
+        DWORD64 rva = c->Rip - m->shared, to;
+        if (rg_x64_inj_mode == 2) {
+            to = rg_x64_inj_exit;
+            c->Rcx = 0;
+        } else {
+            to = m->local + rva;
+        }
+        if (InterlockedIncrement(&rg_x64_inj_hits) <= 8) {
+            fprintf(stderr, "rg x64: thread %lu started at 0x%llx = boot-wide %s+0x%llx (another process injecting "
+                    "with ITS address of the function; here the DLL is at 0x%llx) -> %s\n",
+                    (unsigned long)GetCurrentThreadId(), (unsigned long long)c->Rip, m->name,
+                    (unsigned long long)rva, (unsigned long long)m->local,
+                    rg_x64_inj_mode == 2 ? "thread ended (RG_X64_INJECT=2)" : "redirected to this process's copy");
+            fflush(stderr);
+        }
+        c->Rip = to;
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+static void rg_x64_inject_guard_arm(void)
+{
+    static const struct { const wchar_t *w; const char *a; } dl[2] = {
+        { L"kernel32.dll", "kernel32.dll" }, { L"kernelbase.dll", "KERNELBASE.dll" } };
+    const char *e = getenv("RG_X64_INJECT");
+    const char *lg = getenv("RG_X64_INJECT_LOG");
+    rg_x64_inj_mode = e && e[0] ? atoi(e) : 1;
+    if (rg_x64_inj_mode != 1 && rg_x64_inj_mode != 2) return;
+    rg_x64_inj_exit = (DWORD64)(uintptr_t)(void *)GetProcAddress(GetModuleHandleA("kernel32.dll"), "ExitThread");
+    if (!rg_x64_inj_exit) rg_x64_inj_mode = 1;
+    for (int i = 0; i < 2; i++) {
+        HMODULE l = GetModuleHandleA(dl[i].a);
+        DWORD64 s = rg_x64_known_dll_base(dl[i].w, l);
+        if (!l || !s) continue;
+        IMAGE_NT_HEADERS *nh = (IMAGE_NT_HEADERS *)((char *)l + ((IMAGE_DOS_HEADER *)l)->e_lfanew);
+        if (lg && lg[0] == '1')
+            fprintf(stderr, "rg x64 inject guard: %s here 0x%llx, boot-wide 0x%llx\n", dl[i].a,
+                    (unsigned long long)(uintptr_t)l, (unsigned long long)s);
+        if (s == (DWORD64)(uintptr_t)l) continue;   /* same address: nothing to translate */
+        rg_x64_inj[rg_x64_inj_n].shared = s;
+        rg_x64_inj[rg_x64_inj_n].local = (DWORD64)(uintptr_t)l;
+        rg_x64_inj[rg_x64_inj_n].size = nh->OptionalHeader.SizeOfImage;
+        rg_x64_inj[rg_x64_inj_n].name = dl[i].a;
+        rg_x64_inj_n++;
+    }
+    if (rg_x64_inj_n) AddVectoredExceptionHandler(1, rg_x64_inject_guard);
+}
+
 __attribute__((constructor)) static void rg_x64_lowmem_ctor(void)
 {
     if (rg_x64_lowmem_selfcheck()) {
@@ -406,6 +533,7 @@ __attribute__((constructor)) static void rg_x64_lowmem_ctor(void)
         ExitProcess(86);
     }
     SetUnhandledExceptionFilter(rg_x64_crash);
+    rg_x64_inject_guard_arm();
     {
         const char *c = getenv("RG_X64_D3DCENSUS");
         if (c && c[0] == '1') rg_x64_d3dcensus_arm();

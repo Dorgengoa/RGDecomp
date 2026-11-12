@@ -12,7 +12,20 @@
  *
  * The map must belong to the running exe: its timestamp must equal the PE
  * header's TimeDateStamp, else save states are disabled.
+ *
+ * Linux (ELF, lld -Map; docs/LINUX.md "Save states on Linux"): the image is
+ * the non-PIE executable (program headers from the auxiliary vector: .text =
+ * the executable PT_LOAD, .data = the writable PT_LOAD past PT_GNU_RELRO),
+ * the map is lld's (output section / input section / symbol lines).  Input
+ * sections name "dir/libLIB.a(OBJ.o)" or a bare object path; they are
+ * rewritten to the MSVC map's "LIB:OBJ.obj" / "OBJ.obj" so one policy table
+ * serves both.  An ELF has no link timestamp: the map must place
+ * ss_map_load where it is in this process, and "timestamp" is a hash of the
+ * map text.
  */
+#if defined(__linux__) && !defined(_GNU_SOURCE)
+#define _GNU_SOURCE 1
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +35,11 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#elif defined(__linux__)
+#include <elf.h>
+#include <link.h>
+#include <sys/auxv.h>
+#include <unistd.h>
 #endif
 
 typedef struct ss_sym {
@@ -30,6 +48,7 @@ typedef struct ss_sym {
     uint32_t obj;    /* offset into g_text */
     uint8_t is_code;
     uint8_t dcls, ccls;
+    uint8_t sym;     /* lld: 0 = an input section's start, 1 = a symbol (sorts after a section at its address) */
 } ss_sym;
 
 static struct {
@@ -176,8 +195,8 @@ static int sym_policy(const char *obj, size_t objlen, const char *name, size_t n
     const char *colon = memchr(obj, ':', objlen);
     const char *o = colon ? colon + 1 : obj;
     size_t ol = objlen - (size_t)(o - obj);
-#if defined(_WIN64)
-    /* the table spells the i686 decorated names (`_K`); x64 C names carry no `_` */
+#if defined(_WIN64) || !defined(_WIN32)
+    /* the table spells the i686 Windows decorated names (`_K`); x64 and ELF C names carry no `_` */
     for (int i = 0; k_sym_policy[i].obj; i++)
         if (strlen(k_sym_policy[i].obj) == ol && !memcmp(o, k_sym_policy[i].obj, ol) &&
             strlen(k_sym_policy[i].name + 1) == namelen && !memcmp(name, k_sym_policy[i].name + 1, namelen))
@@ -194,7 +213,9 @@ static int sym_policy(const char *obj, size_t objlen, const char *name, size_t n
 static int cmp_sym(const void *a, const void *b)
 {
     const ss_sym *x = (const ss_sym *)a, *y = (const ss_sym *)b;
-    return x->rva < y->rva ? -1 : x->rva > y->rva;
+    if (x->rva != y->rva)
+        return x->rva < y->rva ? -1 : 1;
+    return x->sym < y->sym ? -1 : x->sym > y->sym;
 }
 
 /* ---- PE header ---------------------------------------------------------- */
@@ -226,12 +247,132 @@ static int read_image(ss_image *im, char *err, size_t cap)
         return -1;
     }
     return 0;
+#elif defined(__linux__)
+    extern char __executable_start[];
+#if UINTPTR_MAX > 0xFFFFFFFFu
+    typedef Elf64_Phdr phdr_t;
+#else
+    typedef Elf32_Phdr phdr_t;
+#endif
+    const phdr_t *ph = (const phdr_t *)getauxval(AT_PHDR);
+    size_t nph = (size_t)getauxval(AT_PHNUM);
+    memset(im, 0, sizeof *im);
+    im->base = (uintptr_t)__executable_start;
+    if (!ph || !nph) {
+        snprintf(err, cap, "no program headers (AT_PHDR)");
+        return -1;
+    }
+    uintptr_t relro_lo = 0, relro_hi = 0, end = im->base;
+    for (size_t i = 0; i < nph; i++)
+        if (ph[i].p_type == PT_GNU_RELRO) {
+            relro_lo = (uintptr_t)ph[i].p_vaddr;
+            relro_hi = relro_lo + (uintptr_t)ph[i].p_memsz;
+        }
+    for (size_t i = 0; i < nph; i++) {
+        if (ph[i].p_type != PT_LOAD)
+            continue;
+        uintptr_t lo = (uintptr_t)ph[i].p_vaddr, hi = lo + (uintptr_t)ph[i].p_memsz;
+        if (hi > end)
+            end = hi;
+        if ((ph[i].p_flags & PF_X) && !im->text_lo) {
+            im->text_lo = lo;
+            im->text_hi = hi;
+        } else if (ph[i].p_flags & PF_W) {
+            if (relro_hi > relro_lo && lo >= relro_lo && lo < relro_hi)
+                lo = relro_hi;                 /* the relro part is read-only after start-up */
+            if (lo < hi && !im->data_lo) {
+                im->data_lo = lo;
+                im->data_hi = hi;
+            }
+        }
+    }
+    im->size_of_image = (uint32_t)(end - im->base);
+    ssize_t n = readlink("/proc/self/exe", im->exe_path, sizeof im->exe_path - 1);
+    im->exe_path[n > 0 ? n : 0] = 0;
+    if (!im->text_lo || !im->data_lo) {
+        snprintf(err, cap, "no executable / writable PT_LOAD in the exe");
+        return -1;
+    }
+    return 0;
 #else
     (void)im;
-    snprintf(err, cap, "save states need Windows (i686) for now");
+    snprintf(err, cap, "save states need Windows or Linux");
     return -1;
 #endif
 }
+
+#if defined(__linux__)
+/* lld map object field -> the MSVC map's spelling, in place (never longer):
+ *   "dir/libLIB.a(OBJ.o)"              -> "LIB:OBJ.obj"
+ *   ".../CMakeFiles/T.dir/.../OBJ.o"   -> "OBJ.obj"   (an object library / the exe's own objects)
+ *   "/sysroot/.../crt1.o"              -> "crt:crt1.o" (start files: host)
+ *   "<internal>"                       -> unchanged */
+static void lld_obj_norm(char *s)
+{
+    if (s[0] == '<')
+        return;
+    size_t n = strlen(s);
+    char out[1024];
+    char *lp = strchr(s, '(');
+    if (lp && n && s[n - 1] == ')') {
+        s[n - 1] = 0;
+        *lp = 0;
+        const char *mem = lp + 1;
+        const char *lib = strrchr(s, '/');
+        lib = lib ? lib + 1 : s;
+        if (!strncmp(lib, "lib", 3))
+            lib += 3;
+        size_t ll = strlen(lib);
+        if (ll > 2 && !strcmp(lib + ll - 2, ".a"))
+            ll -= 2;
+        size_t ml = strlen(mem);
+        int o = ml > 2 && !strcmp(mem + ml - 2, ".o");
+        snprintf(out, sizeof out, "%.*s:%.*s%s", (int)ll, lib, (int)(o ? ml - 2 : ml), mem, o ? ".obj" : "");
+    } else {
+        const char *b = strrchr(s, '/');
+        b = b ? b + 1 : s;
+        size_t bl = strlen(b);
+        int o = bl > 2 && !strcmp(b + bl - 2, ".o");
+        if (strstr(s, "/CMakeFiles/") || !strncmp(s, "CMakeFiles/", 11))
+            snprintf(out, sizeof out, "%.*s%s", (int)(o ? bl - 2 : bl), b, o ? ".obj" : "");
+        else
+            snprintf(out, sizeof out, "crt:%s", b);
+    }
+    size_t on = strlen(out);
+    if (on <= n)
+        memcpy(s, out, on + 1);
+}
+
+/* one lld map line: VMA LMA SIZE ALIGN, then the text after the whitespace run
+ * (its width tells output section / input section / symbol) */
+static int lld_line(char *l, uint64_t *va, uint64_t *sz, int *depth, char **text)
+{
+    char *p = l, *e;
+    uint64_t v[4];
+    for (int i = 0; i < 4; i++) {
+        while (*p == ' ')
+            p++;
+        v[i] = strtoull(p, &e, 16);
+        if (e == p || *e != ' ')
+            return 0;
+        p = e;
+    }
+    char *q = p;
+    while (*q == ' ')
+        q++;
+    if (!*q)
+        return 0;
+    size_t w = (size_t)(q - p);
+    *depth = w < 5 ? 0 : w < 13 ? 1 : 2;
+    *va = v[0];
+    *sz = v[2];
+    char *t = q + strlen(q);
+    while (t > q && (t[-1] == '\r' || t[-1] == ' '))
+        *--t = 0;
+    *text = q;
+    return 1;
+}
+#endif
 
 /* ---- the map ------------------------------------------------------------ */
 static int is_hex(const char *p, size_t n)
@@ -281,12 +422,92 @@ int ss_map_load(char *err, size_t cap)
     fclose(f);
     M.text[n] = 0;
 
+    int cap_sym = 1 << 17;
+    M.sym = (ss_sym *)malloc(sizeof(ss_sym) * (size_t)cap_sym);
+    if (!M.sym)
+        return -1;
+    const uintptr_t tlo = M.img.text_lo - M.img.base, thi = M.img.text_hi - M.img.base;
+    const uintptr_t dlo = M.img.data_lo - M.img.base, dhi = M.img.data_hi - M.img.base;
+#define SS_PUSH_SYM(s_)                                                                        do {                                                                                           if (M.nsym == cap_sym) {                                                                       cap_sym *= 2;                                                                              ss_sym *ns_ = (ss_sym *)realloc(M.sym, sizeof(ss_sym) * (size_t)cap_sym);                  if (!ns_)                                                                                      return -1;                                                                             M.sym = ns_;                                                                           }                                                                                          (s_) = &M.sym[M.nsym++];                                                               } while (0)
+
     const char *ts = strstr(M.text, "Timestamp is ");
     const char *pl = strstr(M.text, "Preferred load address is ");
+#if defined(__linux__)
+    if (!ts && !pl && strstr(M.text, "VMA") && strstr(M.text, "Symbol") &&
+        strstr(M.text, "VMA") < strchr(M.text, '\n')) {
+        /* lld -Map (see the header comment) */
+        M.img.timestamp = (uint32_t)ss_hash64(M.text, (size_t)n, 0x4d4150ull);
+        int found_self = 0;
+        uint32_t cur_obj = 0;
+        int have_obj = 0, in_text = 0, in_data = 0;
+        for (char *l = M.text; l && *l;) {
+            char *e = strchr(l, '\n');
+            if (e)
+                *e = 0;
+            uint64_t va, sz;
+            int depth;
+            char *t;
+            if (lld_line(l, &va, &sz, &depth, &t) && va >= M.img.base) {
+                uintptr_t rva = (uintptr_t)(va - M.img.base);
+                if (depth == 0) {
+                    have_obj = 0;
+                    in_text = rva >= tlo && rva < thi;
+                    in_data = rva >= dlo && rva < dhi;
+                } else if (depth == 1) {
+                    /* "obj:(section)" */
+                    char *c = strstr(t, ":(");
+                    if (c)
+                        *c = 0;
+                    lld_obj_norm(t);
+                    cur_obj = (uint32_t)(t - M.text);
+                    have_obj = 1;
+                    int code = in_text && rva >= tlo && rva < thi, data = in_data && rva >= dlo && rva < dhi;
+                    if (code || data) {
+                        ss_sym *s;
+                        SS_PUSH_SYM(s);
+                        int dc, cc;
+                        classify(t, strlen(t), &dc, &cc);
+                        s->rva = (uint32_t)rva;
+                        s->name = cur_obj;          /* the section start: named after its object */
+                        s->obj = cur_obj;
+                        s->sym = 0;
+                        s->is_code = (uint8_t)code;
+                        s->dcls = (uint8_t)dc;
+                        s->ccls = (uint8_t)cc;
+                    }
+                } else if (have_obj) {
+                    if (!strcmp(t, "ss_map_load") && (uintptr_t)va == (uintptr_t)&ss_map_load)
+                        found_self = 1;
+                    int code = in_text && rva >= tlo && rva < thi, data = in_data && rva >= dlo && rva < dhi;
+                    if (code || data) {
+                        ss_sym *s;
+                        SS_PUSH_SYM(s);
+                        const char *obj = M.text + cur_obj;
+                        int dc, cc;
+                        classify(obj, strlen(obj), &dc, &cc);
+                        s->rva = (uint32_t)rva;
+                        s->name = (uint32_t)(t - M.text);
+                        s->obj = cur_obj;
+                        s->sym = 1;
+                        s->is_code = (uint8_t)code;
+                        s->dcls = (uint8_t)(data ? sym_policy(obj, strlen(obj), t, strlen(t), dc) : dc);
+                        s->ccls = (uint8_t)cc;
+                    }
+                }
+            }
+            l = e ? e + 1 : NULL;
+        }
+        if (!found_self) {
+            snprintf(err, cap, "%s belongs to another link (ss_map_load is not at %p there)", path,
+                     (void *)&ss_map_load);
+            return -1;
+        }
+    } else
+#endif
     if (!ts || !pl) {
         snprintf(err, cap, "%s: not an MSVC-style link map", path);
         return -1;
-    }
+    } else {
     uint32_t stamp = (uint32_t)strtoul(ts + 13, NULL, 16);
     uint64_t pref = strtoull(pl + 26, NULL, 16);
     if (stamp != M.img.timestamp) {
@@ -295,12 +516,6 @@ int ss_map_load(char *err, size_t cap)
         return -1;
     }
 
-    int cap_sym = 1 << 17;
-    M.sym = (ss_sym *)malloc(sizeof(ss_sym) * (size_t)cap_sym);
-    if (!M.sym)
-        return -1;
-    const uintptr_t tlo = M.img.text_lo - M.img.base, thi = M.img.text_hi - M.img.base;
-    const uintptr_t dlo = M.img.data_lo - M.img.base, dhi = M.img.data_hi - M.img.base;
     for (char *l = M.text; l && *l;) {
         char *e = strchr(l, '\n');
         if (e)
@@ -323,20 +538,15 @@ int ss_map_load(char *err, size_t cap)
                 uintptr_t rva = (uintptr_t)(va - pref);
                 int code = rva >= tlo && rva < thi, data = rva >= dlo && rva < dhi;
                 if ((code || data) && va >= pref) {
-                    if (M.nsym == cap_sym) {
-                        cap_sym *= 2;
-                        ss_sym *ns = (ss_sym *)realloc(M.sym, sizeof(ss_sym) * (size_t)cap_sym);
-                        if (!ns)
-                            return -1;
-                        M.sym = ns;
-                    }
-                    ss_sym *s = &M.sym[M.nsym++];
+                    ss_sym *s;
+                    SS_PUSH_SYM(s);
                     const char *obj = tok[nt - 1];
                     int dc, cc;
                     classify(obj, strlen(obj), &dc, &cc);
                     s->rva = (uint32_t)rva;
                     s->name = (uint32_t)(tok[1] - M.text);
                     s->obj = (uint32_t)(obj - M.text);
+                    s->sym = 1;
                     s->is_code = (uint8_t)code;
                     s->dcls = (uint8_t)(data ? sym_policy(obj, strlen(obj), tok[1], strlen(tok[1]), dc) : dc);
                     s->ccls = (uint8_t)cc;
@@ -345,6 +555,8 @@ int ss_map_load(char *err, size_t cap)
         }
         l = e ? e + 1 : NULL;
     }
+    }
+#undef SS_PUSH_SYM
     qsort(M.sym, (size_t)M.nsym, sizeof *M.sym, cmp_sym);
 
     /* merged ranges */

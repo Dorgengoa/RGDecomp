@@ -130,6 +130,7 @@ static void at_exit(void)
                     (unsigned long long)g_rp.frames_on, ra_present_get_gain(RA_SRC_MUSIC),
                     ra_present_get_gain(RA_SRC_EFFECTS), ra_present_get_gain(RA_SRC_VOICE),
                     ra_present_get_gain(RA_SRC_MOVIE));
+        fprintf(stderr, "rg_audio: presentation clipped %llu samples\n", (unsigned long long)ra_present_clips());
     }
 }
 
@@ -219,6 +220,8 @@ void rg_audio_runtime_volumes(int music, int effects, int voice, int movie)
     for (int i = 0; i < RA_SRC_COUNT; i++)
         ra_present_set_gain(i, (float)(pct[i] < 0 ? 0 : pct[i] > 100 ? 100 : pct[i]) / 100.0f);
 }
+
+void rg_audio_runtime_headroom(float gain) { ra_present_set_headroom(gain); }
 
 void rg_audio_runtime_mix(short *lr, unsigned n)
 {

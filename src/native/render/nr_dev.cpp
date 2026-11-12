@@ -158,6 +158,7 @@ struct Rt {
     Pages pages;
     int has_dirty;
     GpuRect dirty;     /* newer than the mirror */
+    int crov_sticky;   /* (gfxperf, $RG_NR_STICKY) its last immediate draw went through the colour view */
     int stale;         /* the mirror is newer than the target */
     Pages stale_pages; /* ... in these pages (the rest still current: rt_copy_pages) */
 };
@@ -174,6 +175,8 @@ struct Twin {
     float sx, sy;
     uint32_t frame;    /* the EE frame the chain last drew it in */
     int valid;         /* every draw into it this frame could be reproduced */
+    uint32_t shuf;     /* (p6left) the EE frame its CT16 view was channel-shuffled in (RG -> BA, the soft
+                        * shadow's blur into alpha): the frame draw reads alpha from green (PF_SHUF16) */
 };
 
 /* ------------------------------------------------------- batched state */
@@ -366,13 +369,21 @@ struct gpu_renderer {
     const uint32_t *im_runs;   /* gpu_nr_im_submit_swap: the runs of the draw being made */
     int im_nruns;
     int im_crov;               /* gpu_nr_im_submit: the draw goes through the colour target's ordered view */
+    int im_crov_ok;            /* ... or could (a state the ordered view's back end draws as the GS does) */
+    int nr_sticky;             /* (gfxperf) $RG_NR_STICKY=1: a target that took a colour-view draw keeps its
+                                * colour-view-capable immediate draws there until a mesh draw or a write-back
+                                * (fewer RTV <-> view switches; a different picture: USER decision, default 0) */
+    uint64_t im_sticky_draws;
     int im_xfree;              /* gpu_set_im_xfree: squeezed 2D, sprites not snapped in X when upscaled
                                 * (bit 0); bit 1: scaled in Y too (UI scale): not snapped in Y, PF_SHARPY */
     float im_line_xs;          /* gpu_set_im_line_xs (0 = 1): y-major lines' x thickness in native pixels */
     int im_box;                /* gpu_set_im_box: a screen-effect pass's minifying read of a live target
                                 * box-filtered over the footprint (nr_sfx.c "enhanced", nr_draw.hlsl PF_BOX) */
+    int im_focus;              /* (ptbugs3) gpu_set_im_focus: the focus blur's composite; its pre-filter's
+                                * box in native pixels x 100 (nr_sfx.c NR_SFX_FOCUSLP, focus_prefilter) */
     /* gpu_set_im_hires: screen-effect chains at the internal resolution (work buffers' twins) */
     int im_hires;
+    int im_hmode;              /* (p6left) 1 bloom, 2 the soft shadow (its own twin cap) */
     float im_hsx, im_hsy, im_hbox;
     uint32_t im_hframe;
     std::vector<Twin> twins;
@@ -386,11 +397,38 @@ struct gpu_renderer {
     uint64_t im_crov_prims;
     uint64_t im_approx[12];    /* immediate primitives drawn natively where the oracle's GS draw path drew (why) */
     uint64_t im_fb_split;      /* texture-feedback primitives drawn one by one */
+    /* (gfxperf3) $RG_NR_FBX: same-buffer feedback runs in two passes (gpu_nr_im_submit_swap fbx_*):
+     * nr_draw_resolved's hook: fbx_mode 1 = this draw takes the pass's snapshot, 2 = it reuses it
+     * (GpuNrDraw.tex_snap 2); fbx_sc = the backend draw's scissor (the coherence keeps the GS one);
+     * fbx_ok: -1 the hook was not reached, 0 the draw was not a plain own-target snapshot, 1 done */
+    int fbx_mode, fbx_ok, fbx_ct, fbx_w, fbx_h;
+    GpuRect fbx_sc;
+    int fbx_scr, fbx_copy;     /* mode 5: sample the scratch target fbx_scr (a copy of the layer's start);
+                                * fbx_copy: this draw first copies fbx_crect of the target into it */
+    GpuRect fbx_crect;
+    int fbx_g, fbx_gfirst;     /* the draw's group, 1 = its first draw: the early-copy and kick bookkeeping
+                                * once per group, in group order after the passes (as the split draws) */
+    std::vector<Pages> fbx_hot;
+    std::vector<char> fbx_hot_have;
+    uint64_t fbx_st[12];   /* (exit line; [9]: draws of the current run) */
     /* replay (gpu_nr_replay_*): offscreen colour / depth pair */
     int rp_c, rp_z, rp_w, rp_h;
     std::vector<uint32_t> rp_buf;
 };
 
+/* $RG_NR_FBCENSUS=1 (measurement, gfxperf2): where the own-target snapshots (tex_snap) come from:
+ * [0] same-buffer runs, [1] one-by-one feedback primitives, [2] other draws; same-buffer run splits
+ * [3], of them [4] whose exact (no margin) read box meets the run's exact write box, [5] whose
+ * primitive maps texels 1:1 onto its pixels (U - X, V - Y the same at every vertex), [6] same-buffer
+ * submissions, [7] primitives in them; =2 also prints the first 200 splits */
+#define FBX_DEFAULT 1   /* (gfxperf3) $RG_NR_FBX default: feedback strips in two passes */
+static int fbc_on = -1, fbc_cat = 2, fbc_logn;
+static uint64_t fbc[8];
+/* $RG_NR_CLUTTIME=1 (measurement, gfxperf2): wall time in CLUT loads (gpu_clut_load) */
+static int clut_time_on = -1;
+static double clut_time_us;
+static uint64_t clut_time_n;
+static GpuRect fbc_ew;
 static int rect_overlap(const GpuRect &a, const GpuRect &b)
 {
     return a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
@@ -488,6 +526,7 @@ static void hot_cpu_write(gpu_renderer *r, const Pages &p);
 static void mem_flush(gpu_renderer *r);
 static void rt_writeback(gpu_renderer *r, Rt &t)
 {
+    t.crov_sticky = 0;   /* (RG_NR_STICKY: until a non-draw operation reads the target) */
     if (!t.has_dirty) return;
     GpuRect d = t.dirty;
     if (d.x1 > t.w) d.x1 = t.w;
@@ -1650,10 +1689,61 @@ static void mem_xfer(gpu_renderer *r, const gs_mem_rect *rc0, const uint8_t *dat
 /* the CLUT cell values a load would write (gs_tex.c gs_tex0_written's arithmetic) from the
  * words of the kept transfers that were the last write of every block the palette lies in;
  * 0 when one of them is not CPU-known */
+/* (gfxperf) CSM1 palettes (16 x 16 or 8 x 2 pixels, one page at BW 1): each cell's word as block
+ * offset from CBP + word in the block, bit shift and mask (nr_px_word at CBP 0); the word at
+ * CBP bp is then ((bp + blk) & 0x3FFF) * 64 + wib, as nr_px_word computes it.  $RG_NR_CLUTTAB=0:
+ * nr_px_word per cell */
+struct ClutTab { uint8_t blk[256], wib[256], sh[256]; uint32_t m[256]; };
+static const ClutTab *clut_tab(int psm, int n256)
+{
+    static ClutTab tab[64][2];
+    static uint8_t have[64][2];
+    static int on = -1;
+    if (on < 0) { const char *e = getenv("RG_NR_CLUTTAB"); on = !(e && e[0] == '0'); }
+    if (!on) return NULL;
+    psm &= 63;
+    if (!have[psm][n256]) {
+        ClutTab &t = tab[psm][n256];
+        for (uint32_t i = 0; i < 256; i++) {
+            uint32_t x, y;
+            if (n256) { uint32_t q = (i & 0xE7u) | ((i & 8u) << 1) | ((i & 0x10u) >> 1); x = q & 15u; y = q >> 4; }
+            else { x = i & 7u; y = i >> 3; }
+            uint32_t w, m, sh;
+            nr_px_word(psm, 0, 1, x, y, &w, &m, &sh);
+            if (w >= 32u * 64u) return NULL;   /* (not within one page: never for these sizes) */
+            t.blk[i] = (uint8_t)(w >> 6);
+            t.wib[i] = (uint8_t)(w & 63u);
+            t.sh[i] = (uint8_t)sh;
+            t.m[i] = m;
+        }
+        have[psm][n256] = 1;
+    }
+    return &tab[psm][n256];
+}
+
 static int clut_cpu_values(gpu_renderer *r, const gs_mem_rect *rc, int csm, uint32_t csa, int cpsm, uint32_t n,
                            uint16_t *cells)
 {
     int is32 = cpsm == GS_PSMCT32 || cpsm == GS_PSMCT24;
+    const ClutTab *ct = csm == 0 && n <= 256 ? clut_tab(rc->psm, n == 256) : NULL;
+    if (ct) {
+        uint32_t lb = ~0u;
+        const KBlk *kb = NULL;
+        for (uint32_t i = 0; i < n; i++) {
+            uint32_t b = (rc->bp + ct->blk[i]) & 0x3FFFu, wi = ct->wib[i], m = ct->m[i];
+            if (b != lb) { kb = kblk_of(r, b); lb = b; }
+            if (!kb || (kb->m[wi] & m) != m) return 0;
+            uint32_t c = (kb->d[wi] & m) >> ct->sh[i];
+            if (is32) {
+                uint32_t e = ((csa & 15u) * 16u + i) & 255u;
+                cells[e] = (uint16_t)c;
+                cells[e + 256] = (uint16_t)(c >> 16);
+            } else {
+                cells[(csa * 16u + i) & 511u] = (uint16_t)c;
+            }
+        }
+        return 1;
+    }
     for (uint32_t i = 0; i < n; i++) {
         uint32_t x, y, bw;
         if (csm == 0) {
@@ -2052,6 +2142,8 @@ gpu_renderer *gpu_create(const gpu_config *cfg, char *err, size_t errcap)
         r->fb_census = fc && fc[0] == '1';
         const char *as = getenv("RG_NR_ASAT");
         r->no_asat = as && as[0] == '0';
+        const char *sy = getenv("RG_NR_STICKY");
+        r->nr_sticky = sy ? atoi(sy) : 0;
         const char *fr = getenv("RG_NR_FBRECT");
         r->no_fbrect = fr && fr[0] == '0';
         const char *gl = getenv("RG_NR_GSLIN");
@@ -2131,12 +2223,26 @@ void gpu_mem_stats(const gpu_renderer *r, FILE *f)
                "colour view %llu (As > 0x80: %llu, of them texel alpha %llu); drawn natively where the oracle uses the GS draw path:",
             (unsigned long long)r->be->n_nr_mesh_pre, (unsigned long long)r->be->n_nr_mesh,
             (unsigned long long)r->im_crov_prims, (unsigned long long)r->im_asat_prims, (unsigned long long)r->im_asat_tex_prims);
+    if (r->nr_sticky)
+        fprintf(f, " [immediate draws kept in the colour view (RG_NR_STICKY) %llu]", (unsigned long long)r->im_sticky_draws);
     static const char *nm[12] = { "CT16 frame", "dest. alpha test", "partial FBMSK", "AFAIL", "blend C=Ad",
                                   "COLCLAMP/PABE/SCANMSK", "frame-Z alias", "texture feedback", "mipmaps",
                                   "region clamp", "depth texture", "backend" };
     for (int k = 0; k < 12; k++)
         if (r->im_approx[k]) fprintf(f, " %s %llu", nm[k], (unsigned long long)r->im_approx[k]);
     fprintf(f, " (feedback primitives one by one %llu)\n", (unsigned long long)r->im_fb_split);
+    if (r->fbx_st[0] || r->fbx_st[5] || r->fbx_st[6] || r->fbx_st[7])
+        fprintf(f, "native device feedback strips (RG_NR_FBX): runs in two passes %llu (split draws %llu -> pass A %llu + pass B %llu, snapshots %llu; with pass A2 %llu); left as split: shape %llu, pass B reads %llu, first draw not a snapshot %llu; off-plan draws %llu\n",
+                (unsigned long long)r->fbx_st[0], (unsigned long long)r->fbx_st[1], (unsigned long long)r->fbx_st[2],
+                (unsigned long long)r->fbx_st[3], (unsigned long long)r->fbx_st[4], (unsigned long long)r->fbx_st[10], (unsigned long long)r->fbx_st[5],
+                (unsigned long long)r->fbx_st[6], (unsigned long long)r->fbx_st[7], (unsigned long long)r->fbx_st[8]);
+    if (clut_time_on > 0)
+        fprintf(f, "native device CLUT loads (RG_NR_CLUTTIME): %llu, %.1f ms\n", (unsigned long long)clut_time_n, clut_time_us / 1000.0);
+    if (fbc_on > 0)
+        fprintf(f, "native device feedback census: own-target snapshots same-buffer runs %llu, one-by-one %llu, other %llu; "
+                   "same-buffer splits %llu (exact boxes meet %llu, 1:1 mapping %llu) in %llu submissions of %llu primitives\n",
+                (unsigned long long)fbc[0], (unsigned long long)fbc[1], (unsigned long long)fbc[2], (unsigned long long)fbc[3],
+                (unsigned long long)fbc[4], (unsigned long long)fbc[5], (unsigned long long)fbc[6], (unsigned long long)fbc[7]);
     if (reint_on())
         fprintf(f, "native device reinterpretations: views sampled %llu, targets bound over another format %llu, "
                    "reads 3-4 texels past a target %llu, refused %llu\n",
@@ -2192,7 +2298,13 @@ int gpu_probe_lag_on(const gpu_renderer *r) { return r && r->probe_lag; }   /* (
 
 int gpu_clut_load(gpu_renderer *r, gpu_gs *gs, const gs_mem_rect *rc, int csm, uint32_t csa, int cpsm, uint32_t n, int dry)
 {
-    return clut_load(r, gs, rc, csm, csa, cpsm, n, dry);
+    if (clut_time_on < 0) { const char *e = getenv("RG_NR_CLUTTIME"); clut_time_on = e && e[0] == '1'; }
+    if (!clut_time_on) return clut_load(r, gs, rc, csm, csa, cpsm, n, dry);
+    double t0 = now_us();
+    int rc_ = clut_load(r, gs, rc, csm, csa, cpsm, n, dry);
+    clut_time_us += now_us() - t0;
+    clut_time_n++;
+    return rc_;
 }
 
 int gpu_mem_save(gpu_renderer *r, uint8_t *out)
@@ -2243,11 +2355,13 @@ const gpu_stats *gpu_get_stats(const gpu_renderer *r)
 
 int gpu_get_scale(const gpu_renderer *r) { return r->scale; }
 void gpu_set_im_xfree(gpu_renderer *r, int on) { if (r) r->im_xfree = on & 1 ? on & 3 : 0; }
-void gpu_set_im_box(gpu_renderer *r, int on) { if (r) r->im_box = on != 0; }
+void gpu_set_im_box(gpu_renderer *r, int on) { if (r) r->im_box = on > 0 ? on : 0; }   /* (2: dof_boxk, p6left) */
+void gpu_set_im_focus(gpu_renderer *r, int on) { if (r) r->im_focus = on > 0 ? on : 0; }
 void gpu_set_im_hires(gpu_renderer *r, int mode, float sx, float sy, float box, uint32_t frame)
 {
     if (!r) return;
-    r->im_hires = mode == 1 && sx >= 1.0f && sy >= 1.0f && sx <= 16.0f && sy <= 16.0f;
+    r->im_hires = (mode == 1 || mode == 2) && sx >= 1.0f && sy >= 1.0f && sx <= 16.0f && sy <= 16.0f;
+    r->im_hmode = mode;
     r->im_hsx = sx;
     r->im_hsy = sy;
     r->im_hbox = box > 0.0f && box < 16.0f ? box : 0.0f;
@@ -2595,11 +2709,18 @@ void gpu_get_enhance(const gpu_renderer *r, gpu_enhance *e) { *e = r->enh; }
  * place in the GS stream.  Targets, coherence and the texture follow the same
  * rules as a batch (flush_batch); the state is the GS registers in force. */
 extern "C" const char *gpu_nr_backend_notice(void) { return g_be_notice; }
+extern "C" int gpu_nr_rt_prepose_on(gpu_renderer *r) { return r && r->be ? r->be->rt_prepose_on() : 0; }
+extern "C" void gpu_nr_rt_prepose(gpu_renderer *r, const struct gpu_nr_draw *d) { if (r && r->be && d) r->be->rt_prepose(d); }
 extern "C" int gpu_nr_rt_chars_shadow(gpu_renderer *r)
 {
     static int keep = -1;
     if (keep < 0) { const char *e = getenv("RG_RT_BLOB"); keep = e && e[0] == '1'; }
-    return !keep && r && r->be ? r->be->rt_chars_shadow() : 0;
+    if (keep || !r || !r->be) return 0;
+    /* (rtnext) graphics.rt_char_shadows (gpu_enhance.rt_char_shadows): 0 replace (rt4: where the ray-traced character
+     * shadows show), 1 keep (the game's always drawn), 2 drop (never drawn while ray tracing runs: also indoors / at night,
+     * where the ray-traced ones are faded out).  The backend: bit 0 rt4's condition, bit 1 ray tracing on with a TLAS */
+    const int v = r->be->rt_chars_shadow(), m = r->enh.rt_char_shadows;
+    return m == 1 ? 0 : m == 2 ? (v >> 1) & 1 : v & 1;
 }
 void gpu_nr_prims_begin(gpu_renderer *r) { (void)r; }   /* (no GS draw path natively) */
 void gpu_nr_prims_alpha_swap(gpu_renderer *r, int on) { (void)r; (void)on; }
@@ -2802,7 +2923,7 @@ static Twin *twin_get(gpu_renderer *r, const Rt *t, float sx, float sy)
     if (id < 0) return NULL;
     Twin x;
     x.id = id; x.bp = t->bp; x.bw = t->bw; x.psm = t->psm; x.w = w; x.h = h; x.sx = sx; x.sy = sy;
-    x.frame = 0xFFFFFFFFu; x.valid = 0;
+    x.frame = 0xFFFFFFFFu; x.valid = 0; x.shuf = 0xFFFFFFFFu;
     r->twins.push_back(x);
     r->nrs.hires_twins++;
     return &r->twins.back();
@@ -2850,6 +2971,86 @@ static void twin_filter(GpuNrDraw &g, float box, float bx, float by)
 }
 /* g: the draw into ct as built.  Returns 1 when g2 (into ct's twin) is to be drawn after g;
  * g itself may have been redirected to read a twin (a draw into the frame) */
+/* (p6left) depth of field "enhanced" (gpu_set_im_box mode 2, nr_sfx.c NR_SFX_BOX2): each blurred copy
+ * of the DOF chain (a 2:1, then 1.5:1 minify, magnified back over the frame) is at the internal
+ * resolution already, so its blur is 1/scale of the PS2's in screen units.  The copy averages a box
+ * of f x its footprint instead: f = s sqrt(3 - 2 / s^2) gives the PS2's variance in native pixels
+ * (box of the footprint + the bilinear magnification's tent, which shrinks by 1/s): f(1) = 1, f(2)
+ * = 3.2, f(3) = 4.9.  $RG_NR_SFX_DOFK=k (> 0): a fixed factor (investigation) */
+static float dof_boxk(int s)
+{
+    static float k = -2.0f;
+    if (k == -2.0f) { const char *e = getenv("RG_NR_SFX_DOFK"); k = e && e[0] ? (float)atof(e) : -1.0f; }
+    if (k > 0.0f) return k;
+    float f = (float)s;
+    return f * sqrtf(3.0f - 2.0f / (f * f));
+}
+
+/* (ptbugs3) the event focus blur (FocusFilterDrawMaybe_17c000, nr_sfx.c NR_SFX_FOCUSLP): its composite
+ * lerps the blurred 192x192 buffer over the frame by a soft depth mask, so (1 - mask) of the frame
+ * itself stays in the result.  On the PS2 that frame is 512x448; at an internal scale s > 1 it carries
+ * s x the detail, a sharp copy showing through the blur.  Before the composite the frame is softened
+ * to the PS2's resolution where the pass marked it (the depth bands' frame alpha > 0, written by the
+ * pass's first sprites and kept by the composite, FBMSK FF000000): one draw over the composite's
+ * rectangle that reads a snapshot of the frame (tex_snap) and writes RGB only, no blend; the shader
+ * (nr_draw.hlsl PF_FOCLP) averages a box of k x s target pixels (k native pixels, im_focus / 100)
+ * where the centre texel's alpha is > 0, else keeps the texel.  Returns 1 when drawn. */
+static uint64_t g_focus_lp;   /* pre-filter draws (exit line: nr_sfx_stats) */
+extern "C" uint64_t gpu_focus_lp_count(void) { return g_focus_lp; }
+static int focus_prefilter(gpu_renderer *r, const Rt *ct, const GpuNrDraw &g)
+{
+    if (!r->im_focus || r->scale <= 1 || ct->depth || ct->w < 512 || !g.tme) return 0;
+    GpuNrDraw gp = g;
+    gp.abe = 0;
+    gp.cmask = g.cmask & 7u;
+    if (!gp.cmask) return 0;
+    gp.zwrite = 0;
+    gp.crov = 0;
+    gp.rep = NULL;
+    gp.aniso = 0;
+    gp.tex_rt = ct->id;
+    gp.tex_snap = 1;
+    gp.tex_rect.x0 = 0;
+    gp.tex_rect.y0 = 0;
+    gp.tex_rect.x1 = ct->w;
+    gp.tex_rect.y1 = ct->h;
+    gp.lin = 1;
+    gp.clamp_u = gp.clamp_v = 1;
+    gp.runs = NULL;
+    gp.nruns = 0;
+    uint32_t fl = 1u | 16u | 0x4000000u | 0x10000000u;   /* PF_TME PF_TCC PF_BOX PF_FOCLP */
+    memcpy(&gp.cb[23][0], &fl, 4);
+    uint32_t at = 0;   /* PS_ATEST: no alpha test, TFX 0 (modulate by the sprite's 0x80 grey) */
+    memcpy(&gp.cb[23][1], &at, 4);
+    gp.cb[22][2] = (float)r->im_focus / 100.0f * (float)r->scale;
+    gp.cb[13][3] = gp.cb[22][2];
+    return r->be->nr_draw(gp) ? 1 : 0;
+}
+
+/* (ptbugs3) the focus composite's read of its blurred buffer (the 192x192 work buffer, a live
+ * target at the internal resolution): on the PS2 the buffer holds 192 samples of the frame and is
+ * magnified bilinearly (a tent one work pixel wide each side); at scale s it holds s x the samples,
+ * so the blur shows s x the PS2's detail (the larger part of "a sharp copy through the blur",
+ * tools/p6/focuscmp.py).  Read through a box of dof_boxk(s) internal texels (the PS2's variance:
+ * the work pixel's box + the tent), colour and alpha averaged apart as the GS's taps do.
+ * im_focus_ratio = the draw's texels per pixel (GS units, nr_sfx.c); $RG_NR_SFX_FOCUSB=0: off */
+static float g_focus_ratio;
+extern "C" void gpu_set_im_focus_ratio(gpu_renderer *r, float ratio) { (void)r; g_focus_ratio = ratio; }
+static void focus_blur_read(gpu_renderer *r, GpuNrDraw &g)
+{
+    static int on = -1;
+    if (on < 0) { const char *e = getenv("RG_NR_SFX_FOCUSB"); on = !(e && e[0] == '0'); }
+    if (!on || r->scale <= 1 || !g.tme || g.tex_rt < 0 || !(g_focus_ratio > 0.01f && g_focus_ratio < 1.0f)) return;
+    uint32_t fl;
+    memcpy(&fl, &g.cb[23][0], 4);
+    fl = (fl & ~(0x400u | 0x800u | 0x1000u | 0x4000u)) | 0x4000000u;   /* PF_BOX (no snap / native taps / GS taps) */
+    memcpy(&g.cb[23][0], &fl, 4);
+    float m = dof_boxk(r->scale) / g_focus_ratio;   /* footprint multiplier: dof_boxk texels per pixel */
+    g.cb[22][2] = m;
+    g.cb[13][3] = -m;
+    g.lin = 1;
+}
+
 static int hires_draw(gpu_renderer *r, const Key &k, const Derived &d, const Rt *ct, const Rt *zt, int reint_tmp, GpuNrDraw &g,
                       GpuNrDraw &g2)
 {
@@ -2858,21 +3059,60 @@ static int hires_draw(gpu_renderer *r, const Key &k, const Derived &d, const Rt 
     int ct_work = !ct->depth && ct->w < 512;
     if (!ct_work) {
         /* the pass's draw over the frame */
-        if (!src || src->w >= 512) return 0;
-        Twin *tw = twin_find(r, src->bp, src->bw, src->psm);
+        Twin *tw = NULL;
+        if (src && src->w < 512) tw = twin_find(r, src->bp, src->bw, src->psm);
+        if (!tw && (!src || src->w < 512) && d.tme)
+            tw = twin_find(r, d.tbp, d.tbw, d.tpsm);   /* (p6left: a buffer last bound as another format, read
+                                                         * through a reinterpreted view or decoded from memory: the
+                                                         * shadow after its shuffle) */
         if (!tw) return 0;
         if (!tw->valid || tw->frame != r->im_hframe) { r->nrs.hires_refused++; return 0; }
         twin_tex(g, *tw, k);
         g.tex_snap = 0;
         twin_filter(g, 0.0f, 1.0f, 1.0f);
+        if (tw->shuf == r->im_hframe) {
+            /* (p6left) the buffer's CT16 shuffle this frame (below): alpha from the twin's green.  The
+             * PS2 magnifies its 192x192 buffer bilinearly (a tent one work pixel wide each side): the
+             * twin is read through a box of the same variance, sqrt(2) work pixels wide, so the shadow
+             * keeps the PS2's softness without the magnified texels ($RG_NR_SFX_SHADOW_BOX=k work
+             * pixels; 0: plain bilinear) */
+            static float sb = -1.0f;
+            if (sb < 0.0f) { const char *e = getenv("RG_NR_SFX_SHADOW_BOX"); sb = e && e[0] ? (float)atof(e) : 1.41421f; }
+            if (sb > 0.0f && sb < 8.0f && tw->w > 0) {
+                float kx = (float)tw->w / 512.0f, ky = kx;   /* (twin pixels per frame pixel: the cap factor) */
+                twin_filter(g, sb, tw->sx * (float)r->scale / kx, tw->sy * (float)r->scale / ky);
+                g.cb[22][2] = -g.cb[22][2];   /* (taps up to 2 texels apart: nr_draw.hlsl PF_BOX) */
+            }
+            uint32_t fl;
+            memcpy(&fl, &g.cb[23][0], 4);
+            fl |= 0x8000000u;   /* PF_SHUF16 */
+            memcpy(&g.cb[23][0], &fl, 4);
+        }
         r->nrs.hires_reads++;
         return 0;
+    }
+    if (ct->psm == GS_PSMCT16 || ct->psm == GS_PSMCT16S) {
+        /* (p6left, graphics.shadow_res) the classic CT16 channel shuffle of a twinned CT32 buffer
+         * (DrawListEndPlaneShadowPass_146cc0: the buffer viewed as CT16, its own low halves drawn
+         * over the high halves with FBMSK 0000FFFF: B5 / A1 of each high half = bits 2-7 of the
+         * texel's green into its alpha).  A twin is an image, not memory: the move is applied where
+         * the twin is read (PF_SHUF16); the work buffer itself is drawn as the game asks */
+        Twin *t32 = twin_find(r, ct->bp, ct->bw, GS_PSMCT32);
+        if (t32 && t32->valid && t32->frame == r->im_hframe && d.tme && d.tbp == ct->bp) {
+            t32->shuf = r->im_hframe;
+            return 0;
+        }
     }
     /* the twin's resolution: the frame's internal resolution up to 3x ($RG_NR_SFX_HIRES_CAP=N: up
      * to Nx; at 5x the full-size chain cost 4.1 ms GPU per frame, 1.8 ms at 3x, p6fx2) */
     static float cap = -1.0f;
     if (cap < 0.0f) { const char *e = getenv("RG_NR_SFX_HIRES_CAP"); cap = e && atof(e) >= 1.0 ? (float)atof(e) : 3.0f; }
-    float kc = (float)r->scale > cap ? cap / (float)r->scale : 1.0f;
+    /* (p6left) the soft shadow's twin: up to 2x ($RG_NR_SFX_SHADOW_CAP=N): 1x, 2x and 3x look the same
+     * after its blur (out/p6left/shadow_caps.png), 3x cost +1.3 ms GPU a frame at 3x, 2x +0.5, 1x +0.4 */
+    static float scap = -1.0f;
+    if (scap < 0.0f) { const char *e = getenv("RG_NR_SFX_SHADOW_CAP"); scap = e && atof(e) >= 1.0 ? (float)atof(e) : 2.0f; }
+    float cp = r->im_hmode == 2 ? scap : cap;
+    float kc = (float)r->scale > cp ? cp / (float)r->scale : 1.0f;
     float kmin = 1.0f / std::min(r->im_hsx, r->im_hsy);   /* (never coarser than the work buffer itself) */
     if (kc < kmin) kc = kmin;
     Twin *dt = twin_get(r, ct, r->im_hsx * kc, r->im_hsy * kc);
@@ -3016,6 +3256,10 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
     g.im = iv;
     g.nim = niv;
     if (iv && r->im_nruns > 0) { g.runs = r->im_runs; g.nruns = r->im_nruns; }
+    if (iv && !r->im_crov && r->nr_sticky && r->im_crov_ok && ct->crov_sticky) {
+        r->im_crov = 1;   /* (RG_NR_STICKY) */
+        r->im_sticky_draws++;
+    }
     if (iv && r->im_crov) {
         /* the GS pixel back end in the shader (nr_draw.hlsl NR_CROV): rows 1-2 */
         uint32_t fl = 0, fbm = BITS(k.frame, 32, 32), az;
@@ -3207,7 +3451,7 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
                 g.cb[13][2] = (float)BITS(k.texa, 32, 8);
             }
             r->stats.direct_samples++;
-            if (g.tex_snap) r->stats.tex_copies++;
+            if (g.tex_snap) { r->stats.tex_copies++; if (fbc_on > 0) fbc[fbc_cat]++; }
         }
         dir_why = src ? (reint_tmp >= 0 ? 5 : 0) : why_nd;
         if (!src && reint_tmp >= 0) { r->be->rt_destroy(reint_tmp); reint_tmp = -1; }
@@ -3282,6 +3526,13 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
         memcpy(&fl, &g.cb[23][0], 4);
         fl = (fl & ~(0x400u | 0x800u | 0x1000u | 0x4000u)) | 0x4000000u;
         memcpy(&g.cb[23][0], &fl, 4);
+        if (r->im_box == 2 && r->scale > 1) {
+            /* (p6left) depth of field "enhanced": the footprint x dof_boxk (the PS2's blur at the
+             * internal resolution; nr_draw.hlsl PF_BOX R[22].z / R[13].w: up to 12 x 12 bilinear taps) */
+            float f = dof_boxk(r->scale);
+            g.cb[22][2] = f;
+            g.cb[13][3] = f;
+        }
         r->nrs.im_box++;
     }
     /* texture: the level-0 wrap rect, decoded once (key: registers, CLUT
@@ -3385,7 +3636,44 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
                 c.last = g_filt_frame;
             }
         }
-        bool drawn = r->be->nr_draw(g);
+        bool drawn;
+        if (r->fbx_mode) {
+            /* (gfxperf3, RG_NR_FBX) a pass of a same-buffer feedback run: the own-target snapshot
+             * taken once per pass (mode 1) or reused (2), the backend draw clipped to the pass's
+             * columns; everything else (coherence below) as the GS scissor has it */
+            int ok = !twin2 && reint_tmp < 0 && g.tme && g.tex_snap == 1 && g.tex_rt == ct->id &&
+                     ct->id == r->fbx_ct && ct->w == r->fbx_w && ct->h == r->fbx_h;
+            if (ok && r->fbx_copy && !r->be->rt_copy(r->fbx_scr, r->fbx_crect.x0, r->fbx_crect.y0, ct->id, r->fbx_crect)) ok = 0;
+            r->fbx_ok = ok;
+            if (!ok && r->fbx_mode == 1 && r->fbx_st[9] == 0) {
+                if (reint_tmp >= 0) r->be->rt_destroy(reint_tmp);
+                return 1;   /* (the run's first draw: nothing drawn yet, the caller draws the run as before) */
+            }
+            GpuNrDraw gb = g;
+            if (ok) {
+                if (r->fbx_mode == 5) { gb.tex_rt = r->fbx_scr; gb.tex_snap = 0; }
+                else gb.tex_snap = r->fbx_mode;
+                if (r->fbx_sc.x0 > gb.scissor.x0) gb.scissor.x0 = r->fbx_sc.x0;
+                if (r->fbx_sc.y0 > gb.scissor.y0) gb.scissor.y0 = r->fbx_sc.y0;
+                if (r->fbx_sc.x1 < gb.scissor.x1) gb.scissor.x1 = r->fbx_sc.x1;
+                if (r->fbx_sc.y1 < gb.scissor.y1) gb.scissor.y1 = r->fbx_sc.y1;
+                if (gb.scissor.x1 < gb.scissor.x0) gb.scissor.x1 = gb.scissor.x0;
+                if (gb.scissor.y1 < gb.scissor.y0) gb.scissor.y1 = gb.scissor.y0;
+            } else {
+                r->fbx_st[8]++;   /* (a later draw of a run not as planned: counted, the identity campaign wants 0) */
+            }
+            r->fbx_st[9]++;
+            drawn = r->be->nr_draw(gb);
+        } else {
+            if (r->im_focus && iv) {
+                /* (ptbugs3) the focus composite: the frame under it at the PS2's resolution, and its
+                 * read of the blurred buffer as the PS2's (focus_blur_read) */
+                g_focus_lp += (uint64_t)focus_prefilter(r, ct, g);
+                focus_blur_read(r, g);
+            }
+            drawn = r->be->nr_draw(g);
+        }
+        if (drawn) ct->crov_sticky = g.crov != 0;
         if (drawn && twin2 && !r->be->nr_draw(g2))
             if (Twin *t = twin_find(r, ct->bp, ct->bw, ct->psm)) t->valid = 0;   /* (the twin no longer matches) */
         if (drawn && twin2) {
@@ -3534,9 +3822,13 @@ static int nr_draw_resolved(gpu_renderer *r, const Key &k, const Derived &d, con
             if (g.cmask) wpg.add(pages_of(ct->bp, ct->bw, ct->psm, wb.x0, wb.y0, wb.x1, wb.y1));
             if (zt && g.zwrite) wpg.add(pages_of(zt->bp, zt->bw, zt->psm, wb.x0, wb.y0, wb.x1, wb.y1));
         }
-        hot_after_batch(r, wpg);
+        if (!r->fbx_mode) hot_after_batch(r, wpg);
+        else if (r->fbx_gfirst && r->fbx_g >= 0 && r->fbx_g < (int)r->fbx_hot.size()) {
+            r->fbx_hot[(size_t)r->fbx_g] = wpg;   /* (RG_NR_FBX: replayed per group after the passes) */
+            r->fbx_hot_have[(size_t)r->fbx_g] = 1;
+        }
     }
-    r->kick_px += (double)(wb.x1 - wb.x0) * (double)(wb.y1 - wb.y0) * 0.25;
+    if (!r->fbx_mode || r->fbx_gfirst) r->kick_px += (double)(wb.x1 - wb.x0) * (double)(wb.y1 - wb.y0) * 0.25;
     if (r->kick_at > 0.0 && r->kick_px >= r->kick_at) {
         double t0 = now_us();
         r->be->kick();
@@ -3628,7 +3920,9 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
         crov = 1;
         why = -1;
     }
+    const int crov_ok = crov || (why < 0 && r->rov && (!d.need_depth || r->zrov));   /* (RG_NR_STICKY) */
     int fbk = d.feedback && !same_buf;
+    if (fbc_on < 0) { const char *e = getenv("RG_NR_FBCENSUS"); fbc_on = e ? atoi(e) : 0; }
     if (why < 0 && d.tme && fbk && !r->no_fbrect) {
         /* the state can sample memory it draws into (page level, whole texture vs the frame
          * over the scissor): with the texels these primitives read and the pixels they cover
@@ -3676,11 +3970,14 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
          * does: a primitive reads memory as it was when it started) */
         int rc = 1;
         r->im_fb_split += (uint64_t)nprim;
+        const int cat0 = fbc_cat;
+        fbc_cat = 1;
         for (int i = 0; i < nprim; i++) {
             int c = gpu_nr_im_submit_swap(r, v + 3 * i, 1, type, swap ? swap + i : NULL);
             if (c == 0) rc = 0;
             else if (c < 0 && rc != 0) rc = -1;
         }
+        fbc_cat = cat0;
         return rc;
     }
     if (why >= 0) {
@@ -3782,8 +4079,12 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
         if (rr.x1 <= rr.x0) rr.x1 = rr.x0 + 1;
         if (rr.y1 <= rr.y0) rr.y1 = rr.y0 + 1;
         r->im_crov = crov;
+        r->im_crov_ok = crov_ok;
+        const int cat1 = fbc_cat;
+        if (same_buf && fbc_cat == 2) fbc_cat = 0;
         int c = nr_draw_resolved(r, k, d, &nd, iv.data() + nstart, n - nstart, type == GS_PRIM_SPRITE, d.tme ? &rr : NULL);
         r->im_crov = 0;
+        fbc_cat = cat1;
         if (c == 0 && crov) r->im_crov_prims += (n - nstart) / 3;
         r->im_runs = NULL;
         r->im_nruns = 0;
@@ -3794,9 +4095,9 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
         have_wr = 0;
         return c;
     };
-    for (int i = 0; i < nprim; i++) {
+    /* one primitive's vertices at iv[n..] (n advanced) and its boxes px* / tu* (false: nothing to draw) */
+    auto emit = [&](int i) -> bool {
         const gs_vertex *pv = &v[i * 3];
-        uint32_t n0 = n;
         px0 = py0 = tu0 = tv0 = 1e30f;
         px1 = py1 = tu1 = tv1 = -1e30f;
         if (type == GS_PRIM_TRIANGLE) {
@@ -3822,7 +4123,7 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
             if (!BITS((gs->reg[GS_PRMODECONT] & 1) ? gs->reg[GS_PRIM] : gs->reg[GS_PRMODE], 3, 1)) { a.r = b.r; a.g = b.g; a.b = b.b; a.a = b.a; a.f = b.f; }
             float ax = (float)a.x / 16.0f, ay = (float)a.y / 16.0f, bx = (float)b.x / 16.0f, by = (float)b.y / 16.0f;
             float ddx = bx - ax, ddy = by - ay;
-            if (ddx == 0.0f && ddy == 0.0f) continue;
+            if (ddx == 0.0f && ddy == 0.0f) return false;
             int xmaj = fabsf(ddx) >= fabsf(ddy);
             float hx = xmaj ? 0.0f : 0.5f, hy = xmaj ? 0.5f : 0.0f;
             if (!xmaj && r->im_line_xs > 0.0f && r->scale > 1)   /* gpu_set_im_line_xs: >= one upscaled pixel */
@@ -3870,11 +4171,371 @@ int gpu_nr_im_submit_swap(gpu_renderer *r, const gs_vertex *v, int nprim, int ty
             iv[n++] = c00; iv[n++] = c10; iv[n++] = c01;
             iv[n++] = c10; iv[n++] = c11; iv[n++] = c01;
         }
+        return true;
+    };
+    /* (gfxperf3) $RG_NR_FBX (1 = on; 0 = one draw + one own-target snapshot per split, as before):
+     * a same-buffer run the loop below would split into G >= 3 draws (the screen-shimmer passes:
+     * column strips, each reading its own column shifted 0.4-1.8 px, so strip i reads what strip i-1
+     * wrote) drawn in two passes per layer with one snapshot each.  The loop's own split rule gives
+     * the groups (group g reads the target as groups < g left it).  Per strip: its pixel box (the
+     * rasterizer's coverage, ceil(lo) <= p < ceil(hi)) and, per pixel column, the texels its taps can
+     * reach ([floor(U - h), floor(U + h)] at the pixel centre, h = 1/2 + the sub-sample spread at x2+
+     * + 1/8); a column is "dirty" when that reaches a box of an earlier group of its layer.  A layer
+     * = consecutive strips with disjoint boxes (a strip overlapping one of the layer starts the next
+     * layer; inside a group only when its taps miss the group's strips of the layers before).  Pass A: every clean column of the layer's strips, in order, from
+     * one snapshot of the layer's read rect taken before it: it reads the same texels as the split
+     * draw did (no earlier group wrote them).  Pass B: the dirty columns from one snapshot taken
+     * after pass A, provided no dirty column reads a clean column of its own or a later group (pass A
+     * wrote those; the split draws had not) nor a dirty column of an earlier group (pass B draws
+     * those after the snapshot): then every tap reads what the split draw read.  Every pixel of a
+     * layer is drawn once, by the same triangles (the backend draw clipped to the columns by the
+     * scissor), so the picture is the same bit for bit.  Any condition unmet, or the first draw not
+     * a plain own-target snapshot: the loop as before.  docs/NATIVE-RENDER.md "Feedback strips" */
+    static int fbx_on = -1;
+    if (fbx_on < 0) { const char *e = getenv("RG_NR_FBX"); fbx_on = e ? atoi(e) : FBX_DEFAULT; }
+    if (fbx_on > 0 && same_buf && d.tme && type == GS_PRIM_SPRITE && nprim >= 3 && nprim <= 256 && !r->im_xfree && !r->im_hires &&
+        !r->im_box && !d.need_depth && fbc_on == 0) {
+        struct FP {
+            uint32_t n0;
+            int g, lay;
+            GpuRect pr, cov;          /* the loop's read box; the pixels it can cover (exclusive) */
+            int ty0, ty1;             /* texel rows its taps can reach (inclusive) */
+            int tx0, tx1;             /* texel columns of all its taps (inclusive) */
+            int dx0, dx1;             /* texel columns of its dirty columns' taps (dx1 < dx0: none) */
+            int ni;                   /* column intervals [ix0, ix1), idt 1 = dirty */
+            int ix0[8], ix1[8], idt[8];   /* (idt 0 pass A1, 1 dirty: pass B, 2 pass A2) */
+        };
+        static std::vector<FP> P;
+        static std::vector<float> gbx;
+        static std::vector<int> lay0;   /* first primitive of each layer (+ nprim) */
+        P.resize((size_t)nprim);
+        gbx.clear();
+        lay0.clear();
+        int ok = 1, G = 0, why = 5, sub = 9;
+        GpuRect wr2 = { 0, 0, 0, 0 };
+        int hw2 = 0;
+        n = 0;
+        for (int i = 0; i < nprim && ok; i++) {
+            FP &q = P[(size_t)i];
+            q.n0 = n;
+            if (!emit(i) || n - q.n0 != 6) { ok = 0; sub = 1; break; }
+            GpuRect pw = { (int)floorf(px0 - ofx) - 1, (int)floorf(py0 - ofy) - 1, (int)ceilf(px1 - ofx) + 1, (int)ceilf(py1 - ofy) + 1 };
+            GpuRect pr = { (int)floorf(tu0) - 1, (int)floorf(tv0) - 1, (int)ceilf(tu1) + 2, (int)ceilf(tv1) + 2 };
+            if (!(tu0 > -1e6f && tu1 < 1e6f && tv0 > -1e6f && tv1 < 1e6f)) { ok = 0; sub = 2; break; }
+            if (hw2 && rect_overlap(pr, wr2)) { G++; wr2 = pw; }
+            else if (hw2) rect_union(wr2, pw);
+            else { wr2 = pw; hw2 = 1; }
+            if ((int)gbx.size() < 4 * (G + 1)) { gbx.push_back(px0); gbx.push_back(py0); gbx.push_back(px1); gbx.push_back(py1); }
+            else {
+                float *b = &gbx[(size_t)G * 4];
+                b[0] = std::min(b[0], px0); b[1] = std::min(b[1], py0); b[2] = std::max(b[2], px1); b[3] = std::max(b[3], py1);
+            }
+            q.g = G;
+            q.pr = pr;
+            const GpuImVtx &a = iv[q.n0], &b = iv[q.n0 + 1], &c = iv[q.n0 + 2];
+            double xa = a.x, xb = b.x, ya = a.y, yc = c.y;
+            q.cov.x0 = (int)ceil(std::min(xa, xb) - ofx); q.cov.x1 = (int)ceil(std::max(xa, xb) - ofx);
+            q.cov.y0 = (int)ceil(std::min(ya, yc) - ofy); q.cov.y1 = (int)ceil(std::max(ya, yc) - ofy);
+            if (q.cov.x1 <= q.cov.x0 || q.cov.y1 <= q.cov.y0) q.cov.x1 = q.cov.x0;   /* (no pixels) */
+            /* layers: a strip overlapping one of the current layer starts the next one, at a group start */
+            int ov = 0;
+            if (q.cov.x1 > q.cov.x0 && !lay0.empty())
+                for (int j = lay0.back(); j < i && !ov; j++)
+                    if (P[(size_t)j].cov.x1 > P[(size_t)j].cov.x0 && rect_overlap(P[(size_t)j].cov, q.cov)) ov = 1;
+            if (lay0.empty() || ov) {
+                lay0.push_back(i);
+            }
+            q.lay = (int)lay0.size() - 1;
+        }
+        G++;
+        lay0.push_back(nprim);
+        const Rt *tt = NULL;
+        for (int pass = 0; pass < 2 && ok && G >= 3 && !tt; pass++) {
+            if (pass == 1) {
+                /* (not bound yet: the split loop's first draw binds it the same way, rt_bind as nr_draw_resolved) */
+                if (!rt_bind(r, 0, d.fbp, (uint32_t)(d.fbw ? d.fbw : 1), d.fpsm, d.scy1, -1)) break;
+            }
+            for (const Rt &t : r->rts)
+                if (!t.depth && t.bp == d.tbp && t.bw == d.tbw && (t.psm == d.tpsm || (t.psm == GS_PSMCT32 && d.tpsm == GS_PSMCT24))) {
+                    tt = &t;
+                    break;
+                }
+        }
+        if (ok && G >= 3 && tt) {
+            const int W = tt->w, H = tt->h, HA = tt->h_alloc, marg = reint_on() ? 4 : 2;
+            const double s = r->scale > 1 ? (double)r->scale : 1.0, dl = 0.125;
+            /* the split draws' read rects must be sampled directly (else they decode from memory) */
+            {
+                GpuRect gr = { 1 << 30, 1 << 30, -(1 << 30), -(1 << 30) };
+                for (int i = 0; i <= nprim && ok; i++) {
+                    if (i == nprim || (i > 0 && P[(size_t)i].g != P[(size_t)i - 1].g)) {
+                        if (gr.x0 < 0) gr.x0 = 0;
+                        if (gr.y0 < 0) gr.y0 = 0;
+                        if (gr.x1 > W + marg || gr.y1 > H + marg) { ok = 0; sub = 3; }
+                        gr.x0 = gr.y0 = 1 << 30; gr.x1 = gr.y1 = -(1 << 30);
+                    }
+                    if (i < nprim) rect_union(gr, P[(size_t)i].pr);
+                }
+            }
+            long cols = 0;
+            for (int i = 0; i < nprim && ok; i++) {
+                FP &q = P[(size_t)i];
+                const GpuImVtx &a = iv[q.n0], &b = iv[q.n0 + 1], &c = iv[q.n0 + 2];
+                double xa = a.x, xb = b.x, ya = a.y, yc = c.y;
+                q.ni = 0;
+                q.dx0 = 1 << 30; q.dx1 = -(1 << 30);
+                if (q.cov.x1 <= q.cov.x0) { q.tx0 = 0; q.tx1 = -1; q.ty0 = 0; q.ty1 = -1; continue; }
+                if (a.q == 0.0f || b.q == 0.0f || c.q == 0.0f || xb == xa || yc == ya) { ok = 0; sub = 4; break; }
+                double ua = (double)a.s / a.q * tw, ub = (double)b.s / b.q * tw, va = (double)a.t / a.q * th, vc = (double)c.t / c.q * th;
+                double ku = (ub - ua) / (xb - xa), kv = (vc - va) / (yc - ya);
+                double hu = std::max(0.5, 0.5 * fabs(ku) * (s - 1.0) / s + 0.5 / s) + dl;
+                double hv = std::max(0.5, 0.5 * fabs(kv) * (s - 1.0) / s + 0.5 / s) + dl;
+                auto U = [&](int p) { return ua + ((double)p + ofx - xa) * ku; };
+                auto V = [&](int p) { return va + ((double)p + ofy - ya) * kv; };
+                auto clampi = [](double x, int hi) { int t = (int)floor(x); return t < 0 ? 0 : t > hi ? hi : t; };
+                double v0 = V(q.cov.y0), v1 = V(q.cov.y1 - 1);
+                q.ty0 = clampi(std::min(v0, v1) - hv, HA - 1); q.ty1 = clampi(std::max(v0, v1) + hv, HA - 1);
+                double u0 = U(q.cov.x0), u1 = U(q.cov.x1 - 1);
+                q.tx0 = clampi(std::min(u0, u1) - hu, W - 1); q.tx1 = clampi(std::max(u0, u1) + hu, W - 1);
+                cols += q.cov.x1 - q.cov.x0;
+                if (cols > 16384) { ok = 0; sub = 5; break; }
+                {
+                    /* a layer starting inside a group: its strips of that group read the target as the
+                     * group found it, without the group's strips of the layers before (taps away from them) */
+                    GpuRect tb = { q.tx0, q.ty0, q.tx1 + 1, q.ty1 + 1 };
+                    for (int j = lay0[(size_t)q.lay] - 1; j >= 0 && P[(size_t)j].g == q.g && ok; j--)
+                        if (P[(size_t)j].cov.x1 > P[(size_t)j].cov.x0 && rect_overlap(tb, P[(size_t)j].cov)) { ok = 0; sub = 7; }
+                    if (!ok) break;
+                }
+                /* earlier groups' boxes of its layer in reach of its rows */
+                int pj[256], np = 0;
+                for (int j = lay0[(size_t)q.lay]; j < i; j++) {
+                    const FP &o = P[(size_t)j];
+                    if (o.g < q.g && o.cov.x1 > o.cov.x0 && o.cov.y0 <= q.ty1 && q.ty0 < o.cov.y1) pj[np++] = j;
+                }
+                int cur = -1;
+                for (int p = q.cov.x0; p < q.cov.x1 && ok; p++) {
+                    double up = U(p);
+                    int a0 = clampi(up - hu, W - 1), a1 = clampi(up + hu, W - 1), dt = 0;
+                    for (int m = 0; m < np && !dt; m++) {
+                        const GpuRect &oc = P[(size_t)pj[m]].cov;
+                        if (a0 < oc.x1 && oc.x0 <= a1) dt = 1;
+                    }
+                    if (dt) { q.dx0 = std::min(q.dx0, a0); q.dx1 = std::max(q.dx1, a1); }
+                    if (dt != cur) {
+                        if (q.ni == 4) { ok = 0; sub = 6; break; }
+                        q.ix0[q.ni] = p; q.ix1[q.ni] = p + 1; q.idt[q.ni] = dt; q.ni++;
+                        cur = dt;
+                    } else {
+                        q.ix1[q.ni - 1] = p + 1;
+                    }
+                }
+            }
+            /* clean columns a dirty column of their own or an earlier group reads: drawn after pass B
+             * (pass A2), from a copy of the layer's start, so that pass B's snapshot still holds them old */
+            for (int i = 0; i < nprim && ok; i++) {
+                FP &q = P[(size_t)i];
+                if (!q.ni) continue;
+                int nx0[8], nx1[8], ndt[8], nn = 0;
+                for (int m = 0; m < q.ni && ok; m++) {
+                    for (int p = q.ix0[m]; p < q.ix1[m]; p++) {
+                        int dt = q.idt[m];
+                        if (dt == 0)
+                            for (int j = lay0[(size_t)q.lay]; j < lay0[(size_t)q.lay + 1] && dt == 0; j++) {
+                                const FP &o = P[(size_t)j];
+                                if (o.g <= q.g && o.dx1 >= o.dx0 && o.dx0 <= p && p <= o.dx1 && o.ty0 < q.cov.y1 && q.cov.y0 <= o.ty1) dt = 2;
+                            }
+                        if (nn && ndt[nn - 1] == dt && nx1[nn - 1] == p) nx1[nn - 1] = p + 1;
+                        else {
+                            if (nn == 8) { ok = 0; sub = 6; break; }
+                            nx0[nn] = p; nx1[nn] = p + 1; ndt[nn] = dt; nn++;
+                        }
+                    }
+                }
+                if (!ok) break;
+                q.ni = nn;
+                for (int m = 0; m < nn; m++) { q.ix0[m] = nx0[m]; q.ix1[m] = nx1[m]; q.idt[m] = ndt[m]; }
+            }
+            /* pass B reads what the split draws read: no column of its own or a later group drawn in
+             * pass A1 (in pass B's snapshot, not yet drawn by the split draws), none of an earlier group
+             * drawn in pass B or A2 (not in the snapshot) */
+            if (ok) why = 6;
+            for (int i = 0; i < nprim && ok; i++) {
+                const FP &q = P[(size_t)i];
+                if (q.dx1 < q.dx0) continue;
+                GpuRect dbx = { q.dx0, q.ty0, q.dx1 + 1, q.ty1 + 1 };
+                for (int j = lay0[(size_t)q.lay]; j < lay0[(size_t)q.lay + 1] && ok; j++) {
+                    const FP &o = P[(size_t)j];
+                    for (int m = 0; m < o.ni && ok; m++) {
+                        if (o.g >= q.g ? o.idt[m] != 0 : o.idt[m] == 0) continue;
+                        GpuRect ob = { o.ix0[m], o.cov.y0, o.ix1[m], o.cov.y1 };
+                        if (rect_overlap(dbx, ob)) { ok = 0; sub = 8; }
+                    }
+                }
+            }
+            if (ok) {
+                const int NL = (int)lay0.size() - 1;
+                static std::vector<GpuRect> lra, lrb;
+                static std::vector<int> lnb, ln2;
+                lra.assign((size_t)NL, GpuRect{ 1 << 30, 1 << 30, -(1 << 30), -(1 << 30) });
+                lrb = lra;
+                lnb.assign((size_t)NL, 0);
+                ln2.assign((size_t)NL, 0);
+                int any2 = 0;
+                for (int i = 0; i < nprim; i++) {
+                    const FP &q = P[(size_t)i];
+                    GpuRect &ra = lra[(size_t)q.lay], &rbx = lrb[(size_t)q.lay];
+                    GpuRect pr = q.pr;
+                    if (pr.x0 < 0) pr.x0 = 0;
+                    if (pr.y0 < 0) pr.y0 = 0;
+                    rect_union(ra, pr);
+                    if (q.tx1 >= q.tx0) { GpuRect tb = { q.tx0, q.ty0, q.tx1 + 1, q.ty1 + 1 }; rect_union(ra, tb); }
+                    if (q.dx1 >= q.dx0) { GpuRect db = { q.dx0, q.ty0, q.dx1 + 1, q.ty1 + 1 }; rect_union(rbx, db); lnb[(size_t)q.lay]++; }
+                    for (int m = 0; m < q.ni; m++)
+                        if (q.idt[m] == 2) { ln2[(size_t)q.lay]++; any2 = 1; }
+                }
+                for (int l = 0; l < NL; l++) {
+                    GpuRect &ra = lra[(size_t)l], &rbx = lrb[(size_t)l];
+                    if (ra.x1 > W) ra.x1 = W;
+                    if (ra.y1 > H) ra.y1 = H;
+                    if (rbx.x1 > W) rbx.x1 = W;
+                    if (rbx.y1 > H) rbx.y1 = H;
+                }
+                /* the passes */
+                r->fbx_ct = tt->id; r->fbx_w = W; r->fbx_h = H;
+                r->fbx_st[9] = 0;
+                r->fbx_hot.assign((size_t)G, Pages());
+                r->fbx_hot_have.assign((size_t)G, 0);
+                static std::vector<char> gseen;
+                gseen.assign((size_t)G, 0);
+                int first = 1, refused = 0, nd_a = 0, nd_b = 0, nsn = 0;
+                rc = 1;
+                drawn = 0;
+                /* (pass A2's copy of the layer's start: a scratch target of the target's size, made for the run) */
+                r->fbx_scr = any2 ? r->be->rt_create(0, W, HA) : -1;
+                if (any2 && r->fbx_scr < 0) refused = 1;
+                for (int l = 0; l < NL && rc >= 0 && !refused; l++)
+                for (int pass = 0; pass < 3 && rc >= 0 && !refused; pass++) {
+                    if (pass == 1 && lnb[(size_t)l] == 0) continue;
+                    if (pass == 2 && ln2[(size_t)l] == 0) continue;
+                    int pfirst = 1;
+                    if (pass < 2) nsn++;
+                    for (int i = lay0[(size_t)l]; i < lay0[(size_t)l + 1] && rc >= 0 && !refused; i++) {
+                        const FP &q = P[(size_t)i];
+                        const float *gb = &gbx[(size_t)q.g * 4];
+                        const int ni = q.ni, nm = ni ? ni : (pass == 0 ? 1 : 0);   /* (no pixels: drawn once, for the coherence) */
+                        for (int m = 0; m < nm && rc >= 0 && !refused; m++) {
+                            GpuRect sc = { -(1 << 20), -(1 << 20), 1 << 20, 1 << 20 };
+                            if (ni) {
+                                if (q.idt[m] != pass) continue;
+                                sc.x0 = q.ix0[m]; sc.x1 = q.ix1[m];
+                            }
+                            nd.box[0] = gb[0]; nd.box[1] = gb[1]; nd.box[2] = gb[2]; nd.box[3] = gb[3];
+                            uint32_t run1[2] = { 6u, swap && swap[i] ? 1u : 0u };
+                            if (swap) { r->im_runs = run1; r->im_nruns = 1; }
+                            r->im_crov = crov;
+                            r->im_crov_ok = crov_ok;
+                            r->fbx_mode = pass == 2 ? 5 : pfirst ? 1 : 2;
+                            r->fbx_copy = pass == 0 && pfirst && ln2[(size_t)l] ? 1 : 0;
+                            r->fbx_crect = lra[(size_t)l];
+                            r->fbx_sc = sc;
+                            r->fbx_ok = -1;
+                            r->fbx_g = q.g;
+                            r->fbx_gfirst = !gseen[(size_t)q.g];
+                            gseen[(size_t)q.g] = 1;
+                            int cc = nr_draw_resolved(r, k, d, &nd, iv.data() + q.n0, 6, 1, pass == 1 ? &lrb[(size_t)l] : &lra[(size_t)l]);
+                            r->fbx_mode = 0;
+                            r->fbx_copy = 0;
+                            r->im_crov = 0;
+                            r->im_runs = NULL;
+                            r->im_nruns = 0;
+                            if (first && r->fbx_ok != 1) { refused = 1; break; }
+                            if (r->fbx_ok == -1) r->fbx_st[8]++;
+                            first = 0;
+                            pfirst = 0;
+                            if (pass == 1) nd_b++; else nd_a++;
+                            if (cc == 0) { drawn = 1; if (crov && pass == 0) r->im_crov_prims += 2; }
+                            else if (cc < 0) rc = -1;
+                        }
+                    }
+                }
+                if (r->fbx_scr >= 0) r->be->rt_destroy(r->fbx_scr);
+                r->fbx_scr = -1;
+                if (!refused) {
+                    if (any2) r->fbx_st[10]++;
+                    if (!r->no_early)
+                        for (int g = 0; g < G; g++)
+                            if (r->fbx_hot_have[(size_t)g]) hot_after_batch(r, r->fbx_hot[(size_t)g]);
+                    r->fbx_st[0]++;
+                    r->fbx_st[1] += (uint64_t)G;
+                    r->fbx_st[2] += (uint64_t)nd_a;
+                    r->fbx_st[3] += (uint64_t)nd_b;
+                    r->fbx_st[4] += (uint64_t)nsn;
+                    if (rc < 0) {
+                        r->nrs.im_fallback++;
+                        r->nrs.im_why[11] += (uint64_t)nprim;
+                        return drawn ? 0 : -1;
+                    }
+                    return drawn ? 0 : 1;
+                }
+                r->fbx_st[7]++;
+                why = -1;
+            }
+        }
+        if (why > 0 && G >= 3) r->fbx_st[why]++;
+        {
+            /* RG_NR_FBX_LOG=N (investigation): the first N runs left as split, why (5 shape / 6 pass B
+             * reads; sub: the condition) and, for the first few "pass B reads", every strip's boxes */
+            static int fl = -1, fn;
+            if (fl < 0) { const char *e = getenv("RG_NR_FBX_LOG"); fl = e ? atoi(e) : 0; }
+            if (why > 0 && G >= 3 && fn < fl) {
+                fn++;
+                fprintf(stderr, "fbx: left split: why %d sub %d n %d G %d layers %d FRAME %016llX TEX0 %016llX scale %d\n",
+                        why, ok ? 0 : sub, nprim, G, (int)lay0.size() - 1, (unsigned long long)k.frame, (unsigned long long)k.tex0, r->scale);
+                if (fn <= 4)
+                    for (int i = 0; i < nprim; i++) {
+                        const FP &q = P[(size_t)i];
+                        fprintf(stderr, "fbx:   prim %d g %d layer %d cov %d,%d-%d,%d taps x %d-%d y %d-%d dirty taps %d-%d intervals", i, q.g,
+                                q.lay, q.cov.x0, q.cov.y0, q.cov.x1, q.cov.y1, q.tx0, q.tx1, q.ty0, q.ty1, q.dx0, q.dx1);
+                        for (int m = 0; m < q.ni && m < 8; m++) fprintf(stderr, " %d-%d%s", q.ix0[m], q.ix1[m], q.idt[m] == 1 ? "d" : q.idt[m] == 2 ? "l" : "");
+                        fprintf(stderr, "\n");
+                    }
+            }
+        }
+        /* (the loop below draws the run as before, from the start) */
+        n = 0;
+        rc = 1;
+        drawn = 0;
+        x0 = y0 = 1e30f; x1 = y1 = -1e30f;
+    }
+    for (int i = 0; i < nprim; i++) {
+        uint32_t n0 = n;
+        if (!emit(i)) continue;
         /* this primitive's window box and texel rect (bilinear margin) */
         GpuRect pw = { (int)floorf(px0 - ofx) - 1, (int)floorf(py0 - ofy) - 1, (int)ceilf(px1 - ofx) + 1, (int)ceilf(py1 - ofy) + 1 };
         GpuRect pr = { (int)floorf(tu0) - 1, (int)floorf(tv0) - 1, (int)ceilf(tu1) + 2, (int)ceilf(tv1) + 2 };
         if (!(tu0 > -1e6f && tu1 < 1e6f && tv0 > -1e6f && tv1 < 1e6f)) { pr.x0 = pr.y0 = 0; pr.x1 = 1 << 20; pr.y1 = 1 << 20; }
-        if (same_buf && have_wr && rect_overlap(pr, wr)) {
+        if (fbc_on > 0 && same_buf) {
+            GpuRect ew = { (int)floorf(px0 - ofx), (int)floorf(py0 - ofy), (int)ceilf(px1 - ofx), (int)ceilf(py1 - ofy) };
+            GpuRect er = { (int)floorf(tu0), (int)floorf(tv0), (int)ceilf(tu1), (int)ceilf(tv1) };
+            if (i == 0) { fbc[6]++; fbc[7] += (uint64_t)nprim; }
+            if (have_wr && rect_overlap(pr, wr)) {
+                fbc[3]++;
+                if (rect_overlap(er, fbc_ew)) fbc[4]++;
+                if (tu0 == px0 - ofx && tu1 == px1 - ofx && tv0 == py0 - ofy && tv1 == py1 - ofy)
+                    fbc[5]++;
+                if (fbc_on > 1 && fbc_logn < 200) {
+                    fbc_logn++;
+                    fprintf(stderr, "fbcensus: type %d n %d i %d FRAME %016llX TEX0 %016llX lin %d scale %d write %.2f,%.2f-%.2f,%.2f "
+                                    "read %.2f,%.2f-%.2f,%.2f run writes %d,%d-%d,%d\n", type, nprim, i, (unsigned long long)k.frame,
+                            (unsigned long long)k.tex0, eu == 0.0f, r->scale, px0 - ofx, py0 - ofy, px1 - ofx, py1 - ofy, tu0, tv0, tu1, tv1,
+                            fbc_ew.x0, fbc_ew.y0, fbc_ew.x1, fbc_ew.y1);
+                }
+                fbc_ew = ew;
+            } else if (have_wr) rect_union(fbc_ew, ew);
+            else fbc_ew = ew;
+        }
+        if (same_buf && have_wr && rect_overlap(pr, wr) && fbc_on != 9) {   /* (RG_NR_FBCENSUS=9: MEASUREMENT ONLY, never split: a wrong picture) */
             /* reads what this run drew: draw the run first, then this one from a new copy */
             uint32_t keep = n - n0;
             n = n0;

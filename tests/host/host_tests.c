@@ -4,7 +4,8 @@
  * Unit tests: pad_report, input_mapping, input_config, input_script,
  *             script_determinism, scaling, png_roundtrip, png_corrupt_control,
  *             pacing, audio_reg, audio_device, audio_focus, wide_fit, wide_present, wide_present_control,
- *             wide_policy, wide_any, wide_host, wide_layout, wide_menu, ui_scale, wide_strips, wide_sides.
+ *             wide_policy, wide_any, wide_host, wide_layout, wide_menu, ui_scale, wide_strips, wide_sides,
+ *             menu_position, menu_3d.
  * Helpers used by the CTest scripts:
  *   script_dump <script> <out.bin>   input.py PINE blob (u32 count, u16 words)
  *   png_write <out.png>              a fixed test image (for pngcheck.py)
@@ -1227,6 +1228,14 @@ static int lpkt_x(int k)   /* vertex k's X in pixels from the left edge */
     uint64_t v = k < 2 ? g_lbuf[2 * (2 + k)] : g_lbuf[2 * (7 + k - 2)];
     return ((int)(v & 0xFFFF) - L + 8) / 16;
 }
+static void host_putenv(const char *kv)
+{
+#ifdef _WIN32
+    _putenv(kv);
+#else
+    putenv((char *)kv);
+#endif
+}
 static void wide_layout(void)
 {
     CHECK_EQ(rg_layout_anchor(10, 100, 0, 512), RG_ANCHOR_LEFT);
@@ -1322,6 +1331,33 @@ static void wide_layout(void)
         CHECK_EQ(lpkt_x(0), 107);               /* 256 + (57 - 256) * 0.75 = 106.75: centre */
     }
     rg_layout_set_frame(1.0f, 19);
+    /* the battle menu's panel follows the party HUD (normal_BtlChgMenuDraw_4f9f80 override,
+     * rg_layout_follow_begin): a small packet in the left third drawn by another task over a
+     * centre-anchored HUD packet takes the HUD's centre anchor from the next frame on;
+     * without the follow (or with RG_LAYOUT_FOLLOW=0) it is left-anchored */
+    {
+        static const int hud_task = 1, menu_task = 2;
+        int fx[3];
+        for (int mode = 0; mode < 3; mode++) {
+            if (mode == 2) host_putenv("RG_LAYOUT_FOLLOW=0");
+            rg_layout_set_frame(1.0f, 20 + 10 * mode);
+            for (int fr = 0; fr < 3; fr++) {
+                rg_layout_set_frame(0.75f, 21 + 10 * mode + fr);
+                lpkt_build(100, 400, 0, 0, 511);
+                rg_layout_task_begin(&hud_task); rg_layout_packet(g_lpkt, NULL); rg_layout_task_end();
+                lpkt_build(110, 150, 0, 0, 511);
+                if (mode != 1) rg_layout_follow_begin(&hud_task);
+                rg_layout_task_begin(&menu_task); rg_layout_packet(g_lpkt, NULL); rg_layout_task_end();
+                rg_layout_follow_end();
+                fx[mode] = lpkt_x(0);
+            }
+        }
+        host_putenv("RG_LAYOUT_FOLLOW=");
+        CHECK_EQ(fx[0], 147);                   /* followed: centre, 256 + (110 - 256) * 0.75 */
+        CHECK_EQ(fx[1], 83);                    /* own group: left, 110 * 0.75 = 82.5 */
+        CHECK_EQ(fx[2], 83);                    /* RG_LAYOUT_FOLLOW=0: as before */
+        rg_layout_set_frame(1.0f, 60);
+    }
 }
 
 /* Widescreen stage 3 (USER 2026-10-19: no aspect switch for menus): a full-screen
@@ -1458,6 +1494,202 @@ static void wide_menu(void)
     rg_layout_task_end();
     rg_layout_set_detect(0);
     rg_layout_set_frame(1.0f, 37);
+}
+
+/* graphics.menu_position (2026-11-10, docs/WIDESCREEN.md "Menu position"): a menu task's
+ * block flush left (or a margin in), a registered task kept centred, centre = stage 3; with
+ * $RG_REV_WIDE=1 a menu sprite past the 4:3 right edge drawn in rg_layout_wide_begin / _end
+ * shows in the canvas instead of being hidden. */
+static int msprite_xu(int sx0, int sx1, int u1, int *xb);
+static int msprite_x(int sx0, int sx1, int *xb) { return msprite_xu(sx0, sx1, 80, xb); }
+static int msprite_xu(int sx0, int sx1, int u1, int *xb)
+{
+    const int C = 2048 * 16, W = 512 * 16, L = C - W / 2;
+    int q = 1;
+    lpkt_cover(sx0, sx1, 100, 120, 0x13);
+    memset(g_lbuf, 0, sizeof g_lbuf);
+    g_lbuf[2 * q] = 5 | (1ull << 15) | (1ull << 46) | (0x116ull << 47) | (1ull << 60);
+    g_lbuf[2 * q + 1] = 0xE;
+    q++;
+    g_lbuf[2 * q] = 0x13ull << 20; g_lbuf[2 * q + 1] = 0x06; q++;
+    g_lbuf[2 * q] = 0; g_lbuf[2 * q + 1] = 0x03; q++;
+    g_lbuf[2 * q] = (uint64_t)(L + sx0 * 16) | ((uint64_t)(1924 * 16) << 16); g_lbuf[2 * q + 1] = 5; q++;
+    g_lbuf[2 * q] = (uint64_t)u1 * 16; g_lbuf[2 * q + 1] = 0x03; q++;
+    g_lbuf[2 * q] = (uint64_t)(L + sx1 * 16) | ((uint64_t)(1944 * 16) << 16); g_lbuf[2 * q + 1] = 5; q++;
+    uint32_t *t = (uint32_t *)g_lbuf;
+    t[0] = (uint32_t)(q - 1) | 0x10000000u;
+    t[3] = (uint32_t)(q - 1) | 0x50000000u;
+    uint8_t *cur = (uint8_t *)g_lbuf + 16 * q;
+    LPKT_PUT(0xF4, cur);
+    rg_layout_packet(g_lpkt, NULL);
+    *xb = ((int)(g_lbuf[2 * 6] & 0xFFFF) - L + 8) / 16;
+    return ((int)(g_lbuf[2 * 4] & 0xFFFF) - L + 8) / 16;
+}
+
+static void menu_position(void)
+{
+    static int menu_fn, ctr_fn;
+    int xa, xb;
+#ifdef _WIN32
+    _putenv("RG_REV_WIDE=1");
+#else
+    setenv("RG_REV_WIDE", "1", 1);
+#endif
+    rg_layout_set_detect(0);
+    rg_layout_set_frame(1.0f, 40);
+    rg_layout_set_detect(1);
+    rg_layout_menu_centred_task(&ctr_fn);
+    for (int pass = 0; pass < 4; pass++) {
+        /* 0 left, 1 left + 1/16 margin, 2 centre, 3 left again, switched off at the end */
+        rg_layout_set_menu_position(pass != 2, pass == 1 ? 0.0625f : 0.0f);
+        rg_layout_set_frame(0.75f, 41 + pass);
+        rg_layout_task_begin(&menu_fn);
+        lpkt_cover(0, 512, 0, 448, 0x13);          /* the menu background: a menu task */
+        rg_layout_packet(g_lpkt, NULL);
+        int b0 = lcov_x(0), b1 = lcov_x(1);
+        lpkt_cover(20, 60, 100, 120, 0x14);        /* a panel */
+        rg_layout_packet(g_lpkt, NULL);
+        int p0 = lcov_x(0);
+        rg_layout_task_end();
+        if (pass == 0 || pass == 3) {
+            CHECK(b0 == 0 && b1 == 384 && p0 == 15);
+        } else if (pass == 1) {
+            CHECK(b0 == 32 && b1 == 416 && p0 == 47);
+        } else {
+            CHECK(b0 == 64 && b1 == 448 && p0 == 79);   /* stage 3, centred */
+        }
+        /* a help sheet / results task registered as centred */
+        rg_layout_task_begin(&ctr_fn);
+        lpkt_cover(0, 512, 0, 448, 0x13);
+        rg_layout_packet(g_lpkt, NULL);
+        CHECK(lcov_x(0) == 64 && lcov_x(1) == 448);
+        rg_layout_task_end();
+    }
+    /* wide content (left): a cell at 520..560, past the 4:3 screen, shows at 390..420 inside
+     * the bracket and stays hidden outside it */
+    rg_layout_set_menu_position(1, 0.0f);
+    rg_layout_set_frame(0.75f, 50);
+    rg_layout_task_begin(&menu_fn);
+    lpkt_cover(0, 512, 0, 448, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    xa = msprite_x(520, 560, &xb);
+    CHECK(xa == xb);
+    rg_layout_wide_begin();
+    xa = msprite_x(520, 560, &xb);
+    rg_layout_wide_end();
+    CHECK(xa == 390 && xb == 420);
+    xa = msprite_x(700, 740, &xb);                 /* past the canvas: hidden */
+    CHECK(xa == xb);
+    /* (menupolish 11-11) a wide bar ending exactly at the 4:3 right edge (the transporter
+     * header box 158..512) is pinned to the canvas edge like one bleeding past it */
+    xa = msprite_x(158, 512, &xb);
+    CHECK(xa == 119 && xb == 512);
+    xa = msprite_x(158, 500, &xb);                 /* short of the edge: not pinned */
+    CHECK(xa == 119 && xb == 375);
+    rg_layout_task_end();
+    /* centred (results): the rule's left half 0..256 (2 texels: a plain rule) reaches the
+     * canvas's left edge; a title with lettering (80 texels over 256 px) is not stretched */
+    rg_layout_set_menu_position(0, 0.0f);
+    rg_layout_set_frame(0.75f, 51);
+    rg_layout_task_begin(&menu_fn);
+    lpkt_cover(0, 512, 0, 448, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    xa = msprite_xu(0, 256, 2, &xb);
+    CHECK(xa == 0 && xb == 256);
+    xa = msprite_xu(256, 512, 2, &xb);
+    CHECK(xa == 256 && xb == 512);
+    xa = msprite_x(0, 256, &xb);
+    CHECK(xa == 64 && xb == 256);
+    rg_layout_task_end();
+    rg_layout_set_menu_position(1, 0.0f);
+    CHECK(rg_layout_wide_extra() == 0);            /* mode 1: no scroll window change */
+    rg_layout_set_revelation_wide(1);              /* the setting: $RG_REV_WIDE wins */
+    CHECK(rg_layout_wide_mode() == 1);
+    rg_layout_set_menu_position(0, 0.0f);
+    rg_layout_set_detect(0);
+    rg_layout_set_frame(1.0f, 53);
+}
+
+/* 3D on menu screens (lane froglog 2026-11-11, docs/WIDESCREEN.md "Menu 3D models"): a
+ * camera view packet a menu task writes with the menu block at the left gets its screen
+ * centre X moved with the block (2048 -> 1792 + 256 * 0.75 = 1984 at s 0.75; + the margin),
+ * the projection's screen rows by dx * w, the inverse translation by -dx; untouched for
+ * another task, a centred task, menu_position centre and at 4:3.  Fails with
+ * RG_LAYOUT_MENU_3D=0. */
+static float g_vpk[4 * 21] __attribute__((aligned(16)));
+static void vpk_fill(void)
+{
+    for (int i = 0; i < 4 * 21; i++)
+        g_vpk[i] = (float)(i % 7) - 2.0f;
+    for (int c = 0; c < 4; c++)
+        g_vpk[20 + 4 * c + 3] = c == 2 ? 1.0f : c == 3 ? 0.5f : 0.0f;   /* P1 row w */
+    g_vpk[64] = 2048.0f;          /* screen matrix m[12] = ox */
+    g_vpk[76] = -2048.0f;         /* qw 19 = -m[12] */
+}
+static int vpk_same(void)
+{
+    float r[4 * 21];
+    memcpy(r, g_vpk, sizeof r);
+    vpk_fill();
+    return !memcmp(r, g_vpk, sizeof r);
+}
+static void menu_3d(void)
+{
+    static int menu_fn, ctr_fn, hud_fn;
+    rg_layout_set_detect(0);
+    rg_layout_set_frame(1.0f, 60);
+    rg_layout_set_detect(1);
+    rg_layout_menu_centred_task(&ctr_fn);
+    for (int pass = 0; pass < 3; pass++) {
+        /* 0 left, 1 left + 1/16 margin, 2 centre */
+        rg_layout_set_menu_position(pass != 2, pass == 1 ? 0.0625f : 0.0f);
+        rg_layout_set_frame(0.75f, 61 + pass);
+        rg_layout_task_begin(&menu_fn);
+        lpkt_cover(0, 512, 0, 448, 0x13);          /* the menu background: a menu task */
+        rg_layout_packet(g_lpkt, NULL);
+        vpk_fill();
+        rg_layout_view_packet(g_vpk);
+        float vdx = rg_layout_view_dx();               /* the composite's box shift */
+        rg_layout_task_end();
+        CHECK(rg_layout_view_dx() == 0.0f);            /* outside the task */
+        CHECK(vdx == (pass == 0 ? -64.0f : pass == 1 ? -32.0f : 0.0f));
+        if (pass == 2) {
+            CHECK(vpk_same());                     /* centre: the stage 3 projection */
+        } else {
+            float nx = pass == 0 ? 1984.0f : 2016.0f, dx = nx - 2048.0f;
+            CHECK(g_vpk[64] == nx && g_vpk[76] == -nx);
+            CHECK(rg_layout_menu_view_x(2048.0f) == 2048.0f);   /* outside the task */
+            CHECK(g_vpk[20 + 0] == 4.0f && g_vpk[20 + 4] == 1.0f);    /* w 0: unchanged */
+            CHECK(g_vpk[20 + 8] == -2.0f + dx && g_vpk[20 + 12] == 2.0f + 0.5f * dx);
+            CHECK(g_vpk[21] == -2.0f && g_vpk[65] == 0.0f);   /* other rows unchanged */
+        }
+        /* another task (the field scene) and a centred task: untouched */
+        rg_layout_task_begin(&hud_fn);
+        vpk_fill();
+        rg_layout_view_packet(g_vpk);
+        CHECK(vpk_same());
+        rg_layout_task_end();
+        rg_layout_task_begin(&ctr_fn);
+        lpkt_cover(0, 512, 0, 448, 0x13);
+        rg_layout_packet(g_lpkt, NULL);
+        vpk_fill();
+        rg_layout_view_packet(g_vpk);
+        CHECK(vpk_same());
+        rg_layout_task_end();
+    }
+    /* 4:3: inactive */
+    rg_layout_set_menu_position(1, 0.0f);
+    rg_layout_set_frame(1.0f, 70);
+    rg_layout_task_begin(&menu_fn);
+    lpkt_cover(0, 512, 0, 448, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    vpk_fill();
+    rg_layout_view_packet(g_vpk);
+    CHECK(vpk_same());
+    rg_layout_task_end();
+    rg_layout_set_menu_position(0, 0.0f);
+    rg_layout_set_detect(0);
+    rg_layout_set_frame(1.0f, 71);
 }
 
 /* Widescreen stage 3 side strips (2026-10-24 gaps): a menu background sprite gets faded
@@ -1736,8 +1968,50 @@ static void wide_sides(void)
     /* PRIM + 2 passes x 3 copies (426.4, 462.4, 498.4 .. 534.4) x (UV, XYZ, UV, XYZ) */
     CHECK_EQ(spkt_qw(), q + 1 + 2 * 3 * 4);
     CHECK_EQ(g_sbuf[2 * q + 1], 0x00ull);
-    CHECK_EQ(((int)(g_sbuf[2 * (q + 1 + 8 + 3)] & 0xFFFF) - L + 8) / 16, 534);
-    CHECK_EQ((int)(g_sbuf[2 * (q + 1 + 8 + 2)] & 0x3FFF), 170 * 16);  /* the tile's own U */
+    /* (menupolish 11-11) copies position by position: copy 3 of the first pass is qwords
+     * 16..19 after the PRIM (copies 1 and 2 of both passes first) */
+    CHECK_EQ(((int)(g_sbuf[2 * (q + 1 + 16 + 3)] & 0xFFFF) - L + 8) / 16, 534);
+    CHECK_EQ((int)(g_sbuf[2 * (q + 1 + 16 + 2)] & 0x3FFF), 170 * 16);  /* the tile's own U */
+    /* (menupolish 11-11, USER "a visual break in the top border") each tile drawn as a
+     * black translucent shadow, then the art (UiDrawSpriteMaybe_2929d0), colours by A+D
+     * RGBAQ: at every copy the shadow comes first and the art last, each with its colour
+     * (the old order drew the shadow copies over the art copies: 40 % darker past the
+     * last original tile) */
+    {
+        const int T = 1824 * 16;
+        int r = 2;
+        g_sbuf[2 * r] = 0x13ull << 20; g_sbuf[2 * r + 1] = 0x06; r++;
+        g_sbuf[2 * r] = 6; g_sbuf[2 * r + 1] = 0x00; r++;
+        for (int t2 = 0; t2 < 14; t2++) {
+            int xa = 111 + 64 * (t2 / 2);
+            g_sbuf[2 * r] = (t2 & 1) ? 0x80808080ull : 0x33000000ull; g_sbuf[2 * r + 1] = 0x01; r++;
+            g_sbuf[2 * r] = (106 * 16) | ((uint64_t)(0 * 16) << 16); g_sbuf[2 * r + 1] = 0x03; r++;
+            g_sbuf[2 * r] = (uint64_t)(L + xa * 16) | ((uint64_t)(T + 4 * 16) << 16); g_sbuf[2 * r + 1] = 5; r++;
+            g_sbuf[2 * r] = (170 * 16) | ((uint64_t)(20 * 16) << 16); g_sbuf[2 * r + 1] = 0x03; r++;
+            g_sbuf[2 * r] = (uint64_t)(L + (xa + 64) * 16) | ((uint64_t)(T + 24 * 16) << 16); g_sbuf[2 * r + 1] = 5; r++;
+        }
+        g_sbuf[2 * r] = 0; g_sbuf[2 * r + 1] = 0x3F; r++;
+        g_sbuf[2] = (uint64_t)(r - 2) | 0x8000ull | (1ull << 60);
+        g_sbuf[3] = 0xE;
+        uint32_t *t32 = (uint32_t *)g_sbuf;
+        t32[0] = (uint32_t)(r - 1) | 0x10000000u;
+        t32[3] = (uint32_t)(r - 1) | 0x50000000u;
+        uint8_t *cur = (uint8_t *)g_sbuf + 16 * r;
+        LPKT_PUT(0xF4, cur);
+        q = r;
+        rg_layout_packet(g_lpkt, &menu_fn);
+        /* PRIM + 3 positions x 2 passes x (RGBAQ + UV, XYZ, UV, XYZ) + colour restored */
+        CHECK_EQ(spkt_qw(), q + 1 + 3 * 2 * 5 + 1);
+        int ok = 1;
+        for (int c = 0; c < 3; c++) {
+            int k0 = q + 1 + c * 10;
+            ok &= g_sbuf[2 * k0 + 1] == 0x01 && g_sbuf[2 * k0] == 0x33000000ull;       /* shadow */
+            ok &= g_sbuf[2 * (k0 + 5) + 1] == 0x01 && g_sbuf[2 * (k0 + 5)] == 0x80808080ull; /* then art */
+            ok &= (g_sbuf[2 * (k0 + 2)] & 0xFFFF) == (g_sbuf[2 * (k0 + 7)] & 0xFFFF);   /* same place */
+        }
+        CHECK(ok);
+        CHECK_EQ(g_sbuf[2 * (spkt_qw() - 1)], 0x80808080ull);
+    }
     rg_layout_task_end();
     rg_layout_set_detect(0);
     rg_layout_set_frame(1.0f, 63);
@@ -2202,6 +2476,8 @@ static const test k_tests[] = {
     { "ui_scale", ui_scale },
     { "wide_strips", wide_strips },
     { "wide_sides", wide_sides },
+    { "menu_position", menu_position },
+    { "menu_3d", menu_3d },
 };
 
 int main(int argc, char **argv)

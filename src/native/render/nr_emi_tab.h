@@ -147,5 +147,96 @@ static const Row emi_tab[] = {
     { 0x6dd21256cd8586e7ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* m_1140,m_3	fam 6dd21256 reviewed: no */
     { 0x7a6e02d58e6f066aull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* m_5006	fam 7a6e02d5 reviewed: no */
     { 0x13b6f362c3c03605ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* m_5014	fam 13b6f362 reviewed: no */
+    { 0xe8e3ed4a203ad228ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:bec0e369f07dc64f	m_7,m_71,m_81	fam bec0e369 rev */
+    { 0xf89f06772f142e16ull, 1, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:6bb39e3ca573e0c8	ch06_vedan,m_1119,m_4	fam 6bb3 */
+    { 0x048d6fa1252bbaeeull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:8caa0a7636a96587	ch06_vedan,m_4	fam 8caa0a76 li */
+    { 0xe5715edb963b798eull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:21ef6455690f0742	ch06_vedan,m_4	fam 8caa0a76 li */
+    { 0x0b36b00c483f8027ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:a270bbb0d7ee5a59	m_5313	fam 8caa0a76 lit window */
+    { 0xdad0defc915ede3aull, 1, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:f79e484b9cc24dff	ch05_factory,m_1119,m_3018,m_3 */
+    { 0x3d009d30a9b1f78eull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:423e46c89f0682d8	ch06_vedan,m_4	fam 423e46c8 li */
+    { 0x8c8275da774225b8ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:6c9315e4d4eae1be	ch01_salgin,ch02_juraika,m_1,m */
+    { 0x7adcdead9822db2eull, 1, 1, { 0, 0, 0 }, 0.700f, 200, 0 },   /* twin of rgba:4518b9768110a5f9	m_414,m_416	fam 4518b976 panel */
+    { 0xbc1f429978e7c828ull, 1, 1, { 0, 0, 0 }, 0.700f, 200, 0 },   /* twin of rgba:9494ff40be826acd	m_1324	fam 9494ff40 glowing gl */
+    { 0x8cf8d175c320ca34ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:5432f4836b3f02fb	ch02_dorgenark,m_11,m_51,m_902 */
+    { 0x09a2ca240019f345ull, 1, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:07d1038dac39ab18	ch06_mines	fam 07d1038d lamp g */
+    { 0xbd06804cb838c093ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:0d68e0a54a620d66	m_5311	fam 0d68e0a5 reviewed:  */
+    { 0x071e2bbe4d64af38ull, 1, 1, { 0, 0, 0 }, 1.000f, 200, 0 },   /* twin of rgba:76f71bc447c809c2	m_1119	fam 76f71bc4 neon tube */
+    { 0x60d20607ca3dd263ull, 1, 1, { 0, 0, 0 }, 1.000f, 200, 0 },   /* twin of rgba:caf458b814adacfd	m_416	fam caf458b8 light strip */
+    { 0x356afb5b5d3b38e3ull, 1, 1, { 0, 0, 0 }, 0.700f, 200, 0 },   /* twin of rgba:4f40e8bd2cae0a59	m_1117	fam 4f40e8bd sci-fi pan */
+    { 0xf3491f03abbfa8c7ull, 1, 1, { 0, 0, 0 }, 1.000f, 200, 0 },   /* twin of rgba:20a3a8698cabd8d0	ch06_vedan,m_4	fam 20a3a869 li */
+    { 0xc92cb39337f422ebull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:2cb0e454c0688f80	ch05_factory,m_1115,m_1116,m_1 */
+    { 0xd06b32d9dec31fc4ull, 1, 1, { 0, 0, 0 }, 1.000f, 200, 0 },   /* twin of rgba:20cd8c6ad45591dd	m_414,m_416	fam 20cd8c6a light */
+    { 0x2eea788c2698e4d8ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:13b5127a6775e9e8	ch01_salgin,ch02_juraika,m_1,m */
+    { 0xf5b5d212380ff379ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:67c363d141298318	m_414,m_416	fam 67c363d1 revie */
+    { 0x98a75171c0524356ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:1eaa71f4ad23e0fb	m_414	fam 1eaa71f4 reviewed: n */
+    { 0x7f7b502fdd667a2full, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:5a32f2ab9aeb8f15	m_414,m_416	fam 5a32f2ab revie */
+    { 0x0f8aa1e8859b61d8ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:34b6b98c1f024336	m_414	fam 5a32f2ab reviewed: n */
+    { 0x7d78cf3d6d4eb5f5ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:cf39c7b4aeba441c	m_414,m_416	fam cf39c7b4 revie */
+    { 0x0f953bd2b0057d84ull, 1, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:25825f77b21709b4	m_3018,m_9	fam 25825f77 blue p */
+    { 0x22b8cd510ab068aeull, 1, 1, { 0, 0, 0 }, 1.000f, 200, 0 },   /* twin of rgba:90dd7356935b0e92	m_414	fam 90dd7356 panel light */
+    { 0xf11e05f5cbd986f8ull, 1, 1, { 0, 0, 0 }, 1.000f, 200, 0 },   /* twin of rgba:2d07b8e77bc27338	m_416	fam 2d07b8e7 panel light */
+    { 0x771d5535776d4d4cull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:a14ae8f3d1a57b1b	m_1119	fam a14ae8f3 reviewed:  */
+    { 0xccaf42f5e6a7c427ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:4e8d856e89885139	ch02_dorgenark,m_11,m_41,m_51, */
+    { 0x65062456723d4edbull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:c386f815d4100463	ch02_dorgenark,m_11,m_41,m_51, */
+    { 0x6cb691bbe8f03f15ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:52c1826b8aa9793d	m_414,m_416	fam 52c1826b revie */
+    { 0x2f9181b8f34fd066ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:c81dfaf0d75b4bda	m_1119	fam c81dfaf0 reviewed:  */
+    { 0x111e81aa6a80d815ull, 1, 1, { 0, 0, 0 }, 1.000f, -1, 2 },   /* twin of rgba:14aacd9ffe08996a	ch02_dorgenark,ch05_factory,m_ */
+    { 0x050b4214b4257097ull, 1, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:39159aa60ada50b2	ch06_mines,ch06_vedan,m_1119,m */
+    { 0xe94109b62e5eda8eull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:188c109f4ed38d39	ch06_vedan,m_1119,m_4	fam 188c */
+    { 0x46cd1eb841cb5578ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:b2fc4bc9f9bb5d06	ch06_vedan,m_1119,m_4,m_41,m_4 */
+    { 0x29f53d212e94d21eull, 1, 1, { 0, 0, 0 }, 0.700f, -1, 0 },   /* twin of rgba:7f0538f484560ad5	ch06_vedan,m_4	fam 7f0538f4 te */
+    { 0x91f6d0ab2790a4e8ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:3292e58842606d67	m_1119	fam 3292e588 reviewed:  */
+    { 0x6893bced62df31c7ull, 1, 1, { 0, 0, 0 }, 0.700f, -1, 0 },   /* twin of rgba:74f2e536a4e29ce9	m_1119	fam 74f2e536 pink glow */
+    { 0xb22d55dd4e03f08bull, 1, 1, { 0, 0, 0 }, 1.000f, 120, 0 },   /* twin of rgba:08642937c16889fe	m_1119	fam 08642937 neon sign */
+    { 0xd2026cc0039f73c0ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:d78415c1f653f725	m_414	fam d78415c1 reviewed: n */
+    { 0x524cc6bf95d33505ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:325644ef335bf3c7	m_416	fam 325644ef reviewed: n */
+    { 0xd1d39355141d7302ull, 1, 1, { 0, 0, 0 }, 0.700f, -1, 0 },   /* twin of rgba:0a28cad27ad2c9e3	m_5313	fam 0a28cad2 glow puff */
+    { 0x917ddac7c1d5ed89ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:9d3d552960382f52	ch05_factory,m_1115,m_1116,m_1 */
+    { 0xe274aff4088e9797ull, 1, 1, { 0, 0, 0 }, 1.000f, 120, 0 },   /* twin of rgba:2d92a215e4f94eee	ch06_vedan	fam 2d92a215 neon s */
+    { 0x7083b7bb760e6cffull, 1, 1, { 0, 0, 0 }, 0.250f, 200, 0 },   /* twin of rgba:9a08767cc85758bf	ch01_salgin,ch05_factory,ch06_ */
+    { 0xa67b5265b5b5bf78ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:a141bb05193eddb9	ch06_mines	fam a141bb05 small  */
+    { 0x00758813d9c67b4bull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:cc2fdb2c300e691e	m_414	fam cc2fdb2c small light */
+    { 0xf3282b2b84b8302dull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:fa7ad340b9f62e43	ch06_vedan,m_4	fam fa7ad340 li */
+    { 0xa030b04d55eb3c97ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:46284fcb4bf4d0ca	m_5311	fam 46284fcb lights */
+    { 0x4992a9ca1df8b34aull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:01c87999e9f3527a	ch06_vedan,m_5311,m_5313	fam 0 */
+    { 0x4d5051c02cdcd6a6ull, 1, 1, { 0, 0, 0 }, 1.000f, 120, 0 },   /* twin of rgba:b6232bb282604206	ch06_vedan,m_4	fam b6232bb2 ne */
+    { 0x1e3344ec76dba7e0ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:8dd305f005a93a0c	m_414	fam 8dd305f0 lights */
+    { 0x657b11c6134fa46aull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:bb4d0b0aba572f60	ch06_vedan,m_5311,m_5313	fam b */
+    { 0x1728038eda38ff6cull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:c031728cd2d03d41	ch06_vedan,m_4	fam c031728c li */
+    { 0x9b3b2d0d1d1ed323ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:c578012466f9f9d8	m_414,m_416	fam c5780124 light */
+    { 0x57b5ca5b9c2bef3bull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:13fd1c2d5631a184	ch06_vedan,m_5311,m_5313	fam 1 */
+    { 0x79b7d86a7e908f9dull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:7cf1036c834316cc	ch06_vedan,m_4	fam 7cf1036c li */
+    { 0xc3f82ad558871d84ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:97646bc0758f3879	m_1117	fam 97646bc0 light bord */
+    { 0xf94a8e01b669be1dull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:7961c49d046eb786	m_3013,m_3018,m_3020,m_9	fam 7 */
+    { 0xfe9fd796e55e9c57ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:acc2b93ee62cd03e	ch06_vedan,m_4	fam acc2b93e wi */
+    { 0xaa82fe577b322e43ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:e940432ae4b09b58	m_416	fam e940432a light bars */
+    { 0x5374103b89360485ull, 1, 1, { 0, 0, 0 }, 0.700f, 200, 0 },   /* twin of rgba:93ec3f257082dc26	m_1119	fam 93ec3f25 panel ligh */
+    { 0xde4ffde7077a05ccull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:37984f34045a6dbf	m_416	fam 37984f34 windows */
+    { 0x47c22f7467ca1b75ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:db13cc321bf19736	m_416	fam db13cc32 windows */
+    { 0x62b2c21288993c4dull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:6eaafa7c892014c7	m_5313	fam db13cc32 windows */
+    { 0x0871745b3d54e705ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:efd16125c8cc0479	m_1119	fam efd16125 windows */
+    { 0xa9f554727bd5f02aull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:d0c9311d760f28b5	m_1119	fam d0c9311d windows */
+    { 0x541f9bfcd949af50ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:d7ccf5a9114e53e4	ch01_salgin,m_1	fam d7ccf5a9 r */
+    { 0x764a25a45f40e18bull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:db4b3464aff07daf	m_5313	fam db4b3464 lights */
+    { 0xb0e7f19baf9e2600ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:4d168067c948d169	m_1119	fam 4d168067 lights */
+    { 0x6e106ed4fbe24ed7ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:263ec342f52b5d8a	ch06_vedan,m_5311	fam 263ec342 */
+    { 0x2aef224f8bb74fb9ull, 1, 1, { 0, 0, 0 }, 0.700f, 200, 0 },   /* twin of rgba:6eeda5646ee7f550	m_5313	fam 6eeda564 lamp panel */
+    { 0x0bcfeb36c19747e1ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:f6340b46810fcd81	m_5313	fam f6340b46 lights */
+    { 0x9adac1d350c66185ull, 1, 1, { 0, 0, 0 }, 0.700f, 200, 0 },   /* twin of rgba:089cfc372dba5b25	m_1119	fam 089cfc37 lamp panel */
+    { 0xeb62dc542a36cebbull, 1, 1, { 0, 0, 0 }, 0.700f, 200, 0 },   /* twin of rgba:2c6afda6a894c07b	m_1117	fam 2c6afda6 indicators */
+    { 0x9758182d140fb586ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:c442ba97abd44cd9	ch06_vedan,m_1119,m_4,m_5313	f */
+    { 0x0270c220efe54e19ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:11bed99b53c9066c	m_416	fam 11bed99b reviewed: n */
+    { 0x53a46caf6b5e935full, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:bd4404996db8819f	ch01_salgin,m_1	fam bd440499 r */
+    { 0x4e3a8c966a13b38eull, 1, 1, { 0, 0, 0 }, 0.700f, 200, 0 },   /* twin of rgba:588a68571d4936a5	ch02_dorgenark,m_11,m_51,m_902 */
+    { 0x5e4fc5f4cc7bc3f7ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:04dd97f21684ff70	m_1119	fam 04dd97f2 light stri */
+    { 0xbfce9e8654b5856full, 1, 1, { 0, 0, 0 }, 0.700f, 160, 0 },   /* twin of rgba:0c67dc2f73408325	ch06_vedan	fam 0c67dc2f lamp c */
+    { 0x31895fcf3b3f9b06ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:50a1ddb3f7b245ef	m_5311	fam 50a1ddb3 lights */
+    { 0xc0e07948bd2d5b7bull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:1e5b6384001ed1f5	ch01_salgin,m_1	fam 1e5b6384 r */
+    { 0x63560dd511c1e867ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:f189448f69e0a800	ch01_salgin,m_1	fam f189448f r */
+    { 0xb9ff91cb62d8d13full, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:996b51946e5d78e3	ch06_vedan	fam 996b5194 lights */
+    { 0xb974447561bdeb1full, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:bd42043cd151ed94	ch01_salgin,m_1	fam bd42043c r */
+    { 0x4f5bdc42b370b6b3ull, 0, 1, { 0, 0, 0 }, 1.000f, -1, 0 },   /* twin of rgba:9200d284eb11b999	ch05_factory	fam 9200d284 revi */
+    { 0x7c5b0947453c3594ull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:f5251e8559ac4659	ch06_vedan,m_4	fam f5251e85 li */
+    { 0x971ef2cb40d100abull, 1, 1, { 0, 0, 0 }, 1.000f, 160, 0 },   /* twin of rgba:3487917fe4f0b6e9	ch06_vedan,m_4	fam 3487917f li */
 };
-static const int emi_ntab = 145;
+static const int emi_ntab = 236;

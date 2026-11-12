@@ -16,7 +16,10 @@
  * and each stack's live part [sp, top) back at the same addresses restores
  * every suspended fiber exactly.
  *
- * i686 Windows only; elsewhere ps2k_fiber_arena_set returns -1.
+ * Windows (i686, x64) and Linux (i686, x86-64 SysV: callee-saved registers,
+ * x87 control word and MXCSR; no TEB fields); elsewhere ps2k_fiber_arena_set
+ * returns -1.  On Linux the range is a PROT_NONE reservation and a commit is
+ * an mprotect (docs/LINUX.md "Save states on Linux").
  */
 #include <stdint.h>
 #include <stdlib.h>
@@ -29,6 +32,10 @@
 #define FA_SUPPORTED 1
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
+#define FA_SUPPORTED 1
+#define FA_LINUX 1
+#include <sys/mman.h>
 #elif defined(_WIN32) && defined(__x86_64__)
 /* x64 (P7, docs/X64-PLAN.md step 4): the switch saves the Win64 non-volatile
  * set (rbx rbp rdi rsi r12-r15, xmm6-15, MXCSR, x87 CW) and the TEB stack
@@ -73,6 +80,17 @@ static size_t g_size;
 static fa_header *g_hdr;
 static fa_fiber g_host; /* the scheduler (host thread); its sp is written by every switch away */
 
+#if FA_SUPPORTED
+static int fa_commit(uintptr_t lo, size_t n)
+{
+#if defined(FA_LINUX)
+    return mprotect((void *)lo, n, PROT_READ | PROT_WRITE) == 0;
+#else
+    return VirtualAlloc((void *)lo, n, MEM_COMMIT, PAGE_READWRITE) != NULL;
+#endif
+}
+#endif
+
 int fa_on(void) { return g_hdr != NULL; }
 
 int ps2k_fiber_arena_on(void) { return fa_on(); }
@@ -82,7 +100,7 @@ int ps2k_fiber_arena_set(void *base, size_t size)
 #if FA_SUPPORTED
     if (g_hdr || !base || size < FA_HDR_BYTES + 2 * (FA_GUARD + 0x10000u) || ((uintptr_t)base & 0xFFFFu))
         return -1;
-    if (!VirtualAlloc(base, FA_HDR_BYTES, MEM_COMMIT, PAGE_READWRITE))
+    if (!fa_commit((uintptr_t)base, FA_HDR_BYTES))
         return -1;
     g_base = (uintptr_t)base;
     g_size = size;
@@ -138,7 +156,7 @@ int ps2k_fiber_arena_commit(uintptr_t lo, uintptr_t hi)
             lo = slo;
     }
     lo &= ~(uintptr_t)0xFFFu;
-    return VirtualAlloc((void *)lo, hi - lo, MEM_COMMIT, PAGE_READWRITE) ? 0 : -1;
+    return fa_commit(lo, hi - lo) ? 0 : -1;
 #else
     (void)lo;
     (void)hi;
@@ -148,7 +166,72 @@ int ps2k_fiber_arena_commit(uintptr_t lo, uintptr_t hi)
 
 #if FA_SUPPORTED
 
-#if defined(FA_X64)
+#if defined(FA_LINUX) && defined(__x86_64__)
+/* x86-64 SysV frame, from the saved rsp upward: MXCSR (4), x87 CW (4), r15 r14 r13 r12 rbx
+ * rbp, then the return address.  fa_swap(rdi = &from->sp, rsi = to->sp). */
+__attribute__((naked)) static void fa_swap(void **save_sp, void *load_sp)
+{
+    __asm__ volatile(
+        "pushq %rbp\n\t"
+        "pushq %rbx\n\t"
+        "pushq %r12\n\t"
+        "pushq %r13\n\t"
+        "pushq %r14\n\t"
+        "pushq %r15\n\t"
+        "subq $8, %rsp\n\t"
+        "stmxcsr 0(%rsp)\n\t"
+        "fnstcw 4(%rsp)\n\t"
+        "movq %rsp, (%rdi)\n\t"
+        "movq %rsi, %rsp\n\t"
+        "ldmxcsr 0(%rsp)\n\t"
+        "fldcw 4(%rsp)\n\t"
+        "addq $8, %rsp\n\t"
+        "popq %r15\n\t"
+        "popq %r14\n\t"
+        "popq %r13\n\t"
+        "popq %r12\n\t"
+        "popq %rbx\n\t"
+        "popq %rbp\n\t"
+        "ret\n\t");
+}
+
+static void fa_entry(fa_fiber *f);
+
+/* First switch into a fiber returns here (rsp 16-aligned) with the fiber in r12. */
+__attribute__((naked, used)) static void fa_start(void)
+{
+    __asm__ volatile(
+        "movq %r12, %rdi\n\t"
+        "call fa_entry\n\t"
+        "ud2\n\t");
+}
+#elif defined(FA_LINUX)
+/* i386 SysV frame, from the saved esp upward: MXCSR, x87 CW, edi esi ebx ebp, the return
+ * address.  cdecl; naked, so only the asm runs. */
+__attribute__((naked)) static void fa_swap(void **save_sp, void *load_sp)
+{
+    __asm__ volatile(
+        "movl 4(%esp), %eax\n\t"
+        "movl 8(%esp), %edx\n\t"
+        "pushl %ebp\n\t"
+        "pushl %ebx\n\t"
+        "pushl %esi\n\t"
+        "pushl %edi\n\t"
+        "subl $8, %esp\n\t"
+        "stmxcsr 0(%esp)\n\t"
+        "fnstcw 4(%esp)\n\t"
+        "movl %esp, (%eax)\n\t"
+        "movl %edx, %esp\n\t"
+        "ldmxcsr 0(%esp)\n\t"
+        "fldcw 4(%esp)\n\t"
+        "addl $8, %esp\n\t"
+        "popl %edi\n\t"
+        "popl %esi\n\t"
+        "popl %ebx\n\t"
+        "popl %ebp\n\t"
+        "ret\n\t");
+}
+#elif defined(FA_X64)
 /* x64 frame, from the saved rsp upward (FA_X64_FRAME bytes, then the return
  * address): xmm6-15 (160), MXCSR (4), x87 CW (4), pad (8), DeallocationStack,
  * StackLimit, StackBase, r15 r14 r13 r12 rsi rdi rbx rbp. */
@@ -261,6 +344,14 @@ __attribute__((naked)) static void fa_swap(void **save_sp, void *load_sp)
  * address) and [esp + 4] = the fiber.  Unhandled faults on the fiber go to the
  * process's unhandled-exception filter (rg-game's crash report), as Windows
  * fibers do through BaseFiberStart. */
+#if defined(FA_LINUX)
+/* a fault on the fiber reaches the process's signal handlers as on any stack */
+__attribute__((used, noinline)) static void fa_entry(fa_fiber *f)
+{
+    f->fn(f->arg);
+    abort(); /* fn must not return */
+}
+#else
 #if defined(FA_X64)
 __attribute__((used, noinline)) static void fa_entry(fa_fiber *f)
 #else
@@ -274,6 +365,7 @@ static void __cdecl fa_entry(fa_fiber *f)
     }
     abort(); /* fn must not return */
 }
+#endif
 
 ps2k_fiber *fa_adopt_host(void)
 {
@@ -311,7 +403,7 @@ ps2k_fiber *fa_create(size_t stack_size, ps2k_fiber_fn fn, void *arg)
             continue;
         uintptr_t sb = g_base + FA_HDR_BYTES + (uintptr_t)i * g_hdr->stride;
         uintptr_t lo = sb + FA_GUARD, hi = sb + g_hdr->stride;
-        if (!VirtualAlloc((void *)lo, hi - lo, MEM_COMMIT, PAGE_READWRITE))
+        if (!fa_commit(lo, hi - lo))
             return NULL;
         memset(f, 0, sizeof *f);
         f->magic = FA_FIBER;
@@ -321,7 +413,43 @@ ps2k_fiber *fa_create(size_t stack_size, ps2k_fiber_fn fn, void *arg)
         f->arg = arg;
         f->lo = lo;
         f->hi = hi;
-#if defined(FA_X64)
+#if defined(FA_LINUX) && defined(__x86_64__)
+        /* the frame fa_swap pops on the first switch: `ret` lands in fa_start with
+         * rsp = hi - 64 (16-aligned) and r12 = f */
+        uint64_t *q = (uint64_t *)(hi - 64);
+        *--q = (uint64_t)(uintptr_t)fa_start;    /* ret target */
+        *--q = 0;                                /* rbp */
+        *--q = 0;                                /* rbx */
+        *--q = (uint64_t)(uintptr_t)f;           /* r12: fa_entry's argument */
+        *--q = 0;                                /* r13 */
+        *--q = 0;                                /* r14 */
+        *--q = 0;                                /* r15 */
+        uint32_t *x = (uint32_t *)(q - 1);       /* MXCSR, x87 CW */
+        x[0] = x[1] = 0;
+        __asm__ volatile("stmxcsr %0" : "=m"(x[0]));
+        __asm__ volatile("fnstcw %0" : "=m"(*(uint16_t *)&x[1]));
+        f->sp = x;
+        return (ps2k_fiber *)f;
+#elif defined(FA_LINUX)
+        /* the frame fa_swap pops on the first switch; fa_entry then starts with
+         * esp = hi - 68 (+4 16-aligned, the i386 SysV rule) */
+        uint32_t *sp = (uint32_t *)(hi - 60);
+        *--sp = (uint32_t)(uintptr_t)f;           /* fa_entry's argument (hi - 64) */
+        *--sp = 0;                                /* fake return address */
+        *--sp = (uint32_t)(uintptr_t)fa_entry;    /* ret target */
+        *--sp = 0;                                /* ebp */
+        *--sp = 0;                                /* ebx */
+        *--sp = 0;                                /* esi */
+        *--sp = 0;                                /* edi */
+        uint16_t cw;
+        uint32_t mx;
+        __asm__ volatile("fnstcw %0" : "=m"(cw));
+        __asm__ volatile("stmxcsr %0" : "=m"(mx));
+        *--sp = cw;                               /* x87 control word (4(%esp)) */
+        *--sp = mx;                               /* MXCSR (0(%esp)) */
+        f->sp = sp;
+        return (ps2k_fiber *)f;
+#elif defined(FA_X64)
         /* the frame fa_swap pops on the first switch (FA_X64_FRAME): `ret` then
          * lands in fa_start with rsp = hi - 64 (16-aligned) and r12 = f */
         uint64_t *q = (uint64_t *)(hi - 64);

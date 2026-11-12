@@ -49,6 +49,9 @@ static int g_active;   /* the transform runs: an X squeeze (g_s < 1) and / or a 
  * group so it stays on the screen; 1 = off (nothing below changes) */
 static float g_u = 1.0f;
 static int g_uon;
+static const void *g_vdx_task;   /* menu 3D: the task whose view packet was shifted last (rg_layout_view_dx) */
+static float g_vdx;
+static int g_wide_now, g_wide_last;   /* a wide-content bracket ran this / the last frame (menu position) */
 static int g_detect;
 static int g_screen_fbp, g_screen_known;   /* this frame's draw buffer (FRAME FBP) */          /* wide canvas: watch for full-screen menus even when pillarboxed */
 static unsigned g_cover_now, g_cover_last;   /* menu backgrounds this / the last drawn frame */
@@ -266,6 +269,34 @@ static int g_elem;              /* rg_layout_elem_begin: an element extent is se
 static float g_elem_x0, g_elem_x1;   /* (screen pixels) */
 void rg_layout_elem_begin(float x0_px, float x1_px) { g_elem = x1_px >= x0_px; g_elem_x0 = x0_px; g_elem_x1 = x1_px; }
 void rg_layout_elem_end(void) { g_elem = 0; }
+/* rg_layout_follow_begin / _end: the followed task; the bracket's packets' union this frame
+ * (12.4); the anchor the bracket's packets get (decided at the last bracket's end), the next */
+static const void *g_follow;
+static float g_fu_x0, g_fu_x1, g_fu_y0, g_fu_y1, g_fu_w;
+static int g_fu_n;
+static int g_fa = -1, g_fa_next = -1, g_fa_seen, g_fa_seen_last;
+static int follow_anchor(const void *task, float x0, float x1, float y0, float y1);
+void rg_layout_follow_begin(const void *task_fn)
+{
+    const char *e = getenv("RG_LAYOUT_FOLLOW");
+    g_follow = (e && *e == '0') ? NULL : task_fn;
+    /* the last bracket's decision; the first bracket after none (the menu opening): the anchor
+     * of the followed task's lowest packet (the HUD row) */
+    g_fa = g_fa_seen_last || g_fa_seen ? g_fa_next
+         : g_follow ? follow_anchor(g_follow, -1e30f, 1e30f, -1e30f, 1e30f) : -1;
+    g_fu_n = 0;
+}
+#define FOLLOW_MAXW 0.62f
+void rg_layout_follow_end(void)
+{
+    if (g_follow) {
+        g_fa_seen = 1;
+        g_fa_next = -1;
+        if (g_fu_n > 0 && g_fu_x1 - g_fu_x0 <= FOLLOW_MAXW * g_fu_w)
+            g_fa_next = follow_anchor(g_follow, g_fu_x0, g_fu_x1, g_fu_y0, g_fu_y1);
+    }
+    g_follow = NULL;
+}
 void rg_layout_get_stats(rg_layout_stats *st) { *st = g_st; }
 
 int rg_layout_anchor(float x0, float x1, float left, float width)
@@ -631,6 +662,7 @@ typedef struct pkrec {
     int anchor;               /* the anchor it was drawn with this frame */
     int yanchor;              /* UI scale: its Y anchor and its group's scale */
     float u;
+    int forced;               /* rg_layout_follow_begin: the followed anchor (filed as is), else 0 */
 } pkrec;
 static pkrec g_pk[MAXPK];
 static int g_npk;
@@ -639,6 +671,53 @@ static int g_mark[MAXDEPTH];
 static const void *g_task[MAXDEPTH];
 static int g_depth;
 
+/* every task's packets with the anchors their groups got (rg_layout_follow_begin reads the
+ * last drawn frame's) */
+typedef struct frec { const void *task; float x0, x1, y0, y1; int anchor; } frec;
+static frec g_fr[2][MAXPK];
+static int g_nfr[2];
+static int g_frcur;              /* g_fr[g_frcur]: this frame's; the other: the last drawn frame's */
+
+static void follow_note(const void *task, const pkrec *k, int anchor)
+{
+    if (task && g_nfr[g_frcur] < MAXPK) {
+        frec *f = &g_fr[g_frcur][g_nfr[g_frcur]++];
+        f->task = task;
+        f->x0 = k->x0;
+        f->x1 = k->x1;
+        f->y0 = k->y0;
+        f->y1 = k->y1;
+        f->anchor = anchor;
+    }
+}
+
+/* the anchor of the followed task's lowest packet overlapping [x0, x1] in the last drawn
+ * frame and at most a quarter of the screen height below [y0, y1] (12.4 units), or -1.  (The
+ * battle menu's widget set also draws the "Main Menu / Team Command" box at the top left,
+ * far above the HUD: it keeps its own layout.) */
+#define FOLLOW_BELOW (0.25f * RG_LAYOUT_FRAME_H * 16.0f)
+/* (FOLLOW_MAXW, above) a bracket follows only when all its packets together are at most this
+ * share of the screen wide: the command page, panel + cursor over one member's slot (~0.35;
+ * with the slot glow of the menu's opening, 16..307, 0.57); the Items page (grid and
+ * description box, ~0.73) keeps its own layout: following the HUD row under part of it tore
+ * it apart (widegate btlitems, a first version of this lane decided per packet).  One anchor
+ * for the whole bracket: per group, the opening's sparkles (single packets, identities
+ * shuffled each frame) mixed two anchors. */
+static int follow_anchor(const void *task, float x0, float x1, float y0, float y1)
+{
+    const frec *fr = g_fr[g_frcur ^ 1];
+    int best = -1;
+    float by = -1e30f;
+    for (int i = 0; i < g_nfr[g_frcur ^ 1]; i++)
+        if (fr[i].task == task && fr[i].x0 <= x1 && x0 <= fr[i].x1 && fr[i].y1 > by &&
+            fr[i].y1 >= y0 && fr[i].y0 - y1 <= FOLLOW_BELOW &&
+            fr[i].anchor > RG_ANCHOR_NONE) {
+            by = fr[i].y1;
+            best = fr[i].anchor;
+        }
+    return best;
+}
+
 static int find(int *par, int i)
 {
     while (par[i] != i)
@@ -646,8 +725,9 @@ static int find(int *par, int i)
     return i;
 }
 
-/* cluster g_pk[first..g_npk) by overlap and file their anchors for the next frame */
-static void cluster(int first)
+/* cluster g_pk[first..g_npk) (drawn by `task`, NULL: outside any task) by overlap and file
+ * their anchors for the next frame */
+static void cluster(int first, const void *task)
 {
     static int par[MAXPK];
     static float gx0[MAXPK], gx1[MAXPK], gy0[MAXPK], gy1[MAXPK];
@@ -682,7 +762,10 @@ static void cluster(int first)
             ya = rg_layout_cluster_anchor(gy0[r], gy1[r], k->top, k->h);
             u = rg_layout_fit_scale(g_u, a, ya, gx0[r], gx1[r], gy0[r], gy1[r], k->left, k->w, k->top, k->h, g_s);
         }
+        if (k->forced > RG_ANCHOR_NONE)
+            a = k->forced;               /* follows another task's layout (follow_begin) */
         tab_put(g_next, g_pk[i].key, a, ya, u);
+        follow_note(task, k, a);
         if (r == i)
             g_st.groups++;
     }
@@ -690,6 +773,7 @@ static void cluster(int first)
 
 void rg_layout_set_frame(float s, int field)
 {
+    g_vdx_task = NULL;   /* (menu 3D) a new frame: no view packet shifted yet */
     /* close the frame that ended: packets drawn outside any task form one group.  The
      * game draws at 30 or 60 Hz: a field without packets (the second VBlank of a 30 Hz
      * frame) keeps the last drawn frame's anchors. */
@@ -717,7 +801,11 @@ void rg_layout_set_frame(float s, int field)
         g_ndrawn = 0;
     }
     if (g_active && g_st.packets != last_packets) {
-        cluster(0);
+        cluster(0, NULL);
+        g_fa_seen_last = g_fa_seen;
+        g_fa_seen = 0;
+        g_frcur ^= 1;
+        g_nfr[g_frcur] = 0;
         memcpy(g_prev, g_next, sizeof g_prev);
         memset(g_next, 0, sizeof g_next);
         memset(g_ord, 0, sizeof g_ord);
@@ -725,11 +813,14 @@ void rg_layout_set_frame(float s, int field)
         memset(g_prev, 0, sizeof g_prev);
         memset(g_next, 0, sizeof g_next);
         memset(g_ord, 0, sizeof g_ord);
+        g_nfr[0] = g_nfr[1] = 0;
     }
     last_packets = g_st.packets;
     g_npk = 0;
     g_depth = 0;
     g_field = field;
+    g_wide_last = g_wide_now;
+    g_wide_now = 0;
     const char *e = getenv("RG_LAYOUT");
     if (e && *e == '0')
         s = 1.0f;
@@ -761,7 +852,7 @@ void rg_layout_task_end(void)
     g_depth--;
     if (g_active && g_depth < MAXDEPTH) {
         int first = g_mark[g_depth];
-        cluster(first);
+        cluster(first, g_task[g_depth]);
         g_npk = first;
     }
 }
@@ -1066,9 +1157,93 @@ static int rep_find(rg_layout_xref *xs, int n, float L, float w, uint8_t *rep, r
 
 /* the A+D qwords continuing each job's row to the canvas edge (after the layout: the
  * outermost tile's vertices are already mapped); 0 none, -1 too long */
+/* (2026-11-11, lane menupolish) Copies in drawing order.  UiDrawSpriteMaybe_2929d0 draws
+ * every tile twice in place: a black translucent shadow (RGBA 0,0,0,0x33), then the art.
+ * The right end's jobs were collected outermost-first (art, then shadow), and all copies of
+ * one job were emitted before the next job's, so past the last original tile the shadow
+ * lay OVER the art: the frame's top bar went 40 % darker in a hard step at the old 4:3
+ * edge's tile (USER 11-11 "a visual break in the top border"; main menu, items, every
+ * screen with that frame, both menu positions, 16:9 and wider).  Now the copies go
+ * position by position (copy 1 of every job, copy 2 of every job, ..) and, at one
+ * position, the jobs in the order their tiles were drawn (shadow, then art), each with its
+ * own colour: the continued bar is drawn as the game draws its tiles.
+ * RG_LAYOUT_REPEAT_ORDER=0: the old order (for comparisons). */
+static int g_repeat_order = -1;
+static int g_pin_edge = -1;   /* RG_LAYOUT_PIN_EDGE (menu_sprites) */
+static int rep_emit_ordered(rg_layout_xref *xs, const rep_job *jobs0, int nj, float L, float R, uint64_t *val, uint8_t *reg)
+{
+    rep_job jobs[8];
+    int k = 0, ncol = 0;
+    const uint8_t *lastcol = NULL;
+    if (nj > 8)
+        nj = 8;
+    memcpy(jobs, jobs0, (size_t)nj * sizeof jobs[0]);
+    for (int p = 1; p < nj; p++)                     /* by side, then drawing order (xs index) */
+        for (int q = p; q > 0 && (jobs[q].side < jobs[q - 1].side ||
+                                  (jobs[q].side == jobs[q - 1].side && jobs[q].o < jobs[q - 1].o)); q--) {
+            rep_job t = jobs[q];
+            jobs[q] = jobs[q - 1];
+            jobs[q - 1] = t;
+        }
+    if (g_scan_primq) {
+        memcpy(&val[k], g_scan_primq, 8);
+        reg[k++] = 0x00;
+    }
+    for (int c = 1; c < 64; c++) {
+        int any = 0;
+        for (int i = 0; i < nj; i++) {
+            rg_layout_xref *a = &xs[jobs[i].o], *b = &xs[jobs[i].o + 1];
+            rg_layout_xref *l = (float)*a->x <= (float)*b->x ? a : b, *r = l == a ? b : a;
+            float ml = (float)*l->x, mr = (float)*r->x, tw = mr - ml;
+            if (tw < 16.0f)
+                continue;
+            float xa = jobs[i].side ? mr + (float)(c - 1) * tw : ml - (float)c * tw;
+            if (jobs[i].side ? xa >= R : xa + tw <= L)
+                continue;
+            any = 1;
+            if (b->col && g_scan_rgbaq && b->col != lastcol &&
+                (!lastcol || memcmp(b->col, lastcol, 8) != 0)) {
+                if (k + 1 > MAXAD)
+                    return -1;
+                memcpy(&val[k], b->col, 8);          /* a sprite takes its second vertex's colour */
+                reg[k++] = 0x01;
+                lastcol = b->col;
+                ncol++;
+            }
+            if (k + 4 + 1 > MAXAD)
+                return -1;
+            for (int e = 0; e < 2; e++) {            /* the original write order: a first */
+                rg_layout_xref *s0 = e == 0 ? a : b;
+                float xv = s0 == l ? xa : xa + tw;
+                uint64_t t, xyz;
+                memcpy(&t, s0->tc, 8);
+                memcpy(&xyz, s0->x, 8);
+                xyz = (xyz & ~(uint64_t)0xFFFF) | ((unsigned)(xv < 0.0f ? 0.0f : xv > 65535.0f ? 65535.0f : xv + 0.5f) & 0xFFFF);
+                val[k] = t;
+                reg[k++] = ((uint8_t *)s0->tc)[8];
+                val[k] = xyz;
+                reg[k++] = ((uint8_t *)s0->x)[8];
+            }
+        }
+        if (!any)
+            break;
+    }
+    if (ncol) {                                      /* the packet's last colour, as it was */
+        memcpy(&val[k], g_scan_rgbaq, 8);
+        reg[k++] = 0x01;
+    }
+    return k > (g_scan_primq ? 1 : 0) ? k : 0;
+}
+
 static int rep_emit(rg_layout_xref *xs, const rep_job *jobs, int nj, float L, float R, uint64_t *val, uint8_t *reg)
 {
     int k = 0, ncol = 0;
+    if (g_repeat_order < 0) {
+        const char *e = getenv("RG_LAYOUT_REPEAT_ORDER");
+        g_repeat_order = !(e && *e == '0');
+    }
+    if (g_repeat_order)
+        return rep_emit_ordered(xs, jobs, nj, L, R, val, reg);
     if (g_scan_primq) {
         memcpy(&val[k], g_scan_primq, 8);
         reg[k++] = 0x00;
@@ -1114,9 +1289,198 @@ static int rep_emit(rg_layout_xref *xs, const rep_job *jobs, int nj, float L, fl
     return k > (g_scan_primq ? 1 : 0) ? k : 0;
 }
 
+/* Menu position (lane menuleft 2026-11-10, USER: "in-game menus aligned with the left side";
+ * docs/WIDESCREEN.md "Menu position").  graphics.menu_position (rg_layout_set_menu_position):
+ * where the full-screen menus' 4:3 block (stage 3 menu tasks) sits in the wide canvas:
+ * left (default; flush with the canvas's left edge, or graphics.menu_margin percent of the
+ * canvas width in, at most centred; the background strips then fill the right) or centre (the
+ * stage 3 layout: this code path is the old one, unchanged; Original).  Tasks registered with
+ * rg_layout_menu_centred_task (help sheets, battle results: overlays over the scene) stay
+ * centred.  $RG_MENU_LEFT overrides it (tests / comparisons): 0 centre, 1 left (A), 2 left +
+ * $RG_MENU_LEFT_MARGIN % (C, default 5), 3 panels left with the background tiles centred (B,
+ * the rejected prototype: the portrait circle and panel shadows separate).
+ * x' = left + off + (x - left) * s, off = the block's left edge in the canvas. */
+static int g_mpos_left;            /* the setting: 1 = left */
+static float g_mpos_margin;        /* the setting: margin (fraction of the canvas width) */
+static int g_mleft_env = -2;       /* $RG_MENU_LEFT: -1 unset, else 0..3 */
+static float g_mleft_env_margin;
+static int g_menu_ctr;             /* this packet's task stays centred */
+#define MAXCTR 8
+static const void *g_ctr_task[MAXCTR];
+static int g_nctr;
+
+void rg_layout_set_menu_position(int left, float margin)
+{
+    g_mpos_left = left != 0;
+    g_mpos_margin = margin < 0.0f ? 0.0f : margin > 0.5f ? 0.5f : margin;
+}
+
+void rg_layout_menu_centred_task(const void *fn)
+{
+    for (int i = 0; i < g_nctr; i++)
+        if (g_ctr_task[i] == fn)
+            return;
+    if (fn && g_nctr < MAXCTR)
+        g_ctr_task[g_nctr++] = fn;
+}
+
+static int menu_ctr_task(const void *t)
+{
+    for (int i = 0; i < g_nctr; i++)
+        if (g_ctr_task[i] == t)
+            return 1;
+    return 0;
+}
+
+/* 0 centre, 1 left, 2 left + margin, 3 B (env only) */
+static int mleft_mode(float *margin)
+{
+    if (g_mleft_env == -2) {
+        const char *e = getenv("RG_MENU_LEFT");
+        g_mleft_env = e && *e >= '0' && *e <= '3' ? *e - '0' : -1;
+        e = getenv("RG_MENU_LEFT_MARGIN");
+        g_mleft_env_margin = (e && *e ? (float)atof(e) : 5.0f) / 100.0f;
+    }
+    if (g_mleft_env >= 0) {
+        *margin = g_mleft_env_margin;
+        return g_mleft_env;
+    }
+    *margin = g_mpos_margin;
+    return g_mpos_left ? (g_mpos_margin > 0.0f ? 2 : 1) : 0;
+}
+
+/* the 4:3 menu block's left edge in the canvas (same units as w) */
+static float menu_off(int m, float margin, float w, float s)
+{
+    float slack = (1.0f - s) * w, off = 0.0f;
+    if (m == 2) {
+        off = margin * w;
+        if (off > 0.5f * slack) off = 0.5f * slack;
+    }
+    return off;
+}
+
+/* a menu piece's X (bg: a background tile, which mode 3 leaves centred) */
+static float menu_map(float x, float left, float w, float s, int bg)
+{
+    float margin;
+    int m = mleft_mode(&margin);
+    if (m == 0 || g_menu_ctr || (m == 3 && bg))
+        return rg_layout_map(x, RG_ANCHOR_CENTER, left, w, s);
+    return left + menu_off(m, margin, w, s) + (x - left) * s;
+}
+
+/* 3D drawn by a menu task (lane froglog 2026-11-11; docs/WIDESCREEN.md "Menu 3D models").
+ * A menu's models (the Frog Log frog, item / weapon previews, ...) are projected about the
+ * screen centre X of the camera view packet their task writes (the screen matrix's
+ * translation ox, GS pixels, 2048 = the frame's centre), with the wide (Hor+) projection: a
+ * model is already squeezed by s about ox, so it stays with a menu laid out about the centre
+ * (stage 3) when ox is the centre.  With the menu block elsewhere (menu_position left) it was
+ * left behind: centred on the canvas, away from its panels (the frog left its speech bubble at
+ * 21:9).  Now, while a stage 3 menu task (not a centred one) writes a view packet, ox goes
+ * where the task's 2D puts that X (menu_map: the same block offset); the projection's screen
+ * rows and the inverse translation follow.  RG_LAYOUT_MENU_3D=0: as before. */
+static int g_menu3d = -1;
+float rg_layout_menu_view_x(float ox)
+{
+    if (!g_active || !(g_s < 0.999f) || g_depth <= 0 || g_depth > MAXDEPTH)
+        return ox;
+    if (g_menu3d < 0) {
+        const char *e = getenv("RG_LAYOUT_MENU_3D");
+        g_menu3d = !(e && *e == '0');
+    }
+    const void *t = g_task[g_depth - 1];
+    if (!g_menu3d || !t || !menu_task(t) || menu_ctr_task(t))
+        return ox;
+    float margin;
+    int m = mleft_mode(&margin);
+    const float left = 2048.0f - 256.0f, w = 512.0f;
+    if (m == 0)
+        return ox;                       /* centre: the stage 3 layout (Original), unchanged */
+    return left + menu_off(m, margin, w, g_s) + (ox - left) * g_s;   /* = menu_map */
+}
+
+/* the shift the current menu task's last view packet got (0 none): the offscreen composite
+ * (ModelDrawOffscreenCompositeMaybe_16aac0 override) clears and copies a model back about the
+ * screen centre from its box (CameraSetView_156200's m2D0 has no screen translation), so its
+ * rectangle takes the same shift as the model drawn into it */
+float rg_layout_view_dx(void)
+{
+    if (!g_active || g_depth <= 0 || g_depth > MAXDEPTH || !g_vdx_task || g_task[g_depth - 1] != g_vdx_task)
+        return 0.0f;
+    return g_vdx;
+}
+
+void rg_layout_view_packet(void *pkt)
+{
+    if (!pkt || !g_active)
+        return;
+    PS2K_FPU_HOST_SCOPE; /* host float rules (ps2k_fpu.h) */
+    float *q = (float *)pkt;            /* VU qw n = packet qw n + 1 (qw 0: the DMA / VIF tags) */
+    float ox = q[64];                   /* packet qw 13..16 = the screen matrix (columns): m[12] */
+    float nx = rg_layout_menu_view_x(ox);
+    float dx = nx - ox;
+    g_vdx_task = g_depth > 0 && g_depth <= MAXDEPTH ? g_task[g_depth - 1] : NULL;
+    g_vdx = dx;
+    if (!(dx != 0.0f))
+        return;
+    /* packet qw 5..8 = screen x clip (P1, columns; w = the clip w): GS x = x / w, so x += dx * w */
+    for (int c = 0; c < 4; c++)
+        q[20 + 4 * c] += dx * q[20 + 4 * c + 3];
+    q[64] = nx;                         /* the screen matrix's translation */
+    q[76] -= dx;                        /* packet qw 19 = -translation */
+    if (g_log)
+        fprintf(g_log, "  view3d: ox=%g -> %g task=%p\n", ox, nx, g_vdx_task);
+}
+
+/* Wide content (rg_layout_wide_begin / _end, the Revelation board's cells): menu sprites past
+ * the 4:3 screen's right edge are shown up to the canvas's right edge instead of hidden.  The
+ * right limit in the game's (4:3) coordinates: the original x that maps to the canvas edge. */
+static int g_wide;
+static int g_wide_env = -2;   /* $RG_REV_WIDE: -1 unset, 0 off, 1 cells, 2 cells + scroll window */
+static int g_wide_set;        /* graphics.revelation_wide (rg_layout_set_revelation_wide): 2 or 0 */
+void rg_layout_set_revelation_wide(int on) { g_wide_set = on ? 2 : 0; }
+/* mode 2: a board was drawn this / the last frame: the board's cursor and balloons (small
+ * widgets of the menu, drawn outside the bracket) are kept up to the canvas edge too */
+void rg_layout_wide_begin(void)
+{
+    g_wide = rg_layout_wide_mode() >= 1;
+    g_wide_now |= g_wide;
+}
+void rg_layout_wide_end(void) { g_wide = 0; }
+int rg_layout_wide_mode(void)
+{
+    if (g_wide_env == -2) {
+        const char *e = getenv("RG_REV_WIDE");
+        g_wide_env = e && *e >= '0' && *e <= '2' ? *e - '0' : -1;
+    }
+    return g_wide_env >= 0 ? g_wide_env : g_wide_set;
+}
+static float wide_right(float left, float w, float s)
+{
+    float margin;
+    int m = mleft_mode(&margin);
+    float off = m == 0 || g_menu_ctr ? 0.5f * (1.0f - s) * w : menu_off(m, margin, w, s);
+    return left + (w - off) / s;
+}
+/* screen pixels (of the 4:3 frame) visible right of the 4:3 screen for wide content now:
+ * 0 at 4:3, with the layout off or with RG_REV_WIDE below 2 */
+int rg_layout_wide_extra(void)
+{
+    if (rg_layout_wide_mode() < 2 || !g_active || !(g_s < 0.999f))
+        return 0;
+    float r = wide_right(0.0f, 512.0f, g_s) - 512.0f;
+    /* at most the board's whole scroll range (0x222): beyond (32:9) the board fits unscrolled */
+    if (r > 546.0f) r = 546.0f;
+    return r > 0.0f ? (int)r : 0;
+}
+
 static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float w, int bg, uint8_t *done)
 {
     const float L = left, R = left + w, px = 16.0f;
+    /* wide content (rg_layout_wide_begin): sprites are kept up to the canvas's right edge */
+    const float RR0 = g_wide ? wide_right(left, w, g_s) : R;
+    const float RRs = !g_wide && (g_wide_now || g_wide_last) && rg_layout_wide_mode() >= 2 ? wide_right(left, w, g_s) : RR0;
     const float top = 1824.0f * 16.0f, bot = (1824.0f + RG_LAYOUT_FRAME_H) * 16.0f;
     static uint64_t val[MAXAD];
     static uint8_t reg[MAXAD];
@@ -1139,8 +1503,8 @@ static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float
             continue;
         done[j] = done[j + 1] = 1;
         if (nrj && rep[j]) {                         /* a tile of a repeated frame strip: whole */
-            set_x(a, rg_layout_map((float)*a->x, RG_ANCHOR_CENTER, left, w, g_s));
-            set_x(b, rg_layout_map((float)*b->x, RG_ANCHOR_CENTER, left, w, g_s));
+            set_x(a, menu_map((float)*a->x, left, w, g_s, 0));
+            set_x(b, menu_map((float)*b->x, left, w, g_s, 0));
             j++;
             continue;
         }
@@ -1149,10 +1513,10 @@ static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float
         float xl = (float)*l->x, xr = (float)*r->x;
         float ya = (float)*a->y, yb = (float)*b->y;
         float sy0 = ya < yb ? ya : yb, sy1 = ya < yb ? yb : ya;
-        float ml = rg_layout_map(xl, RG_ANCHOR_CENTER, left, w, g_s);
-        float mr = rg_layout_map(xr, RG_ANCHOR_CENTER, left, w, g_s);
         /* a background tile: at least an eighth of the screen each way */
         int sbg = bg && xr - xl >= 0.125f * w && sy1 - sy0 >= 0.125f * (bot - top);
+        float ml = menu_map(xl, left, w, g_s, sbg);
+        float mr = menu_map(xr, left, w, g_s, sbg);
         int tck1 = l->tck == 1 && r->tck == 1;
         /* (2026-10-31) the menu's shading layer: one sprite covering exactly the 4:3 screen,
          * drawn over the backdrop with a low-detail texture magnified about 4-5x (every
@@ -1170,16 +1534,17 @@ static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float
                 fprintf(g_log, "  vignette: u=%g..%g over the canvas\n", tc_get(l), tc_get(r));
             continue;
         }
-        if (!sbg && (xr <= L + px || xl >= R - px)) { /* hidden at 4:3: keep it hidden */
+        const float RR = xr - xl < 0.125f * w ? RRs : RR0;   /* (wide content, rg_layout_wide_begin) */
+        if (!sbg && (xr <= L + px || xl >= RR - px)) { /* hidden at 4:3: keep it hidden */
             set_x(l, ml);
             set_x(r, ml);
             continue;
         }
-        float vis = xr > xl ? ((xr < R ? xr : R) - (xl > L ? xl : L)) / (xr - xl) : 1.0f;
+        float vis = xr > xl ? ((xr < RR ? xr : RR) - (xl > L ? xl : L)) / (xr - xl) : 1.0f;
         int tcok = l->tck && r->tck && l->tck == r->tck;
         if (!sbg && (vis < 0.5f || xr - xl < 0.25f * w)) {   /* mostly hidden / small: clip to the screen */
             float ul = tcok ? tc_get(l) : 0.0f, ur = tcok ? tc_get(r) : 0.0f;
-            float cl = xl < L ? L : xl, cr = xr > R ? R : xr;
+            float cl = xl < L ? L : xl, cr = xr > RR ? RR : xr;
             if (tcok && xr > xl) {
                 float nl = ul + (ur - ul) * (cl - xl) / (xr - xl);
                 float nr = ul + (ur - ul) * (cr - xl) / (xr - xl);
@@ -1189,13 +1554,37 @@ static void menu_sprites(void *pkt, rg_layout_xref *xs, int n, float left, float
             } else if (!tcok && (l->tck || r->tck)) {
                 cl = cr = xl;                        /* cannot cut its texture: hide it */
             }
-            set_x(l, rg_layout_map(cl, RG_ANCHOR_CENTER, left, w, g_s));
-            set_x(r, rg_layout_map(cr, RG_ANCHOR_CENTER, left, w, g_s));
+            set_x(l, menu_map(cl, left, w, g_s, 0));
+            set_x(r, menu_map(cr, left, w, g_s, 0));
             continue;
         }
         if (!sbg) {                                  /* bleeding off an edge: pin it there */
             if (xl < L - px && ml > L) ml = L;
             if (xr > R + px && mr < R) mr = R;
+            /* (2026-11-11, lane menupolish) a bar ending exactly at the 4:3 screen's right
+             * edge looks the same at 4:3 as one bleeding past it, and the frame draws the
+             * two kinds side by side: the transporter / save screens' header box fill
+             * (x 158..512) and its inner line (170..511) stopped at the old edge while the
+             * box's border lines (173..535, 174..517) were pinned to the canvas edge (a
+             * navy box with its outline running on alone, 21:9 left most visibly).  A wide
+             * plain bar (>= a quarter of the screen wide, the rule above; see `bar` below)
+             * reaching the right edge within 1 px is pinned like one bleeding off it.
+             * RG_LAYOUT_PIN_EDGE=0: off. */
+            if (g_pin_edge < 0) {
+                const char *e = getenv("RG_LAYOUT_PIN_EDGE");
+                g_pin_edge = !(e && *e == '0');
+            }
+            /* the same at the left edge: battle results' header rule is two halves, 0..256
+             * and 256..512, and its "Acquired Items" box lines 271..513; centred they
+             * stopped at the old 4:3 edges in mid-screen */
+            /* a plain bar: at least 4x as wide as tall (not a panel / the portrait ring,
+             * which slides past 512 while the main menu opens) and a low-detail texture
+             * (at most 1 texel per 4 pixels: a fill or rule, safe to stretch; the shop's /
+             * Galaxy Map's titles start at x 0 with their lettering 1:1 and stay as they are) */
+            float du = tcok ? fabsf(tc_get(r) - tc_get(l)) : 0.0f;
+            int bar = g_pin_edge && 4.0f * (sy1 - sy0) <= xr - xl && 16.0f * 4.0f * du <= xr - xl;
+            if (bar && xr >= R - px && xr <= R + px && xl > L + px && mr < R) mr = R;
+            if (bar && xl >= L - px && xl <= L + px && xr < R - px && ml > L) ml = L;
             set_x(l, ml);
             set_x(r, mr);
             continue;
@@ -1366,6 +1755,11 @@ int rg_layout_packet(void *pkt, const void *caller)
     g_st.verts += nv > 0 ? (unsigned)nv : 0u;
     uintptr_t task = g_depth > 0 && g_depth <= MAXDEPTH ? (uintptr_t)g_task[g_depth - 1] : 0;
     uint32_t ck = mix(mix(2166136261u, (uint32_t)task), (uint32_t)(uintptr_t)caller);
+    /* a follow_begin bracket's packets count apart: the menu page's packets, all with the
+     * followed anchor, would otherwise shift the n-th-packet identities (and so the filed
+     * anchors) of the same task's other packets (the opening's sparkles) frame to frame */
+    if (g_follow)
+        ck = mix(ck, 0x666F6C6Cu);
     uint32_t key = mix(ck, ordinal(ck ? ck : 1));
     if (!key)
         key = 1;
@@ -1464,6 +1858,7 @@ int rg_layout_packet(void *pkt, const void *caller)
         anchor = RG_ANCHOR_CENTER;
         from_prev = 1;
         g_st.menu++;
+        g_menu_ctr = menu_ctr_task((const void *)task);   /* menu position: this task stays centred */
     } else if (!why) {
         /* the element's extent when known ahead (rg_layout_elem_begin: a message window's
          * text block): a partly typed-out line is anchored and grouped as the whole block; a
@@ -1479,6 +1874,21 @@ int rg_layout_packet(void *pkt, const void *caller)
             if (h1 > ex1) ex1 = h1;
         }
         anchor = tab_get(g_prev, key, &yanchor, &ue);
+        int forced = g_follow ? g_fa : -1;
+        if (g_follow) {
+            if (g_fu_n++ == 0) {
+                g_fu_x0 = ex0; g_fu_x1 = ex1; g_fu_y0 = y0; g_fu_y1 = y1; g_fu_w = w;
+            } else {
+                if (ex0 < g_fu_x0) g_fu_x0 = ex0;
+                if (ex1 > g_fu_x1) g_fu_x1 = ex1;
+                if (y0 < g_fu_y0) g_fu_y0 = y0;
+                if (y1 > g_fu_y1) g_fu_y1 = y1;
+            }
+        }
+        if (forced > RG_ANCHOR_NONE) {
+            anchor = forced;
+            g_st.followed++;
+        }
         from_prev = anchor >= 0;
         if (anchor < 0) {
             /* a packet new this frame (no anchor filed under its identity): the anchor of a
@@ -1487,7 +1897,7 @@ int rg_layout_packet(void *pkt, const void *caller)
              * what the group's anchor will be next frame; else its own rectangle */
             const float slack = 4.0f * 16.0f;
             int first = g_depth > 0 && g_depth <= MAXDEPTH ? g_mark[g_depth - 1] : 0;
-            for (int i = g_npk - 1; i >= first && anchor < 0; i--) {
+            for (int i = g_npk - 1; i >= first && anchor < 0 && !g_elem; i--) {
                 const pkrec *b = &g_pk[i];
                 if (ex0 <= b->x1 + slack && b->x0 <= ex1 + slack && y0 <= b->y1 + slack && b->y0 <= y1 + slack &&
                     b->anchor > RG_ANCHOR_NONE) {
@@ -1498,7 +1908,9 @@ int rg_layout_packet(void *pkt, const void *caller)
                 }
             }
             if (anchor < 0) {
-                anchor = rg_layout_anchor(ex0, ex1, left, w);
+                /* an element extent known ahead is a group: the cluster rule its next frame gets
+                 * (a window as wide as the screen centred, not left untouched for one frame) */
+                anchor = g_elem ? rg_layout_cluster_anchor(ex0, ex1, left, w) : rg_layout_anchor(ex0, ex1, left, w);
                 yanchor = RG_ANCHOR_NONE;
                 ue = 1.0f;
                 if (g_uon) {
@@ -1520,6 +1932,7 @@ int rg_layout_packet(void *pkt, const void *caller)
             k->anchor = anchor;
             k->yanchor = yanchor;
             k->u = ue;
+            k->forced = forced > RG_ANCHOR_NONE ? forced : 0;
         }
     }
     float u0 = 1e30f, u1 = -1e30f;   /* texture coordinate range (U texels / S) */
@@ -1534,7 +1947,7 @@ int rg_layout_packet(void *pkt, const void *caller)
                 (unsigned long)(task ? task - image_base() : 0), (unsigned long)((uintptr_t)caller - image_base()),
                 (x0 - left) / 16.0f, (x1 - left) / 16.0f, y0 / 16.0f, y1 / 16.0f, nv, g_scan_psm, g_scan_fbp, g_scan_fbw,
                 why ? why : aname(anchor), menu ? " (menu)" : why || from_prev ? "" : " (own)", g_scan_tbp,
-                u0 < 1e29f ? u0 : -1.0f, u0 < 1e29f ? u1 : -1.0f, g_elem && !why ? " elem" : "");
+                u0 < 1e29f ? u0 : -1.0f, u0 < 1e29f ? u1 : -1.0f, g_elem && !why ? " elem" : g_follow && !why ? " follow" : "");
     if (g_about && why && why[0] == 'a') {
         /* world-anchored text: about its own projected point (no grouping, no scissor) */
         float a = g_about_px ? left + 16.0f * g_about_x : g_about_x;
@@ -1586,7 +1999,7 @@ int rg_layout_packet(void *pkt, const void *caller)
             continue;
         if (x->kind == 0) {
             float o = (float)*x->x;
-            float v = rg_layout_map(o, anchor, left, w, sx);
+            float v = menu ? menu_map(o, left, w, sx, 0) : rg_layout_map(o, anchor, left, w, sx);
             /* stage 3: a menu piece that bleeds off the screen (title bars, frame
              * strips) keeps reaching the canvas edge: its vertices outside the screen
              * are pinned there (a slight stretch of that piece instead of a gap).  Not
@@ -1611,8 +2024,8 @@ int rg_layout_packet(void *pkt, const void *caller)
             float a0 = (float)(sc & 0x7FF), a1 = (float)((sc >> 16) & 0x7FF);
             if (a1 - a0 + 1.0f >= RG_LAYOUT_FULL * wpx)
                 continue;
-            float b0 = rg_layout_map(a0, anchor, 0.0f, wpx, sx);
-            float b1 = rg_layout_map(a1 + 1.0f, anchor, 0.0f, wpx, sx) - 1.0f;
+            float b0 = menu ? menu_map(a0, 0.0f, wpx, sx, 0) : rg_layout_map(a0, anchor, 0.0f, wpx, sx);
+            float b1 = (menu ? menu_map(a1 + 1.0f, 0.0f, wpx, sx, 0) : rg_layout_map(a1 + 1.0f, anchor, 0.0f, wpx, sx)) - 1.0f;
             if (b0 < 0.0f) b0 = 0.0f;
             if (b1 < b0) b1 = b0;
             sc &= ~((uint64_t)0x7FF | ((uint64_t)0x7FF << 16));

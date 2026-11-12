@@ -164,6 +164,20 @@ void ra_render_f(float *lr, uint32_t frames)
             lr[i] /= 32768.0f;
 }
 
+/* $RG_AUDIO_HEADROOM (runtime.c): the master volume applied to the presentation mix BEFORE its
+ * one s16 clip instead of after it (host stream gain); presentation only, the model mix and its
+ * hash never see it (docs/NATIVE-AUDIO.md "Master volume headroom"); the runtime also folds in
+ * its output level $RG_AUDIO_LEVEL ("Output level vs PCSX2") */
+static volatile float g_present_head = 1.0f;
+static uint64_t g_present_clips;   /* presentation samples clipped (host statistic, not saved) */
+
+uint64_t ra_present_clips(void) { return g_present_clips; }
+
+void ra_present_set_headroom(float gain)
+{
+    g_present_head = gain > 0.0f ? (gain < 1.0f ? gain : 1.0f) : 0.0f;   /* also NaN -> 0 */
+}
+
 void ra_render2(int16_t *lr, int16_t *plr, uint32_t frames)
 {
     float buf[2 * 256], pbuf[2 * 256];
@@ -177,8 +191,13 @@ void ra_render2(int16_t *lr, int16_t *plr, uint32_t frames)
         }
         if (plr) { /* presentation: its clips are not the model's statistic */
             uint32_t pclips = 0;
+            const float hg = g_present_head;
+            if (hg != 1.0f)
+                for (uint32_t i = 0; i < n * 2; i++)
+                    pbuf[i] *= hg;
             for (uint32_t i = 0; i < n * 2; i++)
                 plr[i] = to16(pbuf[i], &pclips);
+            g_present_clips += pclips;
             plr += n * 2;
         }
         frames -= n;

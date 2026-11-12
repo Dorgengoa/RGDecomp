@@ -2,7 +2,7 @@
 # Native renderer, scene side (docs/NATIVE-RENDER.md): the model program's
 # semantics (nr_vu1), the mesh cache, draw records and the runtime wiring.
 # The device side lives in src/gpu (gpu_nr_draw, nr_draw.hlsl).
-add_library(rg_native_render STATIC nr.h nr_vu1.h nr_vu1.c nr_vu1sh.h nr_vu1sh.c nr_vu1ln.h nr_vu1ln.c nr_mesh.h nr_mesh.c nr_const.h nr_const.c nr_comp.h nr_comp.c nr_im.h nr_im.c nr_sfx.h nr_sfx.c nr_scene.c nr_hw.c nr_fx.c nr_vux.c
+add_library(rg_native_render STATIC nr.h nr_vu1.h nr_vu1.c nr_vu1sh.h nr_vu1sh.c nr_vu1ln.h nr_vu1ln.c nr_mesh.h nr_mesh.c nr_const.h nr_const.c nr_comp.h nr_comp.c nr_im.h nr_im.c nr_sfx.h nr_sfx.c nr_scene.c nr_hw.c nr_fx.c nr_vux.c nr_lnrm.h nr_lnrm.c
   nr_gs.h nr_gs.c nr_q.c nr_gsmem.h nr_gsmem.c nr_interp.h nr_interp.c nr_mem.h nr_mem.c)
 target_include_directories(rg_native_render PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(rg_native_render PUBLIC rg_ps2_gs rg_ps2_vif rg_ps2_vu PRIVATE rg_flags)
@@ -53,7 +53,7 @@ elseif(RG_NATIVE_ONLY AND NOT WIN32)
   endif()
 endif()
 # original port code (hot per-frame paths): -O2 like src/gpu (docs/PERF-3D.md fix 4)
-set_source_files_properties(nr_vu1.c nr_vu1sh.c nr_vu1ln.c nr_mesh.c nr_const.c nr_comp.c nr_im.c nr_sfx.c nr_scene.c nr_fx.c nr_vux.c nr_gs.c nr_q.c nr_gsmem.c nr_interp.c nr_mem.c PROPERTIES COMPILE_OPTIONS -O2)
+set_source_files_properties(nr_vu1.c nr_vu1sh.c nr_vu1ln.c nr_mesh.c nr_const.c nr_comp.c nr_im.c nr_sfx.c nr_scene.c nr_fx.c nr_vux.c nr_lnrm.c nr_gs.c nr_q.c nr_gsmem.c nr_interp.c nr_mem.c PROPERTIES COMPILE_OPTIONS -O2)
 if(WIN32)
   target_compile_definitions(rg_native_render PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()

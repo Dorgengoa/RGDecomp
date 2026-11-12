@@ -106,6 +106,15 @@ if(NOT WIN32)
     target_compile_options(rg_game_flags INTERFACE "SHELL:-include port/sqrtf_map.h")
   endif()
 endif()
+# Windows i686 (2026-11-10, lane menuleft: VS 2022 / MSVC 14.44 replaced VS 2019 / 14.29): the
+# same float-sqrt mapping.  VS 2019's CRT sqrtf (libcpmt xfprec.obj) was x87 fsqrt + fstps under
+# the x87 control word (round to nearest); VS 2022's (libcpmt special_math.obj -> ucrt
+# sqrt_sse2_precise) is SSE2 and rounds under the guest MXCSR (toward zero, DAZ): golden route
+# hash + audio off from field 24,894.  rg_sqrtf_rn is the round-to-nearest result whatever the CRT
+# (docs/TOOLCHAIN.md "MSVC toolset").
+if(WIN32 AND RG_ARCH STREQUAL "i686")
+  target_compile_options(rg_game_flags INTERFACE "SHELL:-include port/sqrtf_map.h")
+endif()
 
 # RG_GAME_OPT: the optimisation level of the game objects (game/, overrides/,
 # missing/: the rg_game_<image> sources).  docs/UB-AUDIT.md.  CMake keeps only
@@ -157,6 +166,22 @@ if(RG_SBGUARD)
   add_library(rg_sbguard_census STATIC ${CMAKE_SOURCE_DIR}/src/game/sbguard_census.c)
   target_link_libraries(rg_sbguard_census PRIVATE rg_flags)
   target_link_libraries(rg_game_flags INTERFACE rg_sbguard_census)
+endif()
+
+# RG_ASAN=ON: stack-overrun check build (docs/UB-AUDIT.md "Local-size check").  The game
+# objects (game/, overrides/, missing/) are compiled with -fsanitize=address, recoverable,
+# stack + heap checks only (no global redzones: the data layer is one contiguous retail image;
+# no use-after-scope / use-after-return: fake stacks would move locals off the fiber stacks),
+# so a callee writing past a C local (CharaResolveActionHitMaybe_3b28d0's L430, 0xE08 declared,
+# 0xE10 written) is reported where it happens.  rg-game links the clang runtime
+# (cmake/game_link.cmake); src/savestate/ss_heap.c then leaves malloc & co. to it (no save
+# states in this build).  Linux (clang + compiler-rt) only; never a shipping build.
+option(RG_ASAN "stack-overrun check build of the game sources (docs/UB-AUDIT.md)" OFF)
+if(RG_ASAN)
+  target_compile_options(rg_game_flags INTERFACE -fsanitize=address -fsanitize-recover=address
+    -fno-sanitize-address-use-after-scope -fsanitize-address-use-after-return=never
+    "SHELL:-mllvm -asan-globals=0" -fno-omit-frame-pointer)
+  message(STATUS "RG_ASAN: game objects with -fsanitize=address (stack/heap; check build)")
 endif()
 
 # What the game executable must link besides the rg_game_<image> objects

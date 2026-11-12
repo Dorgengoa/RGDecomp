@@ -201,7 +201,8 @@ struct GpuNrDraw {
     const GpuImVtx *im;      /* immediate primitives (triangle list) instead of d->mesh; NULL: a mesh */
     /* texture = a live colour target sampled directly at the internal resolution
      * (immediate primitives; -1: the decoded texture); tex_snap: it is the
-     * target drawn into: sample a copy of tex_rect taken before the draw */
+     * target drawn into: sample a copy of tex_rect taken before the draw (2: sample the copy an
+     * earlier draw into the same target took, nothing copied: nr_dev.cpp RG_NR_FBX) */
     int tex_rt, tex_snap;
     GpuRect tex_rect;
     /* the decoded texels (dec_rect, RGBA8) computed by the core from a pending
@@ -349,6 +350,9 @@ public:
     virtual bool rt_pass(int phase) { (void)phase; return false; }
     /* (rt4) ray-traced character shadows shown at nearly full strength now (gpu_nr_rt_chars_shadow) */
     virtual int rt_chars_shadow() { return 0; }
+    /* (rtnext) a game frame's skinned records before its draws (gpu_nr_rt_prepose) */
+    virtual int rt_prepose_on() { return 0; }
+    virtual void rt_prepose(const gpu_nr_draw *d) { (void)d; }
     virtual void rt_pass_cast(const GpuNrDraw &g) { (void)g; }
     /* any thread: create the GPU copy of a native mesh ahead of its first draw (gpu.h
      * gpu_nr_mesh_prewarm) */
