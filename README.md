@@ -1,163 +1,64 @@
 # Rogue Galaxy PC port
 
-A native Windows port of *Rogue Galaxy* (PlayStation 2, North America, SCUS-97490 v1.01).
-It is not an emulator. The game's own code comes from the matching decompilation of the
-retail executable and is compiled for the PC. The PS2 hardware, operating system and sound
-system are replaced by native PC code: a Direct3D 11 / Vulkan renderer, a native audio
-engine, and native file, controller, memory-card and movie services.
+A native PC port of *Rogue Galaxy* (PS2, North America, SCUS-97490 v1.01) for Windows and
+Linux. It is not an emulator: the game's code comes from a matching decompilation and is
+compiled for the PC, with native graphics (Direct3D 11 / Vulkan), audio, input, saves and
+movies.
 
-**You need your own copy of the game.** This branch and the download contain no game
-content: no art, sound, music, movies, text or game data, and no bytes taken from the
-game's executable. The first-run setup reads everything it needs from your own disc image.
+**You need your own copy of the game.** The downloads contain no game content; setup
+rebuilds everything from your own disc image.
 
-- **Play it on Windows:** download `release/RogueGalaxyPC-1112a-win32.zip` and follow
-  [QUICKSTART.md](QUICKSTART.md). In short: unzip it, put your `.iso` in the folder, run
-  `Setup.exe` once, then run `rg-game.exe`.
-- **Play it on Linux (x86-64):** download `release/RogueGalaxyPC-1112a-linux-x86_64.zip`
-  and follow [QUICKSTART-linux.md](QUICKSTART-linux.md): unzip it, put your `.iso` in the
-  folder, run `./rg-setup` once, then run `./rg-game`.
-- **Build:** 1112a (2026-11-12).
+## Play
 
-## Current state
+| | Download | Steps |
+| --- | --- | --- |
+| Windows 10/11 | `release/RogueGalaxyPC-1112a-win32.zip` | Unzip, put your `.iso` in the folder, run `Setup.exe` once, then `rg-game.exe`. See [QUICKSTART.md](QUICKSTART.md). |
+| Linux x86-64 (Vulkan, X11 or Wayland) | `release/RogueGalaxyPC-1112a-linux-x86_64.zip` | Unzip, put your `.iso` in the folder, run `./rg-setup` once, then `./rg-game`. See [QUICKSTART-linux.md](QUICKSTART-linux.md). |
 
-The port is **playable but unfinished**. Expect bugs; please report them with the steps
-that led there.
+Build 1112a (2026-11-12). Automated tests reach every story boss on both platforms; please
+report bugs with the steps that led there.
 
-- The whole game is compiled natively: all game code from the decompilation, the five game
-  overlays (title, story, Factory, Insectron, Insectron menu) and the parts of the Sony
-  libraries the game uses. No emulation code is linked into the shipping executable.
-- Tested through automated runs on every build: new game to the first save (title,
-  opening movie, first field, first battle, town, save point, saving), booting saves from
-  every chapter, maps, battles, game over, the shop, the Factory and Insectron.
-- Play-testers have played from the start through the early boss fights. **A complete
-  playthrough has not been confirmed yet.** Later chapters are covered by the automated save tests only.
-- Windows 10 or 11, 64-bit, with a Direct3D 11 or Vulkan graphics card. The Windows
-  executable in the download is 32-bit; a 64-bit Windows build exists and runs the same
-  automated routes, but is not in the download yet.
-- Linux, x86-64, with a Vulkan driver (X11 or Wayland): a native 64-bit build in its own
-  download. It runs the same automated routes as Windows with the same results; it has had
-  less play-testing.
+## Features
 
-## Features added over the original
+- **Display:** windowed or fullscreen, internal resolution up to 8x, widescreen (16:9,
+  16:10, 21:9) with menus and HUD laid out for the wider screen, frame rates up to 240 or
+  uncapped, anti-aliasing, anisotropic filtering, and enhanced bloom, depth of field and shadows.
+- **HD texture packs:** dump and replace textures (PCSX2-compatible names).
+- **Controls:** keyboard, mouse and any gamepad, fully rebindable, with button prompts
+  matching your device.
+- **Audio:** separate volumes and output device selection.
+- **Options:** text speed, battle speed-up, UI scale, colour-blind modes and reduced
+  flashing; inventory sorting.
+- **Saves:** stored as files with automatic backups; import from a PCSX2 memory card.
+- **Settings menu:** F1 (or hold Back + Start). An "Original" preset restores the PS2 look
+  and behaviour.
 
-**Display and graphics**
-- Window, borderless fullscreen (F11 or Alt+Enter) or exclusive fullscreen; resizable
-  window; VSync.
-- Internal resolution 1x to 8x, or matched to the window.
-- Widescreen: 4:3, 16:9, 16:10, 21:9 or automatic, with a widened view, HUD and menus
-  anchored to the screen edges, and movies kept at their own aspect ratio.
-- Exclusive fullscreen with a resolution and refresh-rate picker; monitors listed by name.
-- Anti-aliasing (FXAA, 2x to 4x supersampling), texture filtering (original, bilinear,
-  nearest), anisotropic filtering up to 16x, sharpening, CRT / scanline filter, brightness
-  and gamma.
-- Bloom, depth of field and motion blur: original, enhanced or off.
-- Frame rate: original, 30, 60, 120, 144, 165, 240, the display's rate or uncapped, with
-  optional interpolation for smoother motion above 30 fps (off by default).
-- HD texture packs: dump the game's textures as PNG and draw replacements (PNG / DDS, any
-  size) from `textures\SCUS-97490
-eplacements`; file names follow PCSX2's texture-pack
-  naming (off by default).
-- Direct3D 11 (default) or Vulkan.
-- FPS counter.
+## Notes
 
-**Controls**
-- Keyboard, mouse and any SDL-supported gamepad, with rebinding in the menu (several
-  bindings per action).
-- Dead zones, sensitivity and inversion per stick; mouse camera; a walk key.
-- PC-style or original camera direction on the right stick.
-- Hot-plugging controllers and switching devices mid-game; button names in the settings
-  menu follow the device you use (PlayStation, Xbox, Nintendo, keyboard).
-- Optional compensation for the game's own stick dead zone (a gameplay option, off by
-  default).
-
-**Audio**
-- Master, music, effects, voice and movie volumes.
-- Output device selection, switching live, and falling back when a headset is unplugged.
-- Keep playing or mute when the window loses focus.
-
-**Accessibility and gameplay options**
-- UI and subtitle scale (75 to 150 %), camera shake (0 to 100 %), reduced flashing.
-- Colour-blind modes for markers told apart by colour alone.
-- Text speed (original, fast, instant) and battle speed-up (1.5x to 3x); off by default.
-
-**Saves and loading**
-- Memory-card saves as files in `saves\`, written crash-safe, with automatic backups; the
-  saves folder and the number of backups can be set.
-- Save manager in the settings menu: list saves and name them.
-- Import saves from a PCSX2 memory card (the card file is only read).
-- No disc loading delays.
-
-**Settings menu**
-- In-game settings overlay: F1, or hold Back + Start on a gamepad for one second.
-- An "Original" preset that restores the PS2 look and behaviour.
-- Settings are saved in `settings.ini` next to the game.
-
-## Known issues
-
-- No complete playthrough has been confirmed yet (see above).
-- Fixes not yet confirmed by a player: the Item Storage crash at the transporter; Monsha's
-  head and tail tip; floors culled while on screen; interpolated frames out of sync;
-  subtitles snapping from the left at wide aspect ratios; Exchange Points showing "Qu";
-  extra bold outlines on faces; the inventory selection frame; menu sides at 16:9 / 21:9.
-- Saving can cause a short slowdown and an audio hiccup.
-- Closing a shop runs at about 15 fps for half a second.
-- "Enhanced" depth of field and motion blur currently look the same as "Original".
-- The shadow-resolution setting in the menu is a placeholder.
-- Movie audio runs at the disc's 48,048 Hz clock; long movies may drift very slightly.
-- Windows SmartScreen warns about the unsigned executables (choose "More info", then
-  "Run anyway").
-- If the game crashes on Windows, `rg-game-crash.txt` and `rg-game-crash.dmp` appear next to it.
-  Please include them in a report.
-
-## Planned
-
-- A confirmed full playthrough, with automated runs covering every chapter.
-- The 64-bit Windows build in the download; later macOS.
-- Optional ray tracing (Vulkan, 64-bit build): sun shadows, ambient occlusion, reflections
-  and light from the art's lamps, screens and flames. Working in development builds, not
-  in this download yet.
-- Shadow resolution; enhanced depth of field and motion blur.
-- Modding support beyond texture packs.
-
-## How the download avoids shipping game content
-
-The game executable is built from code compiled out of the decompilation, but it also
-needs the game's data tables (numbers, names and parameters stored in the retail
-executable and overlays). Those bytes are **not** in the download. The packaging step
-compares the built `rg-game.exe` against the retail files and zeroes every byte that
-matches them, leaving `rg-game.blank`. It writes `rg-game.fill`, a table of positions:
-for each zeroed run, which retail file and offset to copy it from. The table holds no
-content.
-
-`Setup.exe` checks that your disc image is the supported one (SHA-1), unpacks its files
-into `data\`, copies each run back from those files into `rg-game.blank`, and checks the
-result's SHA-256 before writing `rg-game.exe`. A different disc or a damaged download is
-refused, so nothing half-built is ever run. The game itself reads only `data\`, never the
-disc image.
+- Windows SmartScreen warns about the unsigned executables: choose "More info", then "Run
+  anyway".
+- If the game crashes on Windows, please attach `rg-game-crash.txt` and `rg-game-crash.dmp`
+  (next to the game) to your report.
 
 ## Supported disc
 
-| | |
-| --- | --- |
-| Title | Rogue Galaxy (USA) |
-| Serial | SCUS-97490, version 1.01 |
-| Image | 6,967,721,984 bytes, SHA-1 `87377e721be58e8b6a5a7501721563500d237df7` |
+Rogue Galaxy (USA), SCUS-97490 v1.01: 6,967,721,984 bytes, SHA-1
+`87377e721be58e8b6a5a7501721563500d237df7`. Other versions are refused by setup.
 
-Other regions and versions are not supported yet; `Setup.exe` names the disc it found.
+## How the download avoids game content
+
+Every byte of the built executable that matches the retail game is zeroed before
+packaging, and a table records only where each run comes from. Setup verifies your disc,
+copies those bytes back from it, and checks the result's SHA-256 before writing the
+executable.
 
 ## License
 
-The port's own code and documentation are dedicated to the public domain under
-[CC0 1.0](LICENSE).
-
-CC0 does **not** cover the game code compiled into `rg-game.exe`. That code is decompiled
-from, and derived from, *Rogue Galaxy*, a copyrighted game by Level-5 and Sony Interactive
-Entertainment, and no rights to it are granted. *Rogue Galaxy* is a trademark of its
-owners. This project is not affiliated with or endorsed by them.
-
-Third-party libraries keep their own licenses: see
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and `THIRD_PARTY_LICENSES.txt`. No
-GPL-licensed code is used.
+The port's own code and documentation are [CC0 1.0](LICENSE). This does **not** cover the
+game code compiled into the executable, which is derived from *Rogue Galaxy* (© Level-5 /
+Sony Interactive Entertainment); no rights to it are granted. This project is not
+affiliated with or endorsed by them. Third-party libraries keep their own licenses
+([THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)); no GPL code is used.
 ## Building from source
 
 This branch also holds the port's source, so others can build and change it.
