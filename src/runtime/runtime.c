@@ -768,17 +768,40 @@ static void cdvd_wait_hook(void *ctx, uint64_t due_us)
 #endif /* RG_IOP_ORACLE */
 
 /* ---------------------------------------------------------------- pad glue */
+static rg_runtime_pad_fn g_pad_hook;
+static void *g_pad_hook_user;
+void rg_runtime_set_pad_hook(rg_runtime_pad_fn fn, void *user)
+{
+    g_pad_hook = fn;
+    g_pad_hook_user = user;
+}
+uint64_t rg_runtime_run_hash(void) { return R.st.run_hash; }
+
 static int pad_source(void *user, int port, uint64_t vblank, rg_pad_report *out)
 {
     (void)user;
     rg_pad p;
     uint32_t vbl = R.cfg.game_vblank ? R.cfg.game_vblank(R.cfg.game_vblank_user, vblank) : (uint32_t)vblank;
-    rg_host_read_pad(R.host, port, vbl, &p);
     memset(out, 0, sizeof *out);
-    if (port == 0)
-        out->connected = 1;
-    else
-        out->connected = rg_host_port_connected(R.host, 1) ? 1 : 0; /* live 2-player only */
+    if (g_pad_hook) {
+        /* online versus (rg_runtime_set_pad_hook): the session's lock-step stream */
+        uint8_t st[4] = {0x80, 0x80, 0x80, 0x80};
+        int conn = port == 0;
+        rg_pad_neutral(&p);
+        g_pad_hook(g_pad_hook_user, port, vbl, &p.buttons, st, &conn);
+        p.lx = st[0];
+        p.ly = st[1];
+        p.rx = st[2];
+        p.ry = st[3];
+        rg_pad_fill_pressure(&p);
+        out->connected = conn ? 1 : 0;
+    } else {
+        rg_host_read_pad(R.host, port, vbl, &p);
+        if (port == 0)
+            out->connected = 1;
+        else
+            out->connected = rg_host_port_connected(R.host, 1) ? 1 : 0; /* live 2-player only */
+    }
     out->has_pressure = 1;
     out->buttons = p.buttons;
     out->lx = p.lx;
@@ -3468,6 +3491,24 @@ int rg_runtime_run_field(void)
         return R.last_rc;
     }
     R.st.fields++;
+    {   /* $RG_PRESENT_DUMP=dir and $RG_PRESENT_DUMP_FIELDS=a-b: every present (not every field) of
+         * fields a..b as raw RGBA (rg_host_present_dump; flicker that lives between game ticks) */
+        static int pd_init;
+        static char pd_dir[512];
+        static uint64_t pd_a, pd_b;
+        if (!pd_init) {
+            const char *d = getenv("RG_PRESENT_DUMP"), *f = getenv("RG_PRESENT_DUMP_FIELDS");
+            pd_init = 1;
+            if (d && *d && f && *f) {
+                char *x = NULL;
+                snprintf(pd_dir, sizeof pd_dir, "%s", d);
+                pd_a = strtoull(f, &x, 0);
+                pd_b = (x && *x == '-') ? strtoull(x + 1, NULL, 0) : pd_a;
+            }
+        }
+        if (pd_dir[0] && R.host)
+            rg_host_present_dump(R.host, (R.st.fields >= pd_a && R.st.fields <= pd_b) ? pd_dir : "", R.st.fields);
+    }
     host_half();
     if (R.ndump)
         dump_field();

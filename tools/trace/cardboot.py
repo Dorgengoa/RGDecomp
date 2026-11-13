@@ -263,8 +263,32 @@ def plan_listen(d: Driver):
     d.log("listen done")
 
 
+def plan_burst(d: Driver):
+    """Field control, nothing pressed after it, then window shots as fast as PrintWindow goes
+    from C+40 for BURST_VBL VBlanks (shots burst/v<VBL>.png; run with --speed 0.25 so every
+    VBlank is caught): the retail side of a flicker check (tools/native/flickscan.py
+    --glob 'v*.png'; lane zbanner 2026-11-12)."""
+    import live
+    c = boot_to_control(d)
+    d.shot("control", c + 40)
+    bd = d.dir / f"{d.name}_burst"
+    bd.mkdir(parents=True, exist_ok=True)
+    last = -1
+    while True:
+        v = d.pine.read32(VBL)
+        if v > c + 40 + BURST_VBL:
+            break
+        if v != last:
+            live.window_shot(d.e.proc.pid, str(bd / f"v{v:06d}.png"))
+            last = v
+        time.sleep(0.002)
+    d.log(f"burst {c + 40}..{c + 40 + BURST_VBL} -> {bd.name}")
+
+
+BURST_VBL = int(os.environ.get("CARDBOOT_BURST_VBL", "120"))
+
 PLANS = {"listen": plan_listen, "lib": plan_lib, "factory": plan_factory, "loadmenu": plan_loadmenu, "revel": plan_revel,
-         "itemgrid": plan_itemgrid}
+         "itemgrid": plan_itemgrid, "burst": plan_burst}
 
 
 def _par(v):

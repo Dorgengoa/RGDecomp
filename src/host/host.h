@@ -372,6 +372,10 @@ int rg_host_screenshot(rg_host *h, const char *path);
 /* PNG of the next presented WINDOW (scaled frame + overlay), written inside
  * the next rg_host_present.  Windowed only (headless never presents). */
 void rg_host_request_window_shot(rg_host *h, const char *path);
+/* Diagnostic ($RG_PRESENT_DUMP, runtime.c): while dir is non-empty every present also writes
+ * dir/pNNNNNN_fFIELD_WxH.rgba (the window back buffer before the overlay, raw RGBA8);
+ * field tags the files.  "" stops.  Windowed only. */
+void rg_host_present_dump(rg_host *h, const char *dir, uint64_t field);
 /* The folder F12 writes to (system.screenshot_dir, applied live; "." by
  * default). */
 const char *rg_host_screenshot_dir(const rg_host *h);
@@ -437,6 +441,16 @@ void rg_host_apply_input_map(rg_host *h);
 /* Port 0 is always connected; port 1 only in a live two-player setup
  * (input.players = two, >= 2 gamepads, no script, not headless). */
 bool rg_host_port_connected(const rg_host *h, int port);
+/* Clipboard for the game's text entry (lane insnet, src/game/rg_textentry.c): Ctrl+V stores the
+ * clipboard text, rg_host_take_paste hands it over once (1 = text in out); Ctrl+C is counted,
+ * rg_host_take_copy_request returns 1 once per request; rg_host_set_clipboard 0 ok (-1 headless).
+ * Neither key reaches the pad while Ctrl is held. */
+int rg_host_take_paste(rg_host *h, char *out, size_t cap);
+int rg_host_take_copy_request(rg_host *h);
+int rg_host_set_clipboard(rg_host *h, const char *text);
+/* Keep the window responsive during a long wait inside a field (online lock-step): pumps the OS
+ * event queue without handling anything (events stay queued for rg_host_pump). */
+void rg_host_keepalive(rg_host *h);
 /* Most recently used device (rg_device_kind) and a printable name. */
 int rg_host_active_device(const rg_host *h, char *name, size_t cap);
 /* While the overlay is open, live pad reads are neutral (scripts unaffected). */

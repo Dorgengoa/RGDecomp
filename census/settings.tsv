@@ -1,15 +1,15 @@
 id	type	category	default	original	flags	menu	readers	reader_sites	values	label	src
-display.window_mode	ENUM	display	windowed	windowed	DISPLAY,ORIG	yes	11	src/host/host_sdl.c:218 src/host/host_sdl.c:219 src/host/host_sdl.c:248 src/host/host_sdl.c:249 src/host/host_sdl.c:250 src/host/host_sdl.c:654 ...	windowed|fullscreen|exclusive	Window mode	src/settings/rg_settings_core.c:108
-display.width	INT	display	1280		DISPLAY	yes	7	src/game/rg_game_main.c:972 src/game/rg_game_main.c:974 src/host/host_sdl.c:220 src/host/host_sdl.c:221 src/host/host_sdl.c:255 src/host/host_sdl.c:666 ...		Window width	src/settings/rg_settings_core.c:112
-display.height	INT	display	960		DISPLAY	yes	5	src/game/rg_game_main.c:973 src/game/rg_game_main.c:975 src/host/host_sdl.c:222 src/host/host_sdl.c:256 src/host/host_sdl.c:667		Window height	src/settings/rg_settings_core.c:115
-display.monitor	INT	display	0		DISPLAY	yes	4	src/host/host_sdl.c:633 src/host/host_sdl.c:634 src/host/host_sdl.c:2267 src/host/host_sdl.c:2288		Monitor	src/settings/rg_settings_core.c:118
-display.fullscreen_mode	STRING	display			DISPLAY	yes	3	src/host/host_sdl.c:646 src/host/host_sdl.c:647 src/host/host_sdl.c:2267		Exclusive mode	src/settings/rg_settings_core.c:121
-display.scale	ENUM	display	linear	linear	DISPLAY,ORIG	yes	7	src/host/host_sdl.c:224 src/host/host_sdl.c:225 src/host/host_sdl.c:251 src/host/host_sdl.c:629 src/host/host_sdl.c:630 src/runtime/runtime.c:688 ...	linear|nearest|integer|stretch	Scaling	src/settings/rg_settings_core.c:124
-display.vsync	BOOL	display	false	false	DISPLAY,ORIG	yes	9	src/host/host_sdl.c:226 src/host/host_sdl.c:227 src/host/host_sdl.c:252 src/host/host_sdl.c:631 src/host/host_sdl.c:631 src/host/host_sdl.c:632 ...		VSync	src/settings/rg_settings_core.c:127
+display.window_mode	ENUM	display	windowed	windowed	DISPLAY,ORIG	yes	11	src/host/host_sdl.c:221 src/host/host_sdl.c:222 src/host/host_sdl.c:251 src/host/host_sdl.c:252 src/host/host_sdl.c:253 src/host/host_sdl.c:657 ...	windowed|fullscreen|exclusive	Window mode	src/settings/rg_settings_core.c:108
+display.width	INT	display	1280		DISPLAY	yes	7	src/game/rg_game_main.c:1007 src/game/rg_game_main.c:1009 src/host/host_sdl.c:223 src/host/host_sdl.c:224 src/host/host_sdl.c:258 src/host/host_sdl.c:669 ...		Window width	src/settings/rg_settings_core.c:112
+display.height	INT	display	960		DISPLAY	yes	5	src/game/rg_game_main.c:1008 src/game/rg_game_main.c:1010 src/host/host_sdl.c:225 src/host/host_sdl.c:259 src/host/host_sdl.c:670		Window height	src/settings/rg_settings_core.c:115
+display.monitor	INT	display	0		DISPLAY	yes	4	src/host/host_sdl.c:636 src/host/host_sdl.c:637 src/host/host_sdl.c:2293 src/host/host_sdl.c:2314		Monitor	src/settings/rg_settings_core.c:118
+display.fullscreen_mode	STRING	display			DISPLAY	yes	3	src/host/host_sdl.c:649 src/host/host_sdl.c:650 src/host/host_sdl.c:2293		Exclusive mode	src/settings/rg_settings_core.c:121
+display.scale	ENUM	display	linear	linear	DISPLAY,ORIG	yes	7	src/host/host_sdl.c:227 src/host/host_sdl.c:228 src/host/host_sdl.c:254 src/host/host_sdl.c:632 src/host/host_sdl.c:633 src/runtime/runtime.c:688 ...	linear|nearest|integer|stretch	Scaling	src/settings/rg_settings_core.c:124
+display.vsync	BOOL	display	false	false	DISPLAY,ORIG	yes	9	src/host/host_sdl.c:229 src/host/host_sdl.c:230 src/host/host_sdl.c:255 src/host/host_sdl.c:634 src/host/host_sdl.c:634 src/host/host_sdl.c:635 ...		VSync	src/settings/rg_settings_core.c:127
 display.pacing	ENUM	display	host	retail	ORIG	yes	2	src/runtime/runtime.c:453 src/runtime/runtime.c:453	retail|host	Frame pacing	src/settings/rg_settings_core.c:130
-display.frame_rate	ENUM	display	original	original	ORIG	yes	5	src/runtime/runtime.c:460 src/runtime/runtime.c:461 src/runtime/runtime.c:463 src/runtime/runtime.c:2110 src/runtime/runtime.c:2111	original|30|60|120|144|165|240|display|uncapped	Frame rate cap	src/settings/rg_settings_core.c:134
+display.frame_rate	ENUM	display	original	original	ORIG	yes	5	src/runtime/runtime.c:460 src/runtime/runtime.c:461 src/runtime/runtime.c:463 src/runtime/runtime.c:2125 src/runtime/runtime.c:2126	original|30|60|120|144|165|240|display|uncapped	Frame rate cap	src/settings/rg_settings_core.c:134
 display.interpolation	BOOL	display	false	false	ORIG	yes	2	src/runtime/runtime.c:472 src/runtime/runtime.c:472		Unlocked frame rate (interpolation)	src/settings/rg_settings_core.c:138
-display.fps_counter	ENUM	display	off	off	ORIG	yes	2	src/host/host_sdl.c:686 src/host/host_sdl.c:687	off|fps|detailed	FPS counter	src/settings/rg_settings_core.c:141
+display.fps_counter	ENUM	display	off	off	ORIG	yes	2	src/host/host_sdl.c:689 src/host/host_sdl.c:690	off|fps|detailed	FPS counter	src/settings/rg_settings_core.c:141
 display.backend	ENUM	display	d3d11	d3d11	ORIG,RESTART	yes	2	src/runtime/runtime.c:1755 src/runtime/runtime.c:1756	d3d11|vulkan	Graphics API	src/settings/rg_settings_core.c:145
 graphics.internal_res	ENUM	graphics	window	native	ORIG	yes	2	src/gpu/gpu_gfx.c:25 src/gpu/gpu_gfx.c:27	native|2x|3x|4x|5x|6x|7x|8x|window	Internal resolution	src/settings/rg_settings_core.c:151
 graphics.aspect	ENUM	graphics	4:3	4:3	DISPLAY,ORIG	yes	2	src/settings/rg_aspect.c:88 src/settings/rg_aspect.c:89	4:3|16:9|16:10|21:9|auto	Aspect ratio	src/settings/rg_settings_core.c:155
@@ -41,24 +41,23 @@ graphics.texture_dump_movies	BOOL	graphics	false	false	ORIG	yes	2	src/gpu/gpu_gf
 accessibility.ui_scale	INT	accessibility	100	100	ORIG	yes	2	src/settings/rg_aspect.c:103 src/settings/rg_aspect.c:104		UI / text scale	src/settings/rg_settings_core.c:252
 accessibility.camera_shake	INT	accessibility	100	100	ORIG	yes	2	src/settings/rg_aspect.c:105 src/settings/rg_aspect.c:106		Camera shake	src/settings/rg_settings_core.c:255
 accessibility.flashing	ENUM	accessibility	original	original	ORIG	yes	2	src/gpu/gpu_gfx.c:57 src/gpu/gpu_gfx.c:57	original|reduced|minimal	Reduced flashing	src/settings/rg_settings_core.c:258
-accessibility.colour_blind	ENUM	accessibility	off	off	ORIG	yes	2	src/game/rg_game_main.c:1123 src/game/rg_game_main.c:1124	off|protanopia|deuteranopia|tritanopia	Colour-blind markers	src/settings/rg_settings_core.c:261
-audio.enabled	BOOL	audio	true	true	ORIG,RESTART	yes	5	src/host/host_sdl.c:228 src/host/host_sdl.c:229 src/host/host_sdl.c:253 src/runtime/runtime.c:684 src/runtime/runtime.c:685		Sound	src/settings/rg_settings_core.c:267
-audio.master_volume	INT	audio	100	100	ORIG	yes	2	src/host/host_sdl.c:676 src/host/host_sdl.c:677		Master volume	src/settings/rg_settings_core.c:269
-audio.latency_ms	INT	audio	64			yes	5	src/host/host_sdl.c:230 src/host/host_sdl.c:231 src/host/host_sdl.c:231 src/host/host_sdl.c:678 src/host/host_sdl.c:679		Audio buffer (ms)	src/settings/rg_settings_core.c:271
+accessibility.colour_blind	ENUM	accessibility	off	off	ORIG	yes	2	src/game/rg_game_main.c:1158 src/game/rg_game_main.c:1159	off|protanopia|deuteranopia|tritanopia	Colour-blind markers	src/settings/rg_settings_core.c:261
+audio.enabled	BOOL	audio	true	true	ORIG,RESTART	yes	5	src/host/host_sdl.c:231 src/host/host_sdl.c:232 src/host/host_sdl.c:256 src/runtime/runtime.c:684 src/runtime/runtime.c:685		Sound	src/settings/rg_settings_core.c:267
+audio.master_volume	INT	audio	100	100	ORIG	yes	2	src/host/host_sdl.c:679 src/host/host_sdl.c:680		Master volume	src/settings/rg_settings_core.c:269
+audio.latency_ms	INT	audio	64			yes	5	src/host/host_sdl.c:233 src/host/host_sdl.c:234 src/host/host_sdl.c:234 src/host/host_sdl.c:681 src/host/host_sdl.c:682		Audio buffer (ms)	src/settings/rg_settings_core.c:271
 audio.music_volume	INT	audio	100	100	ORIG	yes	1	src/runtime/runtime.c:2036		Music volume	src/settings/rg_settings_core.c:276
 audio.effects_volume	INT	audio	100	100	ORIG	yes	1	src/runtime/runtime.c:2036		Effects volume	src/settings/rg_settings_core.c:279
 audio.voice_volume	INT	audio	100	100	ORIG	yes	1	src/runtime/runtime.c:2036		Voice volume	src/settings/rg_settings_core.c:282
 audio.movie_volume	INT	audio	100	100	ORIG	yes	1	src/runtime/runtime.c:2037		Movie volume	src/settings/rg_settings_core.c:285
-audio.background	BOOL	audio	true	true	ORIG	yes	2	src/host/host_sdl.c:680 src/host/host_sdl.c:681		Play audio when unfocused	src/settings/rg_settings_core.c:289
-audio.device	STRING	audio				yes	3	src/host/host_sdl.c:682 src/host/host_sdl.c:683 src/host/host_sdl.c:2266		Output device	src/settings/rg_settings_core.c:292
+audio.background	BOOL	audio	true	true	ORIG	yes	2	src/host/host_sdl.c:683 src/host/host_sdl.c:684		Play audio when unfocused	src/settings/rg_settings_core.c:289
+audio.device	STRING	audio				yes	3	src/host/host_sdl.c:685 src/host/host_sdl.c:686 src/host/host_sdl.c:2292		Output device	src/settings/rg_settings_core.c:292
 saves.dir	STRING	saves			RESTART	yes	2	src/runtime/runtime.c:690 src/runtime/runtime.c:693		Saves folder	src/settings/rg_settings_core.c:297
-saves.backup_keep	INT	saves	5		RESTART	yes	4	src/game/rg_game_main.c:1496 src/game/rg_game_main.c:1497 src/runtime/runtime.c:1274 src/runtime/runtime.c:1275		Save backups kept	src/settings/rg_settings_core.c:300
+saves.backup_keep	INT	saves	5		RESTART	yes	4	src/game/rg_game_main.c:1564 src/game/rg_game_main.c:1565 src/runtime/runtime.c:1274 src/runtime/runtime.c:1275		Save backups kept	src/settings/rg_settings_core.c:300
 gameplay.text_speed	ENUM	gameplay	original	original	GAMEPLAY,ORIG	yes	2	src/settings/rg_aspect.c:108 src/settings/rg_aspect.c:109	original|fast|instant	Text speed	src/settings/rg_settings_core.c:305
-gameplay.battle_speed	ENUM	gameplay	original	original	GAMEPLAY,ORIG	yes	2	src/game/rg_game_main.c:1205 src/game/rg_game_main.c:1205	original|1.5x|2x|3x	Battle speed	src/settings/rg_settings_core.c:309
+gameplay.battle_speed	ENUM	gameplay	original	original	GAMEPLAY,ORIG	yes	2	src/game/rg_game_main.c:1240 src/game/rg_game_main.c:1240	original|1.5x|2x|3x	Battle speed	src/settings/rg_settings_core.c:309
 gameplay.frog_log_order	ENUM	gameplay	original	original	GAMEPLAY,ORIG	yes	2	src/settings/rg_aspect.c:111 src/settings/rg_aspect.c:112	original|sorted	Frog Log order	src/settings/rg_settings_core.c:313
-gameplay.skip_seen_movies	BOOL	gameplay	true	false	ORIG,PLACEHOLDER	yes	0			Allow skipping seen movies	src/settings/rg_settings_core.c:317
 system.throttle	BOOL	system	true	true	HIDDEN,ORIG,RESTART	no	2	src/runtime/runtime.c:682 src/runtime/runtime.c:683		Real-time pacing	src/settings/rg_settings_core.c:321
-system.screenshot_dir	STRING	system	.			yes	4	src/host/host_sdl.c:232 src/host/host_sdl.c:233 src/host/host_sdl.c:688 src/host/host_sdl.c:689		Screenshot folder	src/settings/rg_settings_core.c:324
+system.screenshot_dir	STRING	system	.			yes	4	src/host/host_sdl.c:235 src/host/host_sdl.c:236 src/host/host_sdl.c:691 src/host/host_sdl.c:692		Screenshot folder	src/settings/rg_settings_core.c:324
 system.discord	BOOL	system	true			yes	3	src/runtime/runtime.c:353 src/runtime/runtime.c:353 src/runtime/runtime.c:366		Discord activity	src/settings/rg_settings_core.c:328
 system.discord_app_id	STRING	system			HIDDEN,RESTART	no	2	src/runtime/runtime.c:380 src/runtime/runtime.c:382		Discord application ID	src/settings/rg_settings_core.c:331
 system.discord_details	BOOL	system	true			yes	3	src/runtime/runtime.c:350 src/runtime/runtime.c:351 src/runtime/runtime.c:366		Discord: show chapter	src/settings/rg_settings_core.c:334
@@ -83,7 +82,7 @@ input.stick_ds2_range	BOOL	controls	true			yes	2	src/host/host_input.c:552 src/h
 input.camera_convention	ENUM	controls	pc	original	ORIG	yes	2	src/host/host_input.c:554 src/host/host_input.c:555	pc|original	Camera stick direction	src/host/host_input.c:478
 input.players	ENUM	controls	one			yes	1	src/host/host_input.c:556	one|two	Players	src/host/host_input.c:485
 input.min_press_fields	INT	controls	2			yes	3	src/host/host_input.c:557 src/host/host_input.c:1104 src/host/host_input.c:1104		Minimum press length	src/host/host_input.c:487
-prompts.style	ENUM	controls	RG_PROMPTS_AUTO	RG_PROMPTS_PLAYSTATION	ORIG	yes	4	src/host/host_sdl.c:753 src/host/host_sdl.c:754 src/host/host_sdl.c:931 src/host/host_sdl.c:932	auto|playstation|xbox|nintendo|keyboard	Button prompts	src/host/host_input.c:492
+prompts.style	ENUM	controls	RG_PROMPTS_AUTO	RG_PROMPTS_PLAYSTATION	ORIG	yes	4	src/host/host_sdl.c:756 src/host/host_sdl.c:757 src/host/host_sdl.c:934 src/host/host_sdl.c:935	auto|playstation|xbox|nintendo|keyboard	Button prompts	src/host/host_input.c:492
 input.overlay_chord	BINDING	controls_ui	pad:back, pad:start	pad:back, pad:start	ORIG	yes	2	src/host/host_input.c:1098 src/host/host_input.c:1100		Open / close settings: hold together	src/host/host_input.c:501
 input.overlay_chord_hold	FLOAT	controls_ui	1.0	1.0	ORIG	yes	1	src/host/host_input.c:1102		Open / close settings: hold time	src/host/host_input.c:508
 input.bind.move_left	BINDING	controls	(rg_actions_default)			yes	1	src/host/host_input.c:rg_actions_from_settings (generic)		Move left	src/host/host_input.c:27

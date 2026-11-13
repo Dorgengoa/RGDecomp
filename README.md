@@ -12,10 +12,10 @@ rebuilds everything from your own disc image.
 
 | | Download | Steps |
 | --- | --- | --- |
-| Windows 10/11 | `release/RogueGalaxyPC-1112a-win32.zip` | Unzip, put your `.iso` in the folder, run `Setup.exe` once, then `rg-game.exe`. See [QUICKSTART.md](QUICKSTART.md). |
-| Linux x86-64 (Vulkan, X11 or Wayland) | `release/RogueGalaxyPC-1112a-linux-x86_64.zip` | Unzip, put your `.iso` in the folder, run `./rg-setup` once, then `./rg-game`. See [QUICKSTART-linux.md](QUICKSTART-linux.md). |
+| Windows 10/11 | `release/RogueGalaxyPC-1112b-win32.zip` | Unzip, put your `.iso` in the folder, run `Setup.exe` once, then `rg-game.exe`. See [QUICKSTART.md](QUICKSTART.md). |
+| Linux x86-64 (Vulkan, X11 or Wayland) | `release/RogueGalaxyPC-1112b-linux-x86_64.zip` | Unzip, put your `.iso` in the folder, run `./rg-setup` once, then `./rg-game`. See [QUICKSTART-linux.md](QUICKSTART-linux.md). |
 
-Build 1112a (2026-11-12). Automated tests reach every story boss on both platforms; please
+Build 1112b (2026-11-12). Automated tests reach every story boss on both platforms; please
 report bugs with the steps that led there.
 
 ## Features
@@ -23,12 +23,15 @@ report bugs with the steps that led there.
 - **Display:** windowed or fullscreen, internal resolution up to 8x, widescreen (16:9,
   16:10, 21:9) with menus and HUD laid out for the wider screen, frame rates up to 240 or
   uncapped, anti-aliasing, anisotropic filtering, and enhanced bloom, depth of field and shadows.
+  The memory-card screens use the full width too.
 - **HD texture packs:** dump and replace textures (PCSX2-compatible names).
 - **Controls:** keyboard, mouse and any gamepad, fully rebindable, with button prompts
   matching your device.
 - **Audio:** separate volumes and output device selection.
 - **Options:** text speed, battle speed-up, UI scale, colour-blind modes and reduced
   flashing; inventory sorting.
+- **Insectron:** copy and paste Insectron passwords.
+- **Online Battle:** Insectron 2-Player Battle over LAN, a VPN or a forwarded port (TCP 7490).
 - **Saves:** stored as files with automatic backups; import from a PCSX2 memory card.
 - **Settings menu:** F1 (or hold Back + Start). An "Original" preset restores the PS2 look
   and behaviour.

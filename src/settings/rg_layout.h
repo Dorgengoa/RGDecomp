@@ -99,6 +99,17 @@ float rg_layout_ui_scale(void);
  * rg_layout_wants_pillarbox: stage 2's whole-screen 4:3 pillarbox for such screens, now
  * only with RG_LAYOUT_MENU_PILLARBOX=1 (debug, before/after comparisons). */
 void rg_layout_set_detect(int on);
+/* (cardwide 2026-11-12, docs/WIDESCREEN.md "Memory-card screens") the title phase's
+ * memory-card screens (load: slot select, file list, questions): the TitleLoadDrawBgCb_4ed9e0
+ * override brackets their scrolling background (alpha = its opacity, 0..1).  Its task is a
+ * menu task (laid out as one 4:3 block like the in-game save screen); rg_layout_card_screen:
+ * that background is up in the last drawn frame on a wide canvas (it reached full opacity, and
+ * it stays up while it fades out until it is gone) -> the aspect policy shows the screen wide
+ * instead of pillarboxed like the title.
+ * RG_LAYOUT_CARD_WIDE=0: off (pillarboxed, as before). */
+void rg_layout_card_bg_begin(float alpha);
+void rg_layout_card_bg_end(void);
+int rg_layout_card_screen(void);
 int rg_layout_menu_screen(void);
 int rg_layout_wants_pillarbox(void);
 float rg_layout_scale(void);

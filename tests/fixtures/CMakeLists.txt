@@ -122,3 +122,17 @@ set_tests_properties(fixtures.scenario_selftest PROPERTIES LABELS fixtures TIMEO
 rg_slot_test(fixtures.scenario 900 ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/fixtures/scenario.py run "Mud Whooper"
          --exe $<TARGET_FILE:rg-game> --out ${_work}/scenario --skip-missing)
 set_tests_properties(fixtures.scenario PROPERTIES LABELS fixtures SKIP_RETURN_CODE 77)
+# net.* (lane insnet 2026-11-12, docs/INSECTRON-VERSUS.md "Online 2-Player Battle", "Tests"): two
+# rg-game processes on 127.0.0.1, host + joiner, in lock-step through a whole scripted match
+# (tests/fixtures/net_route.txt, made by tools/net/netmatch.py play); PASS = equal run hashes at
+# every 60-field check, both reach the end of the session, the players' own saves untouched.
+# net.loopback_lost: the joiner killed mid-match, the host carries on and exits cleanly.
+# net.proto: a fake peer (garbage, oversized frame, wrong version / build) is refused (exit 7).
+rg_slot_test(net.loopback_match 3600 ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/net/netpair.py match
+         --exe $<TARGET_FILE:rg-game> --out ${_work}/net_match)
+rg_slot_test(net.loopback_lost 1800 ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/net/netpair.py lost
+         --exe $<TARGET_FILE:rg-game> --out ${_work}/net_lost)
+rg_slot_test(net.proto 900 ${RG_PYTHON} ${CMAKE_SOURCE_DIR}/tools/net/netpair.py proto
+         --exe $<TARGET_FILE:rg-game> --out ${_work}/net_proto)
+set_tests_properties(net.loopback_match net.loopback_lost net.proto PROPERTIES LABELS "fixtures;net"
+                     SKIP_RETURN_CODE 77)

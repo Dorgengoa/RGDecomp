@@ -114,6 +114,9 @@ struct rg_host {
     int shot_seq;
     char shot_dir[512];
     char window_shot[512];    /* pending rg_host_request_window_shot */
+    char pdump_dir[512];      /* rg_host_present_dump: every present as raw RGBA (diagnostic) */
+    uint64_t pdump_field;     /* game field the next dumps are tagged with */
+    uint32_t pdump_n;         /* presents written */
     int sdl_inited;
     uint8_t rumble_small[2], rumble_large[2];
     uint64_t rumble_calls;
@@ -133,6 +136,8 @@ struct rg_host {
     /* P6 menu: rebinding capture, text entry, prompts */
     rg_bind_capture cap;
     bool cap_at_pump, text_at_pump;   /* menu state when this pump started */
+    char paste[2048];                 /* Ctrl+V: clipboard text not taken yet (rg_host_take_paste) */
+    int paste_n, copy_req;            /* Ctrl+C requests not taken yet */
     bool text_on;                      /* SDL text input started */
     uint32_t last_pad_id;              /* most recently used gamepad */
     rg_prompt_style prompt_prev;
@@ -718,6 +723,33 @@ void rg_host_set_overlay(rg_host *h, bool open)
     rg_menu_command(&h->menu, RG_MENU_TOGGLE, now_ms());
 }
 
+int rg_host_take_paste(rg_host *h, char *out, size_t cap)
+{
+    if (!h || !h->paste_n || !out || !cap) return 0;
+    SDL_strlcpy(out, h->paste, cap);
+    h->paste_n = 0;
+    h->paste[0] = 0;
+    return 1;
+}
+
+int rg_host_take_copy_request(rg_host *h)
+{
+    if (!h || !h->copy_req) return 0;
+    h->copy_req = 0;
+    return 1;
+}
+
+int rg_host_set_clipboard(rg_host *h, const char *text)
+{
+    if (!h || h->headless || !text) return -1;
+    return SDL_SetClipboardText(text) ? 0 : -1;
+}
+
+void rg_host_keepalive(rg_host *h)
+{
+    if (h && !h->headless) SDL_PumpEvents();
+}
+
 bool rg_host_port_connected(const rg_host *h, int port)
 {
     if (port == 0) return true;
@@ -1179,6 +1211,21 @@ static int pump_events(rg_host *h)
                     }
                 }
             }
+            /* Ctrl+V / Ctrl+C: the game's text entry (src/game/rg_textentry.c); the key does not
+             * reach the pad (C is Circle, V is L3 by default) */
+            if ((e.key.mod & SDL_KMOD_CTRL) && (e.key.key == SDLK_V || e.key.key == SDLK_C) && !h->menu.open &&
+                !capturing) {
+                if (!e.key.repeat && e.key.key == SDLK_V) {
+                    char *t = SDL_GetClipboardText();
+                    if (t && *t) {
+                        SDL_strlcpy(h->paste, t, sizeof h->paste);
+                        h->paste_n = (int)SDL_strlen(h->paste);
+                    }
+                    SDL_free(t);
+                } else if (!e.key.repeat)
+                    h->copy_req++;
+                break;
+            }
             if (e.key.repeat) break;
             rg_roster_note_activity(&h->roster, RG_DEV_KEYBOARD_MOUSE, 0);
             rg_latch_key(&h->latch, (int)e.key.scancode, latch);
@@ -1408,6 +1455,23 @@ static int present_tex(rg_host *h, SDL_Texture *t, const SDL_FRect *src, uint32_
     static int shot_host = -1;
     if (shot_host < 0) { const char *e = SDL_getenv("RG_WINDOW_SHOT_HOST"); shot_host = e && e[0] == '1'; }
     if (shot_host && h->window_shot[0]) draw_fps(h);
+    if (h->pdump_dir[0]) {   /* rg_host_present_dump: what this present shows, before the overlay */
+        SDL_Surface *sf = SDL_RenderReadPixels(h->ren, NULL);
+        SDL_Surface *cv = sf ? SDL_ConvertSurface(sf, SDL_PIXELFORMAT_RGBA32) : NULL;
+        if (cv && cv->pitch == cv->w * 4) {
+            char p[600];
+            SDL_snprintf(p, sizeof p, "%s/p%06u_f%06llu_%dx%d.rgba", h->pdump_dir, (unsigned)h->pdump_n,
+                         (unsigned long long)h->pdump_field, cv->w, cv->h);
+            FILE *f = fopen(p, "wb");
+            if (f) {
+                fwrite(cv->pixels, 4, (size_t)cv->w * cv->h, f);
+                fclose(f);
+            }
+            h->pdump_n++;
+        }
+        if (cv) SDL_DestroySurface(cv);
+        if (sf) SDL_DestroySurface(sf);
+    }
     if (h->window_shot[0]) {
         SDL_Surface *sf = SDL_RenderReadPixels(h->ren, NULL);
         SDL_Surface *cv = sf ? SDL_ConvertSurface(sf, SDL_PIXELFORMAT_RGBA32) : NULL;
@@ -1776,6 +1840,12 @@ rg_rect rg_host_fit(const rg_host *h, int win_w, int win_h, int src_w, int src_h
 {
     return rg_fit_rect_content(win_w, win_h, src_w, src_h, h->cfg.aspect_num, h->cfg.aspect_den,
                                h->content_num, h->content_den, h->scale, factor);
+}
+
+void rg_host_present_dump(rg_host *h, const char *dir, uint64_t field)
+{
+    SDL_snprintf(h->pdump_dir, sizeof h->pdump_dir, "%s", dir ? dir : "");
+    h->pdump_field = field;
 }
 
 void rg_host_request_window_shot(rg_host *h, const char *path)

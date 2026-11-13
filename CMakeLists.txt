@@ -247,6 +247,8 @@ add_subdirectory(src/settings)
 # the local IPC pipe (docs/DISCORD.md); both self-contained, no game art in the tree
 add_subdirectory(src/icon)
 add_subdirectory(src/discord)
+# online Insectron 2-Player Battle transport (lane insnet, docs/INSECTRON-VERSUS.md); plain sockets
+add_subdirectory(src/net)
 if(RG_HOST)
   add_subdirectory(src/host)
   add_subdirectory(tests/host)

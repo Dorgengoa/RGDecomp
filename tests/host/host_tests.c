@@ -4,7 +4,7 @@
  * Unit tests: pad_report, input_mapping, input_config, input_script,
  *             script_determinism, scaling, png_roundtrip, png_corrupt_control,
  *             pacing, audio_reg, audio_device, audio_focus, wide_fit, wide_present, wide_present_control,
- *             wide_policy, wide_any, wide_host, wide_layout, wide_menu, ui_scale, wide_strips, wide_sides,
+ *             wide_policy, wide_any, wide_host, wide_layout, wide_menu, ui_scale, wide_strips, wide_sides, wide_card,
  *             menu_position, menu_3d.
  * Helpers used by the CTest scripts:
  *   script_dump <script> <out.bin>   input.py PINE blob (u32 count, u16 words)
@@ -1891,6 +1891,91 @@ static void wide_strips(void)
     rg_layout_set_frame(1.0f, 42);
 }
 
+/* Memory-card screens (lane cardwide 2026-11-12, docs/WIDESCREEN.md "Memory-card screens"):
+ * the title phase's card background (rg_layout_card_bg_begin / _end) makes its task a menu task
+ * and, once drawn at full opacity, turns the title's 4:3 pillarbox off (rg_aspect); the title
+ * itself (no card background) stays 4:3; RG_LAYOUT_CARD_WIDE=0 restores the pillarbox. */
+static void wide_card(void)
+{
+    static int card_fn;
+    rg_settings *s = rg_settings_create();
+    rg_settings_register_core(s);
+    rg_settings_parse(s, "[graphics]\naspect = 16:9\nui_layout = keep\nmenu_position = centre\n", "t.ini");
+    rg_aspect_ctl c;
+    rg_aspect_frame f;
+    rg_aspect_ctl_init(&c);
+    host_putenv("RG_LAYOUT_CARD_WIDE=");
+    rg_layout_set_detect(0);
+    rg_layout_set_frame(1.0f, 50);             /* forget earlier state */
+    /* the title: pillarboxed, detection on (wide canvas) */
+    rg_aspect_step_settings(&c, s, 1, 0, 0, 0, &f);
+    CHECK(f.game_wide == 0 && f.canvas_num == 16 && f.content_num == 4);
+    rg_aspect_set_current(&f);
+    CHECK(!rg_layout_card_screen());
+    /* the card background fading in (alpha 0.5): still the title's pillarbox */
+    rg_layout_task_begin(&card_fn);
+    rg_layout_card_bg_begin(0.5f);
+    lpkt_cover(-200, 568, -200, 568, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    rg_layout_card_bg_end();
+    rg_layout_task_end();
+    rg_aspect_step_settings(&c, s, 1, 0, 0, 0, &f);
+    CHECK(f.game_wide == 0 && f.content_num == 4);
+    rg_aspect_set_current(&f);
+    /* fully up: wide (the game's WIDE flag on, content = the canvas) */
+    rg_layout_task_begin(&card_fn);
+    rg_layout_card_bg_begin(1.0f);
+    lpkt_cover(-200, 568, -200, 568, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    rg_layout_card_bg_end();
+    rg_layout_task_end();
+    CHECK(rg_layout_card_screen());
+    rg_aspect_step_settings(&c, s, 1, 0, 0, 0, &f);
+    CHECK(f.game_wide == 1 && f.content_num == 16 && f.content_den == 9);
+    rg_aspect_set_current(&f);
+    CHECK(rg_layout_scale() < 0.8f);
+    /* laid out as a menu (menu_position centre): the task's panel is centred with the block
+     * (256 + (20 - 256) * 0.75) */
+    rg_layout_task_begin(&card_fn);
+    rg_layout_card_bg_begin(1.0f);
+    lpkt_cover(-200, 568, -200, 568, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    rg_layout_card_bg_end();
+    lpkt_cover(20, 60, 100, 120, 0x14);
+    rg_layout_packet(g_lpkt, NULL);
+    CHECK(lcov_x(0) == 79 && lcov_x(1) == 109);
+    rg_layout_task_end();
+    /* fading out (a cancel): still wide while it is drawn at all */
+    rg_layout_set_frame(rg_layout_scale(), 57);
+    rg_layout_task_begin(&card_fn);
+    rg_layout_card_bg_begin(0.4f);
+    lpkt_cover(-200, 568, -200, 568, 0x13);
+    rg_layout_packet(g_lpkt, NULL);
+    rg_layout_card_bg_end();
+    rg_layout_task_end();
+    CHECK(rg_layout_card_screen());
+    /* the switch off: pillarboxed as before */
+    host_putenv("RG_LAYOUT_CARD_WIDE=0");
+    CHECK(!rg_layout_card_screen());
+    rg_aspect_step_settings(&c, s, 1, 0, 0, 0, &f);
+    CHECK(f.game_wide == 0 && f.content_num == 4);
+    host_putenv("RG_LAYOUT_CARD_WIDE=");
+    /* the screen closed (a drawn frame without the card background): the title's pillarbox */
+    rg_aspect_set_current(&f);
+    rg_layout_task_begin(&card_fn);
+    lpkt_cover(20, 60, 100, 120, 0x14);
+    rg_layout_packet(g_lpkt, NULL);
+    rg_layout_task_end();
+    rg_aspect_step_settings(&c, s, 1, 0, 0, 0, &f);
+    CHECK(f.game_wide == 0 && f.content_num == 4);
+    /* not the title (in game): the card hook changes nothing */
+    rg_aspect_step_settings(&c, s, 0, 0, 0, 0, &f);
+    CHECK(f.game_wide == 1 && f.content_num == 16);
+    rg_layout_set_detect(0);
+    rg_layout_set_frame(1.0f, 60);
+    rg_settings_destroy(s);
+}
+
 /* Menu sides (2026-10-31, docs/WIDESCREEN.md "Menu sides"): a menu's shading layer (one
  * sprite covering the 4:3 screen with a low-detail texture, ~0.2 texels a pixel) is left
  * over the whole canvas (no squeeze, no strips); at 21:9 a background's strip runs past
@@ -2476,6 +2561,7 @@ static const test k_tests[] = {
     { "ui_scale", ui_scale },
     { "wide_strips", wide_strips },
     { "wide_sides", wide_sides },
+    { "wide_card", wide_card },
     { "menu_position", menu_position },
     { "menu_3d", menu_3d },
 };

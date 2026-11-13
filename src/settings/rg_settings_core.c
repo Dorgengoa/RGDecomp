@@ -314,8 +314,8 @@ static const rg_setting_def k_core[] = {
       .help = "order of the Frog Log's combine lists: the US release added weapons with new item numbers, so the game lists their recipes after all the others; sorted puts each one with its weapon tree (the order of the game's item table). Display only: saves and combining are unchanged. Original = the game's order",
       .flags = GP | ORIG, .def_i = 0, .orig_i = 0, .enum_names = k_frog_log, .enum_labels = k_frog_log_l,
       .enum_count = N(k_frog_log) },
-    { .id = "gameplay.skip_seen_movies", .type = RG_SET_BOOL, .label = "Allow skipping seen movies",
-      .flags = PH | ORIG, .def_i = 1, .orig_i = 0 },
+    /* (gameplay.skip_seen_movies: removed 2026-11-12, cardwide: the game already skips movies;
+     * the id is retired in rg_settings.c, so old settings.ini files load quietly) */
 
     /* ---------------------------------------------------------- system */
     { .id = "system.throttle", .type = RG_SET_BOOL, .label = "Real-time pacing",

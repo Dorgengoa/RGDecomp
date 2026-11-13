@@ -55,6 +55,12 @@ static int g_wide_now, g_wide_last;   /* a wide-content bracket ran this / the l
 static int g_detect;
 static int g_screen_fbp, g_screen_known;   /* this frame's draw buffer (FRAME FBP) */          /* wide canvas: watch for full-screen menus even when pillarboxed */
 static unsigned g_cover_now, g_cover_last;   /* menu backgrounds this / the last drawn frame */
+/* (cardwide 2026-11-12) the title phase's memory-card screens: their scrolling background
+ * (TitleLoadDrawBgCb_4ed9e0 override -> rg_layout_card_bg_begin / _end) up this / the
+ * last drawn frame (drawn at full opacity, then while it fades out); RG_LAYOUT_CARD_WIDE=0: pillarboxed like the title (as before) */
+static int g_card_bg;                       /* inside the bracket */
+static float g_card_alpha;
+static unsigned g_card_now, g_card_last;
 /* stage 3: the game tasks that drew a full-screen menu background this / the last drawn
  * frame ("menu tasks"): everything they draw is laid out as ONE 4:3 element about the
  * screen centre, background included, over the unchanged wide scene */
@@ -228,6 +234,19 @@ void rg_layout_set_ui_scale(float u)
 float rg_layout_ui_scale(void) { return g_uon ? g_u : 1.0f; }
 void rg_layout_set_detect(int on) { g_detect = on; }
 static unsigned g_roll_packets;   /* g_st.packets at the last frame roll */
+static int card_wide_on(void)   /* read each time (once a field, and on the card packets) */
+{
+    const char *e = getenv("RG_LAYOUT_CARD_WIDE");
+    return !(e && *e == '0');
+}
+void rg_layout_card_bg_begin(float alpha) { g_card_bg = 1; g_card_alpha = alpha; }
+void rg_layout_card_bg_end(void) { g_card_bg = 0; }
+int rg_layout_card_screen(void)
+{
+    if (!g_detect || !card_wide_on())
+        return 0;
+    return g_st.packets != g_roll_packets ? g_card_now > 0 : g_card_last > 0;
+}
 /* asked between fields, before rg_layout_set_frame: the frame just drawn decides (a field
  * without packets, the second VBlank of a 30 Hz frame, keeps the last drawn frame's) */
 int rg_layout_menu_screen(void)
@@ -781,6 +800,8 @@ void rg_layout_set_frame(float s, int field)
     if ((g_active || g_detect) && g_st.packets != last_packets) {
         g_cover_last = g_cover_now;
         g_cover_now = 0;
+        g_card_last = g_card_now;
+        g_card_now = 0;
         ded_roll();
         memcpy(g_ctask_last, g_ctask_now, sizeof g_ctask_last);
         g_nct_last = g_nct_now;
@@ -797,6 +818,7 @@ void rg_layout_set_frame(float s, int field)
         g_capture_task = 0;
     if (!g_detect && !g_active) {
         g_cover_last = g_cover_now = 0;
+        g_card_last = g_card_now = 0;
         g_nct_last = g_nct_now = 0;
         g_ndrawn = 0;
     }
@@ -1773,6 +1795,20 @@ int rg_layout_packet(void *pkt, const void *caller)
         (y1 - y0) >= 0.9f * RG_LAYOUT_FRAME_H * 16.0f) {
         g_screen_fbp = g_scan_fbp;
         g_screen_known = 1;
+    }
+    /* (cardwide) the title phase's memory-card background: the screen is up (at full
+     * opacity: the aspect policy then shows it wide, rg_aspect.c) and its task is a menu
+     * task, laid out like the in-game save screen (stage 3) */
+    if (g_card_bg && card_wide_on()) {
+        /* up once fully opaque (it fades in under the screen fade); then up while it is drawn
+         * at all, so a cancel's fade-out stays wide until the background is gone (no pop
+         * back to the pillarbox over a half-faded screen) */
+        if (g_card_alpha >= 0.999f || (g_card_last > 0 && g_card_alpha > 0.001f))
+            g_card_now++;
+        if (task) {
+            g_cover_now++;
+            menu_task_add((const void *)task);
+        }
     }
     int menu = 0;   /* stage 3: part of a full-screen menu (laid out whole, centred) */
     if (g_scan_fbp >= 0 && g_scan_fbp != g_screen_fbp) {

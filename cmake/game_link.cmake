@@ -69,10 +69,30 @@ add_executable(rg-game EXCLUDE_FROM_ALL
   ${CMAKE_SOURCE_DIR}/src/game/rg_game_ss.c
   ${CMAKE_SOURCE_DIR}/src/game/rg_invsort_tab.c   # item sort ranks (tools/census/invsort_census.py)
   ${CMAKE_SOURCE_DIR}/src/game/rg_froglog_tab.c   # Frog Log order ranks (tools/census/froglog_census.py)
+  ${CMAKE_SOURCE_DIR}/src/game/rg_insnet.c       # online Insectron versus session (lane insnet)
+  ${CMAKE_SOURCE_DIR}/src/game/rg_insnet_ui.c    # online versus: the way in through INSMENU (lane insnet)
+  ${CMAKE_SOURCE_DIR}/src/game/rg_textentry.c    # Ctrl+C / Ctrl+V in the game's text entry (lane insnet)
   ${_rg_unbound} ${_rg_game_objs} ${_rg_game_gen})
+# online versus: the game build id both peers must share (game code identity, the same for every
+# arch): the generated manifest and every override, hashed at configure (src/game/rg_insnet.c)
+file(READ ${CMAKE_SOURCE_DIR}/game/MANIFEST.tsv _rg_insnet_id)
+string(REPLACE "\r" "" _rg_insnet_id "${_rg_insnet_id}")   # CRLF / LF checkouts agree
+string(SHA256 _rg_insnet_id "${_rg_insnet_id}")
+file(GLOB_RECURSE _rg_insnet_ovs RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/overrides/*.c ${CMAKE_SOURCE_DIR}/overrides/*.cpp)
+list(SORT _rg_insnet_ovs)
+foreach(_f ${_rg_insnet_ovs})
+  file(READ ${CMAKE_SOURCE_DIR}/${_f} _h)
+  string(REPLACE "\r" "" _h "${_h}")
+  string(SHA256 _h "${_h}")
+  string(SHA256 _rg_insnet_id "${_rg_insnet_id}${_f}${_h}")
+endforeach()
+string(SUBSTRING "${_rg_insnet_id}" 0 16 _rg_insnet_id)
+set_source_files_properties(${CMAKE_SOURCE_DIR}/src/game/rg_insnet.c PROPERTIES
+  COMPILE_DEFINITIONS "RG_INSNET_BUILD=0x${_rg_insnet_id}ull")
 target_include_directories(rg-game PRIVATE
   ${CMAKE_SOURCE_DIR}/src/runtime ${CMAKE_SOURCE_DIR}/src/movie
-  ${CMAKE_SOURCE_DIR}/src/ps2/overlay ${CMAKE_SOURCE_DIR}/src/trace)
+  ${CMAKE_SOURCE_DIR}/src/ps2/overlay ${CMAKE_SOURCE_DIR}/src/trace
+  ${CMAKE_SOURCE_DIR}/src/native/saves)   # mccard.h: rg_insnet_ui.c (lane insnet)
 set(_rg_game_libs
   rg_runtime rg_movie_runtime rg_movie_game rg_movie
   rg_ps2_overlay_bind rg_ovl_arena rg_ps2_overlay
@@ -82,6 +102,7 @@ set(_rg_game_libs
   rg_ps2_hwbus rg_ps2_spin rg_ps2_kernel rg_ps2_cdvd rg_ps2_dmac rg_ps2_gs rg_ps2_vif rg_ps2_vu
   rg_ps2_sif rg_ps2_iop rg_ps2_iop_hle rg_ps2_padmc rg_ps2_sound rg_ps2_spu
   rg_host rg_settings
+  rg_net          # online Insectron versus (src/net, lane insnet)
   rg_savestate)   # save states (docs/TEST-FIXTURES.md): replaces malloc for the exe
 # RG_NATIVE_ONLY (docs/NATIVE-ONLY.md): native-only clones, no IOP/sound/CDVD oracles
 if(RG_NATIVE_ONLY)

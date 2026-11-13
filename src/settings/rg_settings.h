@@ -138,6 +138,9 @@ int rg_settings_find(const rg_settings *s, const char *id);     /* -1 if unknown
  * parser, presets, --set and rg_settings_find accept it; the file is always
  * written with the current id.  0, or -1 (unknown target, old id taken). */
 int rg_settings_add_alias(rg_settings *s, const char *old_id, const char *id);
+/* 1 if `id` names a setting that was removed (an old settings.ini may still hold it: such a
+ * line loads with no warning and is dropped on the next save). */
+int rg_settings_is_retired(const char *id);
 const rg_setting_def *rg_settings_def(const rg_settings *s, int index);
 const char *rg_settings_category(const rg_settings *s, int index);
 /* Categories in registration order; returns the count. */

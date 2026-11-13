@@ -52,6 +52,8 @@
 #endif
 
 #include "rg_runtime.h"
+#include "rg_insnet.h"   /* online Insectron versus (lane insnet) */
+void rg_textentry_field(uint64_t k);   /* src/game/rg_textentry.c */
 #include "rg_settings.h"
 #include "rg_aspect.h"
 #include "rg_prompts.h"
@@ -1429,6 +1431,7 @@ int main(int argc, char **argv)
     const char *shot = NULL;
     int headless = 0, ssa = 0;
     rg_game_ss_early(argc, argv);   /* first: fixed-address state region (save states) */
+    rg_insnet_set_argv(argc, argv);   /* online versus: the command line for its relaunches */
     rg_runtime_default_config(&cfg);
 #ifdef _WIN32
     SetUnhandledExceptionFilter(rg_game_crash);
@@ -1547,7 +1550,12 @@ int main(int argc, char **argv)
             fprintf(g_look_rec, "#!look 1 0\n");
             i++;
         }
-        else { usage(); rg_settings_destroy(settings); return 2; }
+        else {
+            /* --net-* : online Insectron versus (src/game/rg_insnet.c) */
+            int nr = rg_insnet_arg(a, v);
+            if (nr <= 0) { usage(); rg_settings_destroy(settings); return 2; }
+            if (nr == 2) i++;
+        }
     }
     cfg.headless = headless;
     {
@@ -1603,6 +1611,15 @@ int main(int argc, char **argv)
             cfg.game_vblank = rg_game_frame_key;
     }
 #endif
+    if (rg_insnet_wanted()) {
+        /* online Insectron versus: connect, exchange, session saves (docs/INSECTRON-VERSUS.md) */
+        char nerr[300] = "";
+        if (rg_insnet_start(&cfg, settings, nerr, sizeof nerr) != 0) {
+            fprintf(stderr, "rg-game: online battle: %s\n", nerr);
+            rg_settings_destroy(settings);
+            return 7;
+        }
+    }
     if (rg_game_ss_before_init() != 0) {
         rg_settings_destroy(settings);
         return 2;
@@ -1661,10 +1678,14 @@ int main(int argc, char **argv)
             prompts_apply(settings);
             look_apply();
             battle_speed_apply(settings, k);
+            rg_insnet_before_field(k);   /* online versus: prefix speed, settings lock */
             scenario_encounter(k);
             rc = rg_runtime_run_field();
             if (rc)
                 break;
+            rg_textentry_field(k + 1);   /* Ctrl+C on a shown Insectron password */
+            if (rg_insnet_after_field(k + 1))
+                break;                   /* --net-exit-at-end: the online session ended */
             dl_peak_sample();
             randlog_field(k + 1);
             if (g_nshots)
@@ -1744,6 +1765,11 @@ int main(int argc, char **argv)
     printf("rg-game: fields=%llu vblank_start=%llu rc=%d\n", (unsigned long long)st->fields,
            (unsigned long long)st->vblank_start, rc);
     printf("rg-game: run_hash=%016llx\n", (unsigned long long)st->run_hash);
+    if (rg_insnet_wanted()) {
+        int nrc = rg_insnet_finish();
+        printf("rg-game: net %s\n", rg_insnet_end_reason()[0] ? rg_insnet_end_reason() : "running at exit");
+        if (nrc && !rc) rc = nrc;
+    }
     fflush(stdout);
     dl_peak_report();
     rg_runtime_shutdown();

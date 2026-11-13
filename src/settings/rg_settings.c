@@ -872,6 +872,21 @@ static void walk_ini(rg_settings *s, const char *text, const char *name, pair_fn
     free(buf);
 }
 
+/* Settings that existed and were removed: a settings.ini (or preset file) written by an older
+ * build may still name them.  They load silently and are dropped (not kept, so the next save
+ * leaves them out).  A rename is an alias (rg_settings_add_alias), not a retirement. */
+static const char *const k_retired_ids[] = {
+    "gameplay.skip_seen_movies",   /* 2026-11-12 cardwide: the game already skips movies */
+};
+
+int rg_settings_is_retired(const char *id)
+{
+    if (!id) return 0;
+    for (size_t i = 0; i < sizeof k_retired_ids / sizeof k_retired_ids[0]; i++)
+        if (!strcmp(k_retired_ids[i], id)) return 1;
+    return 0;
+}
+
 static void keep_unknown(rg_settings *s, const char *id, const char *val)
 {
     for (int i = 0; i < s->nunk; i++)
@@ -900,6 +915,7 @@ static void file_pair(rg_settings *s, const char *id, const char *val, int ln, c
         return;
     }
     int idx = rg_settings_find(s, id);
+    if (idx < 0 && rg_settings_is_retired(id)) return;   /* removed setting: dropped quietly */
     if (idx < 0) {
         warnf(s, "%s:%d: unknown setting '%s' (kept)", name, ln, id);
         keep_unknown(s, id, val);
@@ -1118,6 +1134,7 @@ static void preset_pair(rg_settings *s, const char *id, const char *val, int ln,
     int idx = rg_settings_find(s, id);
     char err[256];
     sval v;
+    if (idx < 0 && rg_settings_is_retired(id)) return;   /* removed setting: ignored */
     if (idx < 0) {
         seterr(c->err, c->errcap, "%s:%d: unknown setting '%s'", name, ln, id);
         c->bad = 1;

@@ -145,6 +145,15 @@ void rg_runtime_request_quit(void);
  * is unchanged.  stage = the option is on (the audio stage stays in, at speed 1 outside
  * battles: no seam); 0 = off (speed must be 1).  Interpolated presents pause while speed > 1. */
 void rg_runtime_set_speed(double speed, int stage);
+/* Pad source override (online Insectron versus, src/game/rg_insnet.c, lane insnet): when set, the
+ * pad the game reads on `port` at game VBlank `vbl` comes from fn (which fills buttons / sticks;
+ * pressure is derived from the buttons) and *connected says whether the port has a pad.  NULL =
+ * the host's pads, as always.  fn may block (lock-step wait for the peer). */
+typedef void (*rg_runtime_pad_fn)(void *user, int port, uint32_t vbl, uint16_t *buttons, uint8_t sticks[4],
+                                  int *connected);
+void rg_runtime_set_pad_hook(rg_runtime_pad_fn fn, void *user);
+/* the run hash so far (rg_runtime_get_stats()->run_hash, without the stats header) */
+uint64_t rg_runtime_run_hash(void);
 /* rg-game, per field: whether a movie is open (the native device's texture dumps skip movie
  * frames, docs/TEXTURES.md); reaches the GS worker behind everything already sent */
 void rg_runtime_movie_playing(int on);

@@ -14,7 +14,7 @@ set(_out ${CMAKE_CURRENT_BINARY_DIR}/out)
 file(MAKE_DIRECTORY ${_out})
 
 set(RG_SETTINGS_TESTS
-  registry_types ini_parse ini_roundtrip presets cmdline change_tracking
+  registry_types ini_parse ini_roundtrip retired_ids presets cmdline change_tracking
   display_trial save_load core_defs menu_keyboard menu_gamepad
   menu_rebind_keyboard menu_rebind_gamepad menu_text_entry menu_flags
   menu_device_guard_keyboard menu_device_guard_gamepad menu_wrap screenshot_dir_live fps_counter

@@ -10,7 +10,7 @@
 
 ## Set up (once)
 
-1. Unzip `RogueGalaxyPC-1112a-linux-x86_64.zip` to a folder you can write to, for example
+1. Unzip `RogueGalaxyPC-1112b-linux-x86_64.zip` to a folder you can write to, for example
    `~/Games/RogueGalaxyPC`.
 2. Copy your `.iso` into that folder, next to `rg-setup`.
 3. In a terminal in that folder run `./rg-setup` (or `./rg-setup /path/to/image.iso`). It

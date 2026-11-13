@@ -324,6 +324,34 @@ static int t_ini_roundtrip(void)
     return 0;
 }
 
+/* A removed setting (gameplay.skip_seen_movies, 2026-11-12) still in an old settings.ini:
+ * loads with no warning, is not kept, and the next save leaves it out. */
+static int t_retired_ids(void)
+{
+    rg_settings *s = mk();
+    CHECK(rg_settings_is_retired("gameplay.skip_seen_movies"));
+    CHECK(!rg_settings_is_retired("gameplay.text_speed"));
+    CHECK_EQ(rg_settings_find(s, "gameplay.skip_seen_movies"), -1);
+    g_warn.all[0] = 0;
+    CHECK_EQ(rg_settings_parse(s, "[gameplay]\nskip_seen_movies = true\ntext_speed = fast\n", "old.ini"), 0);
+    CHECK(strstr(g_warn.all, "skip_seen_movies") == NULL);
+    CHECK_STR(val(s, "gameplay.text_speed"), "fast");
+    size_t n = rg_settings_format(s, NULL, 0, 0);
+    char *a = (char *)malloc(n + 1);
+    CHECK_EQ(rg_settings_format(s, a, n + 1, 0), n);
+    CHECK(strstr(a, "skip_seen_movies") == NULL);
+    free(a);
+    /* a preset naming it still loads */
+    char err[256] = "";
+    CHECK_EQ(rg_settings_add_preset(s, "oldp", "Old", "[gameplay]\nskip_seen_movies = false\ntext_speed = fast\n",
+                                    err, sizeof err), 0);
+    CHECK_STR(err, "");
+    CHECK_EQ(rg_settings_apply_preset(s, "oldp"), 0);
+    CHECK_STR(val(s, "gameplay.text_speed"), "fast");
+    rg_settings_destroy(s);
+    return 0;
+}
+
 static int t_presets(void)
 {
     rg_settings *s = mk();
@@ -336,7 +364,6 @@ static int t_presets(void)
     CHECK(!rg_settings_matches_preset(s, "default"));
     CHECK_STR(val(s, "graphics.internal_res"), "native");
     CHECK_STR(val(s, "graphics.anisotropic"), "off");
-    CHECK_STR(val(s, "gameplay.skip_seen_movies"), "false");
     CHECK_STR(val(s, "display.scale"), "linear");
     CHECK_STR(val(s, "audio.master_volume"), "100");
     CHECK_EQ(rg_settings_source(s, rg_settings_find(s, "display.scale")), RG_SRC_PRESET);
@@ -3748,7 +3775,7 @@ static int t_menu_saves(void)
 /* ================================================================ main */
 typedef struct test { const char *name; int (*fn)(void); } test;
 static const test k_tests[] = {
-    { "registry_types", t_registry_types }, { "ini_parse", t_ini_parse }, { "ini_roundtrip", t_ini_roundtrip },
+    { "registry_types", t_registry_types }, { "ini_parse", t_ini_parse }, { "ini_roundtrip", t_ini_roundtrip }, { "retired_ids", t_retired_ids },
     { "presets", t_presets }, { "cmdline", t_cmdline }, { "change_tracking", t_change_tracking },
     { "display_trial", t_display_trial }, { "save_load", t_save_load }, { "core_defs", t_core_defs },
     { "menu_keyboard", t_menu_keyboard }, { "menu_gamepad", t_menu_gamepad },

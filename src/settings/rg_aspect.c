@@ -116,6 +116,11 @@ void rg_aspect_step_settings(rg_aspect_ctl *c, const rg_settings *s, int title, 
      * element (rg_layout.h): the switch is left only behind RG_LAYOUT_MENU_PILLARBOX=1 */
     if (g_ui_layout == RG_UI_LAYOUT_KEEP && rg_layout_wants_pillarbox())
         title = 1;
+    /* (cardwide 2026-11-12) the title phase's memory-card screens are menus like the in-game
+     * save screen: wide (laid out by stage 3) once their background is fully up; the title
+     * itself stays 4:3.  RG_LAYOUT_CARD_WIDE=0: pillarboxed as before */
+    else if (title && g_ui_layout == RG_UI_LAYOUT_KEEP && rg_layout_card_screen())
+        title = 0;
     rg_aspect_step_ratio(c, n, d, movie, title, movie_open, out);
 }
 

@@ -56,7 +56,8 @@ EXIT_LEN = 1300                                  # INSMENU mode list (ovl 6, 11/
 # (stream close): SoundStreamSlotShutdown_1bdfd0's kick loop never ran the driven slot step,
 # then EffTableDestroyAll_1a0240 spun (HandleTableGet_1a1d50 lost its handle argument);
 # docs/bringup/BRINGUP-HISTORY.md 2026-10-25 (stream close).  TITLE at ~19,700.
-TITLE = [(1320, "DOWN"), (1350, "DOWN"), (1390, "CROSS"),  # Watch Battle -> Return to title
+TITLE = [(1320, "DOWN"), (1350, "DOWN"), (1380, "DOWN"),   # Watch Battle -> Registration -> Online
+         (1420, "CROSS"),                                  #   Battle (lane insnet) -> Return to title
          (1600, "CROSS"),                                  # "Return to the title screen?" Yes
          (1900, "CROSS")]                                  # "We look forward to your next battle!"
 TITLE_LEN = 3400

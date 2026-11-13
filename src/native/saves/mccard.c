@@ -1802,6 +1802,16 @@ int mccard_open(int port, const char *path, int mode)
 
 static mccard_meta_hook_fn g_meta_hook;
 static void *g_meta_user;
+static int g_last_load_port = -1;
+static char g_last_load_path[MC_PATH_MAX];
+static unsigned g_last_load_seq;
+
+unsigned mccard_last_loaded(int *port, char *path, size_t cap)
+{
+    if (port) *port = g_last_load_port;
+    if (path && cap) snprintf(path, cap, "%s", g_last_load_path);
+    return g_last_load_seq;
+}
 
 void mccard_set_meta_hook(mccard_meta_hook_fn fn, void *user)
 {
@@ -1892,6 +1902,11 @@ int mccard_read(int fd, void *dst, int size)
         got = fread(dst, 1, n, d->f);
     }
     d->pos += (uint32_t)got;
+    if (got && d->pos == m->size && m->size > 0x800) {   /* lane insnet: the save the game loaded last */
+        g_last_load_port = d->port;
+        snprintf(g_last_load_path, sizeof g_last_load_path, "%s", d->path ? d->path : "");
+        g_last_load_seq++;
+    }
     if (g_meta_hook && got && d->pos == m->size && m->size > 0x800) {   /* a whole data file was read */
         uint8_t head[0x350];
         size_t hn;

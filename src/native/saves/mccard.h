@@ -249,6 +249,10 @@ void mc_save_meta_line(const mc_save_meta *m, char *out, size_t cap);
  * docs/DISCORD.md); NULL removes it.  Called on the thread that called mccard_*. */
 typedef void (*mccard_meta_hook_fn)(const mc_save_meta *m, int saved, void *user);
 void mccard_set_meta_hook(mccard_meta_hook_fn fn, void *user);
+/* The data file the game read last, whole (a load, not the slot scan; lane insnet: the save a
+ * player brings to an online battle): slot `port` (0 / 1) and its card path; returns a count
+ * that grows with every load (0 = none yet). */
+unsigned mccard_last_loaded(int *port, char *path, size_t cap);
 /* 1 and the name when save directory `dir` ("NAME" or "/NAME") of slot `port` is named */
 int mccard_save_name(int port, const char *dir, char *out, int outlen);
 /* name (empty: un-name) a save directory; it need not exist yet.  0 ok, -1 bad input / I/O */

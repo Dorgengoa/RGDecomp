@@ -70,6 +70,7 @@ static const char *const k_host_libs[] = {
     "rg_host", "rg_gpu", "rg_settings", "rg_trace", "rg_trace_core", "rg_savestate",
     "rg_native_fs", "rg_native_fs_oracle", "rg_ps2_cdvd",
     "rg_native_render",   /* renderer-side caches and records, rebuilt on demand (docs/NATIVE-RENDER.md) */
+    "rg_net",             /* online versus transport: sockets, buffers (lane insnet) */
     NULL,
 };
 
@@ -158,8 +159,11 @@ static void classify(const char *obj, size_t objlen, int *dcls, int *ccls)
         }
         if ((objlen == 18 && !memcmp(obj, "rg_game_main.c.obj", 18)) ||
             (objlen == 14 && !memcmp(obj, "rg_slots.c.obj", 14)) ||
-            (objlen == 16 && !memcmp(obj, "rg_game_ss.c.obj", 16))) {
-            *dcls = *ccls = SS_HOST;             /* the exe's host entry, instance limiter, CLI */
+            (objlen == 16 && !memcmp(obj, "rg_game_ss.c.obj", 16)) ||
+            (objlen == 15 && !memcmp(obj, "rg_insnet.c.obj", 15)) ||        /* online versus session (lane insnet) */
+            (objlen == 18 && !memcmp(obj, "rg_insnet_ui.c.obj", 18)) ||
+            (objlen == 18 && !memcmp(obj, "rg_textentry.c.obj", 18))) {
+            *dcls = *ccls = SS_HOST;             /* the exe's host entry, instance limiter, CLI, online versus */
             return;
         }
         *dcls = *ccls = SS_GAME;                 /* game/overrides/missing/generated */
